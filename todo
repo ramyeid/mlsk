@@ -1,0 +1,4 @@
+* time_series_analysis
+- pass the order in ARIMA as parameters (as non required)
+- fill setups.py
+- add logs. (test logs)
