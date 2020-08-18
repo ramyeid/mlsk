@@ -226,3 +226,7 @@ gradle-app.setting
 **/build/
 
 # End of https://www.gitignore.io/api/java,macos,maven,gradle,python,windows,java-web,code-java
+
+
+.vscode
+.venv
