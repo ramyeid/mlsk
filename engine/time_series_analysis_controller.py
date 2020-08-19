@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 
 from flask import request
-from utils import csv
+from utils import JsonComplexEncoder
 from services.time_series_analysis_service import TimeSeriesAnalysisService
+from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
+from model.time_series.time_series import TimeSeries
+import json
 
 
 def forecast() -> str:
@@ -10,28 +13,30 @@ def forecast() -> str:
     Forecast values and add the forecasted values to the learning data to predict the next value
 
     Args:
-      - csv (str)               : absolute file path of the csv input file
-      - date_column_name (str)  : name of the column that contains the date values
-      - value_column_name (str) : name of the column that contains the value that will be predicted
-      - date_format (str)       : date format of the date values e.g.: "%Y-%m" (according to Python strftime())
-      - number_of_values (int)  : count of values to forecast
+      - time_series_analysis_request_json (str) : json corresponding to time_series_analysis_request_json file path of the csv input file
 
     Returns:
-      str -> location of the outputFile with forecasted values
+      time_series -> time_series corresponding to the forecasted values and dates.
   """
-
-  csv_file_path = str(request.form['csv'])
-  date_column_name = str(request.form['date_column_name'])
-  value_column_name = str(request.form['value_column_name'])
-  date_format = str(request.form['date_format'])
-  number_of_values = int(request.form['number_of_values'])
-
-  data = csv.read(csv_file_path, date_column_name, date_format)
-
+  
+  time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
+  
+  time_series = time_series_analysis_request.get_time_series()
+  data = time_series.to_data_frame()
+  date_column_name = time_series.get_date_column_name()
+  value_column_name = time_series.get_value_column_name()
+  number_of_values = time_series_analysis_request.get_number_of_values()
+  date_format = time_series.get_date_format()
   time_series_analysis_service = TimeSeriesAnalysisService(data, date_column_name, value_column_name, number_of_values)
-  data_with_predicted_values = time_series_analysis_service.forecast()
 
-  return csv.write(build_output_file_location(csv_file_path, "forecast"), data_with_predicted_values, date_column_name, date_format)
+  forecasted_data_frame = time_series_analysis_service.forecast()
+
+  time_series_with_forecasted_values = TimeSeries.from_data_frame(forecasted_data_frame, date_column_name, value_column_name, date_format)
+  # only send the elements added.
+  time_series_with_forecasted_values_only = TimeSeries(time_series_with_forecasted_values.get_rows()[-number_of_values:],
+                                                       date_column_name, value_column_name, date_format)
+  
+  return json.dumps(time_series_with_forecasted_values_only, cls=JsonComplexEncoder.JsonComplexEncoder)
 
 
 def compute_accuracy_of_forecast() -> float:
@@ -41,25 +46,21 @@ def compute_accuracy_of_forecast() -> float:
     And compute the accuracy for this algorithm
 
     Args:
-      - csv (str)               : absolute file path of the csv input file
-      - date_column_name (str)  : name of the column that contains the date values
-      - value_column_name (str) : name of the column that contains the value that will be predicted
-      - date_format (str)       : date format of the date values e.g.: "%Y-%m" (according to Python strftime())
-      - number_of_values (int)  : count of values to forecast from initial values
+      - time_series_analysis_request_json (str) : json corresponding to time_series_analysis_request_json file path of the csv input file
 
     Returns:
       float -> accuracy of the forecast algorithm per centage
   """
 
-  csv_file_path = str(request.form['csv'])
-  date_column_name = str(request.form['date_column_name'])
-  value_column_name = str(request.form['value_column_name'])
-  date_format = str(request.form['date_format'])
-  number_of_values = int(request.form['number_of_values'])
+  time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
 
-  data = csv.read(csv_file_path, date_column_name, date_format)
-
+  time_series = time_series_analysis_request.get_time_series()
+  data = time_series.to_data_frame()
+  date_column_name = time_series.get_date_column_name()
+  value_column_name = time_series.get_value_column_name()
+  number_of_values = time_series_analysis_request.get_number_of_values()
   time_series_analysis_service = TimeSeriesAnalysisService(data, date_column_name, value_column_name, number_of_values)
+
   return str(time_series_analysis_service.compute_forecast_accuracy())
 
 
@@ -68,29 +69,27 @@ def predict() -> str:
     Predict exact values.
 
     Args:
-      - csv (str)               : absolute file path of the csv input file
-      - date_column_name (str)  : name of the column that contains the date values
-      - value_column_name (str) : name of the column that contains the value that will be predicted
-      - date_format (str)       : date format of the date values e.g.: "%Y-%m" (according to Python strftime())
-      - number_of_values (int)  : count of values to predict 
+      - time_series_analysis_request_json (str) : json corresponding to time_series_analysis_request_json file path of the csv input file
 
     Returns:
       str -> location of the outputFile with predicted values
   """
 
-  csv_file_path = str(request.form['csv'])
-  date_column_name = str(request.form['date_column_name'])
-  value_column_name = str(request.form['value_column_name'])
-  date_format = str(request.form['date_format'])
-  number_of_values = int(request.form['number_of_values'])
-
-  data = csv.read(csv_file_path, date_column_name, date_format)
-
+  time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
+  
+  time_series = time_series_analysis_request.get_time_series()
+  data = time_series.to_data_frame()
+  date_column_name = time_series.get_date_column_name()
+  value_column_name = time_series.get_value_column_name()
+  number_of_values = time_series_analysis_request.get_number_of_values()
+  date_format = time_series.get_date_format()
   time_series_analysis_service = TimeSeriesAnalysisService(data, date_column_name, value_column_name, number_of_values)
+
   data_with_predicted_values = time_series_analysis_service.predict()
 
-  return csv.write(build_output_file_location(csv_file_path, "predict"), data_with_predicted_values, date_column_name, date_format)
-
-
-def build_output_file_location(csv_file_path : str, suffix : str) -> str:
-  return csv_file_path.replace(".csv", "_" + suffix + "_output.csv")
+  time_series_with_predicted_values = TimeSeries.from_data_frame(data_with_predicted_values, date_column_name, value_column_name, date_format)
+  #only send the elements added.
+  time_series_with_predicted_values_only = TimeSeries(time_series_with_predicted_values.get_rows()[-number_of_values:],
+                                                      date_column_name, value_column_name, date_format)
+  
+  return json.dumps(time_series_with_predicted_values_only, cls=JsonComplexEncoder.JsonComplexEncoder)

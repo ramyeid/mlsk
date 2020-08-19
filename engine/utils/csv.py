@@ -3,6 +3,7 @@
 import pandas as pd
 from datetime import datetime
 
+
 def read(csv_input_file : str, date_column_name : str, date_format : str) -> pd.DataFrame:
   """
     from csv file to dictionary [key(date), value]

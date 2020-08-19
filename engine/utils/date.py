@@ -3,6 +3,7 @@
 from datetime import datetime
 from dateutil import relativedelta
 
+
 def get_next_date(first_date : datetime, second_date : datetime) -> datetime:
   """
     Compute the next date from the difference of dates
