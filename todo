@@ -11,8 +11,11 @@
 
 
 *** Service ***
-- modify the default port
-- create Orchestrator for engines (spawn engine on demand)
+- modify the default port for Service
+- create Orchestrator for engines (spawn engineImpl on demand)
+- find a way to launch the engines in the service. => create a packaging script
+take the all the jars put them in a certain directory copy the engine directory
+this way there s a contract on how to launch the engine
 ***************
 
 

@@ -1,10 +1,11 @@
 package org.machinelearning.swissknife.service.controllers;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.TimeSeriesAnalysis;
-import org.machinelearning.swissknife.lib.rest.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
-import org.machinelearning.swissknife.service.engine.client.TimeSeriesAnalysisEngineClient;
+import org.machinelearning.swissknife.service.Orchestrator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,28 +15,25 @@ import static org.machinelearning.swissknife.lib.endpoints.TimeSeriesAnalysisUrl
 @RestController
 public class TimeSeriesAnalysisController implements TimeSeriesAnalysis {
 
+    private final Orchestrator orchestrator;
+
+    @Autowired
+    public TimeSeriesAnalysisController(Orchestrator orchestrator) {
+        this.orchestrator = orchestrator;
+    }
+
     @PostMapping(FORECAST_URL)
     public TimeSeries forecast(@RequestBody TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-        ServiceInformation serviceInformation = new ServiceInformation("localhost", "6767");
-        TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(serviceInformation);
-        TimeSeries timeSeriesWithForecastedValues =  timeSeriesAnalysisEngineClient.forecast(timeSeriesAnalysisRequest);
-        return TimeSeries.concat(timeSeriesAnalysisRequest.getTimeSeries(), timeSeriesWithForecastedValues);
-
+        return orchestrator.runOnEngine(engine -> engine.forecast(timeSeriesAnalysisRequest), "time-series-forecast");
     }
 
     @PostMapping(FORECAST_ACCURACY_URL)
     public Double computeForecastAccuracy(@RequestBody TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-        ServiceInformation serviceInformation = new ServiceInformation("localhost", "6767");
-        TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(serviceInformation);
-        return timeSeriesAnalysisEngineClient.computeForecastAccuracy(timeSeriesAnalysisRequest);
+        return orchestrator.runOnEngine(engine -> engine.computeForecastAccuracy(timeSeriesAnalysisRequest), "time-series-compute-accuracy");
     }
 
     @PostMapping(PREDICATE_URL)
     public TimeSeries predict(@RequestBody TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-        ServiceInformation serviceInformation = new ServiceInformation("localhost", "6767");
-        TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(serviceInformation);
-        TimeSeries timeSeriesWithPredicatedValues =  timeSeriesAnalysisEngineClient.predict(timeSeriesAnalysisRequest);
-        return TimeSeries.concat(timeSeriesAnalysisRequest.getTimeSeries(), timeSeriesWithPredicatedValues);
-
+        return orchestrator.runOnEngine(engine -> engine.predict(timeSeriesAnalysisRequest), "time-series-predict");
     }
 }

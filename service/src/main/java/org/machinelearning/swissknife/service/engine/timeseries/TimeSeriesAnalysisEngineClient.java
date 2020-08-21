@@ -1,4 +1,4 @@
-package org.machinelearning.swissknife.service.engine.client;
+package org.machinelearning.swissknife.service.engine.timeseries;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.TimeSeriesAnalysis;
@@ -6,7 +6,7 @@ import org.machinelearning.swissknife.lib.rest.RestClient;
 import org.machinelearning.swissknife.lib.rest.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
-import org.machinelearning.swissknife.service.engine.client.exception.TimeSeriesAnalysisEngineRequestException;
+import org.machinelearning.swissknife.service.engine.timeseries.exceptions.TimeSeriesAnalysisEngineRequestException;
 
 import static org.machinelearning.swissknife.lib.endpoints.TimeSeriesAnalysisUrls.*;
 
@@ -35,7 +35,7 @@ public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
     @Override
     public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
         try {
-            return Double.valueOf(restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, String.class));
+            return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
         } catch (Exception exception) {
             throw new TimeSeriesAnalysisEngineRequestException("Failed to post computeForecastAccuracy to service", exception);
         }

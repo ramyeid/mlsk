@@ -28,7 +28,7 @@ public class TimeSeriesAnalysisRestClient implements TimeSeriesAnalysis {
     @Override
     public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
         try {
-            return Double.valueOf(restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, String.class));
+            return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
         } catch (Exception exception) {
             throw new TimeSeriesAnalysisServiceRequestException("Failed to post computeForecastAccuracy to service", exception);
         }
