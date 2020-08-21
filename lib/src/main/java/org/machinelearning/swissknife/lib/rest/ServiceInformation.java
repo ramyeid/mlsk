@@ -12,4 +12,5 @@ public class ServiceInformation {
     public String getUrl() {
         return "http://" + host + ":" + port + "/";
     }
+
 }

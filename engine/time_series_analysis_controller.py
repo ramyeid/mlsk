@@ -39,7 +39,7 @@ def forecast() -> str:
   return json.dumps(time_series_with_forecasted_values_only, cls=JsonComplexEncoder.JsonComplexEncoder)
 
 
-def compute_accuracy_of_forecast() -> float:
+def compute_accuracy_of_forecast() -> str:
   """
     Test forecast with the current values of the csv passed
     Forecast the last {number_of_values} elements and compare them to the actual value

@@ -1,6 +1,9 @@
 package org.machinelearning.swissknife.lib.rest;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.Mockito.mock;
@@ -20,6 +23,10 @@ class RestClientTest {
 
         restClient.post("forecast", body, String.class);
 
-        verify(restTemplate).postForObject("http://"+HOST+":"+PORT, body, String.class);
+
+        HttpHeaders expectedHeaders = new HttpHeaders();
+        expectedHeaders.setContentType(MediaType.APPLICATION_JSON);
+        HttpEntity<Double> expectedEntity = new HttpEntity<>(body ,expectedHeaders);
+        verify(restTemplate).postForObject("http://"+HOST+":"+PORT+"/forecast", expectedEntity, String.class);
     }
 }
