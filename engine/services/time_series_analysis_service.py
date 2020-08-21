@@ -83,7 +83,7 @@ class TimeSeriesAnalysisService:
       shallow copy {data} and append the predictions with their correspondant dates.
 
       Returns:
-        pandas.DataFrame -> data frame containg the new values and dates.
+        pandas.DataFrame -> data frame containg the initial data and the new values and dates.
     """
 
     model = ARIMA(self.data[self.value_column_name], order = (5, 1, 0))
@@ -111,13 +111,14 @@ class TimeSeriesAnalysisService:
 
     return data
 
+
   def forecast(self) -> pd.DataFrame:
     """
       Forecast the next {number_of_values} values to come using ARIMA model
       This method will compute the forecasted value and add it again to the dataframe to forecast the next one.
 
       Returns:
-        pandas.DataFrame -> data frame containg the next values and dates.
+        pandas.DataFrame -> data frame containg the initial data and the next values and dates.
     """
 
     copied_data = self.__copy_data_and_append_values()

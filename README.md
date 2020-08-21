@@ -12,40 +12,9 @@ Below is the architecture of this application (Components might be added while d
 > - The calculation engines are seperate  spawnable webservices developed in python using flask and sklearn (Python3)
 > - The aim is dockerize all components
 
-## Algorithms
+## Components
 
-> - [Time Series Analysis](./resources/documentation/TimeSeriesAnalysisService.md)
-
-## Developers
-
-### Python
-
-``` bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-pip install pylint
-code .
-```
-
-#### Compile all files
-
-```bash
-python -m compileall -f .
-```
-
-#### Run test
-
-``` bash
-pytest -s
-```
-
-#### Get Python documentation
-
-``` bash
-python -m pydoc {file}
-```
+> - [Engine](./resources/documentation/Engine.md)
 
 ## Contributors
 

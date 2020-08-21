@@ -95,7 +95,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -227,6 +226,8 @@ gradle-app.setting
 
 # End of https://www.gitignore.io/api/java,macos,maven,gradle,python,windows,java-web,code-java
 
+*.iml
 
 .vscode
 .venv
+.idea

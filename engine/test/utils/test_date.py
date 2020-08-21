@@ -6,6 +6,7 @@ from datetime import datetime
 
 class TestDateUtils(unittest.TestCase):
 
+
   def test_get_next_date_with_seconds_difference(self):
     #Given
     date_1 = datetime(year = 1960, month = 10, day = 2, hour = 10, minute = 5, second = 0)

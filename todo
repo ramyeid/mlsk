@@ -1,4 +1,38 @@
-* time_series_analysis
+*** Engine ***
+
+** Time Series Analysis **
 - pass the order in ARIMA as parameters (as non required)
+**************************
+
+
 - fill setups.py
 - add logs. (test logs)
+**************
+
+
+*** Service ***
+- modify the default port
+- create Orchestrator for engines (spawn engine on demand)
+***************
+
+
+*** UI - Swing ***
+- upload a csv
+- parse the csv into TimeSeries
+- call the Service.
+- plot.
+**********
+
+*** UI - Web ***
+- Final Step make the application a web application as well.
+****************
+
+
+*** Model ***
+*************
+
+
+
+**todo**
+Test end to end with values that are different by year/ month/ day/ hour/ minute/ second/
+*******
