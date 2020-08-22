@@ -1,0 +1,69 @@
+import os
+from pathlib import Path
+from shutil import copy, copytree
+import common_constants as constants
+
+
+def build_directory_exists() -> bool:
+  return os.path.isdir(constants.BUILD_DIRECTORY)
+
+
+def create_build_directory():
+  if not os.path.isdir(constants.BUILD_DIRECTORY):
+    os.mkdir(constants.BUILD_DIRECTORY)
+
+
+def create_components_directory():
+  if not os.path.isdir(constants.BUILD_COMPONENTS_DIRECTORY):
+    os.mkdir(constants.BUILD_COMPONENTS_DIRECTORY)
+
+
+def compile_java_project():
+  os.system("cd .. && mvn clean package -q")
+
+
+def get_all_jar_paths() -> [str]:
+  jar_paths = []
+  for path in Path('..').rglob('*.jar'):
+    jar_paths.append(path.resolve())
+  return jar_paths
+
+
+def copy_all_jars(jar_paths : [str]):
+  for jar_path in jar_paths:
+    copy(jar_path, constants.BUILD_COMPONENTS_DIRECTORY)
+
+
+def copy_engine_project():
+    copytree("../engine", constants.BUILD_COMPONENTS_DIRECTORY + "/engine")
+
+
+def copy_launcher_scripts():
+  copy("common_constants.py", constants.BUILD_DIRECTORY)
+  copy("launch_common.py", constants.BUILD_DIRECTORY)
+  copy("launch_service.py", constants.BUILD_DIRECTORY)
+  copy("launch_ui.py", constants.BUILD_DIRECTORY)
+
+
+def copy_configuration_file():
+  copy("swissknife.ini", constants.BUILD_DIRECTORY)
+
+
+if __name__== "__main__":
+  if (build_directory_exists()):
+    print ("ERROR: Please remove the build directory [../build], to package the solution")
+  else:
+    print ("Compiling Java projects")
+    compile_java_project()
+    print ("Creating build directory")
+    create_build_directory()
+    print ("Creating components directory")
+    create_components_directory()
+    print ("Copying all jars")
+    copy_all_jars(get_all_jar_paths())
+    print ("Copying engine project")
+    copy_engine_project()
+    print ("Copying launcher scripts")
+    copy_launcher_scripts()
+    print ("Copying configuration file")
+    copy_configuration_file()

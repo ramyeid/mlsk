@@ -11,7 +11,6 @@
 
 
 *** Service ***
-- modify the default port for Service
 - create Orchestrator for engines (spawn engineImpl on demand)
 - find a way to launch the engines in the service. => create a packaging script
 take the all the jars put them in a certain directory copy the engine directory
@@ -38,4 +37,5 @@ this way there s a contract on how to launch the engine
 
 **todo**
 Test end to end with values that are different by year/ month/ day/ hour/ minute/ second/
+Create yml file to explain all end points of all components.
 *******
