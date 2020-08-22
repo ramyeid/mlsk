@@ -1,6 +1,5 @@
 package org.machinelearning.swissknife.service.controllers;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.TimeSeriesAnalysis;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;

@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.machinelearning.swissknife.EngineState;
-import org.machinelearning.swissknife.lib.rest.ServiceInformation;
+import org.machinelearning.swissknife.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesRow;

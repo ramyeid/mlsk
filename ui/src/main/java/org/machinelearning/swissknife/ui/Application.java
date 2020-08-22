@@ -1,15 +1,14 @@
 package org.machinelearning.swissknife.ui;
 
 import org.apache.commons.cli.*;
-import org.machinelearning.swissknife.lib.rest.ServiceInformation;
+import org.machinelearning.swissknife.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
-import org.machinelearning.swissknife.ui.timeseries.TimeSeriesAnalysisRestClient;
+import org.machinelearning.swissknife.ui.timeseries.client.TimeSeriesAnalysisServiceClient;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
-import java.util.Arrays;
 
 public class Application {
 
@@ -41,17 +40,17 @@ public class Application {
                 System.out.println(servicePort);
 
                 ServiceInformation serviceInformation = new ServiceInformation("localhost", servicePort);
-                TimeSeriesAnalysisRestClient timeSeriesAnalysisRestClient = new TimeSeriesAnalysisRestClient(serviceInformation);
+                TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient = new TimeSeriesAnalysisServiceClient(serviceInformation);
 
-                TimeSeries predictedTimeSeries = timeSeriesAnalysisRestClient.predict(new TimeSeriesAnalysisRequest(timeSeries, numberOfValues));
+                TimeSeries predictedTimeSeries = timeSeriesAnalysisServiceClient.predict(new TimeSeriesAnalysisRequest(timeSeries, numberOfValues));
 
                 System.out.println(timeSeries.equals(predictedTimeSeries));
 
-                TimeSeries forecastTimeSeries = timeSeriesAnalysisRestClient.forecast(new TimeSeriesAnalysisRequest(timeSeries, numberOfValues));
+                TimeSeries forecastTimeSeries = timeSeriesAnalysisServiceClient.forecast(new TimeSeriesAnalysisRequest(timeSeries, numberOfValues));
 
                 System.out.println(timeSeries.equals(forecastTimeSeries));
 
-                Double accuracy = timeSeriesAnalysisRestClient.computeForecastAccuracy(new TimeSeriesAnalysisRequest(timeSeries, 2));
+                Double accuracy = timeSeriesAnalysisServiceClient.computeForecastAccuracy(new TimeSeriesAnalysisRequest(timeSeries, 2));
 
                 System.out.println(accuracy);
 
