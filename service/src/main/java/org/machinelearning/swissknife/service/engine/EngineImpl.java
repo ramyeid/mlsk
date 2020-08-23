@@ -3,7 +3,7 @@ package org.machinelearning.swissknife.service.engine;
 import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.Engine;
 import org.machinelearning.swissknife.EngineState;
-import org.machinelearning.swissknife.lib.rest.ServiceInformation;
+import org.machinelearning.swissknife.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.service.engine.timeseries.TimeSeriesAnalysisEngineClient;
@@ -24,16 +24,22 @@ public class EngineImpl implements Engine {
         this(serviceInformation, new EngineClientFactory(), new AtomicReference<>(WAITING));
     }
 
-    @Override
-    public synchronized EngineState getState() {
-        return this.state.get();
-    }
-
     @VisibleForTesting
     public EngineImpl(ServiceInformation serviceInformation, EngineClientFactory engineClientFactory, AtomicReference<EngineState> state) {
         this.serviceInformation = serviceInformation;
         this.engineClientFactory = engineClientFactory;
         this.state = state;
+    }
+
+    @Override
+    public synchronized EngineState getState() {
+        return this.state.get();
+    }
+
+
+    @Override
+    public ServiceInformation getServiceInformation() {
+        return serviceInformation;
     }
 
     @Override

@@ -1,10 +1,10 @@
 package org.machinelearning.swissknife.lib.rest;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.machinelearning.swissknife.ServiceInformation;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 

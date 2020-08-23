@@ -3,8 +3,8 @@ package org.machinelearning.swissknife.service.engine.timeseries;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.machinelearning.swissknife.ServiceInformation;
 import org.machinelearning.swissknife.lib.rest.RestClient;
-import org.machinelearning.swissknife.lib.rest.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesRow;
@@ -16,17 +16,17 @@ import java.util.List;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.machinelearning.swissknife.lib.endpoints.TimeSeriesAnalysisUrls.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TimeSeriesAnalysisEngineImplClientTest {
+class TimeSeriesAnalysisEngineClientTest {
 
     private static final String ENGINE_HOST = "hp123";
     private static final String ENGINE_PORT = "6767";
-    private static final ServiceInformation ENGINE_INFORMATION = new ServiceInformation(ENGINE_HOST, ENGINE_PORT);
 
     @Mock
     private RestClient restClient;
@@ -113,5 +113,4 @@ class TimeSeriesAnalysisEngineImplClientTest {
 
         }
     }
-
 }

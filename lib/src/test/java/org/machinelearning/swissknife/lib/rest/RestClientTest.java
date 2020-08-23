@@ -1,6 +1,7 @@
 package org.machinelearning.swissknife.lib.rest;
 
 import org.junit.jupiter.api.Test;
+import org.machinelearning.swissknife.ServiceInformation;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;

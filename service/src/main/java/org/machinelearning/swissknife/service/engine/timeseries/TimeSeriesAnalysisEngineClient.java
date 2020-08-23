@@ -1,9 +1,9 @@
 package org.machinelearning.swissknife.service.engine.timeseries;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.machinelearning.swissknife.ServiceInformation;
 import org.machinelearning.swissknife.TimeSeriesAnalysis;
 import org.machinelearning.swissknife.lib.rest.RestClient;
-import org.machinelearning.swissknife.lib.rest.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.service.engine.timeseries.exceptions.TimeSeriesAnalysisEngineRequestException;
@@ -28,7 +28,7 @@ public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
         try {
             return restClient.post(FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class);
         } catch(Exception exception) {
-            throw new TimeSeriesAnalysisEngineRequestException("Failed to post forecast to service", exception);
+            throw new TimeSeriesAnalysisEngineRequestException("Failed to post forecast to engine", exception);
         }
     }
 
@@ -37,7 +37,7 @@ public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
         try {
             return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
         } catch (Exception exception) {
-            throw new TimeSeriesAnalysisEngineRequestException("Failed to post computeForecastAccuracy to service", exception);
+            throw new TimeSeriesAnalysisEngineRequestException("Failed to post computeForecastAccuracy to engine", exception);
         }
     }
 
@@ -46,7 +46,7 @@ public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
         try {
             return restClient.post(PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
         } catch (Exception exception) {
-            throw new TimeSeriesAnalysisEngineRequestException("Failed to post predict to service", exception);
+            throw new TimeSeriesAnalysisEngineRequestException("Failed to post predict to engine", exception);
         }
     }
 }
