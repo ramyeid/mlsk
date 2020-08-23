@@ -1,4 +1,4 @@
-package org.machinelearning.swissknife;
+package org.machinelearning.swissknife.model;
 
 import java.util.Objects;
 

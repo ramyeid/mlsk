@@ -1,7 +1,7 @@
 package org.machinelearning.swissknife.service.engine.timeseries;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.machinelearning.swissknife.ServiceInformation;
+import org.machinelearning.swissknife.model.ServiceInformation;
 import org.machinelearning.swissknife.TimeSeriesAnalysis;
 import org.machinelearning.swissknife.lib.rest.RestClient;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;

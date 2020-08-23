@@ -1,70 +1,35 @@
 package org.machinelearning.swissknife.ui;
 
 import org.apache.commons.cli.*;
-import org.machinelearning.swissknife.ServiceInformation;
+import org.machinelearning.swissknife.model.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
-import org.machinelearning.swissknife.ui.timeseries.client.TimeSeriesAnalysisServiceClient;
+import org.machinelearning.swissknife.ui.client.timeseries.TimeSeriesAnalysisServiceClient;
+import org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesFrame;
+import org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesPlotPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 
+import static org.machinelearning.swissknife.ui.components.utils.GridBagUtils.buildGridBagConstraints;
+
 public class Application {
 
+    public static ServiceInformation SERVICE_INFORMATION;
+
     public static void main(String[] args) throws ParseException {
-        String servicePort = getServicePort(args);
+        setServiceInformation(args);
 
-        JFrame frame = new JFrame("My First GUI");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(300, 300);
-        frame.setLayout(new FlowLayout());
 
-        JButton button = new JButton("Press");
-        frame.getContentPane().add(button, 0);
 
-        JLabel jLabel = new JLabel();
-        jLabel.setText("Asd");
-        frame.getContentPane().add(jLabel, 1);
+        TimeSeriesFrame timeSeriesFrame = new TimeSeriesFrame();
 
-        button.addActionListener(e -> {
-            String locationOfCsv = "/Users/ramyeid/Documents/machine-learning-swissknife/resources/data_example/AirPassengers.csv";
-            String dateColumnName = "Date";
-            String valueColumnName = "Passengers";
-            String dateFormat = "%Y-%m";
-            int numberOfValues = 5;
-            try {
-                TimeSeries timeSeries = TimeSeries.buildFromCsv(locationOfCsv, dateColumnName, valueColumnName, dateFormat);
-
-                System.out.println(timeSeries.getRows().size());
-                System.out.println(servicePort);
-
-                ServiceInformation serviceInformation = new ServiceInformation("localhost", servicePort);
-                TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient = new TimeSeriesAnalysisServiceClient(serviceInformation);
-
-                TimeSeries predictedTimeSeries = timeSeriesAnalysisServiceClient.predict(new TimeSeriesAnalysisRequest(timeSeries, numberOfValues));
-
-                System.out.println(timeSeries.equals(predictedTimeSeries));
-
-                TimeSeries forecastTimeSeries = timeSeriesAnalysisServiceClient.forecast(new TimeSeriesAnalysisRequest(timeSeries, numberOfValues));
-
-                System.out.println(timeSeries.equals(forecastTimeSeries));
-
-                Double accuracy = timeSeriesAnalysisServiceClient.computeForecastAccuracy(new TimeSeriesAnalysisRequest(timeSeries, 2));
-
-                System.out.println(accuracy);
-
-            } catch (IOException ioException) {
-                ioException.printStackTrace();
-            }
-        });
-
-        frame.pack();
-        frame.setVisible(true);
+        timeSeriesFrame.setVisible(true);
 
     }
 
-    private static String getServicePort(String[] args) throws ParseException {
+    private static void setServiceInformation(String[] args) throws ParseException {
         Option enginePortsOption = new Option("port", "service-port", true, "Port of the service");
         enginePortsOption.setRequired(true);
 
@@ -74,7 +39,9 @@ public class Application {
         CommandLine cmd;
 
         cmd = parser.parse(options, args);
-        return cmd.getOptionValue("port");
+        String port = cmd.getOptionValue("port");
+
+        SERVICE_INFORMATION =  new ServiceInformation("localhost", port);
     }
 
 }

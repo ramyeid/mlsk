@@ -1,7 +1,7 @@
 package org.machinelearning.swissknife.service;
 
 import org.machinelearning.swissknife.Engine;
-import org.machinelearning.swissknife.EngineState;
+import org.machinelearning.swissknife.model.EngineState;
 import org.machinelearning.swissknife.service.exceptions.NoAvailableEngineException;
 
 import java.util.List;

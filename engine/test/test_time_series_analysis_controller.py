@@ -25,7 +25,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
                                           dict(date = "1950-01", value = 115.0), dict(date = "1950-02", value = 126.0)],
                                   dateColumnName = 'Date',
                                   valueColumnName = 'Passengers',
-                                  dateFormat = '%Y-%m'),
+                                  dateFormat = 'yyyy-MM'),
                 numberOfValues = 2)
     body_as_string = json.dumps(body)
 
@@ -36,7 +36,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     #Then
     time_series_row = TimeSeriesRow(datetime(1950, 3, 1), 114.8008754900565)
     time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 123.33176716127309)
-    expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "%Y-%m")
+    expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
     assert expected_time_series == actual_time_series
 
 
@@ -54,7 +54,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
                                           dict(date = "1950-07", value = 170.0), dict(date = "1950-09", value = 158.0)],
                                   dateColumnName = 'Date',
                                   valueColumnName = 'Passengers',
-                                  dateFormat = '%Y-%m'),
+                                  dateFormat = 'yyyy-MM'),
                 numberOfValues = 1)
     body_as_string = json.dumps(body)
 
@@ -77,7 +77,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
                                           dict(date = "1950-01", value = 115.0), dict(date = "1950-02", value = 126.0)],
                                   dateColumnName = 'Date',
                                   valueColumnName = 'Passengers',
-                                  dateFormat = '%Y-%m'),
+                                  dateFormat = 'yyyy-MM'),
                 numberOfValues = 2)
     body_as_string = json.dumps(body)
 
@@ -88,7 +88,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     #Then
     time_series_row = TimeSeriesRow(datetime(1950, 3, 1), 125.32468684121805)
     time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 124.48343613986563)
-    expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "%Y-%m")
+    expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
     assert expected_time_series == actual_time_series
 
 

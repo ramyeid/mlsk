@@ -2,7 +2,7 @@
 #!/usr/bin/python3
 
 from datetime import datetime
-
+from utils.date import to_python_date_format
 
 class TimeSeriesRow:
   """
@@ -31,11 +31,10 @@ class TimeSeriesRow:
 
 
   def to_json(self, date_format : str) -> dict:
-    return dict(date = self.date.strftime(date_format),
-                value = float(self.value))
+    return dict(date = self.date.strftime(to_python_date_format(date_format)), value = float(self.value))
 
 
   @classmethod
   def from_json(cls, data : dict, date_format : str):
-    date = datetime.strptime(data["date"], date_format)
+    date = datetime.strptime(data["date"], to_python_date_format(date_format))
     return cls(date, float(data["value"]))

@@ -2,7 +2,7 @@ package org.machinelearning.swissknife.service.engine.deployment;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.Engine;
-import org.machinelearning.swissknife.ServiceInformation;
+import org.machinelearning.swissknife.model.ServiceInformation;
 import org.machinelearning.swissknife.service.engine.EngineImpl;
 import org.machinelearning.swissknife.service.engine.exceptions.EngineCreationException;
 
@@ -33,9 +33,9 @@ public class EngineCreator {
 
     private ServiceInformation launchEngine(String port) throws IOException {
         Process process = processBuilder
-                            .command("python3", "engine.py", "--port", port)
-                            .directory(new File("components/engine"))
-                            .start();
+                .command("python3", "engine.py", "--port", port)
+                .directory(new File("components/engine"))
+                .start();
 
         return new ServiceInformation("localhost", port, String.valueOf(process.pid()));
     }

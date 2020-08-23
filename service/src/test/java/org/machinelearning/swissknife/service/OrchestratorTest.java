@@ -3,7 +3,7 @@ package org.machinelearning.swissknife.service;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.machinelearning.swissknife.Engine;
-import org.machinelearning.swissknife.EngineState;
+import org.machinelearning.swissknife.model.EngineState;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.service.exceptions.NoAvailableEngineException;
 import org.mockito.Mock;

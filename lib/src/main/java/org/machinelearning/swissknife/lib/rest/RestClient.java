@@ -1,7 +1,7 @@
 package org.machinelearning.swissknife.lib.rest;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.machinelearning.swissknife.ServiceInformation;
+import org.machinelearning.swissknife.model.ServiceInformation;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
