@@ -14,7 +14,7 @@ public class ErrorPopup {
             return callable.call();
         } catch (Exception e) {
             showErrorPopup(errorMessage, e.getClass().getCanonicalName());
-            throw new RuntimeException("A");
+            throw new RuntimeException(e.getCause());
         }
     }
 }

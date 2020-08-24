@@ -2,17 +2,7 @@ package org.machinelearning.swissknife.ui;
 
 import org.apache.commons.cli.*;
 import org.machinelearning.swissknife.model.ServiceInformation;
-import org.machinelearning.swissknife.model.timeseries.TimeSeries;
-import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
-import org.machinelearning.swissknife.ui.client.timeseries.TimeSeriesAnalysisServiceClient;
-import org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesFrame;
-import org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesPlotPanel;
-
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
-
-import static org.machinelearning.swissknife.ui.components.utils.GridBagUtils.buildGridBagConstraints;
+import org.machinelearning.swissknife.ui.components.startup.MainFrame;
 
 public class Application {
 
@@ -20,13 +10,7 @@ public class Application {
 
     public static void main(String[] args) throws ParseException {
         setServiceInformation(args);
-
-
-
-        TimeSeriesFrame timeSeriesFrame = new TimeSeriesFrame();
-
-        timeSeriesFrame.setVisible(true);
-
+        new MainFrame();
     }
 
     private static void setServiceInformation(String[] args) throws ParseException {

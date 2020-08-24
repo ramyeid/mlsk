@@ -16,11 +16,7 @@ import static org.machinelearning.swissknife.ui.components.utils.ErrorPopup.tryP
 
 public class TimeSeriesPlotPanel extends JPanel {
 
-    public TimeSeriesPlotPanel() {
-        this.setSize(600, 600);
-    }
-
-    public void setTimeSeries(org.machinelearning.swissknife.model.timeseries.TimeSeries initialTimeSeries,
+    public TimeSeriesPlotPanel(org.machinelearning.swissknife.model.timeseries.TimeSeries initialTimeSeries,
                               org.machinelearning.swissknife.model.timeseries.TimeSeries timeSeriesWithNewValues,
                               String action) {
 
