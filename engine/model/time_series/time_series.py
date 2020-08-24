@@ -11,9 +11,9 @@ class TimeSeries:
 
     Attributes
       - rows (list[TimeSeriesRow]) : rows corresponding to the csv file
-      - date_column_name (str)  : name of the column that contains the date values
-      - value_column_name (str) : name of the column that contains the value that will be predicted
-      - dateFormat (str)          : date format of the date values e.g.: "%Y-%m" (according to Python strftime())
+      - date_column_name (str)     : name of the column that contains the date values
+      - value_column_name (str)    : name of the column that contains the value that will be predicted
+      - dateFormat (str)           : date format of the date values (according to Java format)
   """
 
   def __init__(self, rows : [TimeSeriesRow], date_column_name : str, value_column_name : str, date_format : str):

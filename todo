@@ -23,6 +23,9 @@ this way there s a contract on how to launch the engine
 - parse the csv into TimeSeries
 - call the Service.
 - plot.
+- Find a way to create an abstract view (Configuration (abstract), Applier (abstract))
+=> so we don't have to create the same frame multiple times (we add the applier needed and the configuration needed)
+and the code that handle the screen is shared.
 **********
 
 *** UI - Web ***

@@ -2,8 +2,8 @@ package org.machinelearning.swissknife.service.engine;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.Engine;
-import org.machinelearning.swissknife.EngineState;
-import org.machinelearning.swissknife.ServiceInformation;
+import org.machinelearning.swissknife.model.EngineState;
+import org.machinelearning.swissknife.model.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.service.engine.timeseries.TimeSeriesAnalysisEngineClient;
@@ -11,8 +11,8 @@ import org.machinelearning.swissknife.service.engine.timeseries.TimeSeriesAnalys
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static org.machinelearning.swissknife.EngineState.COMPUTING;
-import static org.machinelearning.swissknife.EngineState.WAITING;
+import static org.machinelearning.swissknife.model.EngineState.COMPUTING;
+import static org.machinelearning.swissknife.model.EngineState.WAITING;
 
 public class EngineImpl implements Engine {
 
@@ -69,9 +69,11 @@ public class EngineImpl implements Engine {
     }
 
     private <Result> Result callOnEngine(Supplier<Result> supplier) {
-        this.state.set(COMPUTING);
-        Result result = supplier.get();
-        this.state.set(WAITING);
-        return result;
+        try {
+            this.state.set(COMPUTING);
+            return supplier.get();
+        } finally {
+            this.state.set(WAITING);
+        }
     }
 }

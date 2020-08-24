@@ -13,3 +13,7 @@ The Server is a Spring boot Rest Service project that acts as an orchestrator an
 ``` bash
 java -Dserver.port=6766 -jar service.jar --engine-ports 6767,6768
 ```
+
+### Engines
+
+The Service owns the engines; this means that it is the service that will launch and destroy the engines.

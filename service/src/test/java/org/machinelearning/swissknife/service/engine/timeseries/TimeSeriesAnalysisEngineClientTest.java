@@ -3,7 +3,6 @@ package org.machinelearning.swissknife.service.engine.timeseries;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.machinelearning.swissknife.ServiceInformation;
 import org.machinelearning.swissknife.lib.rest.RestClient;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;

@@ -137,6 +137,50 @@ class TestDateUtils(unittest.TestCase):
     assert expected_next_date  == actual_next_date
 
 
+  def test_to_python_date_format(self):
+    #Given
+    java_date_format = "yyyy-MM"
+
+    #When
+    actual_python_date_format = date.to_python_date_format(java_date_format)
+
+    #Then
+    assert "%Y-%m" == actual_python_date_format
+
+
+  def test_to_python_date_format_with_complex_date_format(self):
+    #Given
+    java_date_format = "yyyy-MM-dd HH:mm:ss.SSS"
+
+    #When
+    actual_python_date_format = date.to_python_date_format(java_date_format)
+
+    #Then
+    assert "%Y-%m-%d %H:%M:%S.%f" == actual_python_date_format
+
+
+  def test_to_python_date_format_with_complex_date_format2(self):
+    #Given
+    java_date_format = "yy-MM-dd hh:mm:ss.SSS"
+
+    #When
+    actual_python_date_format = date.to_python_date_format(java_date_format)
+
+    #Then
+    assert "%Y-%m-%d %H:%M:%S.%f" == actual_python_date_format
+
+
+  def test_to_python_date_format_with_complext_date_format_3(self):
+    #Given
+    java_date_format = "dd/MM/yy hh:mm:ss.SSS"
+
+    #When
+    actual_python_date_format = date.to_python_date_format(java_date_format)
+
+    #Then
+    assert "%d/%m/%Y %H:%M:%S.%f" == actual_python_date_format
+
+
 if __name__ == "__main__":
   unittest.main()
 

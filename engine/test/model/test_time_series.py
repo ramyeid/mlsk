@@ -16,7 +16,7 @@ class TestTimeSeries(unittest.TestCase):
     time_series_row1 = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
     time_series_row2 = TimeSeriesRow(datetime(1949, 2, 1), 118.0)
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
-    time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "%Y-%m")
+    time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "yyyy-MM")
 
     #When
     actual_json = time_series.to_json()
@@ -24,7 +24,7 @@ class TestTimeSeries(unittest.TestCase):
     #Then
     expected_json = dict(dateColumnName = 'Date',
                          valueColumnName = 'Passengers',
-                         dateFormat = '%Y-%m',
+                         dateFormat = 'yyyy-MM',
                          rows = [dict(date = '1949-01', value = 112.0),
                                  dict(date = '1949-02', value = 118.0),
                                  dict(date = '1949-03', value = 132.0)])
@@ -35,7 +35,7 @@ class TestTimeSeries(unittest.TestCase):
     #Given
     json = dict(dateColumnName = 'Date',
                 valueColumnName = 'Passengers',
-                dateFormat = '%Y-%m-%d %H:%M:%S',
+                dateFormat = 'yyyy-MM-dd HH:mm:ss',
                 rows = [dict(date = '1949-01-01 11:00:01', value = 112.0),
                         dict(date = '1949-01-01 11:00:02', value = 118.0),
                         dict(date = '1949-01-01 11:00:03', value = 132.0)])
@@ -47,7 +47,7 @@ class TestTimeSeries(unittest.TestCase):
     time_series_row1 = TimeSeriesRow(datetime(1949, 1, 1, 11, 0, 1), 112.0)
     time_series_row2 = TimeSeriesRow(datetime(1949, 1, 1, 11, 0, 2), 118.0)
     time_series_row3 = TimeSeriesRow(datetime(1949, 1, 1, 11, 0, 3), 132.0)
-    expected_time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "%Y-%m-%d %H:%M:%S")
+    expected_time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "yyyy-MM-dd HH:mm:ss")
     assert expected_time_series == actual_time_series
 
 
@@ -58,13 +58,13 @@ class TestTimeSeries(unittest.TestCase):
     data_frame = pd.DataFrame.from_dict(initial_data)
 
     #When
-    actual_time_series = TimeSeries.from_data_frame(data_frame, "Date", "Passengers", "%Y-%m-%d %H:%M:%S")
+    actual_time_series = TimeSeries.from_data_frame(data_frame, "Date", "Passengers", "yyyy-MM-dd HH:mm:ss")
 
     #Then
     time_series_row1 = TimeSeriesRow(datetime(1960, 8, 1, 11, 0, 0), 112.0)
     time_series_row2 = TimeSeriesRow(datetime(1960, 8, 1, 12, 0, 0), 118.0)
     time_series_row3 = TimeSeriesRow(datetime(1960, 8, 1, 13, 0, 0), 132.0)
-    expected_time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "%Y-%m-%d %H:%M:%S")
+    expected_time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "yyyy-MM-dd HH:mm:ss")
     assert expected_time_series == actual_time_series
 
 
@@ -73,7 +73,7 @@ class TestTimeSeries(unittest.TestCase):
     time_series_row1 = TimeSeriesRow(datetime(1960, 8, 1, 11, 0, 0), 112.0)
     time_series_row2 = TimeSeriesRow(datetime(1960, 8, 1, 12, 0, 0), 118.0)
     time_series_row3 = TimeSeriesRow(datetime(1960, 8, 1, 13, 0, 0), 132.0)
-    time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "%Y-%m-%d %H:%M:%S")
+    time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3], "Date", "Passengers", "yyyy-MM-dd HH:mm:ss")
 
     #When
     actual_data_frame = time_series.to_data_frame()

@@ -1,4 +1,4 @@
-package org.machinelearning.swissknife.ui.timeseries.client;
+package org.machinelearning.swissknife.ui.client.timeseries;
 
 public class TimeSeriesAnalysisServiceRequestException extends RuntimeException {
 

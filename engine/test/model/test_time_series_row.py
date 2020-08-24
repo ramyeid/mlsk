@@ -13,7 +13,7 @@ class TestTimeSeriesRow(unittest.TestCase):
     time_series_row = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
 
     #When
-    actual_json = time_series_row.to_json("%Y-%m")
+    actual_json = time_series_row.to_json("yyyy-MM")
 
     #Then
     expected_json = dict(date = '1949-01', value = 112.0)
@@ -25,12 +25,11 @@ class TestTimeSeriesRow(unittest.TestCase):
     json = dict(date = '1949-01', value = 112.0)
 
     #When
-    actual_time_series_row = TimeSeriesRow.from_json(json, "%Y-%m")
+    actual_time_series_row = TimeSeriesRow.from_json(json, "yyyy-MM")
 
     #Then
     expected_time_series_row = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
     assert expected_time_series_row == actual_time_series_row
-
 
 if __name__ == "__main__":
   unittest.main()
