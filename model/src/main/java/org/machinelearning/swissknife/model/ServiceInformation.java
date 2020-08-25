@@ -39,4 +39,13 @@ public class ServiceInformation {
     public int hashCode() {
         return Objects.hash(host, port, pid);
     }
+
+    @Override
+    public String toString() {
+        return "ServiceInformation{" +
+                "host='" + host + '\'' +
+                ", port='" + port + '\'' +
+                ", pid='" + pid + '\'' +
+                '}';
+    }
 }

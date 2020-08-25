@@ -11,7 +11,7 @@ The Server is a Spring boot Rest Service project that acts as an orchestrator an
 ### Launch Server
 
 ``` bash
-java -Dserver.port=6766 -jar service.jar --engine-ports 6767,6768
+java -Dserver.port=6766 -jar service.jar --engine-ports 6767,6768 --logs-path  /Users/ramyeid/Documents/machine-learning-swissknife/build/logs/ --engine-path  /Users/ramyeid/Documents/machine-learning-swissknife/build/components/engine
 ```
 
 ### Engines

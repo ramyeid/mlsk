@@ -1,56 +1,51 @@
 package org.machinelearning.swissknife.service;
 
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.ParseException;
+import org.apache.log4j.Logger;
 import org.machinelearning.swissknife.Engine;
+import org.machinelearning.swissknife.service.controllers.TimeSeriesAnalysisController;
 import org.machinelearning.swissknife.service.engine.deployment.EngineCreator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.ArrayList;
-import java.util.Arrays;
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
+import static org.machinelearning.swissknife.service.LoggerConfiguration.setUpLogger;
+import static org.machinelearning.swissknife.service.ServiceConfiguration.getLogsPath;
 
 @SpringBootApplication
 public class Application {
 
-    private static final List<String> enginePorts = new ArrayList<>();
-    public static String LOGS_PATH = "";
-    public static String ENGINE_PATH = "";
+    private static final Logger LOGGER = Logger.getLogger(Application.class);
 
     @Bean
     public Orchestrator buildOrchestrator() {
         EngineCreator engineCreator = new EngineCreator();
-        List<Engine> engines = enginePorts.stream()
+        List<Engine> engines = ServiceConfiguration.getEnginePorts()
+                                 .stream()
                                  .map(engineCreator::createEngine)
                                  .collect(toList());
         return new Orchestrator(engines);
     }
 
-    public static void main(String... args) throws ParseException {
-        Option enginePortsOption = new Option("ports", "engine-ports", true, "Ports of the engine to be launched");
-        enginePortsOption.setRequired(true);
+    @PostConstruct
+    private void postConstruct() {
+        LOGGER.info("Service is up");
+    }
 
-        Option logsPath = new Option("logsPath", "logsPath", true, "absolute path towards Logs");
-        logsPath.setRequired(true);
+    @PreDestroy
+    private void preDestroy() {
+        LOGGER.info("Service will shutdown");
+    }
 
-        Option enginePath = new Option("enginePath", "enginePath", true, "absolute path towards engine.py");
-        enginePath.setRequired(true);
-
-        CommandLineParser parser = new DefaultParser();
-        Options options = new Options();
-        options.addOption(enginePortsOption);
-        options.addOption(logsPath);
-        options.addOption(enginePath);
-
-        CommandLine cmd = parser.parse(options, args);
-
-        LOGS_PATH = cmd.getOptionValue("logsPath");
-        ENGINE_PATH = cmd.getOptionValue("enginePath");
-        enginePorts.addAll(Arrays.asList(cmd.getOptionValue("ports").split(",")));
-
+    public static void main(String... args) throws ParseException, IOException {
+        ServiceConfiguration.buildServiceConfiguration(args);
+        setUpLogger(getLogsPath());
         SpringApplication.run(Application.class, args);
     }
 }

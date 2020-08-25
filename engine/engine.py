@@ -3,7 +3,8 @@
 from flask import Flask
 import argparse
 import time_series_analysis_controller
-from utils.logger import setup_logger
+from utils.logger import setup_logger, get_logger
+import atexit
 
 
 app = Flask(__name__)
@@ -12,12 +13,17 @@ app.add_url_rule("/time-series-analysis/forecast-accuracy", methods=['POST'], vi
 app.add_url_rule("/time-series-analysis/predict", methods=['POST'], view_func=time_series_analysis_controller.predict)
 
 
+def exit_handler():
+    get_logger().info("Engine will shutdown")
+
+
 if __name__== "__main__":
   parser = argparse.ArgumentParser()
-  parser.add_argument("--port", help = "port to run python engine", required = True)
-  parser.add_argument("--logsPath", help = "location to dump logs", required = True)
+  parser.add_argument("--port", dest = "port", help = "port to run python engine", required = True)
+  parser.add_argument("--logs-path", dest = "logs_path", help = "location to dump logs", required = True)
   args = parser.parse_args()
 
-  logger = setup_logger(args.logsPath, args.port)
-  logger.info ("Engine is up")
+  logger = setup_logger(args.logs_path, args.port)
+  atexit.register(exit_handler)
+  logger.info("Engine is up")
   app.run(host='0.0.0.0', port = args.port)

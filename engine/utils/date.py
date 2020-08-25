@@ -38,6 +38,7 @@ def to_python_date_format(java_date_format : str) -> str:
     Returns:
       str -> string representing the python date format
   """
+
   mapping = {'yyyy': '%Y', 'yy' : '%Y',
              'MM'  : '%m',
              'dd'  : '%d',

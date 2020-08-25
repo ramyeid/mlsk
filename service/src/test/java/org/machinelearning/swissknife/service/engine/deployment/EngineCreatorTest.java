@@ -16,7 +16,6 @@ import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.machinelearning.swissknife.service.Application.LOGS_PATH;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -24,6 +23,9 @@ class EngineCreatorTest {
 
     private static final long PROCESS_PID = 339L;
     private static final String PORT = "6767";
+    private static final String LOGS_PATH = "logsPath";
+    private static final String ENGINE_PATH = "enginePath";
+
     @Mock
     private ProcessBuilder processBuilder;
     @Mock
@@ -40,7 +42,7 @@ class EngineCreatorTest {
     @Test
     public void should_return_engine_with_correct_service_information() {
         when(process.pid()).thenReturn(PROCESS_PID);
-        EngineCreator engineCreator = new EngineCreator(processBuilder);
+        EngineCreator engineCreator = new EngineCreator(processBuilder, LOGS_PATH, new File(ENGINE_PATH));
 
         Engine engine = engineCreator.createEngine(PORT);
         ServiceInformation actualServiceInformation = engine.getServiceInformation();
@@ -52,11 +54,12 @@ class EngineCreatorTest {
     @Test
     public void should_launch_python_engine_on_startup() throws IOException {
         when(process.pid()).thenReturn(PROCESS_PID);
-        EngineCreator engineCreator = new EngineCreator(processBuilder);
+        EngineCreator engineCreator = new EngineCreator(processBuilder, LOGS_PATH, new File(ENGINE_PATH));
 
         engineCreator.createEngine(PORT);
 
-        verify(processBuilder).command("python3", "engine.py", "--port", PORT, "--logsPath", LOGS_PATH);
+        verify(processBuilder).command("python3", "engine.py","--port", PORT, "--logs-path", LOGS_PATH);
+        verify(processBuilder).directory(new File(ENGINE_PATH));
         verify(processBuilder).start();
     }
 
@@ -64,7 +67,7 @@ class EngineCreatorTest {
     public void should_throw_exception_if_process_is_not_alive_after_starting_engine() throws IOException {
         when(process.isAlive()).thenReturn(false);
         when(process.getErrorStream()).thenReturn(new ByteArrayInputStream("Error".getBytes()));
-        EngineCreator engineCreator = new EngineCreator(processBuilder);
+        EngineCreator engineCreator = new EngineCreator(processBuilder, LOGS_PATH, new File(ENGINE_PATH));
 
         try {
             engineCreator.createEngine(PORT);

@@ -20,6 +20,6 @@ if __name__== "__main__":
     print (" and logs path: " + get_absolute_path_logs())
     print (" and engine path: " + get_absolute_engine_path())
 
-    os.system("java -Dserver.port=" + service_port + " -jar " + constants.COMPONENTS_DIRECTORY + "service.jar --engine-ports " + engine_ports + " --logsPath " + get_absolute_path_logs() + " --enginePath " + get_absolute_engine_path())
+    os.system("java -Dserver.port=" + service_port + " -jar " + constants.COMPONENTS_DIRECTORY + "service.jar --engine-ports " + engine_ports + " --logs-path " + get_absolute_path_logs() + " --engine-path " + get_absolute_engine_path())
   else:
     print ("ERROR: Please make sure configuration file: " + constants.CONFIGURATION_FILE + " exists")
