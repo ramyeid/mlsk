@@ -29,7 +29,7 @@ We worked hard to make machine learning easy and accessible for everyone. Packag
 ### Package
 
 To package the solution a script is offered under packaging/.
-The packaging will create a build directory containing the launcher scripts for different services, a configuration file (swissknife.ini) & the jars under build/components/
+The packaging will create a build directory containing the launcher scripts for different services, a configuration file (swissknife.ini) & the jars and the python module under build/components
 
 ```bash
 cd packaging
@@ -68,6 +68,10 @@ The launch_ui dumped under build/ will read from the configuration file; and run
 cd build
 python3 launch_ui.py
 ```
+
+### Logs
+
+Logs are dumped under build/logs
 
 ## Contributors
 

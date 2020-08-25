@@ -17,6 +17,8 @@ import static java.util.stream.Collectors.toList;
 public class Application {
 
     private static final List<String> enginePorts = new ArrayList<>();
+    public static String LOGS_PATH = "";
+    public static String ENGINE_PATH = "";
 
     @Bean
     public Orchestrator buildOrchestrator() {
@@ -28,22 +30,27 @@ public class Application {
     }
 
     public static void main(String... args) throws ParseException {
-        List<String> enginePortsFromArguments = getEnginePortsFromArguments(args);
-        enginePorts.addAll(enginePortsFromArguments);
-        SpringApplication.run(Application.class, args);
-    }
-
-    private static List<String> getEnginePortsFromArguments(String[] args) throws ParseException {
         Option enginePortsOption = new Option("ports", "engine-ports", true, "Ports of the engine to be launched");
         enginePortsOption.setRequired(true);
+
+        Option logsPath = new Option("logsPath", "logsPath", true, "absolute path towards Logs");
+        logsPath.setRequired(true);
+
+        Option enginePath = new Option("enginePath", "enginePath", true, "absolute path towards engine.py");
+        enginePath.setRequired(true);
 
         CommandLineParser parser = new DefaultParser();
         Options options = new Options();
         options.addOption(enginePortsOption);
-        CommandLine cmd;
+        options.addOption(logsPath);
+        options.addOption(enginePath);
 
-        cmd = parser.parse(options, args);
-        String enginePortsAsString = cmd.getOptionValue("ports");
-        return Arrays.asList(enginePortsAsString.split(","));
+        CommandLine cmd = parser.parse(options, args);
+
+        LOGS_PATH = cmd.getOptionValue("logsPath");
+        ENGINE_PATH = cmd.getOptionValue("enginePath");
+        enginePorts.addAll(Arrays.asList(cmd.getOptionValue("ports").split(",")));
+
+        SpringApplication.run(Application.class, args);
     }
 }

@@ -9,6 +9,9 @@ import org.machinelearning.swissknife.service.engine.exceptions.EngineCreationEx
 import java.io.File;
 import java.io.IOException;
 
+import static org.machinelearning.swissknife.service.Application.ENGINE_PATH;
+import static org.machinelearning.swissknife.service.Application.LOGS_PATH;
+
 public class EngineCreator {
 
     private final ProcessBuilder processBuilder;
@@ -33,9 +36,13 @@ public class EngineCreator {
 
     private ServiceInformation launchEngine(String port) throws IOException {
         Process process = processBuilder
-                .command("python3", "engine.py", "--port", port)
-                .directory(new File("components/engine"))
+                .command("python3", "engine.py", "--port", port, "--logsPath", LOGS_PATH)
+                .directory(new File(ENGINE_PATH))
                 .start();
+
+        if (!process.isAlive()) {
+            throw new EngineCreationException(new String(process.getErrorStream().readAllBytes()));
+        }
 
         return new ServiceInformation("localhost", port, String.valueOf(process.pid()));
     }

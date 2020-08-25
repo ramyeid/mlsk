@@ -8,8 +8,9 @@ if __name__== "__main__":
     project_information = common. read_project_information()
     service_port = project_information[constants.SERVICE_PORT_OPTION]
 
-    print ("launching ui with service port: " + service_port)
-    os.system("java -jar " + constants.COMPONENTS_DIRECTORY + "ui-jar-with-dependencies.jar --service-port " + service_port)
+    print ("launching ui ")
+    print (" with service port: " + service_port)
+    os.system("java -jar " + constants.COMPONENTS_DIRECTORY +  "ui-jar-with-dependencies.jar --service-port " + service_port)
 
   else:
     print ("ERROR: Please make sure configuration file: " + constants.CONFIGURATION_FILE + " exists")

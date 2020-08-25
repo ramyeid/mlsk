@@ -43,5 +43,5 @@ python -m pydoc {file}
 ### Launch an engine
 
 ```bash
-    python engine.py --port 6767
+    python engine.py --port 6767 --logsPath /Users/ramyeid/Documents/machine-learning-swissknife/build/logs/
 ```
