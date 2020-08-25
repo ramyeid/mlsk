@@ -1,7 +1,5 @@
 package org.machinelearning.swissknife.ui.components.timeseries;
 
-import org.machinelearning.swissknife.TimeSeriesAnalysis;
-import org.machinelearning.swissknife.model.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.ui.client.timeseries.TimeSeriesAnalysisServiceClient;
@@ -12,35 +10,32 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.concurrent.Callable;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static org.machinelearning.swissknife.ui.Application.SERVICE_INFORMATION;
+import static org.machinelearning.swissknife.ui.components.utils.ComponentBuilder.newJButton;
 import static org.machinelearning.swissknife.ui.components.utils.ErrorPopup.tryPopup;
 import static org.machinelearning.swissknife.ui.components.utils.GridBagUtils.buildGridBagConstraints;
 
 public class TimeSeriesApplierPanel extends JPanel implements ActionListener {
 
-    private static final String PREDICT_COMMAND = "PREDICT";
-    private static final String FORECAST_COMMAND = "FORECAST";
+    private static final String PREDICT_COMMAND = "Predict";
+    private static final String FORECAST_COMMAND = "Forecast";
 
     private final Supplier<TimeSeriesAnalysisRequest> getTimeSeriesAnalysisRequest;
     private final TriFunction<TimeSeries, TimeSeries, String> onResults;
+    private final TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient;
 
-    public TimeSeriesApplierPanel(Supplier<TimeSeriesAnalysisRequest> getTimeSeriesAnalysisRequest,
+    public TimeSeriesApplierPanel(TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient,
+                                  Supplier<TimeSeriesAnalysisRequest> getTimeSeriesAnalysisRequest,
                                   TriFunction<TimeSeries, TimeSeries, String> onResults) {
 
         this.getTimeSeriesAnalysisRequest = getTimeSeriesAnalysisRequest;
         this.onResults = onResults;
+        this.timeSeriesAnalysisServiceClient = timeSeriesAnalysisServiceClient;
 
-        JButton predictButton = new JButton("Predict");
-        JButton forecastButton = new JButton("Forecast");
-
-        predictButton.setActionCommand(PREDICT_COMMAND);
-        forecastButton.setActionCommand(FORECAST_COMMAND);
-        predictButton.addActionListener(this);
-        forecastButton.addActionListener(this);
+        JButton predictButton = newJButton(PREDICT_COMMAND, this);
+        JButton forecastButton = newJButton(FORECAST_COMMAND, this);
 
         this.setLayout(new GridBagLayout());
         this.add(predictButton, buildGridBagConstraints(0, 0));
@@ -50,7 +45,6 @@ public class TimeSeriesApplierPanel extends JPanel implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = getTimeSeriesAnalysisRequest.get();
-        TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient = new TimeSeriesAnalysisServiceClient(SERVICE_INFORMATION);
         Callable<TimeSeries> callable;
         if (e.getActionCommand().equals(PREDICT_COMMAND)) {
             callable = () -> timeSeriesAnalysisServiceClient.predict(timeSeriesAnalysisRequest);
