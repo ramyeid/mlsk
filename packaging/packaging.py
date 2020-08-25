@@ -25,7 +25,7 @@ def create_logs_directory():
 
 def compile_and_run_tests_python():
   os.system("cd ../engine && python3 -m compileall -f .")
-  os.system("cd ../engine && pytest -s")
+  os.system("cd ../engine && python3 -m pytest -s")
 
 def compile_java_project():
   os.system("cd .. && mvn clean package -q")
