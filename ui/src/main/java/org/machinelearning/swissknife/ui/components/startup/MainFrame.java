@@ -10,7 +10,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import static org.machinelearning.swissknife.lib.algorithms.AlgorithmNames.TIME_SERIES_ANALYSIS;
-import static org.machinelearning.swissknife.ui.Application.SERVICE_INFORMATION;
+import static org.machinelearning.swissknife.ui.ServiceConfiguration.getServiceInformation;
 import static org.machinelearning.swissknife.ui.components.utils.ComponentBuilder.newJButton;
 
 public class MainFrame extends JFrame implements ActionListener {
@@ -46,7 +46,7 @@ public class MainFrame extends JFrame implements ActionListener {
         algorithmPanel.removeAll();
         switch (e.getActionCommand()) {
             case TIME_SERIES_ANALYSIS:
-                algorithmPanel.add(new TimeSeriesPanel(new TimeSeriesAnalysisServiceClient(SERVICE_INFORMATION)));
+                algorithmPanel.add(new TimeSeriesPanel(new TimeSeriesAnalysisServiceClient(getServiceInformation())));
                 break;
             default:
                 JPanel empty = new JPanel();

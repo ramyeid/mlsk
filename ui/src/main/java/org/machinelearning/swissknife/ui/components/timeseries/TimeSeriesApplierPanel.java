@@ -12,7 +12,6 @@ import java.awt.event.ActionListener;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
 
-import static org.machinelearning.swissknife.ui.Application.SERVICE_INFORMATION;
 import static org.machinelearning.swissknife.ui.components.utils.ComponentBuilder.newJButton;
 import static org.machinelearning.swissknife.ui.components.utils.ErrorPopup.tryPopup;
 import static org.machinelearning.swissknife.ui.components.utils.GridBagUtils.buildGridBagConstraints;

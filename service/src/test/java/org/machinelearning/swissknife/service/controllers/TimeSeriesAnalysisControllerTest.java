@@ -15,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.machinelearning.swissknife.lib.algorithms.AlgorithmNames.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -43,7 +44,7 @@ class TimeSeriesAnalysisControllerTest {
 
         controller.forecast(mock);
 
-        verify(orchestrator).runOnEngine(any(), eq("time-series-forecast"));
+        verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_FORECAST));
         verify(engine).forecast(mock);
     }
 
@@ -53,7 +54,7 @@ class TimeSeriesAnalysisControllerTest {
 
         controller.computeForecastAccuracy(mock);
 
-        verify(orchestrator).runOnEngine(any(), eq("time-series-compute-accuracy"));
+        verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_FORECAST_ACCURACY));
         verify(engine).computeForecastAccuracy(mock);
     }
 
@@ -63,7 +64,7 @@ class TimeSeriesAnalysisControllerTest {
 
         controller.predict(mock);
 
-        verify(orchestrator).runOnEngine(any(), eq("time-series-predict"));
+        verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_PREDICT));
         verify(engine).predict(mock);
     }
 }

@@ -23,6 +23,7 @@ We worked hard to make machine learning easy and accessible for everyone. Packag
 
 ### Requirements
 
+- mvn
 - jdk11
 - python3
 
