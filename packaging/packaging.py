@@ -18,6 +18,15 @@ def create_components_directory():
     os.mkdir(constants.BUILD_COMPONENTS_DIRECTORY)
 
 
+def create_logs_directory():
+  if not os.path.isdir(constants.BUILD_LOGS_DIRECTORY):
+    os.mkdir(constants.BUILD_LOGS_DIRECTORY)
+
+
+def compile_and_run_tests_python():
+  os.system("cd ../engine && python3 -m compileall -f .")
+  os.system("cd ../engine && pytest -s")
+
 def compile_java_project():
   os.system("cd .. && mvn clean package -q")
 
@@ -35,7 +44,7 @@ def copy_all_jars(jar_paths : [str]):
 
 
 def copy_engine_project():
-    copytree("../engine", constants.BUILD_COMPONENTS_DIRECTORY + "/engine")
+    copytree("../engine", constants.BUILD_COMPONENTS_ENGINE_DIRECTORY)
 
 
 def copy_launcher_scripts():
@@ -53,12 +62,16 @@ if __name__== "__main__":
   if (build_directory_exists()):
     print ("ERROR: Please remove the build directory [../build], to package the solution")
   else:
+    print ("Compiling and Running Python tests")
+    compile_and_run_tests_python()
     print ("Compiling Java projects")
     compile_java_project()
     print ("Creating build directory")
     create_build_directory()
     print ("Creating components directory")
     create_components_directory()
+    print("Creating logs directory")
+    create_logs_directory()
     print ("Copying all jars")
     copy_all_jars(get_all_jar_paths())
     print ("Copying engine project")
