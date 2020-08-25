@@ -25,23 +25,23 @@ code .
 ### Compile all files
 
 ```bash
-python -m compileall -f .
+python3 -m compileall -f .
 ```
 
 ### Run test
 
 ``` bash
-pytest -s
+python3 -m pytest -s
 ```
 
 ### Get Python documentation
 
 ``` bash
-python -m pydoc {file}
+python3 -m pydoc {file}
 ```
 
 ### Launch an engine
 
 ```bash
-    python engine.py --port 6767 --logs-path /Users/ramyeid/Documents/machine-learning-swissknife/build/logs/
+    python3 engine.py --port 6767 --logs-path /Users/ramyeid/Documents/machine-learning-swissknife/build/logs/
 ```
