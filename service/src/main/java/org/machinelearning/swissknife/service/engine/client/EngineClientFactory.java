@@ -1,7 +1,7 @@
-package org.machinelearning.swissknife.service.engine;
+package org.machinelearning.swissknife.service.engine.client;
 
 import org.machinelearning.swissknife.model.ServiceInformation;
-import org.machinelearning.swissknife.service.engine.timeseries.TimeSeriesAnalysisEngineClient;
+import org.machinelearning.swissknife.service.engine.client.timeseries.TimeSeriesAnalysisEngineClient;
 
 public class EngineClientFactory {
 

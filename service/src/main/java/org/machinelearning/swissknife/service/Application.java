@@ -3,8 +3,7 @@ package org.machinelearning.swissknife.service;
 import org.apache.commons.cli.ParseException;
 import org.apache.log4j.Logger;
 import org.machinelearning.swissknife.Engine;
-import org.machinelearning.swissknife.service.controllers.TimeSeriesAnalysisController;
-import org.machinelearning.swissknife.service.engine.deployment.EngineCreator;
+import org.machinelearning.swissknife.service.engine.EngineFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -25,10 +24,9 @@ public class Application {
 
     @Bean
     public Orchestrator buildOrchestrator() {
-        EngineCreator engineCreator = new EngineCreator();
         List<Engine> engines = ServiceConfiguration.getEnginePorts()
                                  .stream()
-                                 .map(engineCreator::createEngine)
+                                 .map(EngineFactory::createEngine)
                                  .collect(toList());
         return new Orchestrator(engines);
     }

@@ -1,4 +1,4 @@
-package org.machinelearning.swissknife.service.engine.timeseries.exceptions;
+package org.machinelearning.swissknife.service.engine.client.timeseries.exceptions;
 
 public class TimeSeriesAnalysisEngineRequestException extends RuntimeException {
 

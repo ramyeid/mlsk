@@ -1,4 +1,4 @@
-package org.machinelearning.swissknife.service.engine.timeseries;
+package org.machinelearning.swissknife.service.engine.client.timeseries;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -7,7 +7,7 @@ import org.machinelearning.swissknife.lib.rest.RestClient;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesRow;
-import org.machinelearning.swissknife.service.engine.timeseries.exceptions.TimeSeriesAnalysisEngineRequestException;
+import org.machinelearning.swissknife.service.engine.client.timeseries.exceptions.TimeSeriesAnalysisEngineRequestException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
