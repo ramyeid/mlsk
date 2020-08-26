@@ -1,4 +1,4 @@
-package org.machinelearning.swissknife.service.engine.timeseries;
+package org.machinelearning.swissknife.service.engine.client.timeseries;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.model.ServiceInformation;
@@ -6,7 +6,7 @@ import org.machinelearning.swissknife.TimeSeriesAnalysis;
 import org.machinelearning.swissknife.lib.rest.RestClient;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
-import org.machinelearning.swissknife.service.engine.timeseries.exceptions.TimeSeriesAnalysisEngineRequestException;
+import org.machinelearning.swissknife.service.engine.client.timeseries.exceptions.TimeSeriesAnalysisEngineRequestException;
 
 import static org.machinelearning.swissknife.lib.endpoints.TimeSeriesAnalysisUrls.*;
 
