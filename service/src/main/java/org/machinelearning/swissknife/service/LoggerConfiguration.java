@@ -13,7 +13,8 @@ public class LoggerConfiguration {
         Logger rootLogger = Logger.getRootLogger();
         rootLogger.setLevel(Level.INFO);
         PatternLayout layout = new PatternLayout("[%d{dd-MM-yyyy HH:mm:ss}] [%-5p] [%c] - %m%n");
-        RollingFileAppender fileAppender = new RollingFileAppender(layout, logsPath + "/service.log");
+        String logFile = String.format("%s/service.log", logsPath);
+        RollingFileAppender fileAppender = new RollingFileAppender(layout, logFile);
         rootLogger.addAppender(fileAppender);
     }
 }

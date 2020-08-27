@@ -6,6 +6,7 @@ import org.machinelearning.swissknife.ui.components.utils.CsvFileChooserButton;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.StringJoiner;
 
 import static org.machinelearning.swissknife.ui.components.utils.ComponentBuilder.newJButton;
 import static org.machinelearning.swissknife.ui.components.utils.ErrorPopup.tryPopup;
@@ -60,16 +61,17 @@ public class TimeSeriesConfigurationPanel extends JPanel {
     private JButton buildDateFormatInformationButton() {
 
         return newJButton("?", e -> {
-            String information = "Date format according to Java SimpleDate: \n" +
-                    "y   = year   (yy or yyyy)\n" +
-                    "M   = month  (MM)\n" +
-                    "d   = day in month (dd)\n" +
-                    "h   = hour (0-12)  (hh)\n" +
-                    "H   = hour (0-23)  (HH)\n" +
-                    "m   = minute in hour (mm)\n" +
-                    "s   = seconds (ss)\n" +
-                    "S   = milliseconds (SSS)\n";
-            JOptionPane.showMessageDialog(null, information, "Date Format information", JOptionPane.INFORMATION_MESSAGE);
+            StringJoiner stringBuilder = new StringJoiner("\n");
+            stringBuilder.add("Date format according to Java SimpleDate:");
+            stringBuilder.add("year: yy or yyyy");
+            stringBuilder.add("month: MM");
+            stringBuilder.add("day: dd");
+            stringBuilder.add("hour (0-12): hh");
+            stringBuilder.add("hour (0-23): HH");
+            stringBuilder.add("minute: mm");
+            stringBuilder.add("seconds: ss");
+            stringBuilder.add("milliseconds: SSS");
+            JOptionPane.showMessageDialog(null, stringBuilder.toString(), "Date Format information", JOptionPane.INFORMATION_MESSAGE);
         });
     }
 
