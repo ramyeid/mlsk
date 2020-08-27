@@ -28,6 +28,6 @@ class RestClientTest {
         HttpHeaders expectedHeaders = new HttpHeaders();
         expectedHeaders.setContentType(MediaType.APPLICATION_JSON);
         HttpEntity<Double> expectedEntity = new HttpEntity<>(body ,expectedHeaders);
-        verify(restTemplate).postForObject("http://"+HOST+":"+PORT+"/forecast", expectedEntity, String.class);
+        verify(restTemplate).postForObject("http://hp123:6767/forecast", expectedEntity, String.class);
     }
 }

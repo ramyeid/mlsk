@@ -12,7 +12,7 @@ public class ServiceInformation {
     }
 
     public String getUrl() {
-        return "http://" + host + ":" + port + "/";
+        return String.format("http://%s:%s/", host, port);
     }
 
 

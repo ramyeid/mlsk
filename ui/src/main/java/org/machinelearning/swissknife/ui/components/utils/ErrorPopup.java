@@ -6,7 +6,8 @@ import java.util.concurrent.Callable;
 public class ErrorPopup {
 
     public static void showErrorPopup(String errorMessage, String popupTitle) {
-        JOptionPane.showMessageDialog(null, errorMessage, "Error: " + popupTitle, JOptionPane.ERROR_MESSAGE);
+        String title = String.format("Error: %s", popupTitle);
+        JOptionPane.showMessageDialog(null, errorMessage, title, JOptionPane.ERROR_MESSAGE);
     }
 
     public static <Return> Return tryPopup(Callable<Return> callable, String errorMessage) {
