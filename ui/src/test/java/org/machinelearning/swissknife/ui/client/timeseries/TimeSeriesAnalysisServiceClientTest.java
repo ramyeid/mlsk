@@ -62,6 +62,32 @@ class TimeSeriesAnalysisServiceClientTest {
     }
 
     @Test
+    public void should_delegate_forecast_vs_actual_call_to_service() {
+        TimeSeries responseTimeSeries = new TimeSeries(singletonList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
+        when(restClient.post(any(), any(), any())).thenReturn(responseTimeSeries);
+
+        List<TimeSeriesRow> timeSeriesRows = asList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
+        TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
+        TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
+        TimeSeries actual_forecasted = client.forecastVsActual(timeSeriesAnalysisRequest);
+
+        verify(restClient).post(FORECAST_VS_ACTUAL_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+        assertEquals(responseTimeSeries, actual_forecasted);
+    }
+
+    @Test
+    public void should_rethrow_time_series_exception_on_forecast_vs_actual_failure() {
+        when(restClient.post(any(), any(), any())).thenThrow(new RuntimeException());
+
+        try {
+            client.forecastVsActual(mock(TimeSeriesAnalysisRequest.class));
+            fail("should fail");
+        } catch(TimeSeriesAnalysisServiceRequestException ignored){
+
+        }
+    }
+
+    @Test
     public void should_delegate_compute_forecast_accuracy_call_to_service() {
         when(restClient.post(any(), any(), any())).thenReturn(2.);
 

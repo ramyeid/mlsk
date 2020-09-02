@@ -10,9 +10,7 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.StringJoiner;
 
-import static org.machinelearning.swissknife.lib.csv.CsvToTimeSeries.toTimeSeries;
-import static org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesActionListener.FORECAST_COMMAND;
-import static org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesActionListener.PREDICT_COMMAND;
+import static org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesActionListener.*;
 import static org.machinelearning.swissknife.ui.components.utils.ComponentBuilder.newJButton;
 import static org.machinelearning.swissknife.ui.components.utils.ErrorPopup.tryPopup;
 import static org.machinelearning.swissknife.ui.components.utils.GridBagUtils.buildGridBagConstraints;
@@ -26,6 +24,7 @@ public class TimeSeriesInputPanel extends JPanel {
     private final JTextField numberOfValuesValue;
     private final JButton predictButton;
     private final JButton forecastButton;
+    private final JButton forecastAndActualButton;
 
     public TimeSeriesInputPanel() {
         this.csvAbsolutePathValue = new JTextField(20);
@@ -35,6 +34,7 @@ public class TimeSeriesInputPanel extends JPanel {
         this.numberOfValuesValue = new JTextField(4);
         this.predictButton = newJButton(PREDICT_COMMAND);
         this.forecastButton = newJButton(FORECAST_COMMAND);
+        this.forecastAndActualButton = newJButton(FORECAST_VS_ACTUAL);
 
         this.setLayout(new GridBagLayout());
 
@@ -48,6 +48,7 @@ public class TimeSeriesInputPanel extends JPanel {
 
         buttonsPanel.add(predictButton, buildGridBagConstraints(0, 0));
         buttonsPanel.add(forecastButton, buildGridBagConstraints(1, 0));
+        buttonsPanel.add(forecastAndActualButton, buildGridBagConstraints(2, 0));
         return buttonsPanel;
     }
 
@@ -78,6 +79,7 @@ public class TimeSeriesInputPanel extends JPanel {
     public void setActionListener(ActionListener actionListener) {
         predictButton.addActionListener(actionListener);
         forecastButton.addActionListener(actionListener);
+        forecastAndActualButton.addActionListener(actionListener);
     }
 
     public TimeSeriesAnalysisRequest buildTimeSeriesRequest() {

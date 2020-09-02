@@ -24,9 +24,6 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TimeSeriesAnalysisEngineClientTest {
 
-    private static final String ENGINE_HOST = "hp123";
-    private static final String ENGINE_PORT = "6767";
-
     @Mock
     private RestClient restClient;
     private TimeSeriesAnalysisEngineClient client;

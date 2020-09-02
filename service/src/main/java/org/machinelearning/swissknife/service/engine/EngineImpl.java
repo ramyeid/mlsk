@@ -7,12 +7,14 @@ import org.machinelearning.swissknife.model.EngineState;
 import org.machinelearning.swissknife.model.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
+import org.machinelearning.swissknife.model.timeseries.TimeSeriesRow;
 import org.machinelearning.swissknife.service.controllers.TimeSeriesAnalysisController;
 import org.machinelearning.swissknife.service.engine.client.EngineClientFactory;
 import org.machinelearning.swissknife.service.engine.client.timeseries.TimeSeriesAnalysisEngineClient;
 import org.machinelearning.swissknife.service.engine.process.ResilientProcess;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
@@ -61,6 +63,23 @@ public class EngineImpl implements Engine {
             TimeSeries forecastedValues = engineClient.forecast(timeSeriesAnalysisRequest);
             return TimeSeries.concat(timeSeriesAnalysisRequest.getTimeSeries(), forecastedValues);
         }, TIME_SERIES_FORECAST);
+    }
+
+    @Override
+    public TimeSeries forecastVsActual(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+        return callOnEngine(() -> {
+            TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
+            int numberOfValues = timeSeriesAnalysisRequest.getNumberOfValues();
+            TimeSeries timeSeries = timeSeriesAnalysisRequest.getTimeSeries();
+            List<TimeSeriesRow> rows = timeSeries.getRows();
+
+            List<TimeSeriesRow> newRows = rows.subList(0, rows.size() - numberOfValues);
+            TimeSeries newTimeSeries = new TimeSeries(newRows, timeSeries.getDateColumnName(), timeSeries.getValueColumnName(), timeSeries.getDateFormat());
+            TimeSeriesAnalysisRequest newTimeSeriesRequest = new TimeSeriesAnalysisRequest(newTimeSeries, numberOfValues);
+
+            TimeSeries forecastedValues = engineClient.forecast(newTimeSeriesRequest);
+            return TimeSeries.concat(newTimeSeries, forecastedValues);
+        }, TIME_SERIES_FORECAST_VS_ACTUAL);
     }
 
     @Override

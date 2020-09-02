@@ -3,6 +3,7 @@ package org.machinelearning.swissknife.service.engine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.machinelearning.swissknife.TimeSeriesAnalysis;
 import org.machinelearning.swissknife.model.EngineState;
 import org.machinelearning.swissknife.model.ServiceInformation;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
@@ -16,6 +17,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.util.Arrays.asList;
@@ -97,6 +99,36 @@ class EngineImplTest {
         EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, mock(ResilientProcess.class));
 
         engineImpl.forecast(timeSeriesAnalysisRequest);
+
+        InOrder inOrder = inOrder(engineState);
+        inOrder.verify(engineState).set(COMPUTING);
+        inOrder.verify(engineState).set(WAITING);
+        inOrder.verifyNoMoreInteractions();
+    }
+
+    @Test
+    public void should_call_forecast_with_last_number_of_values_elements_removed_on_forecast_vs_actual() throws IOException, InterruptedException {
+        when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
+        when(timeSeriesAnalysisEngineClient.forecast(any())).thenReturn(timeSeries2);
+        EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, new AtomicReference<>(WAITING), mock(ResilientProcess.class));
+
+        TimeSeries actualTimeSeries = engineImpl.forecastVsActual(timeSeriesAnalysisRequest);
+
+        TimeSeries timeSeriesSentToEngine = new TimeSeries(singletonList(timeSeriesRow), "Date", "Value", "%Y");
+        TimeSeriesAnalysisRequest timeSeriesAnalysisRequestSentToEngine = new TimeSeriesAnalysisRequest(timeSeriesSentToEngine, 1);
+        TimeSeries expectedTimeSeries = new TimeSeries(asList(timeSeriesRow, timeSeriesRow2), "Date", "Value", "%Y");
+        verify(timeSeriesAnalysisEngineClient).forecast(timeSeriesAnalysisRequestSentToEngine);
+        assertEquals(expectedTimeSeries, actualTimeSeries);
+        assertEquals(WAITING, engineImpl.getState());
+    }
+
+    @Test
+    public void should_modify_state_to_computing_and_then_waiting_on_forecast_vs_actual() throws IOException, InterruptedException {
+        when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
+        when(timeSeriesAnalysisEngineClient.forecast(any())).thenReturn(timeSeries2);
+        EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, mock(ResilientProcess.class));
+
+        engineImpl.forecastVsActual(timeSeriesAnalysisRequest);
 
         InOrder inOrder = inOrder(engineState);
         inOrder.verify(engineState).set(COMPUTING);
