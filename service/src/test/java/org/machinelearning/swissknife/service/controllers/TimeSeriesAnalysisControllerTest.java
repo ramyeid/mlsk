@@ -49,6 +49,16 @@ class TimeSeriesAnalysisControllerTest {
     }
 
     @Test
+    public void should_delegate_call_to_orchestrator_and_engine_on_forecast_vs_actual() {
+        TimeSeriesAnalysisRequest mock = mock(TimeSeriesAnalysisRequest.class);
+
+        controller.forecastVsActual(mock);
+
+        verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_FORECAST_VS_ACTUAL));
+        verify(engine).forecastVsActual(mock);
+    }
+
+    @Test
     public void should_delegate_call_to_orchestrator_and_engine_on_compute_forecast_accuracy() {
         TimeSeriesAnalysisRequest mock = mock(TimeSeriesAnalysisRequest.class);
 

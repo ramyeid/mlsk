@@ -16,8 +16,7 @@ import java.util.Collections;
 
 import static java.util.Collections.singletonList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesActionListener.FORECAST_COMMAND;
-import static org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesActionListener.PREDICT_COMMAND;
+import static org.machinelearning.swissknife.ui.components.timeseries.TimeSeriesActionListener.*;
 import static org.machinelearning.swissknife.ui.components.utils.ComponentBuilder.newJButton;
 import static org.mockito.Mockito.*;
 
@@ -57,6 +56,17 @@ class TimeSeriesActionListenerTest {
         timeSeriesActionListener.actionPerformed(new ActionEvent(newJButton(FORECAST_COMMAND), 0, FORECAST_COMMAND));
 
         verify(timeSeriesAnalysisServiceClient).forecast(TIME_SERIES_ANALYSIS_REQUEST);
+        verify(onResults).apply(TIME_SERIES_ANALYSIS_REQUEST.getTimeSeries(), TIME_SERIES_RESULT, FORECAST_COMMAND.toLowerCase());
+    }
+
+    @Test
+    public void should_delegate_call_to_forecast_vs_actual() {
+        when(timeSeriesAnalysisServiceClient.forecastVsActual(any())).thenReturn(TIME_SERIES_RESULT);
+        TimeSeriesActionListener timeSeriesActionListener = new TimeSeriesActionListener(timeSeriesInputPanel, timeSeriesAnalysisServiceClient, onResults);
+
+        timeSeriesActionListener.actionPerformed(new ActionEvent(newJButton(FORECAST_VS_ACTUAL), 0, FORECAST_VS_ACTUAL));
+
+        verify(timeSeriesAnalysisServiceClient).forecastVsActual(TIME_SERIES_ANALYSIS_REQUEST);
         verify(onResults).apply(TIME_SERIES_ANALYSIS_REQUEST.getTimeSeries(), TIME_SERIES_RESULT, FORECAST_COMMAND.toLowerCase());
     }
 

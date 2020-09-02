@@ -10,7 +10,7 @@ import org.machinelearning.swissknife.service.engine.client.timeseries.exception
 
 import static org.machinelearning.swissknife.lib.endpoints.TimeSeriesAnalysisUrls.*;
 
-public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
+public class TimeSeriesAnalysisEngineClient {
 
     private final RestClient restClient;
 
@@ -23,7 +23,6 @@ public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
         this.restClient = restClient;
     }
 
-    @Override
     public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
         try {
             return restClient.post(FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class);
@@ -32,7 +31,6 @@ public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
         }
     }
 
-    @Override
     public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
         try {
             return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
@@ -41,7 +39,6 @@ public class TimeSeriesAnalysisEngineClient  implements TimeSeriesAnalysis {
         }
     }
 
-    @Override
     public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
         try {
             return restClient.post(PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);

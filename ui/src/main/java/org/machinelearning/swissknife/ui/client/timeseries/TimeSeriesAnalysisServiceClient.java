@@ -27,7 +27,16 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysis {
         try {
             return restClient.post(FORECAST_URL, timeSeriesAnalysisRequest ,TimeSeries.class);
         } catch(Exception exception) {
-            throw new TimeSeriesAnalysisServiceRequestException("Failed to post forecast to service", exception);
+            throw new TimeSeriesAnalysisServiceRequestException("Failed while posting forecast to service", exception);
+        }
+    }
+
+    @Override
+    public TimeSeries forecastVsActual(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+        try {
+            return restClient.post(FORECAST_VS_ACTUAL_URL, timeSeriesAnalysisRequest ,TimeSeries.class);
+        } catch(Exception exception) {
+            throw new TimeSeriesAnalysisServiceRequestException("Failed while posting forecast vs actual to service", exception);
         }
     }
 
@@ -36,7 +45,7 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysis {
         try {
             return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
         } catch (Exception exception) {
-            throw new TimeSeriesAnalysisServiceRequestException("Failed to post computeForecastAccuracy to service", exception);
+            throw new TimeSeriesAnalysisServiceRequestException("Failed while posting computeForecastAccuracy to service", exception);
         }
     }
 
@@ -45,7 +54,7 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysis {
         try {
             return restClient.post(PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
         } catch (Exception exception) {
-            throw new TimeSeriesAnalysisServiceRequestException("Failed to post predict to service", exception);
+            throw new TimeSeriesAnalysisServiceRequestException("Failed while posting predict to service", exception);
         }
     }
 }
