@@ -1,16 +1,10 @@
 package org.machinelearning.swissknife.model.timeseries;
 
-import com.opencsv.CSVReader;
-import com.opencsv.bean.CsvToBeanBuilder;
-import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
-
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static java.util.Arrays.asList;
 
 public class TimeSeries {
 
@@ -76,26 +70,5 @@ public class TimeSeries {
                 ", valueColumnName='" + valueColumnName + '\'' +
                 ", dateFormat='" + dateFormat + '\'' +
                 '}';
-    }
-
-    public static TimeSeries buildFromCsv(String csvAbsolutePath, String dateColumnName, String valueColumnName, String dateFormat) throws IOException {
-        try (CSVReader reader = new CSVReader(new FileReader(csvAbsolutePath))) {
-            Map<String, String> columnMapping = new HashMap<>();
-            columnMapping.put(dateColumnName, "date");
-            columnMapping.put(valueColumnName, "value");
-
-            HeaderColumnNameTranslateMappingStrategy<TimeSeriesRow> beanStrategy = new HeaderColumnNameTranslateMappingStrategy<>();
-            beanStrategy.setType(TimeSeriesRow.class);
-            beanStrategy.setColumnMapping(columnMapping);
-
-            List<TimeSeriesRow> rows = new CsvToBeanBuilder<TimeSeriesRow>(reader)
-                    .withType(TimeSeriesRow.class)
-                    .withIgnoreLeadingWhiteSpace(true)
-                    .withMappingStrategy(beanStrategy)
-                    .build()
-                    .parse();
-
-            return new TimeSeries(rows, dateColumnName, valueColumnName, dateFormat);
-        }
     }
 }

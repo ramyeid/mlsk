@@ -1,46 +1,37 @@
 package org.machinelearning.swissknife.ui.components.timeseries;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
-import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.ui.client.timeseries.TimeSeriesAnalysisServiceClient;
-import org.machinelearning.swissknife.ui.components.utils.TriFunction;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.function.Supplier;
 
-import static org.machinelearning.swissknife.ui.components.utils.GridBagUtils.buildGridBagConstraints;
+import static org.machinelearning.swissknife.ui.ServiceConfiguration.getServiceInformation;
 
 public class TimeSeriesPanel extends JPanel {
 
-    private final JPanel configuration;
-    private final TimeSeriesConfigurationPanel timeSeriesConfigurationPanel;
-    private final TimeSeriesApplierPanel timeSeriesApplierPanel;
-    private final JPanel output;
-    private TimeSeriesPlotPanel timeSeriesPlotPanel;
+    private final JPanel plotPanel;
 
+    public TimeSeriesPanel() {
+        this(new TimeSeriesAnalysisServiceClient(getServiceInformation()));
+    }
+
+    @VisibleForTesting
     public TimeSeriesPanel(TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient) {
-        this.timeSeriesConfigurationPanel = new TimeSeriesConfigurationPanel();
-        Supplier<TimeSeriesAnalysisRequest> buildTimeSeriesRequest = timeSeriesConfigurationPanel::buildTimeSeriesRequest;
-        TriFunction<TimeSeries, TimeSeries, String> onResults = this::addTimeSeriesPlot;
-        this.timeSeriesApplierPanel = new TimeSeriesApplierPanel(timeSeriesAnalysisServiceClient, buildTimeSeriesRequest, onResults);
-
+        this.plotPanel = new JPanel();
         this.setLayout(new BorderLayout());
 
-        configuration = new JPanel();
-        configuration.setLayout(new GridBagLayout());
-        configuration.add(timeSeriesConfigurationPanel, buildGridBagConstraints(0, 0));
-        configuration.add(timeSeriesApplierPanel, buildGridBagConstraints(0, 1));
-        output = new JPanel();
+        TimeSeriesInputPanel timeSeriesInputPanel = new TimeSeriesInputPanel();
+        timeSeriesInputPanel.setActionListener(new TimeSeriesActionListener(timeSeriesInputPanel, timeSeriesAnalysisServiceClient, this::addTimeSeriesPlot));
+        this.add(timeSeriesInputPanel, BorderLayout.NORTH);
 
-        this.add(configuration, BorderLayout.NORTH);
-        this.add(output, BorderLayout.CENTER);
+        this.add(plotPanel, BorderLayout.CENTER);
     }
 
     private void addTimeSeriesPlot(TimeSeries initial, TimeSeries computed, String title) {
-        this.output.removeAll();
-        this.timeSeriesPlotPanel = new TimeSeriesPlotPanel(initial, computed, title);
-        this.output.add(timeSeriesPlotPanel);
+        this.plotPanel.removeAll();
+        this.plotPanel.add(new TimeSeriesPlotPanel(initial, computed, title));
         SwingUtilities.updateComponentTreeUI(this);
     }
 }
