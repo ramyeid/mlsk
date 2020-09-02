@@ -4,25 +4,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 
 import static java.util.Arrays.asList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TimeSeriesTest {
-
-    @Test
-    public void should_be_able_to_build_time_series_from_csv() throws IOException {
-        ClassLoader classLoader = getClass().getClassLoader();
-        String csvLocation = Objects.requireNonNull(classLoader.getResource("time_series_passengers.csv")).getFile();
-
-        TimeSeries actualTimeSeries = TimeSeries.buildFromCsv(csvLocation, "Date", "Passengers", "%Y-%m");
-
-        TimeSeries expectedTimeSeries = buildTimeSeriesPassengers();
-        assertEquals(expectedTimeSeries, actualTimeSeries);
-    }
 
     @Test
     public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
@@ -58,7 +45,7 @@ class TimeSeriesTest {
         return new TimeSeries(timeSeriesRows, "Date", "Passengers", "%Y-%m");
     }
 
-    private static TimeSeries buildTimeSeriesPassengers() {
+    static TimeSeries buildTimeSeriesPassengers() {
         TimeSeriesRow timeSeriesRow = buildTimeSeriesRow("1960-01", 1.0);
         TimeSeriesRow timeSeriesRow1 = buildTimeSeriesRow("1960-02", 2.0);
         TimeSeriesRow timeSeriesRow2 = buildTimeSeriesRow("1960-03", 3.0);

@@ -17,11 +17,11 @@ import static org.machinelearning.swissknife.ui.components.utils.ErrorPopup.tryP
 public class TimeSeriesPlotPanel extends JPanel {
 
     public TimeSeriesPlotPanel(org.machinelearning.swissknife.model.timeseries.TimeSeries initialTimeSeries,
-                              org.machinelearning.swissknife.model.timeseries.TimeSeries timeSeriesWithNewValues,
-                              String action) {
+                               org.machinelearning.swissknife.model.timeseries.TimeSeries timeSeriesWithNewValues,
+                               String action) {
 
-        TimeSeries initialValues = tryPopup(() -> toTimeSeries(initialTimeSeries, "initial"), "Unable to transform TimeSeries to Plot");
-        TimeSeries initialAndComputedValues = tryPopup(() -> toTimeSeries(timeSeriesWithNewValues, action), "Unable to transform TimeSeries to Plot");
+        TimeSeries initialValues = toTimeSeries(initialTimeSeries, "initial");
+        TimeSeries initialAndComputedValues = toTimeSeries(timeSeriesWithNewValues, action);
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         timeSeriesCollection.addSeries(initialValues);
         timeSeriesCollection.addSeries(initialAndComputedValues);
@@ -46,12 +46,13 @@ public class TimeSeriesPlotPanel extends JPanel {
     }
 
     private static TimeSeries toTimeSeries(org.machinelearning.swissknife.model.timeseries.TimeSeries initialTimeSeries,
-                                           String timeSeriesTitle) throws ParseException {
+                                           String timeSeriesTitle) {
         SimpleDateFormat dateFormatter = new SimpleDateFormat(initialTimeSeries.getDateFormat());
 
         TimeSeries series = new TimeSeries(timeSeriesTitle);
         for (TimeSeriesRow row : initialTimeSeries.getRows()) {
-            series.add(new Day(dateFormatter.parse(row.getDate())), row.getValue());
+            Day period = tryPopup(() -> new Day(dateFormatter.parse(row.getDate())), String.format("Could not format %s with formatter %s", row.getDate(), initialTimeSeries.getDateFormat()));
+            series.add(period, row.getValue());
         }
         return series;
     }
