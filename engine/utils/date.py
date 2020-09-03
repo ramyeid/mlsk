@@ -4,20 +4,21 @@ from datetime import datetime
 from dateutil import relativedelta
 
 
-def get_next_date(first_date: datetime, second_date: datetime) -> datetime:
+def get_next_dates(first_date: datetime, second_date: datetime, count: int) -> [datetime]:
     """
-    Compute the next date from the difference of dates
-    Given that first_date < second_date
+    Compute the next [count] dates given the difference of dates
+    With first_date < second_date
 
     Arguments
         - first_date (datetime.datetime)  : first date
         - second_date (datetime.datetime) : second date
+        - count (int)                     : number of dates to generate
 
     Returns
-        datetime.datetime -> date following date_2
+        list[datetime.datetime] -> list containing the next [count] dates
     """
-
-    return second_date + relativedelta.relativedelta(second_date, first_date)
+    
+    return [second_date + i * relativedelta.relativedelta(second_date, first_date) for i in range (1, count + 1)]
 
 
 def to_python_date_format(java_date_format: str) -> str:

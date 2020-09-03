@@ -79,16 +79,15 @@ class EngineImplTest {
     }
 
     @Test
-    public void should_append_forecasted_values_to_initial_time_series_on_forecast() throws IOException, InterruptedException {
+    public void should_delegate_forecast_call_to_engine() throws IOException, InterruptedException {
         when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
         when(timeSeriesAnalysisEngineClient.forecast(any())).thenReturn(timeSeries2);
         EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, new AtomicReference<>(WAITING), mock(ResilientProcess.class));
 
         TimeSeries actualTimeSeries = engineImpl.forecast(timeSeriesAnalysisRequest);
 
-        TimeSeries expectedTimeSeries = new TimeSeries(asList(timeSeriesRow, timeSeriesRow1, timeSeriesRow2), "Date", "Value", "%Y");
         verify(timeSeriesAnalysisEngineClient).forecast(any());
-        assertEquals(expectedTimeSeries, actualTimeSeries);
+        assertEquals(timeSeries2, actualTimeSeries);
         assertEquals(WAITING, engineImpl.getState());
     }
 
@@ -116,9 +115,8 @@ class EngineImplTest {
 
         TimeSeries timeSeriesSentToEngine = new TimeSeries(singletonList(timeSeriesRow), "Date", "Value", "%Y");
         TimeSeriesAnalysisRequest timeSeriesAnalysisRequestSentToEngine = new TimeSeriesAnalysisRequest(timeSeriesSentToEngine, 1);
-        TimeSeries expectedTimeSeries = new TimeSeries(asList(timeSeriesRow, timeSeriesRow2), "Date", "Value", "%Y");
         verify(timeSeriesAnalysisEngineClient).forecast(timeSeriesAnalysisRequestSentToEngine);
-        assertEquals(expectedTimeSeries, actualTimeSeries);
+        assertEquals(timeSeries2, actualTimeSeries);
         assertEquals(WAITING, engineImpl.getState());
     }
 
@@ -164,16 +162,15 @@ class EngineImplTest {
     }
 
     @Test
-    public void should_append_predicted_values_to_initial_time_series_on_predict() throws IOException, InterruptedException {
+    public void should_delegate_predict_call_to_engine() throws IOException, InterruptedException {
         when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
         when(timeSeriesAnalysisEngineClient.predict(any())).thenReturn(timeSeries2);
         EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, new AtomicReference<>(WAITING), mock(ResilientProcess.class));
 
         TimeSeries actualTimeSeries = engineImpl.predict(new TimeSeriesAnalysisRequest(timeSeries, 1));
 
-        TimeSeries expectedTimeSeries = new TimeSeries(asList(timeSeriesRow, timeSeriesRow1, timeSeriesRow2), "Date", "Value", "%Y");
         verify(timeSeriesAnalysisEngineClient).predict(any());
-        assertEquals(expectedTimeSeries, actualTimeSeries);
+        assertEquals(timeSeries2, actualTimeSeries);
         assertEquals(WAITING, engineImpl.getState());
     }
 

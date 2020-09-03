@@ -36,14 +36,10 @@ def forecast() -> str:
 
         forecasted_data_frame = time_series_analysis_service.forecast()
 
-        time_series_with_forecasted_values = TimeSeries.from_data_frame(forecasted_data_frame, date_column_name,
-                                                                        value_column_name, date_format)
-        # only send the elements added.
-        computed_rows = time_series_with_forecasted_values.get_rows()[-number_of_values:]
-        time_series_with_forecasted_values_only = TimeSeries(computed_rows, date_column_name,
-                                                             value_column_name, date_format)
+        forecasted_time_series = TimeSeries.from_data_frame(forecasted_data_frame, date_column_name,
+                                                            value_column_name, date_format)
 
-        return json.dumps(time_series_with_forecasted_values_only, cls=JsonComplexEncoder.JsonComplexEncoder)
+        return json.dumps(forecasted_time_series, cls=JsonComplexEncoder.JsonComplexEncoder)
 
     except Exception as exception:
         get_logger().error("Exception %s raised while forecasting: %s" % (type(exception).__name__, exception))
@@ -101,7 +97,7 @@ def predict() -> str:
                                                     file path of the csv input file
 
     Returns
-        str -> location of the outputFile with predicted values
+        time_series -> time_series corresponding to the predicted values and dates.
     """
 
     try:
@@ -117,16 +113,12 @@ def predict() -> str:
         time_series_analysis_service = TimeSeriesAnalysisService(data, date_column_name, value_column_name,
                                                                  number_of_values)
 
-        data_with_predicted_values = time_series_analysis_service.predict()
+        predicted_data_frame = time_series_analysis_service.predict()
 
-        time_series_with_predicted_values = TimeSeries.from_data_frame(data_with_predicted_values, date_column_name,
-                                                                       value_column_name, date_format)
-        # only send the elements added.
-        computed_rows = time_series_with_predicted_values.get_rows()[-number_of_values:]
-        time_series_with_predicted_values_only = TimeSeries(computed_rows, date_column_name,
-                                                            value_column_name, date_format)
-
-        return json.dumps(time_series_with_predicted_values_only, cls=JsonComplexEncoder.JsonComplexEncoder)
+        predicted_time_series = TimeSeries.from_data_frame(predicted_data_frame, date_column_name,
+                                                           value_column_name, date_format)
+        
+        return json.dumps(predicted_time_series, cls=JsonComplexEncoder.JsonComplexEncoder)
 
     except Exception as exception:
         get_logger().error("Exception %s raised while predicting: %s" % (type(exception).__name__, exception))

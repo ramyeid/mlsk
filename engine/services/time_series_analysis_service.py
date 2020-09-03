@@ -3,6 +3,7 @@
 from statsmodels.tsa.arima_model import ARIMA
 from datetime import datetime
 import pandas as pd
+import numpy as np
 from utils import date
 
 
@@ -26,66 +27,59 @@ class TimeSeriesAnalysisService:
         self.number_of_values = number_of_values
 
 
-    def __get_next_date(self, data_frame: pd.DataFrame) -> datetime:
+    def __get_next_dates(self) -> [datetime]:
         """
-        Computes and returns the next date of a given data_frame by querying the date_column_name.
+        Computes and returns the next {count} date of a given data_frame by querying the date_column_name.
         This method compares 2 dates of the column date and computes the last one.
 
         Arguments
             - data_frame (pandas.DataFrame) : data frame containing the date column
+            - count (int): number of dates to generate
 
         Returns
-            datetime -> next date of the date column
+            list[datetime] -> next {count} date of the date column
         """
 
-        date_column = data_frame[self.date_column_name]
+        date_column = self.data[self.date_column_name]
 
         date_1 = date_column.array[-2]
         date_2 = date_column.array[-1]
 
-        return date.get_next_date(date_1, date_2)
+        return date.get_next_dates(date_1, date_2, self.number_of_values)
 
 
-    def __copy_data_and_append_values(self, data: pd.DataFrame = None, values: list = []) -> pd.DataFrame:
+    def __create_data_frame_with_values(self, values: pd.array) -> pd.DataFrame:
         """
-        Shallow copy data (since old values will not be modified)
-        And append the values with their computed dates.
+        Creates a data frame with computed values and dates
 
         Arguments
-            - values (list) : values to be appended to the data frame
-      
+            - values (pd.array): computed values
+
         Returns
-            pandas.DataFrame -> data frame containing the values and dates
+            pandas.DataFrame -> data frame containing the computed values and corresponding dates
         """
 
-        if data is None:
-            data_with_new_values = self.data.copy(deep=False)
-        else:
-            data_with_new_values = data.copy(deep=False)
+        dates = self. __get_next_dates()
+        data_frame_as_dict = {self.date_column_name: [pd.Timestamp(date) for date in dates],
+                              self.value_column_name: values}
 
-        for current_value in values:
-            current_index = data_with_new_values.last_valid_index() + 1
-            current_date = pd.Timestamp(self.__get_next_date(data_with_new_values))
-            data_with_new_values.loc[current_index] = [current_date, current_value]
-
-        return data_with_new_values
+        return pd.DataFrame.from_dict(data_frame_as_dict)
 
 
     def predict(self) -> pd.DataFrame:
         """
         Predict the next {number_of_values} values to come using ARIMA model
-        This method will compute time series algorithm with initial values taken from {data},
-        shallow copy {data} and append the predictions with their correspondent dates.
+        This method will compute time series algorithm with initial values taken from [data]
 
         Returns
-            pandas.DataFrame -> data frame containing the initial data and the new values and dates.
+            pandas.DataFrame -> data frame containing the new values and dates.
         """
 
         model = ARIMA(self.data[self.value_column_name], order=(5, 1, 0))
         model_fit = model.fit(disp=0)
         predictions = model_fit.predict(len(self.data), len(self.data) + self.number_of_values - 1, typ='levels')
 
-        return self.__copy_data_and_append_values(values=predictions)
+        return self.__create_data_frame_with_values(predictions.array)
 
 
     def __forecast(self, data: pd.DataFrame) -> pd.DataFrame:
@@ -93,32 +87,32 @@ class TimeSeriesAnalysisService:
         Forecast the next {number_of_values} using ARIMA on the data passed
 
         Arguments
-            - data (list) : data for the ARIMA to learn from and forecast
+            - data (pd.Dataframe) : dataframe learn from and forecast
       
         Returns
             pandas.DataFrame -> data frame containing the forecasted values and dates
         """
 
+        value_column = np.asarray(data[self.value_column_name])
         for _ in range(self.number_of_values):
-            model = ARIMA(data[self.value_column_name], order=(9, 1, 0))
+            model = ARIMA(value_column, order=(9, 1, 0))
             model_fit = model.fit(disp=0)
             forecasted_value = model_fit.forecast()
-            data = self.__copy_data_and_append_values(data=data, values=forecasted_value[0])
+            value_column = np.append(value_column, forecasted_value[0])
 
-        return data
+        return self.__create_data_frame_with_values(value_column[-self.number_of_values:])
 
 
     def forecast(self) -> pd.DataFrame:
         """
         Forecast the next {number_of_values} values to come using ARIMA model
-        This method will compute the forecasted value and add it again to the dataframe to forecast the next one.
+        This method will compute the forecasted value and create a dataframe with the computed results and dates
 
         Returns
-            pandas.DataFrame -> data frame containing the initial data and the next values and dates.
+            pandas.DataFrame -> data frame containing computed values and dates.
         """
 
-        copied_data = self.__copy_data_and_append_values()
-        return self.__forecast(copied_data)
+        return self.__forecast(self.data)
 
 
     def compute_forecast_accuracy(self) -> float:
@@ -130,15 +124,15 @@ class TimeSeriesAnalysisService:
             float -> computed accuracy of the forecast service
         """
 
-        copied_data = self.__copy_data_and_append_values()
+        copied_data = self.data.copy(deep=False)
         copied_data.drop(copied_data.tail(self.number_of_values).index, inplace=True)
 
-        data_with_forecasted_values = self.__forecast(copied_data)
-        assert len(self.data) == len(data_with_forecasted_values), \
-               "initial data and forecasted should be the same length"
+        forecasted_data_frame = self.__forecast(copied_data)
+        assert len(forecasted_data_frame) == self.number_of_values, \
+               "forecasted data frame should be equal to number of values"
 
         actual_values = self.data[self.value_column_name].values[-self.number_of_values:]
-        forecasted_values = data_with_forecasted_values[self.value_column_name].values[-self.number_of_values:]
+        forecasted_values = forecasted_data_frame[self.value_column_name].values
         sum_of_actual = sum(actual_values)
         sum_of_diff = sum(abs(actual_values[i] - forecasted_values[i]) for i in range(0, self.number_of_values))
         return round(100 * (1 - ((sum_of_diff / self.number_of_values) / (sum_of_actual / self.number_of_values))), 2)

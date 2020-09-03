@@ -3,28 +3,29 @@ package org.machinelearning.swissknife.ui.components.timeseries;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.data.time.Day;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
+import org.jfree.data.time.*;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesRow;
 
 import javax.swing.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.*;
 
 import static org.machinelearning.swissknife.ui.components.utils.ErrorPopup.tryPopup;
 
 public class TimeSeriesPlotPanel extends JPanel {
 
     public TimeSeriesPlotPanel(org.machinelearning.swissknife.model.timeseries.TimeSeries initialTimeSeries,
-                               org.machinelearning.swissknife.model.timeseries.TimeSeries timeSeriesWithNewValues,
+                               org.machinelearning.swissknife.model.timeseries.TimeSeries computedTimeSeries,
                                String action) {
 
         TimeSeries initialValues = toTimeSeries(initialTimeSeries, "initial");
-        TimeSeries initialAndComputedValues = toTimeSeries(timeSeriesWithNewValues, action);
+        TimeSeries computedValues = toTimeSeries(computedTimeSeries, action);
+        linkComputedToInitialTimeSeries(initialValues, computedValues);
+
         TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();
         timeSeriesCollection.addSeries(initialValues);
-        timeSeriesCollection.addSeries(initialAndComputedValues);
+        timeSeriesCollection.addSeries(computedValues);
 
         JFreeChart timeSeriesChart = ChartFactory.createTimeSeriesChart(
                 String.format("time-series-%s", action),
@@ -43,6 +44,14 @@ public class TimeSeriesPlotPanel extends JPanel {
         chartPanel.setVerticalAxisTrace(true);
 
         this.add(chartPanel, 0);
+    }
+
+    private void linkComputedToInitialTimeSeries(TimeSeries initial, TimeSeries computed) {
+        // In order not to have a blank between the last element in initial and the first element in computed.
+        List<RegularTimePeriod> timePeriodsNotInComputed = new ArrayList<>(computed.getTimePeriodsUniqueToOtherSeries(initial));
+        RegularTimePeriod lastTimePeriodNotInComputed = timePeriodsNotInComputed.get(timePeriodsNotInComputed.size() - 1);
+        TimeSeriesDataItem lastDataItemNotInComputed = initial.getDataItem(lastTimePeriodNotInComputed);
+        computed.add(lastDataItemNotInComputed);
     }
 
     private static TimeSeries toTimeSeries(org.machinelearning.swissknife.model.timeseries.TimeSeries initialTimeSeries,
