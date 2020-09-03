@@ -2,6 +2,7 @@
 
 import sys
 import argparse
+import pandas as pd
 sys.path.append("..")
 from services.time_series_analysis_service import TimeSeriesAnalysisService
 from utils import csv
@@ -41,13 +42,17 @@ if __name__ == "__main__":
                                                              value_column_name, number_of_values)
   
     if action == "FORECAST":
-        print(csv.write(csv_output, time_series_analysis_service.forecast(), date_column_name, date_format))
+        forecasted_data_frame = time_series_analysis_service.forecast()
+        result_data_frame = pd.concat([data_frame, forecasted_data_frame], ignore_index=True, sort=False)
+        print(csv.write(csv_output, result_data_frame, date_column_name, date_format))
 
     elif action == "FORECAST_ACCURACY":
         print("Accuracy: {} %".format(time_series_analysis_service.compute_forecast_accuracy()))
 
     elif action == "PREDICT":
-        print(csv.write(csv_output, time_series_analysis_service.predict(), date_column_name, date_format))
+        prediction_data_frame = time_series_analysis_service.predict()
+        result_data_frame = pd.concat([data_frame, prediction_data_frame], ignore_index=True, sort=False)
+        print(csv.write(csv_output, result_data_frame, date_column_name, date_format))
 
     else:
         raise Exception("Action not valid: {}. Please should choose between FORECAST/ FORECAST_ACCURACY/ PREDICT"

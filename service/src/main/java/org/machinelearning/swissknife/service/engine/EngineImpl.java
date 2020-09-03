@@ -26,7 +26,7 @@ public class EngineImpl implements Engine {
 
     private static final Logger LOGGER = Logger.getLogger(TimeSeriesAnalysisController.class);
 
-    private ResilientProcess engineProcess;
+    private final ResilientProcess engineProcess;
     private final ServiceInformation serviceInformation;
     private final EngineClientFactory engineClientFactory;
     private final AtomicReference<EngineState> state;
@@ -60,8 +60,7 @@ public class EngineImpl implements Engine {
     public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
         return callOnEngine(() -> {
             TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
-            TimeSeries forecastedValues = engineClient.forecast(timeSeriesAnalysisRequest);
-            return TimeSeries.concat(timeSeriesAnalysisRequest.getTimeSeries(), forecastedValues);
+            return engineClient.forecast(timeSeriesAnalysisRequest);
         }, TIME_SERIES_FORECAST);
     }
 
@@ -77,8 +76,7 @@ public class EngineImpl implements Engine {
             TimeSeries newTimeSeries = new TimeSeries(newRows, timeSeries.getDateColumnName(), timeSeries.getValueColumnName(), timeSeries.getDateFormat());
             TimeSeriesAnalysisRequest newTimeSeriesRequest = new TimeSeriesAnalysisRequest(newTimeSeries, numberOfValues);
 
-            TimeSeries forecastedValues = engineClient.forecast(newTimeSeriesRequest);
-            return TimeSeries.concat(newTimeSeries, forecastedValues);
+            return engineClient.forecast(newTimeSeriesRequest);
         }, TIME_SERIES_FORECAST_VS_ACTUAL);
     }
 
@@ -94,8 +92,7 @@ public class EngineImpl implements Engine {
     public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
         return callOnEngine(() -> {
             TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
-            TimeSeries predictedValues = engineClient.predict(timeSeriesAnalysisRequest);
-            return TimeSeries.concat(timeSeriesAnalysisRequest.getTimeSeries(), predictedValues);
+            return engineClient.predict(timeSeriesAnalysisRequest);
         }, TIME_SERIES_PREDICT);
     }
 
