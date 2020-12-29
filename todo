@@ -23,7 +23,7 @@ and the code that handle the screen is shared.
     => grey the other buttons?
 **********
 
-*** UI - Web ***
+*** UI - Web using Angular ***
 - Final Step make the application a web application as well.
 ****************
 
@@ -35,5 +35,5 @@ and the code that handle the screen is shared.
 
 **todo**
 Test end to end with values that are different by year/ month/ day/ hour/ minute/ second/
-Create yml file to explain all end points of all components.
+Create yml (swagger) file to explain all end points of all components.
 *******
