@@ -17,7 +17,7 @@
     <modules>
         <module>service</module>
         <module>model</module>
-        <module>ui</module>
+        <module>swing-ui</module>
         <module>public</module>
         <module>lib</module>
     </modules>
