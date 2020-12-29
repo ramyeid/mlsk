@@ -32,6 +32,11 @@ def compile_java_project():
     os.system("cd .. && mvn clean package -q")
 
 
+def compile_angular_project():
+    os.system("cd ../web-ui && ng build --prod")
+    os.system("cd ../web-ui && ng test --watch=false")
+
+
 def get_all_jar_paths() -> [str]:
     jar_paths = []
     for path in Path('..').rglob('*.jar'):
@@ -48,11 +53,16 @@ def copy_engine_project():
     copytree("../engine", const.BUILD_COMPONENTS_ENGINE_DIRECTORY)
 
 
+def copy_web_ui_project():
+    copytree("../web-ui", const.BUILD_COMPONENTS_WEB_UI_DIRECTORY)
+
+
 def copy_launcher_scripts():
     copy("common_constants.py", const.BUILD_DIRECTORY)
     copy("launch_common.py", const.BUILD_DIRECTORY)
     copy("launch_service.py", const.BUILD_DIRECTORY)
     copy("launch_ui.py", const.BUILD_DIRECTORY)
+    copy("launch_web_ui.py", const.BUILD_DIRECTORY)
 
 
 def copy_configuration_file():
@@ -67,6 +77,8 @@ if __name__ == "__main__":
         compile_and_run_tests_python()
         print("Compiling Java projects")
         compile_java_project()
+        print("Compiling Angular UI")
+        compile_angular_project()
         print("Creating build directory")
         create_build_directory()
         print("Creating components directory")
@@ -77,6 +89,8 @@ if __name__ == "__main__":
         copy_all_jars(get_all_jar_paths())
         print("Copying engine project")
         copy_engine_project()
+        print("Copying web-ui project")
+        copy_web_ui_project()
         print("Copying launcher scripts")
         copy_launcher_scripts()
         print("Copying configuration file")

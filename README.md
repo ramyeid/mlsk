@@ -16,6 +16,7 @@ Below is the architecture of this application (Components might be added while d
 
 > - [Engine](./resources/documentation/Engine.md)
 > - [Service](./resources/documentation/Service.md)
+> - [Web UI](./resources/documentation/WebUI.md)
 
 ## Package and run
 
@@ -32,6 +33,10 @@ We worked hard to make machine learning easy and accessible for everyone. Packag
 To package the solution a script is offered under packaging/.
 The packaging will create a build directory containing the launcher scripts for different services, a configuration file (swissknife.ini) & the jars and the python module under build/components
 
+> It is recommended to launch a python virtual environment locally \
+> to do so [Setup venv](./resources/documentation/Engine.md "Setup Python Environment")
+
+
 ```bash
 cd packaging
 python3 packaging.py
@@ -46,11 +51,13 @@ The configuration file used has to be named **swissknife.ini** and it should hav
 port={port}
 [ENGINE]
 ports={port1,port2}
+[WEB_UI]
+port={port}
 ```
 
-_We will create as many engines as there are values in the section ENGINE#ports_.
+We will create as many engines as there are values in the section ENGINE#ports_.
 
-_Ports can be modified if needed. (nothing is hard coded in our codeline)_.
+Ports can be modified if needed. (nothing is hard coded in our codeline)_.
 
 ### Launch Service
 
@@ -61,13 +68,22 @@ cd build
 python3 launch_service.py
 ```
 
-### Launch UI
+### Launch Desktop UI
 
 The launch_ui dumped under build/ will read from the configuration file; and run the ui jar.
 
 ```bash
 cd build
 python3 launch_ui.py
+```
+
+### Launch Web UI
+
+The launch_web_ui dumped under build/ will read from the configuration file; and run the web-ui jar.
+
+```bash
+cd build
+python3 launch_web_ui.py
 ```
 
 ### Logs
