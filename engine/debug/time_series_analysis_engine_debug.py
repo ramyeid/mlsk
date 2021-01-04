@@ -40,7 +40,7 @@ if __name__ == "__main__":
     data_frame = csv.read(csv_input, date_column_name, date_format)
     time_series_analysis_service = TimeSeriesAnalysisService(data_frame, date_column_name,
                                                              value_column_name, number_of_values)
-  
+
     if action == "FORECAST":
         forecasted_data_frame = time_series_analysis_service.forecast()
         result_data_frame = pd.concat([data_frame, forecasted_data_frame], ignore_index=True, sort=False)

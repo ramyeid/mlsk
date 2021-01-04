@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import os
 import common_constants as const
 import launch_common as common

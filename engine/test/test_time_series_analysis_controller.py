@@ -34,8 +34,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         actual_time_series = TimeSeries.from_json(json.loads(response.data))
 
         # Then
-        time_series_row = TimeSeriesRow(datetime(1950, 3, 1), 114.8008754900565)
-        time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 123.33176716127309)
+        time_series_row = TimeSeriesRow(datetime(1950, 3, 1), 114.0)
+        time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 123.0)
         expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
         assert expected_time_series == actual_time_series
 
@@ -59,7 +59,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         body_as_string = json.dumps(body)
 
         # When
-        response = test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string, 
+        response = test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
                                  content_type='application/json')
         actual_accuracy = float(response.data)
 
@@ -88,8 +88,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         actual_time_series = TimeSeries.from_json(json.loads(response.data))
 
         # Then
-        time_series_row = TimeSeriesRow(datetime(1950, 3, 1), 125.32468684121805)
-        time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 124.48343613986563)
+        time_series_row = TimeSeriesRow(datetime(1950, 3, 1), 125.0)
+        time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 124.0)
         expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
         assert expected_time_series == actual_time_series
 
