@@ -5,9 +5,7 @@ import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.service.Orchestrator;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import static org.machinelearning.swissknife.lib.algorithms.AlgorithmNames.*;
 import static org.machinelearning.swissknife.lib.endpoints.TimeSeriesAnalysisUrls.*;

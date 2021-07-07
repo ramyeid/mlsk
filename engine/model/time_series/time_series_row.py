@@ -28,7 +28,7 @@ class TimeSeriesRow:
 
 
     def __eq__(self, other):
-        return isinstance(other, TimeSeriesRow) and self.date == other.date and self.value == other.value
+        return isinstance(other, TimeSeriesRow) and self.date == other.date and int(self.value) == int(other.value)
 
 
     def to_json(self, date_format: str) -> dict:

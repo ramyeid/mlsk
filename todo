@@ -1,5 +1,7 @@
 *** Engine ***
 
+***************
+
 ** Time Series Analysis **
 - pass the order in ARIMA as parameters (as non required)
 **************************
@@ -21,10 +23,21 @@ and the code that handle the screen is shared.
 - rework ui => refactor write tests
 - maybe call the forecast / predict in another thread and update the screen in another thread. ? (but what if they launch multiple request ? )
     => grey the other buttons?
+
 **********
 
 *** UI - Web using Angular ***
+- Write unit test for
+  - validation-message-generator
+  - time-series-analysis-input.component
+  - time-series-analysis-output.component
 - Final Step make the application a web application as well.
+// TODO for TimeSeriesAnalysisInput:
+//  Work on exception message for each input (required message or number can't be negative, or date format not matched)
+//  Put tooltip for dateformat to show all possible date formats (already one in swing-ui)
+- refactor form make Angular more readable and follow best practices
+- find a way to pass server port to angular instead of being hard coded in the service.ts
+- Complete Time Series Analysis Output Component
 ****************
 
 
@@ -34,6 +47,8 @@ and the code that handle the screen is shared.
 
 
 **todo**
-Test end to end with values that are different by year/ month/ day/ hour/ minute/ second/
-Create yml (swagger) file to explain all end points of all components.
+- Test end to end with values that are different by year/ month/ day/ hour/ minute/ second/
+- Create yml (swagger) file to explain all resources of all components.
+- Move all todos to clickup app and create a board
+- Make packaging.py fail if one of the commands fail (i.e.: if tests fail stop packaging)
 *******

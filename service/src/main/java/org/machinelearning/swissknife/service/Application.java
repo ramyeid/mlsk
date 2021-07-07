@@ -7,6 +7,8 @@ import org.machinelearning.swissknife.service.engine.EngineFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -25,10 +27,22 @@ public class Application {
     @Bean
     public Orchestrator buildOrchestrator() {
         List<Engine> engines = ServiceConfiguration.getEnginePorts()
-                                 .stream()
-                                 .map(EngineFactory::createEngine)
-                                 .collect(toList());
+                .stream()
+                .map(EngineFactory::createEngine)
+                .collect(toList());
         return new Orchestrator(engines);
+    }
+
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("*")
+                        .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS");
+            }
+        };
     }
 
     @PostConstruct

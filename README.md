@@ -39,7 +39,7 @@ The packaging will create a build directory containing the launcher scripts for 
 
 ```bash
 cd packaging
-python3 packaging.py
+python3 packaging.py [--skipTests]
 ```
 
 ### Configuration file
@@ -89,6 +89,14 @@ python3 launch_web_ui.py
 ### Logs
 
 Logs are dumped under build/logs
+
+### Miscellenaous
+
+* To find process that is listening/using a port
+  ```bash
+  lsof -i tcp:6765 
+  ```
+
 
 ## Contributors
 

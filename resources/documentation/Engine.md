@@ -29,10 +29,16 @@ code .
 python3 -m compileall -f .
 ```
 
-### Run test
+### Run all tests
 
 ``` bash
 python3 -m pytest -s
+```
+
+### Run single test
+
+``` bash
+python3 -m pytest -s test/services/test_time_series_analysis_service.py::TestTimeSeriesAnalysisService::test_forecast_service
 ```
 
 ### Get Python documentation
