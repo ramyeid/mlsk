@@ -2,6 +2,20 @@
 
 The aim of this application is to make machine learning accessible for everyone. A user with a set of data wants to have a calculated prediction, estimation or forecast will be able to do so with this very simple webapplication.
 
+## Pull request requirements
+
+We expect all pull requests to follow the best practices and maintain high quality and readable code.
+
+We have set up a requirements tab in order to maintain quality.
+
+> [Requirements](./resources/documentation/PullRequestRequirements.md)
+
+## Tasks & todos
+
+We exported our Kanban board and we intend to keep it up to date
+
+> [Tasks](./resources/documentation/TasksAndTodos.md)
+
 ## Architecture
 
 Below is the architecture of this application (Components might be added while developing this platform).
@@ -22,75 +36,9 @@ Below is the architecture of this application (Components might be added while d
 
 We worked hard to make machine learning easy and accessible for everyone. Packaging and running the solution should also be easy.
 
-### Requirements
+> [Package & run](./resources/documentation/PackageAndRun.md)
 
-- mvn
-- jdk11
-- python3
-
-### Package
-
-To package the solution a script is offered under packaging/.
-The packaging will create a build directory containing the launcher scripts for different services, a configuration file (swissknife.ini) & the jars and the python module under build/components
-
-> It is recommended to launch a python virtual environment locally \
-> to do so [Setup venv](./resources/documentation/Engine.md "Setup Python Environment")
-
-
-```bash
-cd packaging
-python3 packaging.py [--skipTests]
-```
-
-### Configuration file
-
-The configuration file used has to be named **swissknife.ini** and it should have the following style.
-
-```txt
-[SERVICE]
-port={port}
-[ENGINE]
-ports={port1,port2}
-[WEB_UI]
-port={port}
-```
-
-We will create as many engines as there are values in the section ENGINE#ports_.
-
-Ports can be modified if needed. (nothing is hard coded in our codeline)_.
-
-### Launch Service
-
-The launch_service dumped under build/ will read from the configuration file; and run the service jar which will launch the REST service
-
-```bash
-cd build
-python3 launch_service.py
-```
-
-### Launch Desktop UI
-
-The launch_ui dumped under build/ will read from the configuration file; and run the ui jar.
-
-```bash
-cd build
-python3 launch_ui.py
-```
-
-### Launch Web UI
-
-The launch_web_ui dumped under build/ will read from the configuration file; and run the web-ui jar.
-
-```bash
-cd build
-python3 launch_web_ui.py
-```
-
-### Logs
-
-Logs are dumped under build/logs
-
-### Miscellenaous
+## Miscellaneous
 
 * To find process that is listening/using a port
   ```bash

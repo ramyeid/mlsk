@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 import unittest
-from utils import date
 from datetime import datetime
+from utils import date
 
 
 class TestDateUtils(unittest.TestCase):
@@ -125,7 +125,7 @@ class TestDateUtils(unittest.TestCase):
                == actual_next_dates
 
 
-    def test_get_next_date_with_months_difference_and_month_is_December(self):
+    def test_get_next_date_with_months_difference_and_month_is_december(self):
         # Given
         date_1 = datetime(year=1960, month=11, day=1, hour=0, minute=0, second=0)
         date_2 = datetime(year=1960, month=12, day=1, hour=0, minute=0, second=0)

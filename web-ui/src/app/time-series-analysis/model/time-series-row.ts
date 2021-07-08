@@ -1,4 +1,3 @@
-
 export class TimeSeriesRow {
   private readonly date: string;
   private readonly value: number;

@@ -1,29 +1,32 @@
 import { FormGroup } from '@angular/forms';
 
+import { ValidationMessages } from './validation-messages';
 
 export class ValidationMessageGenerator {
 
-  private readonly validationMessages: { [key: string]: { [key: string]: string } };
+  private readonly validationMessages: ValidationMessages;
 
-  constructor(validationMessages: { [key: string]: { [key: string]: string } }) {
+  constructor(validationMessages: ValidationMessages) {
     this.validationMessages = validationMessages;
   }
 
   generateErrorMessages(container: FormGroup): { [key: string]: string } {
     const messages: { [key: string]: string} = {};
     for (const controlKey in container.controls) {
+      // needed since since for in might loop over objects from object's prototype chain
+      // TSLINT-for...in
       if (container.controls.hasOwnProperty(controlKey)) {
         const control = container.controls[controlKey];
         if (control instanceof FormGroup) {
           const containerErrorMessages = this.generateErrorMessages(control);
           Object.assign(messages, containerErrorMessages);
         } else {
-          if (this.validationMessages[controlKey]) {
+          if (this.validationMessages.has(controlKey)) {
             messages[controlKey] = '';
             if ((control.dirty || control.touched) && control.errors) {
-              Object.keys(control.errors).map(messageKey => {
-                if (this.validationMessages[controlKey][messageKey]) {
-                  messages[controlKey] += this.validationMessages[controlKey][messageKey] + ' ';
+              Object.keys(control.errors).forEach(messageKey => {
+                if (this.validationMessages.hasError(controlKey, messageKey)) {
+                  messages[controlKey] += this.validationMessages.getError(controlKey, messageKey) + ' ';
                 }
               });
             }

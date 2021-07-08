@@ -19,7 +19,7 @@ describe('TimeSeriesAnalysisComponent', () => {
     const timeSeriesAnalysisInputSelector = nativeElement.querySelector('app-time-series-analysis-input');
     const timeSeriesAnalysisOutputSelector = nativeElement.querySelector('app-time-series-analysis-output');
 
-    expect(timeSeriesAnalysisInputSelector).not.toBeNull()
-    expect(timeSeriesAnalysisOutputSelector).not.toBeNull()
+    expect(timeSeriesAnalysisInputSelector).not.toBeNull();
+    expect(timeSeriesAnalysisOutputSelector).not.toBeNull();
   });
 });

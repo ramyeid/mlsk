@@ -28,8 +28,8 @@ Given a csv input this service will compute the last x values and compare them t
 
 ## Python Documentation
 
-``` bash
-python3 -m pydoc time_series_analysis_service
+```bash
+python -m pydoc time_series_analysis_service
 ```
 
 ## Debug Service
@@ -41,17 +41,17 @@ The three methods are also offered in this small python script:
 * Predict
 
     ```bash
-    python3 time_series_analysis_engine_debug.py --csv //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 100 --action PREDICT [--output //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers_predict_output.csv]
+    python time_series_analysis_engine_debug.py --csv //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 100 --action PREDICT [--output //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers_predict_output.csv]
     ```
 
 * Forecast
 
     ```bash
-    python3 time_series_analysis_engine_debug.py --csv //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST [--output //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers_predict_output.csv]
+    python time_series_analysis_engine_debug.py --csv //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST [--output //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers_predict_output.csv]
     ```
 
 * Accuracy for Forecast
 
     ```bash
-    python3 time_series_analysis_engine_debug.py --csv //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST_ACCURACY
+    python time_series_analysis_engine_debug.py --csv //Users//ramyeid//Documents//machine-learning-swissknife//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST_ACCURACY
     ```

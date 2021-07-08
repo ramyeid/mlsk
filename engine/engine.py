@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-from flask import Flask
 import argparse
 import atexit
 import signal
+from flask import Flask
 import time_series_analysis_controller
 from utils.logger import setup_logger, get_logger
 

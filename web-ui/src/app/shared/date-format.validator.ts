@@ -4,10 +4,9 @@ export class DateFormatValidator {
 
   // Order of these two array is important!
   private static readonly DATE_FORMAT_PATTERNS: string[] = ['yyyy', 'yy', 'MM', 'dd', 'HH', 'hh', 'mm', 'ss', 'SSS'];
-  private static readonly DATE_FORMAT_SEPERATOR: string[] = ['/', '\\', '.', '-', ':', ',', ' '];
+  private static readonly DATE_FORMAT_SEPARATOR: string[] = ['/', '\\', '.', '-', ':', ',', ' '];
 
-  private constructor() {
-  }
+  private constructor() { }
 
   static validateDateFormat(control: AbstractControl): { [key: string]: boolean } | null {
     if (control.value && !DateFormatValidator.isValidDateFormat(control.value)) {
@@ -43,10 +42,10 @@ export class DateFormatValidator {
       dateFormatWithoutPattern = dateFormatWithoutPattern.replace(pattern, '');
     });
 
-    DateFormatValidator.DATE_FORMAT_SEPERATOR.forEach(seperator => {
-      dateFormatWithoutPattern = dateFormatWithoutPattern.split(seperator).join("")
-    })
+    DateFormatValidator.DATE_FORMAT_SEPARATOR.forEach(separator => {
+      dateFormatWithoutPattern = dateFormatWithoutPattern.split(separator).join('');
+    });
 
-    return dateFormatWithoutPattern.length == 0;
+    return dateFormatWithoutPattern.length === 0;
   }
 }

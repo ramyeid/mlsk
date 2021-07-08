@@ -24,7 +24,7 @@ describe('TimeSeriesAnalysisService', () => {
   describe('Forecast', () => {
 
     it('should handle error from http post forecast', () => {
-      var errorEvent = new ErrorEvent('Type', {
+      const errorEvent = new ErrorEvent('Type', {
         error : new Error('Error from backend'),
         message : 'Error from backend Message'
       });
@@ -36,15 +36,15 @@ describe('TimeSeriesAnalysisService', () => {
         error: (err) => {
           expect(err.message).toBe('An error occurred: Error from backend Message');
         }
-      })
+      });
       const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
       req.error(errorEvent);
-      expect(req.request.method).toBe("POST");
+      expect(req.request.method).toBe('POST');
       httpMock.verify();
     });
 
     it('should handle error of type ErrorEvent from http post forecast', () => {
-      var errorEvent = new ErrorEvent('Type', {
+      const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
       });
@@ -56,10 +56,10 @@ describe('TimeSeriesAnalysisService', () => {
         error: (err) => {
           expect(err.message).toBe('An error occurred: Error Event type Message');
         }
-      })
+      });
       const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
       req.error(errorEvent);
-      expect(req.request.method).toBe("POST");
+      expect(req.request.method).toBe('POST');
       httpMock.verify();
     });
 
@@ -74,10 +74,10 @@ describe('TimeSeriesAnalysisService', () => {
           expect(actualValue).toEqual(Helper.buildTimeSeriesResult());
           done();
         }
-      })
+      });
       const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
       req.flush(timeSeriesResult);
-      expect(req.request.method).toBe("POST");
+      expect(req.request.method).toBe('POST');
       httpMock.verify();
     });
 
@@ -86,7 +86,9 @@ describe('TimeSeriesAnalysisService', () => {
 });
 
 
-export class Helper {
+class Helper {
+
+  private constructor() { }
 
   static buildTimeSeriesResult(): TimeSeries {
     const timeSeriesRow1 = new TimeSeriesRow('4', 44);

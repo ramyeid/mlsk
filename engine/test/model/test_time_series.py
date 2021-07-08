@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
 import unittest
+from datetime import datetime, timedelta
 import pandas as pd
 from pandas.testing import assert_frame_equal
 from model.time_series.time_series import TimeSeries
 from model.time_series.time_series_row import TimeSeriesRow
-from datetime import datetime, timedelta
 
 
 class TestTimeSeries(unittest.TestCase):
@@ -43,7 +43,7 @@ class TestTimeSeries(unittest.TestCase):
 
         # When
         actual_time_series = TimeSeries.from_json(json)
-    
+
         # Then
         time_series_row1 = TimeSeriesRow(datetime(1949, 1, 1, 11, 0, 1), 112.0)
         time_series_row2 = TimeSeriesRow(datetime(1949, 1, 1, 11, 0, 2), 118.0)

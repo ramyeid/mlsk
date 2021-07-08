@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 import unittest
-import engine
 import json
 from datetime import datetime
+import engine
 from model.time_series.time_series import TimeSeries
 from model.time_series.time_series_row import TimeSeriesRow
 

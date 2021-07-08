@@ -11,9 +11,13 @@ The Engine is a python project that is easy to launch that will offer endpoints 
 Python is very easy to use, launch and debug.
 Also Python Libraries are very rich with machine learning algorithms
 
+### Requirements
+
+> - python3
+
 ### Setup Python Environment
 
-``` bash
+```bash
 cd machine-learning-swissknife
 python3 -m venv .venv
 source .venv/bin/activate
@@ -26,29 +30,35 @@ code .
 ### Compile all files
 
 ```bash
-python3 -m compileall -f .
+python -m compileall -f .
 ```
 
 ### Run all tests
 
-``` bash
-python3 -m pytest -s
+```bash
+python -m pytest -s
 ```
 
 ### Run single test
 
-``` bash
-python3 -m pytest -s test/services/test_time_series_analysis_service.py::TestTimeSeriesAnalysisService::test_forecast_service
+```bash
+python -m pytest -s test/services/test_time_series_analysis_service.py::TestTimeSeriesAnalysisService::test_forecast_service
+```
+
+### Run Lint
+
+```bash
+pylint *
 ```
 
 ### Get Python documentation
 
-``` bash
-python3 -m pydoc {file}
+```bash
+python -m pydoc {file}
 ```
 
 ### Launch an engine
 
 ```bash
-    python3 engine.py --port 6767 --logs-path /Users/ramyeid/Documents/machine-learning-swissknife/build/logs/
+python engine.py --port 6767 --logs-path /Users/ramyeid/Documents/machine-learning-swissknife/build/logs/
 ```

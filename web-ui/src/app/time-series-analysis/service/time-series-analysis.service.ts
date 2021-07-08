@@ -12,9 +12,9 @@ import { TimeSeries } from '../model/time-series';
 export class TimeSeriesAnalysisService {
 
   private static readonly BASE_URL = 'http://localhost:6766/time-series-analysis';
-  // public static final String FORECAST_VS_ACTUAL_URL = "/time-series-analysis/forecast-vs-actual";
-  // public static final String FORECAST_ACCURACY_URL = "/time-series-analysis/forecast-accuracy";
-  // public static final String PREDICATE_URL = "/time-series-analysis/predict";
+  // public static final String FORECAST_VS_ACTUAL_URL = '/time-series-analysis/forecast-vs-actual';
+  // public static final String FORECAST_ACCURACY_URL = '/time-series-analysis/forecast-accuracy';
+  // public static final String PREDICATE_URL = '/time-series-analysis/predict';
 
   private readonly httpClient: HttpClient;
 

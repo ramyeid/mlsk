@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
 import unittest
+from datetime import datetime, timedelta
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from datetime import datetime, timedelta
 from services.time_series_analysis_service import TimeSeriesAnalysisService
 
 
@@ -60,7 +60,7 @@ class TestTimeSeriesAnalysisService(unittest.TestCase):
         actual_accuracy = tsa.compute_forecast_accuracy()
 
         # Test
-        assert(88.75 == actual_accuracy)
+        assert 88.75 == actual_accuracy
 
 
 if __name__ == "__main__":
