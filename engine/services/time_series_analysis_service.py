@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from statsmodels.tsa.arima_model import ARIMA
 from datetime import datetime
+from statsmodels.tsa.arima_model import ARIMA
 import pandas as pd
 import numpy as np
 from utils import date
@@ -88,7 +88,7 @@ class TimeSeriesAnalysisService:
 
         Arguments
             - data (pd.Dataframe) : dataframe learn from and forecast
-      
+
         Returns
             pandas.DataFrame -> data frame containing the forecasted values and dates
         """

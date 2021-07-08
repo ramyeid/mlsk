@@ -19,4 +19,4 @@ import { TimeSeriesAnalysisOutputComponent } from './output/time-series-analysis
     TimeSeriesAnalysisOutputComponent
   ]
 })
-export class TimeSeriesAnalysisModule { };
+export class TimeSeriesAnalysisModule { }

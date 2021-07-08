@@ -1,10 +1,10 @@
 #!/usr/bin/python3
 
 import unittest
+from datetime import datetime
 from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
 from model.time_series.time_series import TimeSeries
 from model.time_series.time_series_row import TimeSeriesRow
-from datetime import datetime
 
 
 class TestTimeSeriesAnalysisRequest(unittest.TestCase):
@@ -22,7 +22,7 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
 
         # When
         actual_time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(json)
-    
+
         # Then
         time_series_row1 = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
         time_series_row2 = TimeSeriesRow(datetime(1949, 2, 1), 118.0)

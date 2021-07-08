@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-import pandas as pd
 from datetime import datetime
+import pandas as pd
 
 
 def read(csv_input_file: str, date_column_name: str, date_format: str) -> pd.DataFrame:

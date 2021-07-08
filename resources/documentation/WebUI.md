@@ -17,7 +17,7 @@ https://nodejs.org/en/
 ```
 
 #### To install ng
-``` bash
+```bash
 npm install -g @angular/cli
 ```
 
@@ -30,9 +30,15 @@ ng build --prod
 
 ### Run test
 
-``` bash
+```bash
 ng test
 ng e2e
+```
+
+### Run Lint
+
+```bash
+ng lint
 ```
 
 ### Launch the Web ui engine

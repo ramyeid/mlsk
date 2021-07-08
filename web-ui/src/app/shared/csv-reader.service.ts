@@ -1,5 +1,5 @@
-import { ErrorHandler, Injectable } from '@angular/core';
-import { observable, Observable } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Observable } from 'rxjs';
 
 export type ValuePerColumnPerLine = { [key: string]: string }[];
 export type ValuePerColumn = { [key: string]: string };
@@ -12,8 +12,7 @@ export class CsvReaderService {
   private static readonly SEPERATOR: string = ',';
   private static readonly END_LINE: string = '\n';
 
-  constructor() {
-  }
+  constructor() { }
 
   readCsv(file: File, columns: string[]): Observable<ValuePerColumnPerLine> {
 
@@ -27,12 +26,12 @@ export class CsvReaderService {
         const columnIndexes: number[] = this.toColumnIndexes(contentLines, columns);
         if (columnIndexes.includes(-1)) {
           const errorIndex: number = columnIndexes.indexOf(-1);
-          observable.error(`column  with title '${columns[errorIndex]}' is not available in the csv file`);
+          observable.error(new Error(`Column with title '${columns[errorIndex]}' is not available in the csv file`));
           return;
         }
 
         try {
-          let values = this.buildValuePerColumnPerLine(columnIndexes, columns, contentLines);
+          const values = this.buildValuePerColumnPerLine(columnIndexes, columns, contentLines);
           observable.next(values);
         } catch (error) {
           observable.error(error);
@@ -84,8 +83,8 @@ export class CsvReaderService {
   }
 
   private throwExceptionIfColumnAndValueLengthNotEqual(columnIndexes: number[], valuesPerLine: string[]): void {
-    if (columnIndexes.length != valuesPerLine.length) {
-      throw `Unable to parse line: '${valuesPerLine}'`;
+    if (columnIndexes.length !== valuesPerLine.length) {
+      throw new Error(`Unable to parse line: '${valuesPerLine}'`);
     }
   }
 

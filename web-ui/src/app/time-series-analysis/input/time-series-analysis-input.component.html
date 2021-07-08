@@ -55,7 +55,7 @@
             {{ errorMessagePerInput.dateFormat }}
           </span>
         </div>
-        <!---->
+
         <div class="col-md-5">
           <mat-icon matTooltipClass="multiline-tooltip"
                     matTooltipPosition="right"
@@ -110,6 +110,7 @@
       <div class="form-group row mb-2">
         <div class="offset-md-2 col-md-4">
           <button class="btn btn-primary mr-3"
+                  id="SaveButton"
                   type="submit"
                   style="width:80px"
                   [title]="settingsForm.valid ? 'Save your entered data' : 'Disabled until the form data is valid'"
@@ -128,9 +129,3 @@
     {{errorMessage}}
   </div>
 </div>
-
-<br>Dirty: {{ settingsForm.dirty }}
-<br>Touched: {{ settingsForm.touched }}
-<br>Valid: {{ settingsForm.valid }}
-<br>Value: {{ settingsForm.value | json }}
-<br>

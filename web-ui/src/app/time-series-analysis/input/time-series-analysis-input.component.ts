@@ -1,12 +1,11 @@
-import { Component, OnInit, AfterViewInit, ViewChildren, ElementRef } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, FormControlName } from '@angular/forms';
+import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 
-import { Observable, fromEvent, merge } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
 
 import { DateFormatValidator } from '../../shared/date-format.validator';
-import { ValidationMessages } from '../../shared/validation-messages';
 import { ValidationMessageGenerator } from './../../shared/validation-message-generator';
+import { TimeSeriesAnalysisValidationMessages } from '../validation/time-series-analysis-validation-messages';
 import { TimeSeriesRequestBuilderService } from '../request-builder/time-series-request-builder.service';
 import { TimeSeriesAnalysisService } from '../service/time-series-analysis.service';
 import { TimeSeries } from '../model/time-series';
@@ -16,13 +15,13 @@ import { TimeSeries } from '../model/time-series';
   templateUrl: './time-series-analysis-input.component.html',
   styleUrls: ['./time-series-analysis-input.component.css']
 })
-export class TimeSeriesAnalysisInputComponent implements OnInit, AfterViewInit {
+export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
-  @ViewChildren(FormControlName, { read: ElementRef }) formInputElements: ElementRef[];
+  @Output() timeSeriesResultOutput = new EventEmitter<TimeSeries>();
   private readonly formBuilder: FormBuilder;
-  private readonly validationMessageGenrator: ValidationMessageGenerator;
   private readonly requestBuilder: TimeSeriesRequestBuilderService;
   private readonly service: TimeSeriesAnalysisService;
+  private readonly validationMessageGenrator: ValidationMessageGenerator;
   settingsForm: FormGroup;
   errorMessage: string;
   errorMessagePerInput: { [key: string]: string } = {};
@@ -30,30 +29,19 @@ export class TimeSeriesAnalysisInputComponent implements OnInit, AfterViewInit {
   isWaitingForResult: boolean;
 
   constructor(formBuilder: FormBuilder,
-              timeSeriesRequestBuilderService: TimeSeriesRequestBuilderService,
-              timeServiceAnalysisService: TimeSeriesAnalysisService) {
+              requestBuilder: TimeSeriesRequestBuilderService,
+              service: TimeSeriesAnalysisService) {
     this.formBuilder = formBuilder;
-    this.requestBuilder = timeSeriesRequestBuilderService;
-    this.service = timeServiceAnalysisService;
-    this.validationMessageGenrator = new ValidationMessageGenerator(ValidationMessages.getTimeSeriesValidationMessages());
+    this.requestBuilder = requestBuilder;
+    this.service = service;
+    const validationMessages = TimeSeriesAnalysisValidationMessages.buildTimeSeriesValidationMessages();
+    this.validationMessageGenrator = new ValidationMessageGenerator(validationMessages);
     this.isWaitingForResult = false;
-  }
-
-  ngOnInit(): void {
-    this.settingsForm = this.formBuilder.group({
-      dateColumnName: ['', [Validators.required]],
-      valueColumnName: ['', [Validators.required]],
-      dateFormat: ['', [Validators.required, DateFormatValidator.validateDateFormat]],
-      csvLocation: ['', [Validators.required]],
-      numberOfValues: ['', [Validators.required, Validators.min(1)]]
-    });
+    this.buildForm();
   }
 
   ngAfterViewInit(): void {
-    const controlBlurs: Observable<any>[] = this.formInputElements
-    .map((formControl: ElementRef) => fromEvent(formControl.nativeElement, 'blur'));
-
-    merge(this.settingsForm.valueChanges, ...controlBlurs).pipe(
+    this.settingsForm.valueChanges.pipe(
       debounceTime(800)
     ).subscribe(() => {
       this.errorMessagePerInput = this.validationMessageGenrator.generateErrorMessages(this.settingsForm);
@@ -77,18 +65,29 @@ export class TimeSeriesAnalysisInputComponent implements OnInit, AfterViewInit {
           });
   }
 
+  onUpload(event: any): void {
+    const files: File[] = event.target.files;
+    this.csvFile = files[0];
+  }
+
+  private buildForm(): void {
+    this.settingsForm = this.formBuilder.group({
+      dateColumnName: ['', [Validators.required]],
+      valueColumnName: ['', [Validators.required]],
+      dateFormat: ['', [Validators.required, DateFormatValidator.validateDateFormat]],
+      csvLocation: ['', [Validators.required]],
+      numberOfValues: ['', [Validators.required, Validators.min(1)]]
+    });
+  }
+
   private onSuccess(timeSeriesResult: TimeSeries): void {
+    this.timeSeriesResultOutput.emit(timeSeriesResult);
     console.log(`output: ${JSON.stringify(timeSeriesResult)}`);
     this.isWaitingForResult = false;
   }
 
-  private onError(errorMessage: string): void {
-    this.errorMessage = errorMessage;
+  private onError(errorMessage: Error): void {
+    this.errorMessage = errorMessage.message;
     this.isWaitingForResult = false;
-  }
-
-  onUpload(event: any): void {
-    const files: File[] = event.target.files;
-    this.csvFile = files[0];
   }
 }

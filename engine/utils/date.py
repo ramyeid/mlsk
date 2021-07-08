@@ -17,7 +17,7 @@ def get_next_dates(first_date: datetime, second_date: datetime, count: int) -> [
     Returns
         list[datetime.datetime] -> list containing the next [count] dates
     """
-    
+
     return [second_date + i * relativedelta.relativedelta(second_date, first_date) for i in range (1, count + 1)]
 
 

@@ -6,7 +6,7 @@ import { MatListModule } from '@angular/material/list';
 import { MatButtonModule } from '@angular/material/button';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { MatIconModule } from '@angular/material/icon'
+import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 
 @NgModule({
@@ -33,5 +33,4 @@ import { CommonModule } from '@angular/common';
     CommonModule
    ]
 })
-export class SharedModule { };
-
+export class SharedModule { }

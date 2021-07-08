@@ -1,12 +1,12 @@
 #!/usr/bin/python3
 
+import json
 from flask import request
-from utils import JsonComplexEncoder
+from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
 from services.time_series_analysis_service import TimeSeriesAnalysisService
 from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
 from model.time_series.time_series import TimeSeries
-import json
 
 
 def forecast() -> str:
@@ -39,7 +39,7 @@ def forecast() -> str:
         forecasted_time_series = TimeSeries.from_data_frame(forecasted_data_frame, date_column_name,
                                                             value_column_name, date_format)
 
-        return json.dumps(forecasted_time_series, cls=JsonComplexEncoder.JsonComplexEncoder)
+        return json.dumps(forecasted_time_series, cls=JsonComplexEncoder)
 
     except Exception as exception:
         get_logger().error("Exception %s raised while forecasting: %s" % (type(exception).__name__, exception))
@@ -117,8 +117,8 @@ def predict() -> str:
 
         predicted_time_series = TimeSeries.from_data_frame(predicted_data_frame, date_column_name,
                                                            value_column_name, date_format)
-        
-        return json.dumps(predicted_time_series, cls=JsonComplexEncoder.JsonComplexEncoder)
+
+        return json.dumps(predicted_time_series, cls=JsonComplexEncoder)
 
     except Exception as exception:
         get_logger().error("Exception %s raised while predicting: %s" % (type(exception).__name__, exception))
