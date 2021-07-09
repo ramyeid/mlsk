@@ -28,58 +28,58 @@ import static org.springframework.boot.web.error.ErrorAttributeOptions.Include.M
 @SpringBootApplication
 public class Application {
 
-    private static final Logger LOGGER = Logger.getLogger(Application.class);
+  private static final Logger LOGGER = Logger.getLogger(Application.class);
 
-    @Bean
-    public Orchestrator buildOrchestrator() {
-        List<Engine> engines = ServiceConfiguration.getEnginePorts()
-            .stream()
-            .map(EngineFactory::createEngine)
-            .collect(toList());
-        return new Orchestrator(engines);
-    }
+  @Bean
+  public Orchestrator buildOrchestrator() {
+    List<Engine> engines = ServiceConfiguration.getEnginePorts()
+        .stream()
+        .map(EngineFactory::createEngine)
+        .collect(toList());
+    return new Orchestrator(engines);
+  }
 
-    @Bean
-    public ErrorAttributes errorAttributes() {
-        return new DefaultErrorAttributes() {
-            @Override
-            public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
-                ErrorAttributeOptions newOptions = options.including(MESSAGE);
+  @Bean
+  public ErrorAttributes errorAttributes() {
+    return new DefaultErrorAttributes() {
+      @Override
+      public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+        ErrorAttributeOptions newOptions = options.including(MESSAGE);
 
-                Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, newOptions);
-                errorAttributes.remove("timestamp");
-                errorAttributes.remove("path");
-                errorAttributes.remove("error");
-                return errorAttributes;
-            }
-        };
-    }
+        Map<String, Object> errorAttributes = super.getErrorAttributes(webRequest, newOptions);
+        errorAttributes.remove("timestamp");
+        errorAttributes.remove("path");
+        errorAttributes.remove("error");
+        return errorAttributes;
+      }
+    };
+  }
 
-    @Bean
-    public WebMvcConfigurer corsConfigurer() {
-        return new WebMvcConfigurer() {
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/**")
-                    .allowedOrigins("*")
-                    .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS");
-            }
-        };
-    }
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+            .allowedOrigins("*")
+            .allowedMethods("GET", "PUT", "POST", "PATCH", "DELETE", "OPTIONS");
+      }
+    };
+  }
 
-    @PostConstruct
-    private void postConstruct() {
-        LOGGER.info("Service is up");
-    }
+  @PostConstruct
+  private void postConstruct() {
+    LOGGER.info("Service is up");
+  }
 
-    @PreDestroy
-    private void preDestroy() {
-        LOGGER.info("Service will shutdown");
-    }
+  @PreDestroy
+  private void preDestroy() {
+    LOGGER.info("Service will shutdown");
+  }
 
-    public static void main(String... args) throws ParseException, IOException {
-        ServiceConfiguration.buildServiceConfiguration(args);
-        setUpLogger(getLogsPath());
-        SpringApplication.run(Application.class, args);
-    }
+  public static void main(String... args) throws ParseException, IOException {
+    ServiceConfiguration.buildServiceConfiguration(args);
+    setUpLogger(getLogsPath());
+    SpringApplication.run(Application.class, args);
+  }
 }

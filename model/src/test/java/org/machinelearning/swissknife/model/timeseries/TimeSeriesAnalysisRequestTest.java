@@ -9,14 +9,14 @@ import static org.machinelearning.swissknife.model.timeseries.TimeSeriesTest.bui
 
 class TimeSeriesAnalysisRequestTest {
 
-    @Test
-    public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
-        TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(buildTimeSeriesPassengers(), 19);
+  @Test
+  public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
+    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(buildTimeSeriesPassengers(), 19);
+    ObjectMapper objectMapper = new ObjectMapper();
 
-        ObjectMapper objectMapper = new ObjectMapper();
-        String serializedTimeSeries = objectMapper.writeValueAsString(timeSeriesAnalysisRequest);
-        TimeSeriesAnalysisRequest deserializedTimeSeriesAnalysisRequest = objectMapper.readValue(serializedTimeSeries, TimeSeriesAnalysisRequest.class);
+    String serializedTimeSeries = objectMapper.writeValueAsString(timeSeriesAnalysisRequest);
+    TimeSeriesAnalysisRequest deserializedTimeSeriesAnalysisRequest = objectMapper.readValue(serializedTimeSeries, TimeSeriesAnalysisRequest.class);
 
-        assertEquals(deserializedTimeSeriesAnalysisRequest, timeSeriesAnalysisRequest);
-    }
+    assertEquals(deserializedTimeSeriesAnalysisRequest, timeSeriesAnalysisRequest);
+  }
 }

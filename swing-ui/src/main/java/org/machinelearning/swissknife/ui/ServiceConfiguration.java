@@ -5,30 +5,30 @@ import org.machinelearning.swissknife.model.ServiceInformation;
 
 public class ServiceConfiguration {
 
-    private static ServiceConfiguration SERVICE_CONFIGURATION = null;
+  private static ServiceConfiguration SERVICE_CONFIGURATION = null;
 
-    private final ServiceInformation serviceInformation;
+  private final ServiceInformation serviceInformation;
 
-    private ServiceConfiguration(ServiceInformation serviceInformation) {
-        this.serviceInformation = serviceInformation;
-    }
+  private ServiceConfiguration(ServiceInformation serviceInformation) {
+    this.serviceInformation = serviceInformation;
+  }
 
-    public static ServiceInformation getServiceInformation() {
-        return SERVICE_CONFIGURATION.serviceInformation;
-    }
+  public static ServiceInformation getServiceInformation() {
+    return SERVICE_CONFIGURATION.serviceInformation;
+  }
 
-    static void buildServiceConfiguration(String... args) throws ParseException {
-        Option enginePortsOption = new Option("port", "service-port", true, "Port of the service");
-        enginePortsOption.setRequired(true);
+  static void buildServiceConfiguration(String... args) throws ParseException {
+    Option enginePortsOption = new Option("port", "service-port", true, "Port of the service");
+    enginePortsOption.setRequired(true);
 
-        CommandLineParser parser = new DefaultParser();
-        Options options = new Options();
-        options.addOption(enginePortsOption);
-        CommandLine cmd;
+    CommandLineParser parser = new DefaultParser();
+    Options options = new Options();
+    options.addOption(enginePortsOption);
+    CommandLine cmd;
 
-        cmd = parser.parse(options, args);
-        String port = cmd.getOptionValue("port");
+    cmd = parser.parse(options, args);
+    String port = cmd.getOptionValue("port");
 
-        SERVICE_CONFIGURATION = new ServiceConfiguration(new ServiceInformation("localhost", port));
-    }
+    SERVICE_CONFIGURATION = new ServiceConfiguration(new ServiceInformation("localhost", port));
+  }
 }

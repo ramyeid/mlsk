@@ -12,21 +12,21 @@ import static org.mockito.Mockito.when;
 
 class RealTimeSeries {
 
-    private static final TimeSeries EMPTY_TIME_SERIES = new TimeSeries(emptyList(), "", "", "");
+  private static final TimeSeries EMPTY_TIME_SERIES = new TimeSeries(emptyList(), "", "", "");
 
-    public static void main(String []args) {
-        JFrame mainFrame = new JFrame();
-        mainFrame.add(new TimeSeriesPanel(mockTimeSeriesAnalysisServiceClient()));
+  public static void main(String[] args) {
+    JFrame mainFrame = new JFrame();
+    mainFrame.add(new TimeSeriesPanel(mockTimeSeriesAnalysisServiceClient()));
 
-        mainFrame.setSize(900, 600);
-        mainFrame.setVisible(true);
-    }
+    mainFrame.setSize(900, 600);
+    mainFrame.setVisible(true);
+  }
 
-    private static TimeSeriesAnalysisServiceClient mockTimeSeriesAnalysisServiceClient() {
-        TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient = mock(TimeSeriesAnalysisServiceClient.class);
-        when(timeSeriesAnalysisServiceClient.forecast(any())).thenReturn(EMPTY_TIME_SERIES);
-        when(timeSeriesAnalysisServiceClient.predict(any())).thenReturn(EMPTY_TIME_SERIES);
+  private static TimeSeriesAnalysisServiceClient mockTimeSeriesAnalysisServiceClient() {
+    TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient = mock(TimeSeriesAnalysisServiceClient.class);
+    when(timeSeriesAnalysisServiceClient.forecast(any())).thenReturn(EMPTY_TIME_SERIES);
+    when(timeSeriesAnalysisServiceClient.predict(any())).thenReturn(EMPTY_TIME_SERIES);
 
-        return timeSeriesAnalysisServiceClient;
-    }
+    return timeSeriesAnalysisServiceClient;
+  }
 }

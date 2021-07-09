@@ -5,7 +5,7 @@ import org.machinelearning.swissknife.service.engine.client.timeseries.TimeSerie
 
 public class EngineClientFactory {
 
-    public TimeSeriesAnalysisEngineClient buildTimeSeriesAnalysisEngineClient(ServiceInformation serviceInformation) {
-        return new TimeSeriesAnalysisEngineClient(serviceInformation);
-    }
+  public TimeSeriesAnalysisEngineClient buildTimeSeriesAnalysisEngineClient(ServiceInformation serviceInformation) {
+    return new TimeSeriesAnalysisEngineClient(serviceInformation);
+  }
 }
