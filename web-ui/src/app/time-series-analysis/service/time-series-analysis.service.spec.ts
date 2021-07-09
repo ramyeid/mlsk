@@ -23,26 +23,6 @@ describe('TimeSeriesAnalysisService', () => {
 
   describe('Forecast', () => {
 
-    it('should handle error from http post forecast', () => {
-      const errorEvent = new ErrorEvent('Type', {
-        error : new Error('Error from backend'),
-        message : 'Error from backend Message'
-      });
-      const timeSeriesAnalysisRequest = Helper.buildTimeSeriesAnalysisRequest();
-
-      const actualResult$ = service.forecast(timeSeriesAnalysisRequest);
-
-      actualResult$.subscribe({
-        error: (err) => {
-          expect(err.message).toBe('An error occurred: Error from backend Message');
-        }
-      });
-      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
-      req.error(errorEvent);
-      expect(req.request.method).toBe('POST');
-      httpMock.verify();
-    });
-
     it('should handle error of type error event from http post forecast', () => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
