@@ -7,6 +7,7 @@ from utils.logger import get_logger
 from services.time_series_analysis_service import TimeSeriesAnalysisService
 from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
 from model.time_series.time_series import TimeSeries
+from exception.engine_computation_exception import EngineComputationException
 
 
 def forecast() -> str:
@@ -42,9 +43,10 @@ def forecast() -> str:
         return json.dumps(forecasted_time_series, cls=JsonComplexEncoder)
 
     except Exception as exception:
-        get_logger().error("Exception %s raised while forecasting: %s" % (type(exception).__name__, exception))
+        error_message = "Exception %s raised while forecasting: %s" % (type(exception).__name__, exception)
+        get_logger().error(error_message)
         get_logger().exception(exception)
-        raise exception
+        raise EngineComputationException(error_message)
 
     finally:
         get_logger().info("[End] forecast request")
@@ -79,10 +81,10 @@ def compute_accuracy_of_forecast() -> str:
         return str(time_series_analysis_service.compute_forecast_accuracy())
 
     except Exception as exception:
-        get_logger().error("Exception %s raised while computing forecast accuracy: %s" %
-                           (type(exception).__name__, exception))
+        error_message = "Exception %s raised while computing forecast accuracy: %s" % (type(exception).__name__, exception)
+        get_logger().error(error_message)
         get_logger().exception(exception)
-        raise exception
+        raise EngineComputationException(error_message)
 
     finally:
         get_logger().info("[End] compute forecast accuracy request")
@@ -121,9 +123,10 @@ def predict() -> str:
         return json.dumps(predicted_time_series, cls=JsonComplexEncoder)
 
     except Exception as exception:
-        get_logger().error("Exception %s raised while predicting: %s" % (type(exception).__name__, exception))
+        error_message = "Exception %s raised while predicting: %s" % (type(exception).__name__, exception)
+        get_logger().error(error_message)
         get_logger().exception(exception)
-        raise exception
+        raise EngineComputationException(error_message)
 
     finally:
         get_logger().info("[End] predict request")

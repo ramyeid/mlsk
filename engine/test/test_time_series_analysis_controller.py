@@ -30,7 +30,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         body_as_string = json.dumps(body)
 
         # When
-        response = test_app.post('/time-series-analysis/forecast', data=body_as_string, content_type='application/json')
+        response = test_app.post('/time-series-analysis/forecast', data=body_as_string,
+                                 content_type='application/json')
         actual_time_series = TimeSeries.from_json(json.loads(response.data))
 
         # Then
@@ -38,6 +39,24 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 123.0)
         expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
         assert expected_time_series == actual_time_series
+
+
+    def test_forecast_exception(self):
+        # Given
+        body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0)],
+                                    dateColumnName='Date',
+                                    valueColumnName='Passengers',
+                                    dateFormat='yyyy-MM-dd'),
+                    numberOfValues=2)
+        body_as_string = json.dumps(body)
+
+        # When
+        response = test_app.post('/time-series-analysis/forecast', data=body_as_string,
+                                 content_type='application/json')
+
+        # Then
+        assert b'"Exception ValueError raised while forecasting: ' \
+               b'time data \'1949-01\' does not match format \'%Y-%m-%d\'"\n' == response.data
 
 
     def test_compute_forecast_accuracy(self):
@@ -67,6 +86,23 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         assert 81.1 == actual_accuracy
 
 
+    def test_compute_forecast_accuracy_exception(self):
+        # Given
+        body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0)],
+                                    dateColumnName='Date',
+                                    valueColumnName='Passengers',
+                                    dateFormat='yyyy-MM-hh'),
+                    numberOfValues=1)
+        body_as_string = json.dumps(body)
+
+        # When
+        response = test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
+                                 content_type='application/json')
+        # Then
+        assert b'"Exception ValueError raised while computing forecast accuracy: ' \
+               b'time data \'1949-01\' does not match format \'%Y-%m-%H\'"\n' == response.data
+
+
     def test_predict(self):
         # Given
         body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0),
@@ -92,6 +128,24 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         time_series_row1 = TimeSeriesRow(datetime(1950, 4, 1), 124.0)
         expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
         assert expected_time_series == actual_time_series
+
+
+    def test_predict(self):
+        # Given
+        body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0)],
+                                    dateColumnName='Date',
+                                    valueColumnName='Passengers',
+                                    dateFormat='yyyy-MM-SS'),
+                    numberOfValues=2)
+        body_as_string = json.dumps(body)
+
+        # When
+        response = test_app.post('/time-series-analysis/predict', data=body_as_string,
+                                 content_type='application/json')
+
+        # Then
+        assert b'"Exception ValueError raised while predicting: ' \
+               b'time data \'1949-01\' does not match format \'%Y-%m-SS\'"\n' == response.data
 
 
 if __name__ == "__main__":

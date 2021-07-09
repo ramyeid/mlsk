@@ -34,7 +34,7 @@ export class TimeSeriesAnalysisService {
     if (err.error instanceof ErrorEvent) {
       errorMessage = `An error occurred: ${err.error.message}`;
     } else {
-      errorMessage = `Backend returned code ${err.status}: ${err.body?.error}`;
+      errorMessage = `Backend returned code ${err.status}: ${err.error.message}`;
     }
     return throwError(() => new Error(errorMessage));
   }

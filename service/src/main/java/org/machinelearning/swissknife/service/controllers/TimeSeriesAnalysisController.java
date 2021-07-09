@@ -4,6 +4,7 @@ import org.machinelearning.swissknife.TimeSeriesAnalysis;
 import org.machinelearning.swissknife.model.timeseries.TimeSeries;
 import org.machinelearning.swissknife.model.timeseries.TimeSeriesAnalysisRequest;
 import org.machinelearning.swissknife.service.Orchestrator;
+import org.machinelearning.swissknife.service.exceptions.TimeSeriesAnalysisServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class TimeSeriesAnalysisController implements TimeSeriesAnalysis {
             return orchestrator.runOnEngine(engine -> engine.forecast(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST);
         } catch (Exception exception) {
             LOGGER.error(String.format("Exception while forecasting: %s", exception.getMessage()), exception);
-            throw exception;
+            throw new TimeSeriesAnalysisServiceException(exception.getMessage());
         } finally {
             LOGGER.info("[End] forecast request");
         }
@@ -44,7 +45,7 @@ public class TimeSeriesAnalysisController implements TimeSeriesAnalysis {
             return orchestrator.runOnEngine(engine -> engine.forecastVsActual(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_VS_ACTUAL);
         } catch (Exception exception) {
             LOGGER.error(String.format("Exception while forecasting: %s", exception.getMessage()), exception);
-            throw exception;
+            throw new TimeSeriesAnalysisServiceException(exception.getMessage());
         } finally {
             LOGGER.info("[End] forecast vs actual request");
         }
@@ -57,7 +58,7 @@ public class TimeSeriesAnalysisController implements TimeSeriesAnalysis {
             return orchestrator.runOnEngine(engine -> engine.computeForecastAccuracy(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_ACCURACY);
         } catch (Exception exception) {
             LOGGER.error(String.format("Exception while computing forecast accuracy: %s", exception.getMessage()), exception);
-            throw exception;
+            throw new TimeSeriesAnalysisServiceException(exception.getMessage());
         } finally {
             LOGGER.info("[End] compute forecast accuracy request");
         }
@@ -70,7 +71,7 @@ public class TimeSeriesAnalysisController implements TimeSeriesAnalysis {
             return orchestrator.runOnEngine(engine -> engine.predict(timeSeriesAnalysisRequest), TIME_SERIES_PREDICT);
         } catch (Exception exception) {
             LOGGER.error(String.format("Exception while predicting: %s", exception.getMessage()), exception);
-            throw exception;
+            throw new TimeSeriesAnalysisServiceException(exception.getMessage());
         } finally {
             LOGGER.info("[End] predict request");
         }
