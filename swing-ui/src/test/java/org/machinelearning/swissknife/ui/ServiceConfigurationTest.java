@@ -10,13 +10,13 @@ import static org.machinelearning.swissknife.ui.ServiceConfiguration.getServiceI
 
 class ServiceConfigurationTest {
 
-    @Test
-    public void should_build_correct_service_configuration_given_parameters() throws ParseException {
-        String enginePorts = "6766";
+  @Test
+  public void should_build_correct_service_configuration_given_parameters() throws ParseException {
+    String enginePorts = "6766";
 
-        buildServiceConfiguration("", "--service-port", enginePorts);
+    buildServiceConfiguration("", "--service-port", enginePorts);
 
-        ServiceInformation expectedServiceInformation = new ServiceInformation("localhost", enginePorts);
-        assertEquals(expectedServiceInformation, getServiceInformation());
-    }
+    ServiceInformation expectedServiceInformation = new ServiceInformation("localhost", enginePorts);
+    assertEquals(expectedServiceInformation, getServiceInformation());
+  }
 }

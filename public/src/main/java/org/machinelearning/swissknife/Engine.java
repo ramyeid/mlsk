@@ -5,7 +5,7 @@ import org.machinelearning.swissknife.model.ServiceInformation;
 
 public interface Engine extends TimeSeriesAnalysis {
 
-    EngineState getState();
+  EngineState getState();
 
-    ServiceInformation getServiceInformation();
+  ServiceInformation getServiceInformation();
 }

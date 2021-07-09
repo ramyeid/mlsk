@@ -11,27 +11,27 @@ import static org.machinelearning.swissknife.ui.ServiceConfiguration.getServiceI
 
 public class TimeSeriesPanel extends JPanel {
 
-    private final JPanel plotPanel;
+  private final JPanel plotPanel;
 
-    public TimeSeriesPanel() {
-        this(new TimeSeriesAnalysisServiceClient(getServiceInformation()));
-    }
+  public TimeSeriesPanel() {
+    this(new TimeSeriesAnalysisServiceClient(getServiceInformation()));
+  }
 
-    @VisibleForTesting
-    public TimeSeriesPanel(TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient) {
-        this.plotPanel = new JPanel();
-        this.setLayout(new BorderLayout());
+  @VisibleForTesting
+  public TimeSeriesPanel(TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient) {
+    this.plotPanel = new JPanel();
+    this.setLayout(new BorderLayout());
 
-        TimeSeriesInputPanel timeSeriesInputPanel = new TimeSeriesInputPanel();
-        timeSeriesInputPanel.setActionListener(new TimeSeriesActionListener(timeSeriesInputPanel, timeSeriesAnalysisServiceClient, this::addTimeSeriesPlot));
-        this.add(timeSeriesInputPanel, BorderLayout.NORTH);
+    TimeSeriesInputPanel timeSeriesInputPanel = new TimeSeriesInputPanel();
+    timeSeriesInputPanel.setActionListener(new TimeSeriesActionListener(timeSeriesInputPanel, timeSeriesAnalysisServiceClient, this::addTimeSeriesPlot));
+    this.add(timeSeriesInputPanel, BorderLayout.NORTH);
 
-        this.add(plotPanel, BorderLayout.CENTER);
-    }
+    this.add(plotPanel, BorderLayout.CENTER);
+  }
 
-    private void addTimeSeriesPlot(TimeSeries initial, TimeSeries computed, String title) {
-        this.plotPanel.removeAll();
-        this.plotPanel.add(new TimeSeriesPlotPanel(initial, computed, title));
-        SwingUtilities.updateComponentTreeUI(this);
-    }
+  private void addTimeSeriesPlot(TimeSeries initial, TimeSeries computed, String title) {
+    this.plotPanel.removeAll();
+    this.plotPanel.add(new TimeSeriesPlotPanel(initial, computed, title));
+    SwingUtilities.updateComponentTreeUI(this);
+  }
 }

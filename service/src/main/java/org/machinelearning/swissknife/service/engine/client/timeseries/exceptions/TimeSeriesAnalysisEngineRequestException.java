@@ -2,7 +2,7 @@ package org.machinelearning.swissknife.service.engine.client.timeseries.exceptio
 
 public class TimeSeriesAnalysisEngineRequestException extends RuntimeException {
 
-    public TimeSeriesAnalysisEngineRequestException(String message, Exception cause) {
-        super(message, cause);
-    }
+  public TimeSeriesAnalysisEngineRequestException(String message, Exception cause) {
+    super(message, cause);
+  }
 }
