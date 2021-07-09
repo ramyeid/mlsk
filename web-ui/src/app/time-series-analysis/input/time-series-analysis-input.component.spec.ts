@@ -10,6 +10,7 @@ import { TimeSeriesRequestBuilderService } from '../request-builder/time-series-
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
+import { Constants } from '../utils/constants';
 
 describe('TimeSeriesAnalysisInputComponent', () => {
 
@@ -48,113 +49,112 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
-    it('should disable button and set form as invalid if dateColumnName form is empty', fakeAsync(() => {
+    it('should disable button and set form as invalid if date column name form is empty', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
 
-      Helper.setValueAndMarkAsTouched(component, 'dateColumnName', '');
+      Helper.setValueAndMarkAsTouched(component, Constants.DATE_COLUMN_NAME_FORM, '');
       Helper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
-        dateColumnName: 'Date column name is required. ',
-        valueColumnName: '', dateFormat: '',
-        csvLocation: '', numberOfValues: ''
+        [ Constants.DATE_COLUMN_NAME_FORM ]: 'Date column name is required. ',
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
-    it('should disable button and set form as invalid if valueColumnName form is empty', fakeAsync(() => {
+    it('should disable button and set form as invalid if value column name form is empty', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
 
-      Helper.setValueAndMarkAsTouched(component, 'valueColumnName', '');
+      Helper.setValueAndMarkAsTouched(component, Constants.VALUE_COLUMN_NAME_FORM, '');
       Helper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
-        dateColumnName: '',
-        valueColumnName: 'Value column name is required. ', dateFormat: '',
-        csvLocation: '', numberOfValues: ''
+        [ Constants.DATE_COLUMN_NAME_FORM ]: '',
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: 'Value column name is required. ', [Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
-    it('should disable button and set form as invalid if dateFormat form is empty', fakeAsync(() => {
+    it('should disable button and set form as invalid if date format form is empty', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
 
-      Helper.setValueAndMarkAsTouched(component, 'dateFormat', '');
+      Helper.setValueAndMarkAsTouched(component, Constants.DATE_FORMAT_FORM, '');
       Helper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
-        dateColumnName: '',
-        valueColumnName: '', dateFormat: 'Date format is required. ',
-        csvLocation: '', numberOfValues: ''
+        [ Constants.DATE_COLUMN_NAME_FORM ]: '',
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: 'Date format is required. ',
+        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
-    it('should disable button and set form as invalid if dateformat form is invalid', fakeAsync(() => {
+    it('should disable button and set form as invalid if date format form is invalid', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
 
-      Helper.setValueAndMarkAsTouched(component, 'dateFormat', '222');
+      Helper.setValueAndMarkAsTouched(component, Constants.DATE_FORMAT_FORM, '222');
       Helper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
-        dateColumnName: '',
-        valueColumnName: '', dateFormat: 'Date format should follow the date format pattern. ',
-        csvLocation: '', numberOfValues: ''
+        [ Constants.DATE_COLUMN_NAME_FORM ]: '',
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: 'Date format should follow the date format pattern. ',
+        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
-    it('should disable button and set form as invalid if numberOfValues form is empty', fakeAsync(() => {
+    it('should disable button and set form as invalid if number of values form is empty', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
 
-      Helper.setValueAndMarkAsTouched(component, 'numberOfValues', '');
+      Helper.setValueAndMarkAsTouched(component, Constants.NUMBER_OF_VALUES_FORM, '');
       Helper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
-        dateColumnName: '',
-        valueColumnName: '', dateFormat: '',
-        csvLocation: '', numberOfValues: 'Number of values is required. '
+        [ Constants.DATE_COLUMN_NAME_FORM ]: '',
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: 'Number of values is required. '
       };
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
-    it('should disable button and set form as invalid if numberOfValues form is invalid', fakeAsync(() => {
+    it('should disable button and set form as invalid if number of values form is invalid', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
 
-      Helper.setValueAndMarkAsTouched(component, 'numberOfValues', '-1');
+      Helper.setValueAndMarkAsTouched(component, Constants.NUMBER_OF_VALUES_FORM, '-1');
       Helper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
-        dateColumnName: '',
-        valueColumnName: '', dateFormat: '',
-        csvLocation: '', numberOfValues: 'Number of values should be a positive number. '
+        [ Constants.DATE_COLUMN_NAME_FORM ]: '',
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: 'Number of values should be a positive number. '
       };
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
-    it('should disable button and set form as invalid if csvLocation form is empty', fakeAsync(() => {
+    it('should disable button and set form as invalid if csv location form is empty', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
 
-      Helper.setValueAndMarkAsTouched(component, 'csvLocation', '');
+      Helper.setValueAndMarkAsTouched(component, Constants.CSV_LOCATION_FORM, '');
       Helper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
-        dateColumnName: '',
-        valueColumnName: '', dateFormat: '',
-        csvLocation: 'CSV Location is required. ', numberOfValues: ''
+        [ Constants.DATE_COLUMN_NAME_FORM ]: '',
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: 'CSV Location is required. ', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       Helper.expectInvalidForm(component, button, expectedErrorMessagePerInput);
     }));
 
     it('should enable button and set form as value if all forms are valid', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
-      const csvLocationForm = component.settingsForm.controls[Helper.CSV_LOCATION];
 
-      Helper.setValueAndMarkAsTouched(component, 'dateColumnName', 'Date');
-      Helper.setValueAndMarkAsTouched(component, 'valueColumnName', 'Passengers');
-      Helper.setValueAndMarkAsTouched(component, 'dateFormat', 'yyyy/MM');
-      Helper.setValueAndMarkAsTouched(component, 'numberOfValues', '2');
-      csvLocationForm.clearValidators(); // we can't set a value for file input.
+      Helper.setValueAndMarkAsTouched(component, Constants.DATE_COLUMN_NAME_FORM, 'Date');
+      Helper.setValueAndMarkAsTouched(component, Constants.VALUE_COLUMN_NAME_FORM, 'Passengers');
+      Helper.setValueAndMarkAsTouched(component, Constants.DATE_FORMAT_FORM, 'yyyy/MM');
+      Helper.setValueAndMarkAsTouched(component, Constants.NUMBER_OF_VALUES_FORM, '2');
+      component.settingsForm.controls[Constants.CSV_LOCATION_FORM].clearValidators(); // we can't set a value for file input.
       Helper.detectChangesAndTick(fixture);
 
       Helper.expectValidForm(component, button);
@@ -164,15 +164,9 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
   describe('Forecast Submission', () => {
 
-    it('should call service on and output result on forecast success', fakeAsync(() => {
+    it('should call service and output result on forecast success', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
-      const csvLocationForm = component.settingsForm.controls[Helper.CSV_LOCATION];
-      Helper.setValueAndMarkAsTouched(component, 'dateColumnName', 'Date');
-      Helper.setValueAndMarkAsTouched(component, 'valueColumnName', 'Passengers');
-      Helper.setValueAndMarkAsTouched(component, 'dateFormat', 'yyyy/MM');
-      Helper.setValueAndMarkAsTouched(component, 'numberOfValues', '2');
-      csvLocationForm.clearValidators(); // we can't set a value for file input.
-      Helper.detectChangesAndTick(fixture);
+      Helper.prepareValidForm(fixture, component);
       mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(Helper.buildTimeSeriesAnalysisRequestObservable());
       mockService.forecast.and.returnValue(Helper.buildTimeSeriesObservable());
       let actualTimeSeries: TimeSeries = new TimeSeries([], 'tmp', 'tmp', 'tmp');
@@ -184,36 +178,25 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       expect(mockRequestBuilderService.buildTimeSeriesAnalysisRequest).toHaveBeenCalled();
       expect(mockService.forecast).toHaveBeenCalled();
       expect(actualTimeSeries).toEqual(Helper.buildTimeSeries());
+      expect(component.errorMessage).toEqual('');
     }));
 
-    it('should call service on and set errorMessage on build time series analysis request failure', fakeAsync(() => {
+    it('should call service on and set error message on build time series analysis request failure', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
-      const csvLocationForm = component.settingsForm.controls[Helper.CSV_LOCATION];
-      Helper.setValueAndMarkAsTouched(component, 'dateColumnName', 'Date');
-      Helper.setValueAndMarkAsTouched(component, 'valueColumnName', 'Passengers');
-      Helper.setValueAndMarkAsTouched(component, 'dateFormat', 'yyyy/MM');
-      Helper.setValueAndMarkAsTouched(component, 'numberOfValues', '2');
-      csvLocationForm.clearValidators(); // we can't set a value for file input.
-      Helper.detectChangesAndTick(fixture);
+      Helper.prepareValidForm(fixture, component);
       mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(Helper.buildTimeSeriesAnalysisRequestErrorObservable());
 
       component.submit();
 
       Helper.expectValidForm(component, button);
       expect(mockRequestBuilderService.buildTimeSeriesAnalysisRequest).toHaveBeenCalled();
-      expect(mockService.forecast).toHaveBeenCalledTimes(0);
+      expect(mockService.forecast).not.toHaveBeenCalled();
       expect(component.errorMessage).toEqual('error from request builder');
     }));
 
-    it('should call service and set errorMessage on forecast failure', fakeAsync(() => {
+    it('should call service and set error message on forecast failure', fakeAsync(() => {
       const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
-      const csvLocationForm = component.settingsForm.controls[Helper.CSV_LOCATION];
-      Helper.setValueAndMarkAsTouched(component, 'dateColumnName', 'Date');
-      Helper.setValueAndMarkAsTouched(component, 'valueColumnName', 'Passengers');
-      Helper.setValueAndMarkAsTouched(component, 'dateFormat', 'yyyy/MM');
-      Helper.setValueAndMarkAsTouched(component, 'numberOfValues', '2');
-      csvLocationForm.clearValidators(); // we can't set a value for file input.
-      Helper.detectChangesAndTick(fixture);
+      Helper.prepareValidForm(fixture, component);
       mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(Helper.buildTimeSeriesAnalysisRequestObservable());
       mockService.forecast.and.returnValue(Helper.buildTimeSeriesErrorObservable());
 
@@ -225,6 +208,22 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       expect(component.errorMessage).toEqual('error from service');
     }));
 
+    it('should reset error message on forecast after first forecast fail', fakeAsync(() => {
+      const button: DebugElement = fixture.debugElement.query(By.css('#SaveButton'));
+      Helper.prepareValidForm(fixture, component);
+      mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(Helper.buildTimeSeriesAnalysisRequestErrorObservable());
+      component.submit();
+      mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(Helper.buildTimeSeriesAnalysisRequestObservable());
+      mockService.forecast.and.returnValue(Helper.buildTimeSeriesObservable());
+
+      component.submit();
+
+      Helper.expectValidForm(component, button);
+      expect(mockRequestBuilderService.buildTimeSeriesAnalysisRequest).toHaveBeenCalledTimes(2);
+      expect(mockService.forecast).toHaveBeenCalledTimes(1);
+      expect(component.errorMessage).toEqual('');
+    }));
+
   });
 
 });
@@ -233,7 +232,6 @@ class Helper {
 
   static readonly DISABLED = 'disabled';
   static readonly TITLE = 'title';
-  static readonly CSV_LOCATION = 'csvLocation';
 
   static setValueAndMarkAsTouched(component: TimeSeriesAnalysisInputComponent, formName: string, value: string): void {
     const form = component.settingsForm.controls[formName];
@@ -247,11 +245,20 @@ class Helper {
     tick(1000);
   }
 
+  static prepareValidForm(fixture: ComponentFixture<TimeSeriesAnalysisInputComponent>, component: TimeSeriesAnalysisInputComponent): void {
+    Helper.setValueAndMarkAsTouched(component, Constants.DATE_COLUMN_NAME_FORM, 'Date');
+    Helper.setValueAndMarkAsTouched(component, Constants.VALUE_COLUMN_NAME_FORM, 'Passengers');
+    Helper.setValueAndMarkAsTouched(component, Constants.DATE_FORMAT_FORM, 'yyyy/MM');
+    Helper.setValueAndMarkAsTouched(component, Constants.NUMBER_OF_VALUES_FORM, '2');
+    component.settingsForm.controls[Constants.CSV_LOCATION_FORM].clearValidators(); // we can't set a value for file input.
+    Helper.detectChangesAndTick(fixture);
+  }
+
   static expectValidForm(component: TimeSeriesAnalysisInputComponent, button: DebugElement): void {
     const expectedErrorMessagePerInput = {
-      dateColumnName: '',
-      valueColumnName: '', dateFormat: '',
-      csvLocation: '', numberOfValues: ''
+      [ Constants.DATE_COLUMN_NAME_FORM ]: '',
+      [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
+      [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
     };
     expect(component.errorMessagePerInput).toEqual(expectedErrorMessagePerInput);
     expect(button.properties[Helper.DISABLED]).toBeFalse();

@@ -33,7 +33,7 @@ describe('TimeSeriesRequestBuilderService', () => {
     });
   });
 
-  it('should map result from csv reader service to Time Series Analysis Request', (done: DoneFn) => {
+  it('should map result from csv reader service to time series analysis request', (done: DoneFn) => {
     const readCsvResult$ = of([ { Date: '1.2', Passengers: '120' },
                                 { Date: '1.3', Passengers: '130' },
                                 { Date: '1.4', Passengers: '140'}]);

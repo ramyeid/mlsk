@@ -5,10 +5,11 @@ import { debounceTime, switchMap } from 'rxjs/operators';
 
 import { DateFormatValidator } from '../../shared/date-format.validator';
 import { ValidationMessageGenerator } from './../../shared/validation-message-generator';
-import { TimeSeriesAnalysisValidationMessages } from '../validation/time-series-analysis-validation-messages';
+import { TimeSeriesAnalysisValidationMessages } from '../utils/time-series-analysis-validation-messages';
 import { TimeSeriesRequestBuilderService } from '../request-builder/time-series-request-builder.service';
 import { TimeSeriesAnalysisService } from '../service/time-series-analysis.service';
 import { TimeSeries } from '../model/time-series';
+import { Constants } from '../utils/constants';
 
 @Component({
   selector: 'app-time-series-analysis-input',
@@ -49,11 +50,12 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
   }
 
   submit(): void {
+    this.errorMessage = '';
     this.isWaitingForResult = true;
-    const dateColumnName: string = this.settingsForm.get('dateColumnName')?.value;
-    const valueColumnName: string = this.settingsForm.get('valueColumnName')?.value;
-    const dateFormat: string = this.settingsForm.get('dateFormat')?.value;
-    const numberOfValues: number = this.settingsForm.get('numberOfValues')?.value;
+    const dateColumnName: string = this.settingsForm.get(Constants.DATE_COLUMN_NAME_FORM)?.value;
+    const valueColumnName: string = this.settingsForm.get(Constants.VALUE_COLUMN_NAME_FORM)?.value;
+    const dateFormat: string = this.settingsForm.get(Constants.DATE_FORMAT_FORM)?.value;
+    const numberOfValues: number = this.settingsForm.get(Constants.NUMBER_OF_VALUES_FORM)?.value;
 
     this.requestBuilder
           .buildTimeSeriesAnalysisRequest(this.csvFile, dateColumnName, valueColumnName, dateFormat, numberOfValues)
@@ -72,11 +74,11 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
   private buildForm(): void {
     this.settingsForm = this.formBuilder.group({
-      dateColumnName: ['', [Validators.required]],
-      valueColumnName: ['', [Validators.required]],
-      dateFormat: ['', [Validators.required, DateFormatValidator.validateDateFormat]],
-      csvLocation: ['', [Validators.required]],
-      numberOfValues: ['', [Validators.required, Validators.min(1)]]
+      [ Constants.DATE_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
+      [ Constants.VALUE_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
+      [ Constants.DATE_FORMAT_FORM ]: [ '', [ Validators.required, DateFormatValidator.validateDateFormat ] ],
+      [ Constants.CSV_LOCATION_FORM ]: [ '', [ Validators.required ] ],
+      [ Constants.NUMBER_OF_VALUES_FORM ]: [ '', [ Validators.required, Validators.min(1) ] ]
     });
   }
 

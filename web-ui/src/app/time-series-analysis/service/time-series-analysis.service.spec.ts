@@ -43,7 +43,7 @@ describe('TimeSeriesAnalysisService', () => {
       httpMock.verify();
     });
 
-    it('should handle error of type ErrorEvent from http post forecast', () => {
+    it('should handle error of type error event from http post forecast', () => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
