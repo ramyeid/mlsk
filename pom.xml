@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>machine-learning-swissknife</groupId>
-    <artifactId>machine-learning-swissknife</artifactId>
+    <artifactId>mlsk</artifactId>
     <packaging>pom</packaging>
     <version>1.0</version>
 
@@ -14,13 +14,13 @@
         <maven.compiler.source>11</maven.compiler.source>
         <spring.boot.version>2.5.2</spring.boot.version>
         <spring.version>5.2.8.RELEASE</spring.version>
+        <junit.version>5.8.0-M1</junit.version>
+        <mockito.version>3.5.2</mockito.version>
     </properties>
 
     <modules>
-        <module>service</module>
-        <module>model</module>
         <module>swing-ui</module>
-        <module>public</module>
+        <module>service</module>
         <module>lib</module>
     </modules>
 

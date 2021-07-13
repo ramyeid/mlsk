@@ -27,10 +27,10 @@ if __name__ == "__main__":
         print(" and logs path: {}".format(logs_path))
         print(" and engine path: {}".format(engine_path))
 
-        os.system("java -Dserver.port={} -jar {}service.jar "
+        os.system("java -Dserver.port={} -jar {}{} "
                   "--engine-ports {} "
                   "--logs-path {} "
                   "--engine-path {} "
-                  .format(service_port, const.COMPONENTS_DIRECTORY, engine_ports, logs_path, engine_path))
+                  .format(service_port, const.COMPONENTS_DIRECTORY, const.SERVICE_JAR, engine_ports, logs_path, engine_path))
     else:
         print("ERROR: Please make sure configuration file: {} exists".format(const.CONFIGURATION_FILE))

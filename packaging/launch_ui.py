@@ -12,8 +12,9 @@ if __name__ == "__main__":
 
         print("launching ui ")
         print(" with service port: {}".format(service_port))
-        os.system("java -jar {}ui-jar-with-dependencies.jar "
-                  "--service-port {}".format(const.COMPONENTS_DIRECTORY, service_port))
+        os.system("java -jar {}{} "
+                  "--service-port {}"
+                  .format(const.COMPONENTS_DIRECTORY, const.UI_JAR, service_port))
 
     else:
         print("ERROR: Please make sure configuration file: {} exists".format(const.CONFIGURATION_FILE))
