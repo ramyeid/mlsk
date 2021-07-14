@@ -1,10 +1,11 @@
 package org.mlsk.service.model.timeseries;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static com.google.common.collect.Lists.newArrayList;
 
 public class TimeSeries {
 
@@ -21,7 +22,7 @@ public class TimeSeries {
   }
 
   public TimeSeries() {
-    this(new ArrayList<>(), "", "", "");
+    this(newArrayList(), "", "", "");
   }
 
   public static TimeSeries concat(TimeSeries firstTimeSeries, TimeSeries secondTimeSeries) {

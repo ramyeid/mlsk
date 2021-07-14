@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
-export type ValuePerColumnPerLine = { [key: string]: string }[];
 export type ValuePerColumn = { [key: string]: string };
+export type ValuePerColumnPerLine = ValuePerColumn[];
 
 @Injectable({
   providedIn: 'root'
@@ -11,8 +11,6 @@ export class CsvReaderService {
 
   private static readonly SEPERATOR: string = ',';
   private static readonly END_LINE: string = '\n';
-
-  constructor() { }
 
   readCsv(file: File, columns: string[]): Observable<ValuePerColumnPerLine> {
 

@@ -13,7 +13,7 @@ describe('AppComponent', () => {
     fixture = TestBed.createComponent(AppComponent);
   });
 
-  it(`should have as title 'machine-learning-swissknife'`, () => {
+  it('should have as machine-learning-swissknife title', () => {
     fixture = TestBed.createComponent(AppComponent);
 
     const actualTitle = fixture.componentInstance.title;

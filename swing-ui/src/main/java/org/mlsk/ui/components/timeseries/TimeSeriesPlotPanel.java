@@ -8,9 +8,9 @@ import org.mlsk.service.model.timeseries.TimeSeriesRow;
 
 import javax.swing.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static org.mlsk.ui.components.utils.ErrorPopup.tryPopup;
 
 public class TimeSeriesPlotPanel extends JPanel {
@@ -48,7 +48,7 @@ public class TimeSeriesPlotPanel extends JPanel {
 
   private void linkComputedToInitialTimeSeries(TimeSeries initial, TimeSeries computed) {
     // In order not to have a blank between the last element in initial and the first element in computed.
-    List<RegularTimePeriod> timePeriodsNotInComputed = new ArrayList<>(computed.getTimePeriodsUniqueToOtherSeries(initial));
+    List<RegularTimePeriod> timePeriodsNotInComputed = newArrayList(computed.getTimePeriodsUniqueToOtherSeries(initial));
     RegularTimePeriod lastTimePeriodNotInComputed = timePeriodsNotInComputed.get(timePeriodsNotInComputed.size() - 1);
     TimeSeriesDataItem lastDataItemNotInComputed = initial.getDataItem(lastTimePeriodNotInComputed);
     computed.add(lastDataItemNotInComputed);

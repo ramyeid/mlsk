@@ -45,6 +45,22 @@ We worked hard to make machine learning easy and accessible for everyone. Packag
   lsof -i tcp:6765 
   ```
 
+* Date Formatter
+  * Java
+    ```text
+    https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
+    => "Patterns for Formatting and Parsing"
+    ```
+  * Python
+    ```text
+    https://docs.python.org/3/library/datetime.html
+    => "strftime() and strptime() Format Codes"
+    ```
+  * Angular
+    ```text
+    https://angular.io/api/common/DatePipe
+    => "Custom format options"
+    ```
 
 ## Contributors
 

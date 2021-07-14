@@ -10,20 +10,20 @@ export class ValidationMessages {
 
   has(formName: string): boolean {
     return this.validationMessages
-            .find(validationMessage => validationMessage.formName === formName) !== undefined;
+      .find(validationMessage => validationMessage.formName === formName) !== undefined;
   }
 
   hasError(formName: string, error: string): boolean {
     return this.validationMessages
-            .find(validationMessage =>
-                validationMessage.formName === formName && validationMessage.messagePerError[error] !== undefined
-            ) !== undefined;
+      .find(validationMessage =>
+        validationMessage.formName === formName && validationMessage.messagePerError[error] !== undefined
+      ) !== undefined;
   }
 
   getError(formName: string, error: string): string | undefined {
     return this.validationMessages
       .find(validationMessage =>
-          validationMessage.formName === formName && validationMessage.messagePerError[error] !== undefined
+        validationMessage.formName === formName && validationMessage.messagePerError[error] !== undefined
       )?.messagePerError[error];
   }
 }

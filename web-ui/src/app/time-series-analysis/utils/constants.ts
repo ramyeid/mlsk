@@ -5,6 +5,9 @@ export class Constants {
   static readonly DATE_FORMAT_FORM: string = 'dateFormat';
   static readonly CSV_LOCATION_FORM: string = 'csvLocation';
   static readonly NUMBER_OF_VALUES_FORM: string = 'numberOfValues';
+  static readonly PREDICT_BTN: string = 'predictBtn';
+  static readonly FORECAST_BTN: string = 'forecastBtn';
+  static readonly FORECAST_VS_ACTUAL_BTN: string = 'forecastVsActualBtn';
 
   private constructor() { }
 

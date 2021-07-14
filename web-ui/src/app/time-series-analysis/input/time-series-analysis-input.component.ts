@@ -1,15 +1,17 @@
 import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-
+import { Observable } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
 
-import { DateFormatValidator } from '../../shared/date-format.validator';
-import { ValidationMessageGenerator } from './../../shared/validation-message-generator';
+import { DateFormatValidator } from 'src/app/shared/date-format.validator';
+import { ValidationMessageGenerator } from 'src/app/shared/validation-message-generator';
 import { TimeSeriesAnalysisValidationMessages } from '../utils/time-series-analysis-validation-messages';
 import { TimeSeriesRequestBuilderService } from '../request-builder/time-series-request-builder.service';
 import { TimeSeriesAnalysisService } from '../service/time-series-analysis.service';
 import { TimeSeries } from '../model/time-series';
 import { Constants } from '../utils/constants';
+import { TimeSeriesType } from '../model/time-series-type';
+import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 
 @Component({
   selector: 'app-time-series-analysis-input',
@@ -18,7 +20,8 @@ import { Constants } from '../utils/constants';
 })
 export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
-  @Output() timeSeriesResultOutput = new EventEmitter<TimeSeries>();
+  @Output() timeSeriesResultEmitter = new EventEmitter<[TimeSeries, TimeSeriesType]>();
+  @Output() newRequestEmitter = new EventEmitter<undefined>();
   private readonly formBuilder: FormBuilder;
   private readonly requestBuilder: TimeSeriesRequestBuilderService;
   private readonly service: TimeSeriesAnalysisService;
@@ -49,27 +52,51 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     });
   }
 
-  submit(): void {
-    this.errorMessage = '';
-    this.isWaitingForResult = true;
+  predict(): void {
+    this.postNewRequest(request => this.service.predict(request));
+  }
+
+  forecast(): void {
+    this.postNewRequest(request => this.service.forecast(request));
+  }
+
+  forecastVsActual(): void {
+    this.postNewRequest(request => this.service.forecastVsActual(request));
+  }
+
+  onUpload(event: Event): void {
+    const input = event.target as HTMLInputElement;
+
+    if (input.files?.length) {
+      this.csvFile = input.files[0];
+    }
+  }
+
+  private postNewRequest(serviceCall: (request: TimeSeriesAnalysisRequest) => Observable<TimeSeries>): void {
     const dateColumnName: string = this.settingsForm.get(Constants.DATE_COLUMN_NAME_FORM)?.value;
     const valueColumnName: string = this.settingsForm.get(Constants.VALUE_COLUMN_NAME_FORM)?.value;
     const dateFormat: string = this.settingsForm.get(Constants.DATE_FORMAT_FORM)?.value;
     const numberOfValues: number = this.settingsForm.get(Constants.NUMBER_OF_VALUES_FORM)?.value;
 
+    this.onNewRequest();
+
     this.requestBuilder
-          .buildTimeSeriesAnalysisRequest(this.csvFile, dateColumnName, valueColumnName, dateFormat, numberOfValues)
-          .pipe(
-            switchMap(output => this.service.forecast(output))
-          ).subscribe({
-            next: (timeSeries: TimeSeries) => this.onSuccess(timeSeries),
-            error: err => this.onError(err)
-          });
+      .buildTimeSeriesAnalysisRequest(this.csvFile, dateColumnName, valueColumnName, dateFormat, numberOfValues)
+      .pipe(
+        switchMap(request => {
+          this.timeSeriesResultEmitter.emit([request.timeSeries, TimeSeriesType.REQUEST]);
+          return serviceCall(request);
+        })
+      ).subscribe({
+        next: (timeSeries: TimeSeries) => this.onSuccess(timeSeries),
+        error: err => this.onError(err)
+      });
   }
 
-  onUpload(event: any): void {
-    const files: File[] = event.target.files;
-    this.csvFile = files[0];
+  private onNewRequest(): void {
+    this.errorMessage = '';
+    this.newRequestEmitter.emit();
+    this.isWaitingForResult = true;
   }
 
   private buildForm(): void {
@@ -83,8 +110,7 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
   }
 
   private onSuccess(timeSeriesResult: TimeSeries): void {
-    this.timeSeriesResultOutput.emit(timeSeriesResult);
-    console.log(`output: ${JSON.stringify(timeSeriesResult)}`);
+    this.timeSeriesResultEmitter.emit([timeSeriesResult, TimeSeriesType.RESULT]);
     this.isWaitingForResult = false;
   }
 

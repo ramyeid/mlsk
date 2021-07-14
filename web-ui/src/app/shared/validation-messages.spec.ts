@@ -2,6 +2,7 @@ import { ValidationMessages } from './validation-messages';
 
 describe('ValidationMessages', () => {
 
+
   describe('push', () => {
 
     it('should not add form if already exists', () => {
@@ -16,6 +17,7 @@ describe('ValidationMessages', () => {
     });
 
   });
+
 
   describe('getError', () => {
 
@@ -72,6 +74,7 @@ describe('ValidationMessages', () => {
 
   });
 
+
   describe('has', () => {
 
     it('should return true if contains form', () => {
@@ -95,6 +98,7 @@ describe('ValidationMessages', () => {
     });
 
   });
+
 
   describe('hasError', () => {
 

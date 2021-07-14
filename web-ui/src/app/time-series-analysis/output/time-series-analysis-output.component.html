@@ -1,1 +1,16 @@
-<p>time-series-analysis-output works!</p>
+<div class="chart-col center">
+  <ngx-charts-line-chart *ngIf="shouldDisplay && chartOptions"
+        [view]="chartOptions.view"
+        [scheme]="chartOptions.scheme"
+        [results]="chartLines"
+        [xAxis]="chartOptions.showXAxis"
+        [yAxis]="chartOptions.showYAxis"
+        [legend]="chartOptions.showLegend"
+        [showXAxisLabel]="chartOptions.showXAxisLabel"
+        [showYAxisLabel]="chartOptions.showYAxisLabel"
+        [xAxisLabel]="chartOptions.xAxisLabel"
+        [yAxisLabel]="chartOptions.yAxisLabel"
+        [autoScale]="chartOptions.autoScale"
+        [timeline]="chartOptions.timeline">
+  </ngx-charts-line-chart>
+</div>

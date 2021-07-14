@@ -1,8 +1,9 @@
 import { TimeSeries } from './time-series';
 
 export class TimeSeriesAnalysisRequest {
-  private readonly numberOfValues: number;
-  private readonly timeSeries: TimeSeries;
+
+  readonly numberOfValues: number;
+  readonly timeSeries: TimeSeries;
 
   constructor(numberOfValues: number, timeSeries: TimeSeries) {
     this.numberOfValues = numberOfValues;

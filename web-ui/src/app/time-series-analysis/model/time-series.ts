@@ -1,10 +1,11 @@
 import { TimeSeriesRow } from './time-series-row';
 
 export class TimeSeries {
-  private readonly rows: TimeSeriesRow[];
-  private readonly dateColumnName: string;
-  private readonly valueColumnName: string;
-  private readonly dateFormat: string;
+
+  readonly rows: TimeSeriesRow[];
+  readonly dateColumnName: string;
+  readonly valueColumnName: string;
+  readonly dateFormat: string;
 
   constructor(rows: TimeSeriesRow[], dateColumnName: string, valueColumnName: string, dateFormat: string) {
     this.rows = rows;

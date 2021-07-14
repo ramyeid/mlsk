@@ -8,6 +8,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
+import { NgxChartsModule } from '@swimlane/ngx-charts';
 
 @NgModule({
   imports: [
@@ -19,9 +20,10 @@ import { CommonModule } from '@angular/common';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatIconModule,
-    CommonModule
-   ],
-   exports: [
+    CommonModule,
+    NgxChartsModule
+  ],
+  exports: [
     ReactiveFormsModule,
     MatToolbarModule,
     MatButtonModule,
@@ -30,7 +32,8 @@ import { CommonModule } from '@angular/common';
     MatProgressSpinnerModule,
     MatTooltipModule,
     MatIconModule,
-    CommonModule
-   ]
+    CommonModule,
+    NgxChartsModule
+  ]
 })
 export class SharedModule { }
