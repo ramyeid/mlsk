@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
@@ -12,9 +12,6 @@ import { TimeSeries } from '../model/time-series';
 export class TimeSeriesAnalysisService {
 
   private static readonly BASE_URL = 'http://localhost:6766/time-series-analysis';
-  // public static final String FORECAST_VS_ACTUAL_URL = '/time-series-analysis/forecast-vs-actual';
-  // public static final String FORECAST_ACCURACY_URL = '/time-series-analysis/forecast-accuracy';
-  // public static final String PREDICATE_URL = '/time-series-analysis/predict';
 
   private readonly httpClient: HttpClient;
 
@@ -23,20 +20,29 @@ export class TimeSeriesAnalysisService {
   }
 
   forecast(body: TimeSeriesAnalysisRequest): Observable<TimeSeries> {
-    return this.httpClient.post<TimeSeries>(`${TimeSeriesAnalysisService.BASE_URL}/forecast`, body)
-        .pipe(
-          catchError(this.handleError)
-        );
+    return this.postAndCatchError('forecast', body);
   }
 
-  private handleError(err: any): Observable<never> {
-    let errorMessage: string;
-    if (err.error instanceof ErrorEvent) {
-      errorMessage = `An error occurred: ${err.error.message}`;
-    } else {
-      errorMessage = `Backend returned code ${err.status}: ${err.error.message}`;
+  predict(body: TimeSeriesAnalysisRequest): Observable<TimeSeries> {
+    return this.postAndCatchError('predict', body);
+  }
+
+  forecastVsActual(body: TimeSeriesAnalysisRequest): Observable<TimeSeries> {
+    return this.postAndCatchError('forecast-vs-actual', body);
+  }
+
+  private postAndCatchError(resource: string, body: TimeSeriesAnalysisRequest): Observable<TimeSeries> {
+    return this.httpClient.post<TimeSeries>(`${TimeSeriesAnalysisService.BASE_URL}/${resource}`, body)
+      .pipe(
+        catchError(this.handleError)
+      );
+  }
+
+  private handleError(err: HttpErrorResponse): Observable<never> {
+    let message = 'Unable to call Service';
+    if (err.error.message) {
+      message = `Error while calling Service; code ${err.status}: ${err.error.message}`;
     }
-    return throwError(() => new Error(errorMessage));
+    return throwError(new Error(message));
   }
-
 }

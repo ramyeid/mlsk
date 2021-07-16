@@ -41,6 +41,13 @@ ng e2e
 ng lint
 ```
 
+#### Rules
+Rules should be added to *.eslintrc*
+> Rules can be found here: https://eslint.org/docs/rules/
+
+> Tutorial for ESLint can be found: https://khalilstemmler.com/blogs/typescript/eslint-for-typescript/
+
+> List of other configs and plugins: https://github.com/dustinspecker/awesome-eslint
 ### Launch the Web ui engine
 
 To launch the web ui we need to build and open the index.html this is automated using the script under packaging

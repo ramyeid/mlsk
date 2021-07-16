@@ -1,0 +1,23 @@
+{
+  "root": true,
+  "parser": "@typescript-eslint/parser",
+  "plugins": [
+    "@typescript-eslint",
+    "unused-imports"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "rules": {
+    "indent": ["error", 2, {"FunctionDeclaration": {"parameters": "first"}, "FunctionExpression": {"parameters": "first"}}],
+    "no-empty-function": "off",
+    "@typescript-eslint/no-empty-function": ["error",  { "allow": ["private-constructors"] }],
+    "quotes": ["error", "single", { "avoidEscape": true, "allowTemplateLiterals": true }],
+    "semi": ["error", "always"],
+    "@typescript-eslint/type-annotation-spacing": "error",
+    "unused-imports/no-unused-imports": "error",
+    "no-unused-expressions": ["error"]
+  }
+}

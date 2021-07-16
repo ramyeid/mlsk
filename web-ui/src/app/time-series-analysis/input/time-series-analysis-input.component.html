@@ -4,10 +4,7 @@
   </div>
 
   <div class="card-body">
-    <form novalidate
-          (ngSubmit)="submit()"
-          [formGroup]="settingsForm">
-
+    <form novalidate [formGroup]="settingsForm">
 
       <div class="form-group row mb-2">
         <label class="col-md-2 col-form-label"
@@ -25,7 +22,7 @@
         </div>
       </div>
 
-      <div class="form-group row mb-2 ">
+      <div class="form-group row mb-2">
         <label class="col-md-2 col-form-label"
               for="valueColumnName">Value Column Name</label>
         <div class="col-md-4">
@@ -41,7 +38,7 @@
         </div>
       </div>
 
-      <div class="form-group row mb-2!">
+      <div class="form-group row mb-2">
         <label class="col-md-2 col-form-label"
               for="dateFormat">Date Format</label>
         <div class="col-md-4">
@@ -98,7 +95,7 @@
           <input class="form-control"
                 id="numberOfValues"
                 type="number"
-                placeholder="Number of values to predict (required)"
+                placeholder="Number of values for action (required)"
                 formControlName="numberOfValues"
                 [ngClass]="{'is-invalid': errorMessagePerInput.numberOfValues }" />
           <span class="invalid-feedback">
@@ -109,16 +106,35 @@
 
       <div class="form-group row mb-2">
         <div class="offset-md-2 col-md-4">
-          <button class="btn btn-primary mr-3"
-                  id="SaveButton"
-                  type="submit"
+          <button class="btn btn-outline-primary"
+                  id="predictBtn"
+                  type="button"
                   style="width:80px"
-                  [title]="settingsForm.valid ? 'Save your entered data' : 'Disabled until the form data is valid'"
-                  [disabled]="!settingsForm.valid">
-            Save
+                  [title]="settingsForm.valid ? 'Launch predict' : 'Disabled until the form data is valid'"
+                  [disabled]="!settingsForm.valid"
+                  (click)="predict()">
+            Predict
+          </button>
+          <button class="btn btn-outline-primary"
+                  id="forecastBtn"
+                  type="button"
+                  style="width:100px"
+                  [title]="settingsForm.valid ? 'Launch forecast' : 'Disabled until the form data is valid'"
+                  [disabled]="!settingsForm.valid"
+                  (click)="forecast()">
+            Forecast
+          </button>
+          <button class="btn btn-outline-primary"
+                  id="forecastVsActualBtn"
+                  type="button"
+                  style="width:200px"
+                  [title]="settingsForm.valid ? 'Launch forecast vs actual' : 'Disabled until the form data is valid'"
+                  [disabled]="!settingsForm.valid"
+                  (click)="forecastVsActual()">
+            Forecast vs Actual
           </button>
         </div>
-        <div class="col-md-5">
+        <div class="col-md-4">
           <mat-spinner diameter="30" strokeWidth="2" color="accent" *ngIf="isWaitingForResult"></mat-spinner>
         </div>
       </div>

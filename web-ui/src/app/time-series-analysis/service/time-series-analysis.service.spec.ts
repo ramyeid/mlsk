@@ -21,6 +21,7 @@ describe('TimeSeriesAnalysisService', () => {
     service = TestBed.inject(TimeSeriesAnalysisService);
   });
 
+
   describe('Forecast', () => {
 
     it('should handle error of type error event from http post forecast', () => {
@@ -34,7 +35,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       actualResult$.subscribe({
         error: (err) => {
-          expect(err.message).toBe('An error occurred: Error Event type Message');
+          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
         }
       });
       const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
@@ -56,6 +57,92 @@ describe('TimeSeriesAnalysisService', () => {
         }
       });
       const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
+      req.flush(timeSeriesResult);
+      expect(req.request.method).toBe('POST');
+      httpMock.verify();
+    });
+
+  });
+
+
+  describe('Predict', () => {
+
+    it('should handle error of type error event from http post predict', () => {
+      const errorEvent = new ErrorEvent('Type', {
+        error : new ErrorEvent('Error Event type'),
+        message : 'Error Event type Message'
+      });
+      const timeSeriesAnalysisRequest = Helper.buildTimeSeriesAnalysisRequest();
+
+      const actualResult$ = service.predict(timeSeriesAnalysisRequest);
+
+      actualResult$.subscribe({
+        error: (err) => {
+          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
+        }
+      });
+      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/predict');
+      req.error(errorEvent);
+      expect(req.request.method).toBe('POST');
+      httpMock.verify();
+    });
+
+    it('should return result from http post predict', (done: DoneFn) => {
+      const timeSeriesResult = Helper.buildTimeSeriesResult();
+      const timeSeriesAnalysisRequest = Helper.buildTimeSeriesAnalysisRequest();
+
+      const actualResult$ = service.predict(timeSeriesAnalysisRequest);
+
+      actualResult$.subscribe({
+        next: (actualValue: TimeSeries) => {
+          expect(actualValue).toEqual(Helper.buildTimeSeriesResult());
+          done();
+        }
+      });
+      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/predict');
+      req.flush(timeSeriesResult);
+      expect(req.request.method).toBe('POST');
+      httpMock.verify();
+    });
+
+  });
+
+
+  describe('Forecast vs Actual', () => {
+
+    it('should handle error of type error event from http post forecast vs actual', () => {
+      const errorEvent = new ErrorEvent('Type', {
+        error : new ErrorEvent('Error Event type'),
+        message : 'Error Event type Message'
+      });
+      const timeSeriesAnalysisRequest = Helper.buildTimeSeriesAnalysisRequest();
+
+      const actualResult$ = service.forecastVsActual(timeSeriesAnalysisRequest);
+
+      actualResult$.subscribe({
+        error: (err) => {
+          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
+        }
+      });
+      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast-vs-actual');
+      req.error(errorEvent);
+      expect(req.request.method).toBe('POST');
+      httpMock.verify();
+    });
+
+    it('should return result from http post forecast vs actual', (done: DoneFn) => {
+      const timeSeriesResult = Helper.buildTimeSeriesResult();
+      const timeSeriesAnalysisRequest = Helper.buildTimeSeriesAnalysisRequest();
+
+      const actualResult$ = service.forecastVsActual(timeSeriesAnalysisRequest);
+
+      actualResult$.subscribe({
+        next: (actualValue: TimeSeries) => {
+          expect(actualValue).toEqual(Helper.buildTimeSeriesResult());
+          done();
+        }
+      });
+      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast-vs-actual');
       req.flush(timeSeriesResult);
       expect(req.request.method).toBe('POST');
       httpMock.verify();
