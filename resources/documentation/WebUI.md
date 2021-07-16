@@ -48,6 +48,17 @@ Rules should be added to *.eslintrc*
 > Tutorial for ESLint can be found: https://khalilstemmler.com/blogs/typescript/eslint-for-typescript/
 
 > List of other configs and plugins: https://github.com/dustinspecker/awesome-eslint
+
+### Unused dependencies
+
+To check for unused dependencies we are using *depcheck*
+
+```bash
+npm install depcheck -g
+cd web-ui
+depcheck
+```
+
 ### Launch the Web ui engine
 
 To launch the web ui we need to build and open the index.html this is automated using the script under packaging
