@@ -8,9 +8,9 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.mockito.Mockito.*;
 
-class RestClientTest {
+public class RestClientTest {
 
-  private static final IServiceInformation SERVICE_INFORMATION = () -> "http://hp123:6767/";
+  private static final IServiceInformation SERVICE_INFORMATION = buildServiceInformation();
 
   @Test
   public void should_delegate_post_call_to_rest_template() {
@@ -26,4 +26,19 @@ class RestClientTest {
     HttpEntity<Double> expectedEntity = new HttpEntity<>(body, expectedHeaders);
     verify(restTemplate).postForObject("http://hp123:6767/forecast", expectedEntity, String.class);
   }
+
+  private static IServiceInformation buildServiceInformation() {
+    return new IServiceInformation() {
+      @Override
+      public String getUrl() {
+        return "http://hp123:6767/";
+      }
+
+      @Override
+      public String getPort() {
+        return "66767";
+      }
+    };
+  }
+
 }

@@ -3,11 +3,11 @@ package org.mlsk.service.impl.engine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.service.impl.engine.client.EngineClientFactory;
-import org.mlsk.service.impl.engine.client.timeseries.TimeSeriesAnalysisEngineClient;
-import org.mlsk.service.impl.engine.process.ResilientProcess;
+import org.mlsk.lib.engine.ResilientEngine;
+import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.service.impl.engine.impl.EngineImpl;
+import org.mlsk.service.impl.engine.impl.timeseries.TimeSeriesAnalysisEngineCaller;
 import org.mlsk.service.model.EngineState;
-import org.mlsk.service.model.ServiceInformation;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
@@ -16,174 +16,185 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mlsk.service.model.EngineState.*;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class EngineImplTest {
+public class EngineImplTest {
+
+  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("host", "port");
 
   @Mock
-  private EngineClientFactory engineClientFactory;
+  private ResilientEngine resilientEngine;
   @Mock
-  private TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient;
-  @Mock
-  private AtomicReference<EngineState> engineState;
+  private TimeSeriesAnalysisEngineCaller timeSeriesAnalysisEngineCaller;
 
-  private final ServiceInformation serviceInformation = new ServiceInformation("host", "port");
-  private final TimeSeriesRow timeSeriesRow = new TimeSeriesRow("1960", 1.);
-  private final TimeSeriesRow timeSeriesRow1 = new TimeSeriesRow("1961", 2.);
-  private final TimeSeriesRow timeSeriesRow2 = new TimeSeriesRow("1962", 3.);
-  private final TimeSeries timeSeries = new TimeSeries(asList(timeSeriesRow, timeSeriesRow1), "Date", "Value", "%Y");
-  private final TimeSeries timeSeries2 = new TimeSeries(singletonList(timeSeriesRow2), "Date", "Value", "%Y");
-  private final TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
-  private final Double accuracy = 33.;
+  private AtomicReference<EngineState> engineStateSpy;
+  private EngineImpl engineImpl;
 
   @BeforeEach
   public void setUp() {
+    engineStateSpy = spy(new AtomicReference<>());
+    engineImpl = new EngineImpl(resilientEngine, SERVICE_INFORMATION, engineStateSpy, timeSeriesAnalysisEngineCaller);
   }
 
   @Test
   public void should_modify_state_and_relaunch_engine_when_killed() throws IOException, InterruptedException {
-    ResilientProcess resilientProcess = mock(ResilientProcess.class);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, resilientProcess);
 
     engineImpl.onProcessKilled();
 
-    InOrder inOrder = inOrder(resilientProcess, engineState);
-    inOrder.verify(engineState).set(OFF);
-    inOrder.verify(resilientProcess).launchProcess();
-    inOrder.verify(engineState).set(WAITING);
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engineStateSpy).set(OFF);
+    inOrder.verify(resilientEngine).launchEngine();
+    inOrder.verify(engineStateSpy).set(WAITING);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_keep_state_off_when_engine_fail_to_relaunch() throws IOException, InterruptedException {
-    ResilientProcess resilientProcess = mock(ResilientProcess.class);
-    doThrow(new RuntimeException("Exception while relaunch")).when(resilientProcess).launchProcess();
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, resilientProcess);
+    doThrow(new RuntimeException("Exception while relaunch")).when(resilientEngine).launchEngine();
 
     engineImpl.onProcessKilled();
 
-    InOrder inOrder = inOrder(resilientProcess, engineState);
-    inOrder.verify(engineState).set(OFF);
-    inOrder.verify(resilientProcess).launchProcess();
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engineStateSpy).set(OFF);
+    inOrder.verify(resilientEngine).launchEngine();
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_delegate_forecast_call_to_engine() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.forecast(any())).thenReturn(timeSeries2);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, new AtomicReference<>(WAITING), mock(ResilientProcess.class));
+  public void should_delegate_forecast_call_to_engine() {
+    onForecastReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
 
-    TimeSeries actualTimeSeries = engineImpl.forecast(timeSeriesAnalysisRequest);
+    engineImpl.forecast(buildTimeSeriesAnalysisRequest());
 
-    verify(timeSeriesAnalysisEngineClient).forecast(any());
-    assertEquals(timeSeries2, actualTimeSeries);
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engineStateSpy).set(COMPUTING);
+    inOrder.verify(timeSeriesAnalysisEngineCaller).forecast(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(engineStateSpy).set(WAITING);
+    inOrder.verifyNoMoreInteractions();
+
+  }
+
+  @Test
+  public void should_return_time_series_and_reset_state_on_forecast() {
+    onForecastReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
+
+    TimeSeries actualTimeSeries = engineImpl.forecast(buildTimeSeriesAnalysisRequest());
+
+    assertEquals(buildTimeSeries(), actualTimeSeries);
     assertEquals(WAITING, engineImpl.getState());
   }
 
   @Test
-  public void should_modify_state_to_computing_and_then_waiting_on_forecast() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.forecast(any())).thenReturn(timeSeries2);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, mock(ResilientProcess.class));
+  public void should_delegate_forecast_vs_actual_call_to_engine() {
+    onForecastVsActualReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
 
-    engineImpl.forecast(timeSeriesAnalysisRequest);
+    engineImpl.forecastVsActual(buildTimeSeriesAnalysisRequest());
 
-    InOrder inOrder = inOrder(engineState);
-    inOrder.verify(engineState).set(COMPUTING);
-    inOrder.verify(engineState).set(WAITING);
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engineStateSpy).set(COMPUTING);
+    inOrder.verify(timeSeriesAnalysisEngineCaller).forecastVsActual(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(engineStateSpy).set(WAITING);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_call_forecast_with_last_number_of_values_elements_removed_on_forecast_vs_actual() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.forecast(any())).thenReturn(timeSeries2);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, new AtomicReference<>(WAITING), mock(ResilientProcess.class));
+  public void should_return_time_series_and_reset_state_on_forecast_vs_actual() {
+    onForecastVsActualReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
 
-    TimeSeries actualTimeSeries = engineImpl.forecastVsActual(timeSeriesAnalysisRequest);
+    TimeSeries actualTimeSeries = engineImpl.forecastVsActual(buildTimeSeriesAnalysisRequest());
 
-    TimeSeries timeSeriesSentToEngine = new TimeSeries(singletonList(timeSeriesRow), "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequest timeSeriesAnalysisRequestSentToEngine = new TimeSeriesAnalysisRequest(timeSeriesSentToEngine, 1);
-    verify(timeSeriesAnalysisEngineClient).forecast(timeSeriesAnalysisRequestSentToEngine);
-    assertEquals(timeSeries2, actualTimeSeries);
+    assertEquals(buildTimeSeries(), actualTimeSeries);
     assertEquals(WAITING, engineImpl.getState());
   }
 
   @Test
-  public void should_modify_state_to_computing_and_then_waiting_on_forecast_vs_actual() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.forecast(any())).thenReturn(timeSeries2);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, mock(ResilientProcess.class));
+  public void should_delegate_compute_forecast_accuracy_to_engine() {
+    onComputeForecastAccuracyReturn(buildTimeSeriesAnalysisRequest(), 2.0);
 
-    engineImpl.forecastVsActual(timeSeriesAnalysisRequest);
+    engineImpl.computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
 
-    InOrder inOrder = inOrder(engineState);
-    inOrder.verify(engineState).set(COMPUTING);
-    inOrder.verify(engineState).set(WAITING);
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engineStateSpy).set(COMPUTING);
+    inOrder.verify(timeSeriesAnalysisEngineCaller).computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(engineStateSpy).set(WAITING);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_delegate_compute_forecast_accuracy_to_engine() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.computeForecastAccuracy(any())).thenReturn(accuracy);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, new AtomicReference<>(WAITING), mock(ResilientProcess.class));
+  public void should_return_accuracy_and_reset_state_on_compute_forecast_accuracy() {
+    onComputeForecastAccuracyReturn(buildTimeSeriesAnalysisRequest(), 3.0);
 
-    Double actualAccuracy = engineImpl.computeForecastAccuracy(new TimeSeriesAnalysisRequest(timeSeries, 1));
+    Double actualAccuracy = engineImpl.computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
 
-    verify(timeSeriesAnalysisEngineClient).computeForecastAccuracy(any());
-    assertEquals(accuracy, actualAccuracy);
+    assertEquals(3.0, actualAccuracy);
     assertEquals(WAITING, engineImpl.getState());
   }
 
   @Test
-  public void should_modify_state_to_computing_and_then_waiting_on_compute_forecast_accuracy() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.computeForecastAccuracy(any())).thenReturn(accuracy);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, mock(ResilientProcess.class));
+  public void should_delegate_predict_call_to_engine() {
+    onPredictReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
 
-    engineImpl.computeForecastAccuracy(timeSeriesAnalysisRequest);
+    engineImpl.predict(buildTimeSeriesAnalysisRequest());
 
-    InOrder inOrder = inOrder(engineState);
-    inOrder.verify(engineState).set(COMPUTING);
-    inOrder.verify(engineState).set(WAITING);
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engineStateSpy).set(COMPUTING);
+    inOrder.verify(timeSeriesAnalysisEngineCaller).predict(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(engineStateSpy).set(WAITING);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_delegate_predict_call_to_engine() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.predict(any())).thenReturn(timeSeries2);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, new AtomicReference<>(WAITING), mock(ResilientProcess.class));
+  public void should_return_time_series_and_reset_state_on_preidct() {
+    onPredictReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
 
-    TimeSeries actualTimeSeries = engineImpl.predict(new TimeSeriesAnalysisRequest(timeSeries, 1));
+    TimeSeries actualTimeSeries = engineImpl.predict(buildTimeSeriesAnalysisRequest());
 
-    verify(timeSeriesAnalysisEngineClient).predict(any());
-    assertEquals(timeSeries2, actualTimeSeries);
+    assertEquals(buildTimeSeries(), actualTimeSeries);
     assertEquals(WAITING, engineImpl.getState());
   }
 
-  @Test
-  public void should_modify_state_to_computing_and_then_waiting_on_predict() throws IOException, InterruptedException {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(timeSeriesAnalysisEngineClient);
-    when(timeSeriesAnalysisEngineClient.predict(any())).thenReturn(timeSeries2);
-    EngineImpl engineImpl = new EngineImpl(serviceInformation, engineClientFactory, engineState, mock(ResilientProcess.class));
-
-    engineImpl.predict(timeSeriesAnalysisRequest);
-
-    InOrder inOrder = inOrder(engineState);
-    inOrder.verify(engineState).set(COMPUTING);
-    inOrder.verify(engineState).set(WAITING);
-    inOrder.verifyNoMoreInteractions();
+  private InOrder buildInOrder() {
+    return inOrder(timeSeriesAnalysisEngineCaller, engineStateSpy, resilientEngine);
   }
 
+  private void onForecastReturn(TimeSeriesAnalysisRequest request, TimeSeries timeSeries) {
+    when(timeSeriesAnalysisEngineCaller.forecast(request)).thenReturn(timeSeries);
+  }
+
+  private void onForecastVsActualReturn(TimeSeriesAnalysisRequest request, TimeSeries timeSeries) {
+    when(timeSeriesAnalysisEngineCaller.forecastVsActual(request)).thenReturn(timeSeries);
+  }
+
+  private void onComputeForecastAccuracyReturn(TimeSeriesAnalysisRequest request, Double accuracy) {
+    when(timeSeriesAnalysisEngineCaller.computeForecastAccuracy(request)).thenReturn(accuracy);
+  }
+
+  private void onPredictReturn(TimeSeriesAnalysisRequest request, TimeSeries timeSeries) {
+    when(timeSeriesAnalysisEngineCaller.predict(request)).thenReturn(timeSeries);
+  }
+
+  private TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest() {
+    TimeSeriesRow row1 = new TimeSeriesRow("1960", 1.);
+    TimeSeriesRow row2 = new TimeSeriesRow("1961", 2.);
+    TimeSeriesRow row3 = new TimeSeriesRow("1962", 3.);
+
+    List<TimeSeriesRow> rows = newArrayList(row1, row2, row3);
+    TimeSeries timeSeries = new TimeSeries(rows, "Date", "Value", "%Y");
+
+    return new TimeSeriesAnalysisRequest(timeSeries, 1);
+  }
+
+  private TimeSeries buildTimeSeries() {
+    TimeSeriesRow row = new TimeSeriesRow("1961", 2.);
+
+    List<TimeSeriesRow> rows = newArrayList(row);
+    return new TimeSeries(rows, "Date", "Value", "%Y");
+  }
 }

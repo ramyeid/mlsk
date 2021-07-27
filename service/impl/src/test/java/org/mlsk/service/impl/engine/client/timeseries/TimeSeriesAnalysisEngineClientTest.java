@@ -16,15 +16,14 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.security.InvalidParameterException;
 import java.util.List;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.singletonList;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.service.utils.TimeSeriesAnalysisUrls.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TimeSeriesAnalysisEngineClientTest {
+public class TimeSeriesAnalysisEngineClientTest {
 
   @Mock
   private RestClient restClient;
@@ -37,10 +36,10 @@ class TimeSeriesAnalysisEngineClientTest {
 
   @Test
   public void should_delegate_forecast_call_to_engine() {
-    List<TimeSeriesRow> timeSeriesRows = asList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
+    List<TimeSeriesRow> timeSeriesRows = newArrayList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
-    TimeSeries responseTimeSeries = new TimeSeries(singletonList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
+    TimeSeries responseTimeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
     onPostReturn(responseTimeSeries);
 
     TimeSeries actual_forecasted = client.forecast(timeSeriesAnalysisRequest);
@@ -81,7 +80,7 @@ class TimeSeriesAnalysisEngineClientTest {
 
   @Test
   public void should_delegate_compute_forecast_accuracy_call_to_engine() {
-    List<TimeSeriesRow> timeSeriesRows = asList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
+    List<TimeSeriesRow> timeSeriesRows = newArrayList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
     onPostReturn(2.);
@@ -124,10 +123,10 @@ class TimeSeriesAnalysisEngineClientTest {
 
   @Test
   public void should_delegate_predict_call_to_engine() {
-    List<TimeSeriesRow> timeSeriesRows = asList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
+    List<TimeSeriesRow> timeSeriesRows = newArrayList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
-    TimeSeries responseTimeSeries = new TimeSeries(singletonList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
+    TimeSeries responseTimeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
     onPostReturn(responseTimeSeries);
 
     TimeSeries actual_predicted = client.predict(timeSeriesAnalysisRequest);

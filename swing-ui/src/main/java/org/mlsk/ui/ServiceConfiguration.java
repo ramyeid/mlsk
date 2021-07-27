@@ -1,7 +1,7 @@
 package org.mlsk.ui;
 
 import org.apache.commons.cli.*;
-import org.mlsk.service.model.ServiceInformation;
+import org.mlsk.lib.model.ServiceInformation;
 
 public class ServiceConfiguration {
 

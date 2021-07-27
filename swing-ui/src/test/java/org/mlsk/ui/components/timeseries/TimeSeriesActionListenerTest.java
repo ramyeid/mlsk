@@ -13,13 +13,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.awt.event.ActionEvent;
 
-import static java.util.Collections.singletonList;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.mlsk.ui.components.timeseries.TimeSeriesActionListener.*;
 import static org.mlsk.ui.components.utils.ComponentBuilder.newJButton;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TimeSeriesActionListenerTest {
+public class TimeSeriesActionListenerTest {
 
   @Mock
   private TimeSeriesInputPanel timeSeriesInputPanel;
@@ -69,11 +69,11 @@ class TimeSeriesActionListenerTest {
   }
 
   private static TimeSeriesAnalysisRequest buildTimeSeriesRequest() {
-    TimeSeries timeSeries = new TimeSeries(singletonList(new TimeSeriesRow("date", 1.)), "Date", "Value", "yy");
+    TimeSeries timeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("date", 1.)), "Date", "Value", "yy");
     return new TimeSeriesAnalysisRequest(timeSeries, 2);
   }
 
   private static TimeSeries buildTimeSeriesResult() {
-    return new TimeSeries(singletonList(new TimeSeriesRow("date2", 2.)), "Date", "Value", "yy");
+    return new TimeSeries(newArrayList(new TimeSeriesRow("date2", 2.)), "Date", "Value", "yy");
   }
 }

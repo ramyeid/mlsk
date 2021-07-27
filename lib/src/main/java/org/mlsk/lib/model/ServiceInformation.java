@@ -1,4 +1,4 @@
-package org.mlsk.service.model;
+package org.mlsk.lib.model;
 
 import org.mlsk.lib.rest.IServiceInformation;
 
@@ -14,10 +14,12 @@ public class ServiceInformation implements IServiceInformation {
     this.port = port;
   }
 
+  @Override
   public String getUrl() {
     return String.format("http://%s:%s/", host, port);
   }
 
+  @Override
   public String getPort() {
     return port;
   }

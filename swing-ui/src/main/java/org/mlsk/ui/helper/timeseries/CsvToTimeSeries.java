@@ -12,13 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
+import static com.google.common.collect.Lists.newArrayList;
 
 public class CsvToTimeSeries {
 
   public static TimeSeries toTimeSeries(String csvAbsolutePath, String dateColumnName, String valueColumnName, String dateFormat) throws CsvParsingException {
     try (CSVReader reader = new CSVReader(new FileReader(csvAbsolutePath))) {
-      List<String> header = asList(reader.peek());
+      List<String> header = newArrayList(reader.peek());
       assertHeaderContains(header, dateColumnName);
       assertHeaderContains(header, valueColumnName);
 

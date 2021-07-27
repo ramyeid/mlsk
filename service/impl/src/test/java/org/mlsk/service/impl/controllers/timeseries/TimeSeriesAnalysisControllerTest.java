@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.controllers;
+package org.mlsk.service.impl.controllers.timeseries;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class TimeSeriesAnalysisControllerTest {
+public class TimeSeriesAnalysisControllerTest {
 
   @Mock
   private Orchestrator orchestrator;

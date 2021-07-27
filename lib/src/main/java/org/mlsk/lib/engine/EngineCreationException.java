@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.engine.exceptions;
+package org.mlsk.lib.engine;
 
 public class EngineCreationException extends RuntimeException {
 

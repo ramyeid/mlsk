@@ -3,7 +3,7 @@ package org.mlsk.ui.client.timeseries;
 import com.google.common.annotations.VisibleForTesting;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.TimeSeriesAnalysis;
-import org.mlsk.service.model.ServiceInformation;
+import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.springframework.web.client.HttpServerErrorException;
@@ -16,7 +16,7 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysis {
   private final RestClient restClient;
 
   public TimeSeriesAnalysisServiceClient(ServiceInformation serviceInformation) {
-    this.restClient = new RestClient(serviceInformation);
+    this(new RestClient(serviceInformation));
   }
 
   @VisibleForTesting

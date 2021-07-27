@@ -2,7 +2,6 @@ package org.mlsk.service.impl;
 
 import org.apache.log4j.Logger;
 import org.mlsk.service.Engine;
-import org.mlsk.service.impl.controllers.TimeSeriesAnalysisController;
 import org.mlsk.service.impl.exceptions.NoAvailableEngineException;
 import org.mlsk.service.model.EngineState;
 
@@ -12,7 +11,7 @@ import java.util.function.Function;
 
 public class Orchestrator {
 
-  private static final Logger LOGGER = Logger.getLogger(TimeSeriesAnalysisController.class);
+  private static final Logger LOGGER = Logger.getLogger(Orchestrator.class);
 
   private final List<Engine> engines;
 
@@ -21,6 +20,12 @@ public class Orchestrator {
   }
 
   public <Result> Result runOnEngine(Function<Engine, Result> action, String actionName) {
+    Engine availableEngine = retrieveAvailableEngine(actionName);
+
+    return action.apply(availableEngine);
+  }
+
+  private synchronized Engine retrieveAvailableEngine(String actionName) {
     Optional<Engine> availableEngineOptional = this.engines.stream().filter(engine -> engine.getState().equals(EngineState.WAITING)).findFirst();
 
     if (availableEngineOptional.isEmpty()) {
@@ -29,7 +34,8 @@ public class Orchestrator {
     }
 
     Engine availableEngine = availableEngineOptional.get();
+    availableEngine.bookEngine();
     LOGGER.info(String.format("Request %s will be treated on engine: %s", actionName, availableEngine.getServiceInformation()));
-    return action.apply(availableEngine);
+    return availableEngine;
   }
 }

@@ -7,7 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
-import static java.util.Collections.singletonList;
+import static com.google.common.collect.Lists.newArrayList;
 
 public class RestClient {
 
@@ -19,12 +19,12 @@ public class RestClient {
   }
 
   @VisibleForTesting
-  RestClient(IServiceInformation serviceInformation, RestTemplate restTemplate) {
+  public RestClient(IServiceInformation serviceInformation, RestTemplate restTemplate) {
     this.serviceInformation = serviceInformation;
     this.restTemplate = restTemplate;
     MappingJackson2HttpMessageConverter messageConvereter = new MappingJackson2HttpMessageConverter();
-    messageConvereter.setSupportedMediaTypes(singletonList(MediaType.ALL));
-    this.restTemplate.setMessageConverters(singletonList(messageConvereter));
+    messageConvereter.setSupportedMediaTypes(newArrayList(MediaType.ALL));
+    this.restTemplate.setMessageConverters(newArrayList(messageConvereter));
   }
 
   public <Body, Response> Response post(String endPoint, Body body, Class<Response> responseType) {

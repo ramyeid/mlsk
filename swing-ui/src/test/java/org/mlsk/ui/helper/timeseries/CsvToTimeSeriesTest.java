@@ -5,18 +5,17 @@ import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
 import org.mlsk.ui.helper.CsvParsingException;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 
-import static java.util.Arrays.asList;
+import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.ui.helper.timeseries.CsvToTimeSeries.toTimeSeries;
 
-class CsvToTimeSeriesTest {
+public class CsvToTimeSeriesTest {
 
   @Test
-  public void should_be_able_to_build_time_series_from_csv() throws IOException, CsvParsingException {
+  public void should_be_able_to_build_time_series_from_csv() throws CsvParsingException {
     ClassLoader classLoader = getClass().getClassLoader();
     String csvLocation = Objects.requireNonNull(classLoader.getResource("time_series_passengers.csv")).getFile();
 
@@ -63,7 +62,7 @@ class CsvToTimeSeriesTest {
     TimeSeriesRow timeSeriesRow2 = buildTimeSeriesRow("1960-03", 3.0);
     TimeSeriesRow timeSeriesRow3 = buildTimeSeriesRow("1960-04", 4.0);
     TimeSeriesRow timeSeriesRow4 = buildTimeSeriesRow("1960-05", 5.0);
-    List<TimeSeriesRow> timeSeriesRows = asList(timeSeriesRow, timeSeriesRow1, timeSeriesRow2, timeSeriesRow3, timeSeriesRow4);
+    List<TimeSeriesRow> timeSeriesRows = newArrayList(timeSeriesRow, timeSeriesRow1, timeSeriesRow2, timeSeriesRow3, timeSeriesRow4);
     return new TimeSeries(timeSeriesRows, "Date", "Passengers", "%Y-%m");
   }
 
