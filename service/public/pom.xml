@@ -15,7 +15,10 @@
         <dependency>
             <groupId>machine-learning-swissknife</groupId>
             <artifactId>mlsk-service-model</artifactId>
-            <version>${parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>machine-learning-swissknife</groupId>
+            <artifactId>mlsk-lib</artifactId>
         </dependency>
     </dependencies>
 
