@@ -3,7 +3,7 @@ package org.mlsk.lib.engine.launcher;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.lib.rest.IServiceInformation;
+import org.mlsk.lib.model.ServiceInformation;
 import org.mockito.ArgumentMatchers;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -33,11 +33,11 @@ public class EngineLauncherTest {
 
   @Test
   public void should_call_process_builder_on_launch_engine() throws IOException {
-    IServiceInformation port = buildServiceInformation();
+    ServiceInformation serviceInformation = new ServiceInformation("host", "port");
     String logsPath = "logsPath";
     String enginePath = "enginePath";
 
-    engineLauncher.launchEngine(port, logsPath, enginePath);
+    engineLauncher.launchEngine(serviceInformation, logsPath, enginePath);
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(processBuilder).command("python3", "engine.py", "--port", "port", "--logs-path", logsPath);
@@ -48,19 +48,5 @@ public class EngineLauncherTest {
 
   private InOrder buildInOrder() {
     return inOrder(processBuilder);
-  }
-
-  private static IServiceInformation buildServiceInformation() {
-    return new IServiceInformation() {
-      @Override
-      public String getUrl() {
-        return "url";
-      }
-
-      @Override
-      public String getPort() {
-        return "port";
-      }
-    };
   }
 }

@@ -1,6 +1,7 @@
 package org.mlsk.lib.rest;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.mlsk.lib.model.ServiceInformation;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -11,15 +12,15 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class RestClient {
 
-  private final IServiceInformation serviceInformation;
+  private final ServiceInformation serviceInformation;
   private final RestTemplate restTemplate;
 
-  public RestClient(IServiceInformation serviceInformation) {
+  public RestClient(ServiceInformation serviceInformation) {
     this(serviceInformation, new RestTemplate());
   }
 
   @VisibleForTesting
-  public RestClient(IServiceInformation serviceInformation, RestTemplate restTemplate) {
+  public RestClient(ServiceInformation serviceInformation, RestTemplate restTemplate) {
     this.serviceInformation = serviceInformation;
     this.restTemplate = restTemplate;
     MappingJackson2HttpMessageConverter messageConvereter = new MappingJackson2HttpMessageConverter();
