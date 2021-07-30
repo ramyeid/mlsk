@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.controllers;
+package org.mlsk.service.impl.controllers.timeseries;
 
 import org.apache.log4j.Logger;
 import org.mlsk.service.TimeSeriesAnalysis;

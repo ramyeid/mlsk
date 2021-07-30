@@ -2,8 +2,9 @@ package org.mlsk.service.impl.engine;
 
 import org.apache.log4j.Logger;
 import org.mlsk.service.Engine;
-import org.mlsk.service.impl.engine.exceptions.EngineCreationException;
-import org.mlsk.service.model.ServiceInformation;
+import org.mlsk.lib.engine.EngineCreationException;
+import org.mlsk.service.impl.engine.impl.EngineImpl;
+import org.mlsk.lib.model.ServiceInformation;
 
 
 public class EngineFactory {

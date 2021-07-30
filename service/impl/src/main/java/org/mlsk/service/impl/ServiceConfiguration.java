@@ -1,6 +1,5 @@
 package org.mlsk.service.impl;
 
-import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.cli.*;
 
 import java.util.Arrays;
@@ -57,11 +56,6 @@ public class ServiceConfiguration {
         .map(String::trim)
         .collect(Collectors.toList());
 
-    SERVICE_CONFIGURATION = new ServiceConfiguration(logsPath, enginePath, enginePorts);
-  }
-
-  @VisibleForTesting
-  public static void buildForTest(String logsPath, String enginePath, List<String> enginePorts) {
     SERVICE_CONFIGURATION = new ServiceConfiguration(logsPath, enginePath, enginePorts);
   }
 }

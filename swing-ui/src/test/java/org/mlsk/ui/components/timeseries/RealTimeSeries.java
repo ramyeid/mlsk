@@ -10,7 +10,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class RealTimeSeries {
+public class RealTimeSeries {
 
   private static final TimeSeries EMPTY_TIME_SERIES = new TimeSeries(emptyList(), "", "", "");
 

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mlsk.service.model.timeseries.TimeSeriesTest.buildTimeSeriesPassengers;
 
-class TimeSeriesAnalysisRequestTest {
+public class TimeSeriesAnalysisRequestTest {
 
   @Test
   public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {

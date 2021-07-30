@@ -16,6 +16,7 @@
         <spring.version>5.2.8.RELEASE</spring.version>
         <junit.version>5.8.0-M1</junit.version>
         <mockito.version>3.5.2</mockito.version>
+        <log4j.version>1.2.17</log4j.version>
     </properties>
 
     <modules>
