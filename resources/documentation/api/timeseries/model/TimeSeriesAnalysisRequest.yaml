@@ -1,0 +1,15 @@
+swagger: '2.0'
+info:
+  version: "1.0"
+  title: TimeSeriesAnalysisRequestModel
+  description: This is the yaml detailing the TimeSeriesAnalysisRequest
+paths: {}
+definitions:
+  TimeSeriesAnalysisRequestModel:
+    type: object
+    properties:
+      timeSeries:
+        $ref: './TimeSeries.yaml#/definitions/TimeSeriesModel'
+      numberOfValues:
+        type: integer
+        description: Number Of values to predict/forecast/etc. using the algorithm

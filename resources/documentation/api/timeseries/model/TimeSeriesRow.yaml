@@ -1,0 +1,16 @@
+swagger: '2.0'
+info:
+  version: "1.0"
+  title: TimeSeriesRowModel
+  description: This is the yaml detailing the TimeSeriesRow
+paths: {}
+definitions:
+  TimeSeriesRowModel:
+    type: object
+    properties:
+      date:
+        type: string
+        description: date of the current row
+      value:
+        type: number
+        description: value of the current row
