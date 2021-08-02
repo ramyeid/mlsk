@@ -14,6 +14,8 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
+import org.mockito.stubbing.Answer;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -54,8 +56,8 @@ public abstract class AbstractIT {
   }
 
   protected void setup() {
-    mockEngine.setRestTemplateMock(restTemplate);
     mockEngine.reset();
+    onRestTemplatePostForObjectCallMockEngine();
   }
 
   protected Orchestrator buildOrchestrator(List<ServiceInformation> serviceInformationList) throws IOException {
@@ -74,6 +76,10 @@ public abstract class AbstractIT {
     }
   }
 
+  void verifyRestTemplateCalledOn(String resource, InOrder inOrder) {
+    inOrder.verify(restTemplate).postForObject(eq(resource), any(), any());
+  }
+
   private void setUpEngineLauncher(List<ServiceInformation> serviceInformationList) throws IOException {
     for (ServiceInformation serviceInformation : serviceInformationList) {
       Process process = mock(Process.class);
@@ -81,6 +87,14 @@ public abstract class AbstractIT {
       when(process.isAlive()).thenReturn(true);
       when(process.onExit()).thenReturn(CompletableFuture.supplyAsync(() -> null));
     }
+  }
+
+  private void onRestTemplatePostForObjectCallMockEngine() {
+    when(restTemplate.postForObject(any(String.class), any(), any())).thenAnswer((Answer<?>) invocationOnMock -> {
+      String actualResource = invocationOnMock.getArgument(0, String.class);
+      Object actualRequest = ((HttpEntity<Object>) invocationOnMock.getArgument(1)).getBody();
+      return mockEngine.engineCall(actualResource, actualRequest);
+    });
   }
 
   protected static HttpServerErrorException buildHttpServerErrorException(HttpStatus status, String body) {

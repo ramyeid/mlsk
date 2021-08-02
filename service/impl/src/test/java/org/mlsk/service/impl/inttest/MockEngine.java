@@ -1,38 +1,33 @@
 package org.mlsk.service.impl.inttest;
 
 import org.mlsk.lib.model.ServiceInformation;
-import org.mockito.InOrder;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import org.springframework.http.HttpEntity;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.when;
+import static com.google.common.collect.Lists.newArrayList;
 
 public class MockEngine {
 
-  private RestTemplate restTemplateMock;
   private boolean isWaitUntilEngineCallEnabled;
   private CountDownLatch waitUntilEngineCallLatch;
+  private final List<MockedRequest> mockedRequests;
 
   MockEngine() {
     this.isWaitUntilEngineCallEnabled = false;
+    this.mockedRequests = newArrayList();
   }
 
-  public void setRestTemplateMock(RestTemplate restTemplateMock) {
-    this.restTemplateMock = restTemplateMock;
+  public void registerRequests(MockedRequest... mockedRequestsIn) {
+    mockedRequests.addAll(List.of(mockedRequestsIn));
   }
 
   void reset() {
     this.isWaitUntilEngineCallEnabled = false;
     this.waitUntilEngineCallLatch = null;
+    this.mockedRequests.clear();
   }
 
   void setupWaitUntilEngineCall() {
@@ -45,38 +40,27 @@ public class MockEngine {
     setupWaitUntilEngineCall();
   }
 
-  @SafeVarargs
-  public final <Request, Result> void onRestTemplatePostReturn(Class<Result> type, MockedRequest<Request, Result>... mockedRequests) {
-    when(restTemplateMock.postForObject(any(String.class), any(), eq(type))).thenAnswer((Answer<Result>) invocationOnMock -> {
-      Optional<MockedRequest<Request, Result>> mockedRequestOptional = retrieveMatchingRequest(invocationOnMock, mockedRequests);
+  public Object engineCall(String actualResource, Object actualRequest) throws Exception {
+    Optional<MockedRequest> mockedRequestOptional = retrieveMatchingRequest(actualResource, actualRequest);
 
-      if (mockedRequestOptional.isPresent()) {
-        MockedRequest<Request, Result> mockedRequest = mockedRequestOptional.get();
-        releaseWaitUntilEngineCallLatchIfNecessary();
-        throwExceptionIfNecessary(mockedRequest);
-        hangEngineIfNecessary(mockedRequest);
-        return mockedRequest.result;
-      }
-      return null;
-    });
+    if (mockedRequestOptional.isPresent()) {
+      MockedRequest mockedRequest = mockedRequestOptional.get();
+      releaseWaitUntilEngineCallLatchIfNecessary();
+      throwExceptionIfNecessary(mockedRequest);
+      hangEngineIfNecessary(mockedRequest);
+      return mockedRequest.result;
+    }
+    return null;
   }
 
-  void verifyEngineCalledOnResource(String resource, InOrder inOrder) {
-    inOrder.verify(restTemplateMock).postForObject(eq(resource), any(), any());
-  }
+  private Optional<MockedRequest> retrieveMatchingRequest(String actualResource, Object actualRequest) {
+    Predicate<MockedRequest> matchesResource = mockedRequest -> mockedRequest.resource.equals(actualResource);
+    Predicate<MockedRequest> matchesBody = mockedRequest -> mockedRequest.request.equals(actualRequest);
 
-  private <Request, Result> Optional<MockedRequest<Request, Result>> retrieveMatchingRequest(InvocationOnMock invocationOnMock, MockedRequest<Request, Result>[] mockedRequests) {
-    String actualResource = invocationOnMock.getArgument(0, String.class);
-    Request actualRequest = ((HttpEntity<Request>) invocationOnMock.getArgument(1)).getBody();
-
-    Predicate<MockedRequest<Request, Result>> matchesResource = mockedRequest -> mockedRequest.resource.equals(actualResource);
-    Predicate<MockedRequest<Request, Result>> matchesBody = mockedRequest -> mockedRequest.request.equals(actualRequest);
-
-    Optional<MockedRequest<Request, Result>> mockedRequestOptional = Arrays
-        .stream(mockedRequests)
+    return mockedRequests
+        .stream()
         .filter(matchesResource.and(matchesBody))
         .findFirst();
-    return mockedRequestOptional;
   }
 
   private void releaseWaitUntilEngineCallLatchIfNecessary() {
@@ -85,28 +69,28 @@ public class MockEngine {
     }
   }
 
-  private <Request, Result> void throwExceptionIfNecessary(MockedRequest<Request, Result> mockedRequest) throws Exception {
+  private void throwExceptionIfNecessary(MockedRequest mockedRequest) throws Exception {
     if (mockedRequest.exception != null) {
       throw mockedRequest.exception;
     }
   }
 
-  private <Request, Result> void hangEngineIfNecessary(MockedRequest<Request, Result> mockedRequest) throws InterruptedException {
+  private void hangEngineIfNecessary(MockedRequest mockedRequest) throws InterruptedException {
     if (mockedRequest.shouldHang) {
       mockedRequest.countDownLatch.await();
     }
   }
 
-  static class MockedRequest<Request, Result> {
+  static class MockedRequest {
 
     final String resource;
-    final Request request;
-    final Result result;
+    final Object request;
+    final Object result;
     final Exception exception;
     final boolean shouldHang;
     final CountDownLatch countDownLatch;
 
-    private MockedRequest(String resource, Request request, Result result, Exception exception, boolean shouldHang) {
+    private MockedRequest(String resource, Object request, Object result, Exception exception, boolean shouldHang) {
       this.resource = resource;
       this.request = request;
       this.result = result;
@@ -115,19 +99,19 @@ public class MockEngine {
       this.countDownLatch = new CountDownLatch(1);
     }
 
-    public static <Request, Result> MockedRequest<Request, Result> buildHangingMockRequest(ServiceInformation serviceInformation, String endPoint, Request request, Result result) {
+    public static MockedRequest buildHangingMockRequest(ServiceInformation serviceInformation, String endPoint, Object request, Object result) {
       String resource = serviceInformation.getUrl() + endPoint;
-      return new MockedRequest<>(resource, request, result, null, true);
+      return new MockedRequest(resource, request, result, null, true);
     }
 
-    public static <Request, Result> MockedRequest<Request, Result> buildMockRequest(ServiceInformation serviceInformation, String endPoint, Request request, Result result) {
+    public static MockedRequest buildMockRequest(ServiceInformation serviceInformation, String endPoint, Object request, Object result) {
       String resource = serviceInformation.getUrl() + endPoint;
-      return new MockedRequest<>(resource, request, result, null, false);
+      return new MockedRequest(resource, request, result, null, false);
     }
 
-    public static <Request, Result> MockedRequest<Request, Result> buildFailingMockRequest(ServiceInformation serviceInformation, String endPoint, Request request, Exception exception) {
+    public static MockedRequest buildFailingMockRequest(ServiceInformation serviceInformation, String endPoint, Object request, Exception exception) {
       String resource = serviceInformation.getUrl() + endPoint;
-      return new MockedRequest<>(resource, request, null, exception, false);
+      return new MockedRequest(resource, request, null, exception, false);
 
     }
   }

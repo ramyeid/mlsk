@@ -47,8 +47,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   @Test
   public void should_return_time_series_result_from_engine_on_forecast() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> forecastMockedRequest = buildMockRequest(SERVICE_INFO1, FORECAST_URL, request, buildTimeSeriesResult());
-    onTimeSeriesEnginePostReturn(forecastMockedRequest);
+    MockedRequest forecastMockedRequest = buildMockRequest(SERVICE_INFO1, FORECAST_URL, request, buildTimeSeriesResult());
+    mockEngine.registerRequests(forecastMockedRequest);
 
     TimeSeries actualTimeSeries = timeSeriesAnalysisController.forecast(request);
 
@@ -59,8 +59,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   public void should_throw_exception_if_engine_returns_an_exception_on_forecast() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while forecasting: NullPointer");
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> forecastMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_URL, request, exceptionToThrow);
-    onTimeSeriesEnginePostReturn(forecastMockedRequest);
+    MockedRequest forecastMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_URL, request, exceptionToThrow);
+    mockEngine.registerRequests(forecastMockedRequest);
 
     try {
       timeSeriesAnalysisController.forecast(request);
@@ -79,8 +79,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   @Test
   public void should_return_time_series_result_from_engine_on_predict() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> predictMockedRequest = buildMockRequest(SERVICE_INFO1, PREDICATE_URL, request, buildTimeSeriesResult2());
-    onTimeSeriesEnginePostReturn(predictMockedRequest);
+    MockedRequest predictMockedRequest = buildMockRequest(SERVICE_INFO1, PREDICATE_URL, request, buildTimeSeriesResult2());
+    mockEngine.registerRequests(predictMockedRequest);
 
     TimeSeries actualTimeSeries = timeSeriesAnalysisController.predict(request);
 
@@ -91,8 +91,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   public void should_throw_exception_if_engine_returns_an_exception_on_predict() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while predicting: NullPointer");
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> predictMockedRequest = buildFailingMockRequest(SERVICE_INFO1, PREDICATE_URL, request, exceptionToThrow);
-    onTimeSeriesEnginePostReturn(predictMockedRequest);
+    MockedRequest predictMockedRequest = buildFailingMockRequest(SERVICE_INFO1, PREDICATE_URL, request, exceptionToThrow);
+    mockEngine.registerRequests(predictMockedRequest);
 
     try {
       timeSeriesAnalysisController.predict(request);
@@ -111,8 +111,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   @Test
   public void should_return_accuracy_result_from_engine_on_compute_forecast_accuracy() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    MockedRequest<TimeSeriesAnalysisRequest, Double> accuracyMockedRequest = buildMockRequest(SERVICE_INFO1, FORECAST_ACCURACY_URL, request, 2.0);
-    onAccuracyEnginePostReturn(accuracyMockedRequest);
+    MockedRequest accuracyMockedRequest = buildMockRequest(SERVICE_INFO1, FORECAST_ACCURACY_URL, request, 2.0);
+    mockEngine.registerRequests(accuracyMockedRequest);
 
     Double actualAccuracy = timeSeriesAnalysisController.computeForecastAccuracy(request);
 
@@ -123,8 +123,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   public void should_throw_exception_if_engine_returns_an_exception_on_compute_accuracy() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while computing accuracy: NullPointer");
-    MockedRequest<TimeSeriesAnalysisRequest, Double> accuracyMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_ACCURACY_URL, request, exceptionToThrow);
-    onAccuracyEnginePostReturn(accuracyMockedRequest);
+    MockedRequest accuracyMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_ACCURACY_URL, request, exceptionToThrow);
+    mockEngine.registerRequests(accuracyMockedRequest);
 
     try {
       timeSeriesAnalysisController.computeForecastAccuracy(request);
@@ -144,8 +144,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   public void should_return_time_series_from_engine_on_forecast_vs_actual() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
     TimeSeriesAnalysisRequest expectedRequest = buildTimeSeriesAnalysisExpectedRequestForecastVsActual();
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> forecastVsActualMockedRequest = buildMockRequest(SERVICE_INFO1, FORECAST_URL, expectedRequest, buildTimeSeriesResult());
-    onTimeSeriesEnginePostReturn(forecastVsActualMockedRequest);
+    MockedRequest forecastVsActualMockedRequest = buildMockRequest(SERVICE_INFO1, FORECAST_URL, expectedRequest, buildTimeSeriesResult());
+    mockEngine.registerRequests(forecastVsActualMockedRequest);
 
     TimeSeries actualTimeSeries = timeSeriesAnalysisController.forecastVsActual(request);
 
@@ -157,8 +157,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
     TimeSeriesAnalysisRequest expectedRequest = buildTimeSeriesAnalysisExpectedRequestForecastVsActual();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while computing forecast: NullPointer");
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> forecastVsActualMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_URL, expectedRequest, exceptionToThrow);
-    onTimeSeriesEnginePostReturn(forecastVsActualMockedRequest);
+    MockedRequest forecastVsActualMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_URL, expectedRequest, exceptionToThrow);
+    mockEngine.registerRequests(forecastVsActualMockedRequest);
 
     try {
       timeSeriesAnalysisController.forecastVsActual(request);
@@ -179,9 +179,9 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     mockEngine.setupWaitUntilEngineCall();
     TimeSeriesAnalysisRequest forecastRequest = buildTimeSeriesAnalysisRequest();
     TimeSeriesAnalysisRequest predictRequest = buildTimeSeriesAnalysisRequest();
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> forecastMockedRequest = buildHangingMockRequest(SERVICE_INFO1, FORECAST_URL, forecastRequest, buildTimeSeriesResult());
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> predicateMockedRequest = buildMockRequest(SERVICE_INFO2, PREDICATE_URL, predictRequest, buildTimeSeriesResult2());
-    onTimeSeriesEnginePostReturn(forecastMockedRequest, predicateMockedRequest);
+    MockedRequest forecastMockedRequest = buildHangingMockRequest(SERVICE_INFO1, FORECAST_URL, forecastRequest, buildTimeSeriesResult());
+    MockedRequest predicateMockedRequest = buildMockRequest(SERVICE_INFO2, PREDICATE_URL, predictRequest, buildTimeSeriesResult2());
+    mockEngine.registerRequests(forecastMockedRequest, predicateMockedRequest);
 
     CompletableFuture<TimeSeries> actualForecastFuture = supplyAsync(() -> timeSeriesAnalysisController.forecast(forecastRequest));
     mockEngine.waitUntilEngineCall();
@@ -200,9 +200,9 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     mockEngine.setupWaitUntilEngineCall();
     TimeSeriesAnalysisRequest forecastRequest = buildTimeSeriesAnalysisRequest();
     TimeSeriesAnalysisRequest predictRequest = buildTimeSeriesAnalysisRequest();
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> forecastMockedRequest = buildHangingMockRequest(SERVICE_INFO1, FORECAST_URL, forecastRequest, buildTimeSeriesResult());
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> predicateMockedRequest = buildMockRequest(SERVICE_INFO2, PREDICATE_URL, predictRequest, buildTimeSeriesResult2());
-    onTimeSeriesEnginePostReturn(forecastMockedRequest, predicateMockedRequest);
+    MockedRequest forecastMockedRequest = buildHangingMockRequest(SERVICE_INFO1, FORECAST_URL, forecastRequest, buildTimeSeriesResult());
+    MockedRequest predicateMockedRequest = buildMockRequest(SERVICE_INFO2, PREDICATE_URL, predictRequest, buildTimeSeriesResult2());
+    mockEngine.registerRequests(forecastMockedRequest, predicateMockedRequest);
 
     CompletableFuture<TimeSeries> actualForecastFuture = supplyAsync(() -> timeSeriesAnalysisController.forecast(forecastRequest));
     mockEngine.waitUntilEngineCall();
@@ -212,8 +212,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     InOrder inOrder = buildInOrder();
     verifyServiceSetup(newArrayList(SERVICE_INFO1, SERVICE_INFO2), inOrder);
-    mockEngine.verifyEngineCalledOnResource(SERVICE_INFO1.getUrl() + FORECAST_URL, inOrder);
-    mockEngine.verifyEngineCalledOnResource(SERVICE_INFO2.getUrl() + PREDICATE_URL, inOrder);
+    verifyRestTemplateCalledOn(SERVICE_INFO1.getUrl() + FORECAST_URL, inOrder);
+    verifyRestTemplateCalledOn(SERVICE_INFO2.getUrl() + PREDICATE_URL, inOrder);
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -222,10 +222,9 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     mockEngine.setupWaitUntilEngineCall();
     TimeSeriesAnalysisRequest forecastRequest = buildTimeSeriesAnalysisRequest();
     TimeSeriesAnalysisRequest predictRequest = buildTimeSeriesAnalysisRequest();
-    MockedRequest<TimeSeriesAnalysisRequest, TimeSeries> forecastMockedRequest = buildHangingMockRequest(SERVICE_INFO1, FORECAST_URL, forecastRequest, buildTimeSeriesResult());
-    MockedRequest<TimeSeriesAnalysisRequest, Double> forecastAccuracyMockedRequest = buildHangingMockRequest(SERVICE_INFO2, FORECAST_ACCURACY_URL, predictRequest, 2.);
-    onTimeSeriesEnginePostReturn(forecastMockedRequest);
-    onAccuracyEnginePostReturn(forecastAccuracyMockedRequest);
+    MockedRequest forecastMockedRequest = buildHangingMockRequest(SERVICE_INFO1, FORECAST_URL, forecastRequest, buildTimeSeriesResult());
+    MockedRequest forecastAccuracyMockedRequest = buildHangingMockRequest(SERVICE_INFO2, FORECAST_ACCURACY_URL, predictRequest, 2.);
+    mockEngine.registerRequests(forecastMockedRequest, forecastAccuracyMockedRequest);
 
     try {
       ExecutorService executor = Executors.newFixedThreadPool(2);
@@ -240,16 +239,6 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
       assertInstanceOf(TimeSeriesAnalysisServiceException.class, exception);
       assertEquals("No available engine to run time-series-predict please try again later", exception.getMessage());
     }
-  }
-
-  @SafeVarargs
-  private void onTimeSeriesEnginePostReturn(MockedRequest<TimeSeriesAnalysisRequest, TimeSeries>... mockedRequests) {
-    mockEngine.onRestTemplatePostReturn(TimeSeries.class, mockedRequests);
-  }
-
-  @SafeVarargs
-  private void onAccuracyEnginePostReturn(MockedRequest<TimeSeriesAnalysisRequest, Double>... mockedRequests) {
-    mockEngine.onRestTemplatePostReturn(Double.class, mockedRequests);
   }
 
   private static TimeSeries buildTimeSeriesResult() {
