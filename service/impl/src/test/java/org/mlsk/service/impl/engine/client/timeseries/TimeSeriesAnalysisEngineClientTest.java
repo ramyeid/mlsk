@@ -57,9 +57,7 @@ public class TimeSeriesAnalysisEngineClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
-      assertEquals("Failed to post forecast to engine", exception.getMessage());
-      assertInstanceOf(InvalidParameterException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisEngineRequestException(exception, "Failed to post forecast to engine");
     }
   }
 
@@ -72,9 +70,7 @@ public class TimeSeriesAnalysisEngineClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
-      assertEquals("Failed on post forecast to engine: Original Forecast Exception Message", exception.getMessage());
-      assertInstanceOf(HttpServerErrorException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisEngineRequestExceptionWithServerError(exception, "Failed on post forecast to engine: Original Forecast Exception Message");
     }
   }
 
@@ -100,9 +96,7 @@ public class TimeSeriesAnalysisEngineClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
-      assertEquals("Failed to post computeForecastAccuracy to engine", exception.getMessage());
-      assertInstanceOf(InvalidParameterException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisEngineRequestException(exception, "Failed to post computeForecastAccuracy to engine");
     }
   }
 
@@ -115,9 +109,7 @@ public class TimeSeriesAnalysisEngineClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
-      assertEquals("Failed on post computeForecastAccuracy to engine: Original Forecast Accuracy Exception Message", exception.getMessage());
-      assertInstanceOf(HttpServerErrorException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisEngineRequestExceptionWithServerError(exception, "Failed on post computeForecastAccuracy to engine: Original Forecast Accuracy Exception Message");
     }
   }
 
@@ -144,9 +136,7 @@ public class TimeSeriesAnalysisEngineClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
-      assertEquals("Failed to post predict to engine", exception.getMessage());
-      assertInstanceOf(InvalidParameterException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisEngineRequestException(exception, "Failed to post predict to engine");
     }
   }
 
@@ -159,9 +149,7 @@ public class TimeSeriesAnalysisEngineClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
-      assertEquals("Failed on post predict to engine: Original Predict Exception Message", exception.getMessage());
-      assertInstanceOf(HttpServerErrorException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisEngineRequestExceptionWithServerError(exception, "Failed on post predict to engine: Original Predict Exception Message");
     }
   }
 
@@ -175,5 +163,17 @@ public class TimeSeriesAnalysisEngineClientTest {
 
   private static HttpServerErrorException buildHttpServerErrorException(String exceptionMessage) {
     return new HttpServerErrorException("message", HttpStatus.INTERNAL_SERVER_ERROR, "status", null, exceptionMessage.getBytes(), null);
+  }
+
+  private static void assertOnTimeSeriesAnalysisEngineRequestException(Exception exception, String exceptionMessage) {
+    assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
+    assertEquals(exceptionMessage, exception.getMessage());
+    assertInstanceOf(InvalidParameterException.class, exception.getCause());
+  }
+
+  private static void assertOnTimeSeriesAnalysisEngineRequestExceptionWithServerError(Exception exception, String exceptionMessage) {
+    assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
+    assertEquals(exceptionMessage, exception.getMessage());
+    assertInstanceOf(HttpServerErrorException.class, exception.getCause());
   }
 }

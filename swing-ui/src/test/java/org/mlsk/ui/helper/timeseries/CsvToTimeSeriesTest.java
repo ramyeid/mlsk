@@ -35,11 +35,9 @@ public class CsvToTimeSeriesTest {
       fail("Date Column Name does not exit");
 
     } catch (Exception exception) {
-      assertInstanceOf(CsvParsingException.class, exception);
-      assertEquals("Header does not contain 'PASSENGER' column", exception.getMessage());
+      assertOnCsvParsingException(exception, "Header does not contain 'PASSENGER' column");
     }
   }
-
 
   @Test
   public void should_throw_exception_if_header_does_not_contain_date_column_name() {
@@ -50,9 +48,8 @@ public class CsvToTimeSeriesTest {
       toTimeSeries(csvLocation, "DAT", "Passengers", "%Y-%m");
       fail("Date Column Name does not exit");
 
-    } catch (CsvParsingException exception) {
-      assertInstanceOf(CsvParsingException.class, exception);
-      assertEquals("Header does not contain 'DAT' column", exception.getMessage());
+    } catch (Exception exception) {
+      assertOnCsvParsingException(exception, "Header does not contain 'DAT' column");
     }
   }
 
@@ -68,5 +65,10 @@ public class CsvToTimeSeriesTest {
 
   private static TimeSeriesRow buildTimeSeriesRow(String date, Double value) {
     return new TimeSeriesRow(date, value);
+  }
+
+  private static void assertOnCsvParsingException(Exception exception, String exceptionMessage) {
+    assertInstanceOf(CsvParsingException.class, exception);
+    assertEquals(exceptionMessage, exception.getMessage());
   }
 }

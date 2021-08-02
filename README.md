@@ -26,18 +26,12 @@ Below is the architecture of this application (Components might be added while d
 > - The calculation engines are seperate  spawnable webservices developed in python using flask and sklearn (Python3)
 > - The aim is dockerize all components
 
-### Api Documentation
-
-In order to document our endpoints we decided to use swagger/open api.
-
-> [Api Documentation](resources/documentation/md/Api.md)
-
-
 ## Components
 
-> - [Engine](resources/documentation/md/Engine.md)
-> - [Service](resources/documentation/md/Service.md)
-> - [Web UI](resources/documentation/md/WebUI.md)
+> - [Api](resources/documentation/md/Api.md)
+> - [Engine](./resources/documentation/Engine.md)
+> - [Service](./resources/documentation/Service.md)
+> - [Web UI](./resources/documentation/WebUI.md)
 
 ## Package and run
 
