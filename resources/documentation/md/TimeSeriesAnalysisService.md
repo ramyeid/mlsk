@@ -4,7 +4,7 @@ Extract values at a certain rate and a certain time interval and predict accordi
 
 This Services offers two end points; forecast and predict
 
-![Forecast vs Predict](./images/forecast_vs_prediction_air_Passengers_file.png)
+![Forecast vs Predict](images/forecast_vs_prediction_air_Passengers_file.png)
 
 ## Forecast
 

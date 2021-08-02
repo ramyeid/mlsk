@@ -1,0 +1,23 @@
+swagger: '2.0'
+info:
+  version: "1.0"
+  title: TimeSeriesModel
+  description: This is the yaml detailing the TimeSeries
+paths: {}
+definitions:
+  TimeSeriesModel:
+    type: object
+    properties:
+      rows:
+        type: array
+        items:
+          $ref: './TimeSeriesRow.yaml#/definitions/TimeSeriesRowModel'
+      dateColumnName:
+        type: string
+        description: name of the date column
+      valueColumnName:
+        type: string
+        description: name of the value column
+      dateFormat:
+        type: string
+        description: date format used in the time series rows.

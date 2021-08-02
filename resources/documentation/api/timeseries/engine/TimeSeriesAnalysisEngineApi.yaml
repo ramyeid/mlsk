@@ -1,0 +1,76 @@
+swagger: '2.0'
+info:
+  version: "1.0"
+  title: MLSK - TimeSeriesAnalysis - Engine
+  description: This is the API detailing all endpoints
+    of the Machine Learning Swiss Knife, Time Series Analysis, Engine side.
+    The Service is written in PYTHON
+tags:
+  - name: TimeSeriesAnalysis
+paths:
+  '/time-series-analysis/forecast':
+    post:
+      tags:
+        - TimeSeriesAnalysis
+      summary: Time Series Analysis Forecast
+      operationId: forecast
+      description: Forecast with Time Series Analysis Algorithm
+      parameters:
+        - in: body
+          name: timeSeriesAnalysisRequest
+          schema:
+            $ref: '../model/TimeSeriesAnalysisRequest.yaml#/definitions/TimeSeriesAnalysisRequestModel'
+      responses:
+        '200':
+          description: |
+            Returns only the result, we should not expect to return all the time series analysis input.
+            The number of rows returned is equal to TimeSeriesAnalysisRequest#numberOfValues.
+            The dates of each row returned is incremented acording to diff between previous dates.
+          schema:
+            $ref: '../model/TimeSeries.yaml#/definitions/TimeSeriesModel'
+        '500':
+          description: Engine Computation Exception with detailed exception message.
+  '/time-series-analysis/forecast-accuracy':
+    post:
+      tags:
+        - TimeSeriesAnalysis
+      summary: Time Series Analysis Forecast Accuracy
+      operationId: compute_accuracy_of_forecast
+      description: |
+        Compute Forecast Accuracy with Time Series Analysis Algorithm using the last {numberOfValues}.
+        Forecast the last {numberOfValues} and compare to actual data.
+      parameters:
+        - in: body
+          name: timeSeriesAnalysisRequest
+          schema:
+            $ref: '../model/TimeSeriesAnalysisRequest.yaml#/definitions/TimeSeriesAnalysisRequestModel'
+      responses:
+        '200':
+          description: |
+            Returns the accuracy of the forecast algorithm.
+          schema:
+            type: number
+        '500':
+          description: Engine Computation Exception with detailed exception message.
+  '/time-series-analysis/predict':
+    post:
+      tags:
+        - TimeSeriesAnalysis
+      summary: Time Series Analysis Predict
+      operationId: predict
+      description: Predict with Time Series Analysis Algorithm.
+      parameters:
+        - in: body
+          name: timeSeriesAnalysisRequest
+          schema:
+            $ref: '../model/TimeSeriesAnalysisRequest.yaml#/definitions/TimeSeriesAnalysisRequestModel'
+      responses:
+        '200':
+          description: |
+            Returns only the result, we should not expect to return all the time series analysis input.
+            The number of rows returned is equal to TimeSeriesAnalysisRequest#numberOfValues.
+            The dates of each row returned is incremented acording to diff between previous dates.
+          schema:
+            $ref: '../model/TimeSeries.yaml#/definitions/TimeSeriesModel'
+        '500':
+          description: Engine Computation Exception with detailed exception message.
