@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import common_constants as const
-import launch_common as common
+import common
 import os
 
 

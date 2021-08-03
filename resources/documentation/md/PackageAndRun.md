@@ -9,11 +9,12 @@ We worked hard to make machine learning easy and accessible for everyone. Packag
 - python3
 - npm
 - ng
+- lite-server
 
 ## Package
 
 To package the solution a script is offered under packaging/.
-The packaging will create a build directory containing the launcher scripts for different services, a configuration file (swissknife.ini) & the jars and the python module under build/components
+The packaging will create a build directory containing the launcher scripts for different services, a configuration file (mlsk.ini) & the jars and the python module under build/components
 
 > It is recommended to launch a python virtual environment locally \
 > to do so [Setup venv](./Engine.md#Setup-Python-Environment)
@@ -27,7 +28,7 @@ python packaging.py [--skipTests]
 
 ## Configuration file
 
-The configuration file used has to be named **swissknife.ini** and it should have the following style.
+The configuration file used has to be named **mlsk.ini** and it should have the following style.
 
 ```txt
 [SERVICE]
@@ -64,7 +65,7 @@ python launch_ui.py
 
 ## Launch Web UI
 
-The launch_web_ui dumped under build/ will read from the configuration file; and run the web-ui jar.
+The launch_web_ui dumped under build/ will read from the configuration file; and run **_lite-server_** with a specific bs-config.json which is filled with information from the configuration file.
 
 ```bash
 source .venv/bin/activate
