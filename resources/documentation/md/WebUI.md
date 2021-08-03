@@ -21,6 +21,14 @@ https://nodejs.org/en/
 npm install -g @angular/cli
 ```
 
+#### To install lite-server
+```bash
+npm install --global lite-server
+```
+
+> for more information on [_lite-server_](https://www.npmjs.com/package/lite-server)
+
+
 ### Build
 
 ```bash

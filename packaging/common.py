@@ -16,3 +16,13 @@ def read_project_information() -> dict:
                          const.ENGINE_PORTS_OPTION: config_parser.get(const.ENGINE_SECTION, const.PORTS_SECTION),
                          const.WEB_UI_PORT_OPTION:  config_parser.get(const.WEB_UI_SECTION, const.PORT_SECTION)}
     return result_dictionary
+
+
+def replace_placeholder_in_file(file_path: str, place_holder: str, value: str):
+    with open(file_path, "r") as file:
+        file_content = file.read()
+
+    file_content = file_content.replace(place_holder, value)
+
+    with open(file_path, "w+") as file:
+        file.write(file_content)

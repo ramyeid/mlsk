@@ -5,13 +5,14 @@ import { catchError } from 'rxjs/operators';
 
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 import { TimeSeries } from '../model/time-series';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TimeSeriesAnalysisService {
 
-  private static readonly BASE_URL = 'http://localhost:6766/time-series-analysis';
+  private static readonly BASE_URL = `http://localhost:${environment.serverPort}/time-series-analysis`;
 
   private readonly httpClient: HttpClient;
 

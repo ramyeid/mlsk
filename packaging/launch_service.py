@@ -2,7 +2,7 @@
 
 import os
 import common_constants as const
-import launch_common as common
+import common
 
 
 def get_absolute_path_logs() -> str:
@@ -31,6 +31,7 @@ if __name__ == "__main__":
                   "--engine-ports {} "
                   "--logs-path {} "
                   "--engine-path {} "
-                  .format(service_port, const.COMPONENTS_DIRECTORY, const.SERVICE_JAR, engine_ports, logs_path, engine_path))
+                  .format(service_port, const.COMPONENTS_DIRECTORY, const.SERVICE_JAR,
+                          engine_ports, logs_path, engine_path))
     else:
         print("ERROR: Please make sure configuration file: {} exists".format(const.CONFIGURATION_FILE))

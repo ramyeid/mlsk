@@ -5,6 +5,7 @@ import argparse
 from pathlib import Path
 from shutil import copy, copytree
 import common_constants as const
+import common
 
 
 def print_start_step(step_name: str):
@@ -59,15 +60,27 @@ def compile_java_and_run_tests():
     os.system("cd .. && mvn clean package -q")
 
 
+def set_environment_variables_for_angular():
+    print("  Setting Angular Environment Variables")
+
+    # Read Service Port
+    project_information = common.read_project_information()
+    service_port = project_information[const.SERVICE_PORT_OPTION]
+
+    # Override Service Port in environment.prod.ts
+    common.replace_placeholder_in_file(const.BUILD_COMPONENTS_WEB_UI_PROD_ENVIRONMENT_FILE,
+                                       const.ANGULAR_SERVER_PORT_OPTION, service_port)
+
+
 def compile_angular():
     print("  Compiling Angular")
-    os.system("cd ../web-ui && ng build --configuration production")
+    os.system("cd {} && ng build --configuration production".format(const.BUILD_COMPONENTS_WEB_UI_DIRECTORY))
 
 
 def compile_angular_and_run_tests():
     compile_angular()
     print("  Running Angular tests")
-    os.system("cd ../web-ui && ng test --watch=false")
+    os.system("cd {} && ng test --watch=false".format(const.BUILD_COMPONENTS_WEB_UI_DIRECTORY))
 
 
 def get_all_jar_paths() -> [str]:
@@ -96,7 +109,7 @@ def copy_web_ui_project():
 def copy_launcher_scripts():
     print("  Copying launcher scripts")
     copy("common_constants.py", const.BUILD_DIRECTORY)
-    copy("launch_common.py", const.BUILD_DIRECTORY)
+    copy("common.py", const.BUILD_DIRECTORY)
     copy("launch_service.py", const.BUILD_DIRECTORY)
     copy("launch_ui.py", const.BUILD_DIRECTORY)
     copy("launch_web_ui.py", const.BUILD_DIRECTORY)
@@ -104,7 +117,7 @@ def copy_launcher_scripts():
 
 def copy_configuration_file():
     print("  Copying configuration file")
-    copy("swissknife.ini", const.BUILD_DIRECTORY)
+    copy(const.CONFIGURATION_FILE, const.BUILD_DIRECTORY)
 
 
 if __name__ == "__main__":
@@ -115,38 +128,35 @@ if __name__ == "__main__":
     if build_directory_exists():
         print("ERROR: Please remove the build directory [../build], to package the solution")
     else:
-
-        print_start_step("PYTHON")
-        compile_python() if args.should_skip_tests else compile_python_and_run_tests()
-        print_end_step("PYTHON")
-
-        print_start_step("JAVA")
-        compile_java() if args.should_skip_tests else compile_java_and_run_tests()
-        print_end_step("JAVA")
-
-        print_start_step("ANGULAR")
-        compile_angular() if args.should_skip_tests else compile_angular_and_run_tests()
-        print_end_step("ANGULAR")
-
         print_start_step("CREATING DIRECTORIES")
         create_build_directory()
         create_components_directory()
         create_logs_directory()
         print_end_step("CREATING DIRECTORIES")
 
-        print_start_step("COPYING JARS")
-        copy_all_jars(get_all_jar_paths())
-        print_end_step("COPYING JARS")
-
-        print_start_step("COPYING ENGINE")
+        print_start_step("COMPILE PYTHON")
+        compile_python() if args.should_skip_tests else compile_python_and_run_tests()
+        print_end_step("COMPILE PYTHON")
+        print_start_step("COPY PYTHON")
         copy_engine_project()
-        print_end_step("COPYING ENGINE")
+        print_end_step("COPY PYTHON")
 
-        print_start_step("COPYING WEB UI")
+        print_start_step("COMPILE JAVA")
+        compile_java() if args.should_skip_tests else compile_java_and_run_tests()
+        print_end_step("COMPILE JAVA")
+        print_start_step("COPY JAVA")
+        copy_all_jars(get_all_jar_paths())
+        print_end_step("COPY JAVA")
+
+        print_start_step("COPY ANGULAR")
         copy_web_ui_project()
-        print_end_step("COPYING WEB UI")
+        set_environment_variables_for_angular()
+        print_end_step("COPY ANGULAR")
+        print_start_step("COMPILE ANGULAR")
+        compile_angular() if args.should_skip_tests else compile_angular_and_run_tests()
+        print_end_step("COMPILE ANGULAR")
 
-        print_start_step("COPYING SETUP")
+        print_start_step("COPY SETUP")
         copy_launcher_scripts()
         copy_configuration_file()
-        print_end_step("COPYING SETUP")
+        print_end_step("COPY SETUP")
