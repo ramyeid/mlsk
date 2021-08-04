@@ -1,6 +1,7 @@
 package org.mlsk.service.impl;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mlsk.service.Engine;
 import org.mlsk.service.impl.exceptions.NoAvailableEngineException;
 import org.mlsk.service.model.EngineState;
@@ -11,7 +12,7 @@ import java.util.function.Function;
 
 public class Orchestrator {
 
-  private static final Logger LOGGER = Logger.getLogger(Orchestrator.class);
+  private static final Logger LOGGER = LogManager.getLogger(Orchestrator.class);
 
   private final List<Engine> engines;
 

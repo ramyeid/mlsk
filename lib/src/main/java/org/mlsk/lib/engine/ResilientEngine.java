@@ -1,7 +1,8 @@
 package org.mlsk.lib.engine;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.engine.launcher.EngineLauncher;
 import org.mlsk.lib.model.ServiceInformation;
 
@@ -10,7 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ResilientEngine {
 
-  private static final Logger LOGGER = Logger.getLogger(ResilientEngine.class);
+  private static final Logger LOGGER = LogManager.getLogger(ResilientEngine.class);
 
   private Process process;
   private final ServiceInformation serviceInformation;
