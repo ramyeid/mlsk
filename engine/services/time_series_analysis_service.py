@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 from datetime import datetime
-from statsmodels.tsa.arima_model import ARIMA
+from statsmodels.tsa.arima.model import ARIMA
 import pandas as pd
 import numpy as np
 from utils import date
@@ -75,8 +75,8 @@ class TimeSeriesAnalysisService:
             pandas.DataFrame -> data frame containing the new values and dates.
         """
 
-        model = ARIMA(self.data[self.value_column_name], order=(5, 1, 0))
-        model_fit = model.fit(disp=0)
+        model = ARIMA(self.data[self.value_column_name], order=(5, 2, 2))
+        model_fit = model.fit()
         predictions = model_fit.predict(len(self.data), len(self.data) + self.number_of_values - 1, typ='levels')
 
         return self.__create_data_frame_with_values(predictions.array)
@@ -95,8 +95,8 @@ class TimeSeriesAnalysisService:
 
         value_column = np.asarray(data[self.value_column_name])
         for _ in range(self.number_of_values):
-            model = ARIMA(value_column, order=(9, 1, 0))
-            model_fit = model.fit(disp=0)
+            model = ARIMA(value_column, order=(9, 2, 3))
+            model_fit = model.fit()
             forecasted_value = model_fit.forecast()
             value_column = np.append(value_column, forecasted_value[0])
 
