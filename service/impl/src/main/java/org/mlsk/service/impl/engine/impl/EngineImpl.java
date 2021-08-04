@@ -1,13 +1,13 @@
 package org.mlsk.service.impl.engine.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.apache.log4j.Logger;
-import org.mlsk.service.Engine;
-import org.mlsk.service.impl.ServiceConfiguration;
-import org.mlsk.service.impl.engine.impl.timeseries.TimeSeriesAnalysisEngineCaller;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.engine.ResilientEngine;
-import org.mlsk.service.model.EngineState;
 import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.service.Engine;
+import org.mlsk.service.impl.engine.impl.timeseries.TimeSeriesAnalysisEngineCaller;
+import org.mlsk.service.model.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 
@@ -23,7 +23,7 @@ import static org.mlsk.service.utils.TimeSeriesAnalysisAlgorithmNames.*;
 
 public class EngineImpl implements Engine {
 
-  private static final Logger LOGGER = Logger.getLogger(EngineImpl.class);
+  private static final Logger LOGGER = LogManager.getLogger(EngineImpl.class);
 
   private final ResilientEngine engineProcess;
   private final ServiceInformation serviceInformation;

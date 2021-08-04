@@ -1,6 +1,7 @@
 package org.mlsk.service.impl.controllers.timeseries;
 
-import org.apache.log4j.Logger;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.mlsk.service.TimeSeriesAnalysis;
 import org.mlsk.service.impl.Orchestrator;
 import org.mlsk.service.impl.exceptions.TimeSeriesAnalysisServiceException;
@@ -17,7 +18,7 @@ import static org.mlsk.service.utils.TimeSeriesAnalysisUrls.*;
 @RestController
 public class TimeSeriesAnalysisController implements TimeSeriesAnalysis {
 
-  private static final Logger LOGGER = Logger.getLogger(TimeSeriesAnalysisController.class);
+  private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAnalysisController.class);
 
   private final Orchestrator orchestrator;
 
