@@ -3,6 +3,7 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { Observable, of } from 'rxjs';
+import { MatIconModule } from '@angular/material/icon';
 
 import { TimeSeriesAnalysisInputComponent } from './time-series-analysis-input.component';
 import { TimeSeriesAnalysisService } from '../service/time-series-analysis.service';
@@ -25,7 +26,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
     mockService = jasmine.createSpyObj<TimeSeriesAnalysisService>(['forecast', 'predict', 'forecastVsActual']);
 
     TestBed.configureTestingModule({
-      imports: [ ReactiveFormsModule, FormsModule ],
+      imports: [ ReactiveFormsModule, FormsModule, MatIconModule ],
       declarations: [ TimeSeriesAnalysisInputComponent ],
       providers: [
         { provide: TimeSeriesAnalysisService, useValue: mockService },

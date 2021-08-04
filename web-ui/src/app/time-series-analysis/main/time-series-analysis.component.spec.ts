@@ -1,4 +1,4 @@
-import { DebugElement } from '@angular/core';
+import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
@@ -16,7 +16,8 @@ describe('TimeSeriesAnalysisComponent', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      declarations: [ TimeSeriesAnalysisComponent ]
+      declarations: [ TimeSeriesAnalysisComponent ],
+      schemas: [ NO_ERRORS_SCHEMA ]
     });
     fixture = TestBed.createComponent(TimeSeriesAnalysisComponent);
     inputComponent = fixture.debugElement.query(By.css('app-time-series-analysis-input'));
