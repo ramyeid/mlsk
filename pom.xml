@@ -34,6 +34,9 @@
                 <version>3.0.0-M5</version>
                 <configuration>
                     <redirectTestOutputToFile>true</redirectTestOutputToFile>
+                    <includes>
+                        <include>**/**</include>
+                    </includes>
                 </configuration>
             </plugin>
             <plugin>
