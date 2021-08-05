@@ -18,11 +18,19 @@ def read_project_information() -> dict:
     return result_dictionary
 
 
-def replace_placeholder_in_file(file_path: str, place_holder: str, value: str):
+def read_file(file_path: str) -> str:
     with open(file_path, "r") as file:
-        file_content = file.read()
+        return file.read()
 
-    file_content = file_content.replace(place_holder, value)
 
+def write_file(file_path: str, content: str):
     with open(file_path, "w+") as file:
-        file.write(file_content)
+        file.write(content)
+
+
+def replace_placeholder_in_file(file_path: str, place_holder: str, value: str):
+    file_content = read_file(file_path)
+
+    updated_file_content = file_content.replace(place_holder, value)
+
+    write_file(file_path, updated_file_content)
