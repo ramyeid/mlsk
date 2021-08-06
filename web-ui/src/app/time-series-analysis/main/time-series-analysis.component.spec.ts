@@ -21,7 +21,7 @@ describe('TimeSeriesAnalysisComponent', () => {
     });
     fixture = TestBed.createComponent(TimeSeriesAnalysisComponent);
     inputComponent = fixture.debugElement.query(By.css('app-time-series-analysis-input'));
-    mockOutputComponent = jasmine.createSpyObj<TimeSeriesAnalysisOutputComponent>(['onNewRequest', 'onTimeSeriesResult']);
+    mockOutputComponent = jasmine.createSpyObj<TimeSeriesAnalysisOutputComponent>(['onNewRequest', 'onResult']);
     fixture.componentInstance.outputComponent = mockOutputComponent;
   });
 
@@ -48,9 +48,18 @@ describe('TimeSeriesAnalysisComponent', () => {
       const row2: TimeSeriesRow = new TimeSeriesRow('2', 2);
       const timeSeries: TimeSeries = new TimeSeries([row1, row2], 'date', 'value', 'yyyyMM');
 
-      inputComponent.triggerEventHandler('timeSeriesResultEmitter', [timeSeries, type]);
+      inputComponent.triggerEventHandler('resultEmitter', [timeSeries, type]);
 
-      expect(mockOutputComponent.onTimeSeriesResult).toHaveBeenCalledWith([timeSeries, type]);
+      expect(mockOutputComponent.onResult).toHaveBeenCalledWith([timeSeries, type]);
+    });
+
+    it('should call output on accuracy result', () => {
+      const type: TimeSeriesType = TimeSeriesType.REQUEST;
+      const accuracy = 74.123;
+
+      inputComponent.triggerEventHandler('resultEmitter', [accuracy, type]);
+
+      expect(mockOutputComponent.onResult).toHaveBeenCalledWith([accuracy, type]);
     });
 
     it('should call output on new request', () => {

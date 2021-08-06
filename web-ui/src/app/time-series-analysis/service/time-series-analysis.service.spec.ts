@@ -38,7 +38,7 @@ describe('TimeSeriesAnalysisService', () => {
           expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
         }
       });
-      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
       httpMock.verify();
@@ -56,7 +56,7 @@ describe('TimeSeriesAnalysisService', () => {
           done();
         }
       });
-      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast');
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast');
       req.flush(timeSeriesResult);
       expect(req.request.method).toBe('POST');
       httpMock.verify();
@@ -81,7 +81,7 @@ describe('TimeSeriesAnalysisService', () => {
           expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
         }
       });
-      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/predict');
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/predict');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
       httpMock.verify();
@@ -99,7 +99,7 @@ describe('TimeSeriesAnalysisService', () => {
           done();
         }
       });
-      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/predict');
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/predict');
       req.flush(timeSeriesResult);
       expect(req.request.method).toBe('POST');
       httpMock.verify();
@@ -124,7 +124,7 @@ describe('TimeSeriesAnalysisService', () => {
           expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
         }
       });
-      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast-vs-actual');
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-vs-actual');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
       httpMock.verify();
@@ -142,8 +142,50 @@ describe('TimeSeriesAnalysisService', () => {
           done();
         }
       });
-      const req = httpMock.expectOne('http://localhost:6766/time-series-analysis/forecast-vs-actual');
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-vs-actual');
       req.flush(timeSeriesResult);
+      expect(req.request.method).toBe('POST');
+      httpMock.verify();
+    });
+
+  });
+
+
+  describe('Compute Forecat Accuracy', () => {
+
+    it('should handle error of type error event from http post compute forecast accuracy', () => {
+      const errorEvent = new ErrorEvent('Type', {
+        error : new ErrorEvent('Error Event type'),
+        message : 'Error Event type Message'
+      });
+      const timeSeriesAnalysisRequest = Helper.buildTimeSeriesAnalysisRequest();
+
+      const actualResult$ = service.computeForecastAccuracy(timeSeriesAnalysisRequest);
+
+      actualResult$.subscribe({
+        error: (err) => {
+          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
+        }
+      });
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-accuracy');
+      req.error(errorEvent);
+      expect(req.request.method).toBe('POST');
+      httpMock.verify();
+    });
+
+    it('should return result from http post compute forecast accuracy', (done: DoneFn) => {
+      const timeSeriesAnalysisRequest = Helper.buildTimeSeriesAnalysisRequest();
+
+      const actualResult$ = service.computeForecastAccuracy(timeSeriesAnalysisRequest);
+
+      actualResult$.subscribe({
+        next: (actualValue: number) => {
+          expect(actualValue).toEqual(98.55);
+          done();
+        }
+      });
+      const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-accuracy');
+      req.flush(98.55);
       expect(req.request.method).toBe('POST');
       httpMock.verify();
     });

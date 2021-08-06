@@ -105,7 +105,7 @@
       </div>
 
       <div class="form-group row mb-2">
-        <div class="offset-md-2 col-md-4">
+        <div class="offset-md-2 col-md-6">
           <button class="btn btn-outline-primary"
                   id="predictBtn"
                   type="button"
@@ -132,6 +132,15 @@
                   [disabled]="!settingsForm.valid"
                   (click)="forecastVsActual()">
             Forecast vs Actual
+          </button>
+          <button class="btn btn-outline-primary"
+                  id="computeForecastAccuracyBtn"
+                  type="button"
+                  style="width:200px"
+                  [title]="settingsForm.valid ? 'Launch compute forecast accuracy' : 'Disabled until the form data is valid'"
+                  [disabled]="!settingsForm.valid"
+                  (click)="computeForecastAccuracy()">
+            Forecast Accuracy
           </button>
         </div>
         <div class="col-md-4">

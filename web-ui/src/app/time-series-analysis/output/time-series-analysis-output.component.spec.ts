@@ -10,6 +10,7 @@ import { TimeSeriesType } from '../model/time-series-type';
 import { TimeSeriesAnalysisOutputComponent } from './time-series-analysis-output.component';
 import { ChartCoordinate, ChartLine, ChartLines, LineHelper } from 'src/app/shared/line-helper';
 import { ChartOptions } from 'src/app/shared/chart-options';
+import { Constants } from '../utils/constants';
 
 describe('TimeSeriesAnalysisOutputComponent', () => {
 
@@ -29,76 +30,130 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
 
   describe('Component Rendering', () => {
 
-    it('should render page without chart on load', () => {
+    it('should render page without chart and accuracy on load', () => {
 
       fixture.detectChanges();
 
+      const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
       const ngxLineChart: DebugElement = fixture.debugElement.query(By.css('ngx-charts-line-chart'));
+      expect(accuracyResult).toBeNull();
       expect(ngxLineChart).toBeNull();
     });
 
-    it('should render page without chart when only request is received', () => {
+    it('should render page without chart and accuracy when only request is received', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
 
-      component.onTimeSeriesResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
       fixture.detectChanges();
 
+      const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
       const ngxLineChart: DebugElement = fixture.debugElement.query(By.css('ngx-charts-line-chart'));
+      expect(accuracyResult).toBeNull();
       expect(ngxLineChart).toBeNull();
     });
 
-    it('should render page with chart when request and result are received', () => {
+    it('should render page with chart when request and time series result are received', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
 
-      component.onTimeSeriesResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
-      component.onTimeSeriesResult([timeSeriesResult, TimeSeriesType.RESULT]);
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([timeSeriesResult, TimeSeriesType.RESULT]);
       fixture.detectChanges();
 
+      const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
       const ngxLineChart: DebugElement = fixture.debugElement.query(By.css('ngx-charts-line-chart'));
+      expect(accuracyResult).toBeNull();
       expect(ngxLineChart).not.toBeNull();
       Helper.expectCorrectLineChartComponent(ngxLineChart.componentInstance);
+    });
+
+    it('should render page with accuracy when request and forecast accuracy result are received', () => {
+      const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
+      const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
+
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([forecastAccuracyResult, TimeSeriesType.RESULT]);
+      fixture.detectChanges();
+
+      const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
+      const ngxLineChart: DebugElement = fixture.debugElement.query(By.css('ngx-charts-line-chart'));
+      expect(accuracyResult).not.toBeNull();
+      expect(ngxLineChart).toBeNull();
+      Helper.expectCorrectForecastMessage(accuracyResult.nativeElement);
     });
 
     it('should render page without chart when request and result received and new request', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
-      component.onTimeSeriesResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
-      component.onTimeSeriesResult([timeSeriesResult, TimeSeriesType.RESULT]);
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([timeSeriesResult, TimeSeriesType.RESULT]);
       fixture.detectChanges();
 
       component.onNewRequest();
       fixture.detectChanges();
 
+      const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
       const ngxLineChart: DebugElement = fixture.debugElement.query(By.css('ngx-charts-line-chart'));
+      expect(accuracyResult).toBeNull();
+      expect(ngxLineChart).toBeNull();
+    });
+
+    it('should render page without accuracy when request and result received and new request', () => {
+      const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
+      const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([forecastAccuracyResult, TimeSeriesType.RESULT]);
+      fixture.detectChanges();
+
+      component.onNewRequest();
+      fixture.detectChanges();
+
+      const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
+      const ngxLineChart: DebugElement = fixture.debugElement.query(By.css('ngx-charts-line-chart'));
+      expect(accuracyResult).toBeNull();
       expect(ngxLineChart).toBeNull();
     });
 
   });
 
 
-  describe('TimeSeriesResult', () => {
+  describe('TimeSeriesResult & AccuracyResult', () => {
 
     it('should not set display to true when only request is received', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
 
-      component.onTimeSeriesResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
 
+      expect(component.forecastAccuracy).toBeUndefined();
       expect(component.chartOptions).toEqual(Helper.buildExpectedChartOptions());
       expect(component.chartLines).toEqual([ Helper.buildExpectedRequestChartLine() ]);
       expect(component.shouldDisplay).toBeFalse();
     });
 
-    it ('should build chart lines when request and result are received', () => {
+    it ('should build chart lines when request and time series result are received', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
 
-      component.onTimeSeriesResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
-      component.onTimeSeriesResult([timeSeriesResult, TimeSeriesType.RESULT]);
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([timeSeriesResult, TimeSeriesType.RESULT]);
 
+      expect(component.forecastAccuracy).toBeUndefined();
       expect(component.chartOptions).toEqual(Helper.buildExpectedChartOptions());
       expect(component.chartLines).toEqual(Helper.buildExpectedChartLines());
       expect(component.shouldDisplay).toBeTrue();
+    });
+
+    it('should set forecast accuracy when request and forecast accuracy result are received', () => {
+      const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
+      const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
+
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([forecastAccuracyResult, TimeSeriesType.RESULT]);
+
+      expect(component.forecastAccuracy).toBe(String(Helper.buildForecastAccuracyResult()));
+      expect(component.chartOptions).toEqual(Helper.buildExpectedChartOptions());
+      expect(component.chartLines).toEqual([ Helper.buildExpectedRequestChartLine() ]);
+      expect(component.shouldDisplay).toBeFalse();
     });
 
   });
@@ -106,14 +161,29 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
 
   describe('NewRequest', () => {
 
-    it('should reset chart options, chart lines and display on new request', () => {
+    it('should reset chart options, chart lines and display on new request after time series result', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
-      component.onTimeSeriesResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
-      component.onTimeSeriesResult([timeSeriesResult, TimeSeriesType.RESULT]);
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([timeSeriesResult, TimeSeriesType.RESULT]);
 
       component.onNewRequest();
 
+      expect(component.forecastAccuracy).toBeUndefined();
+      expect(component.chartOptions).toBeUndefined();
+      expect(component.chartLines).toEqual([]);
+      expect(component.shouldDisplay).toBeFalse();
+    });
+
+    it('should reset chart options, chart lines and display on new request after forecast accuracy result', () => {
+      const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
+      const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
+      component.onResult([timeSeriesRequest, TimeSeriesType.REQUEST]);
+      component.onResult([forecastAccuracyResult, TimeSeriesType.RESULT]);
+
+      component.onNewRequest();
+
+      expect(component.forecastAccuracy).toBeUndefined();
       expect(component.chartOptions).toBeUndefined();
       expect(component.chartLines).toEqual([]);
       expect(component.shouldDisplay).toBeFalse();
@@ -140,6 +210,10 @@ class Helper {
     const row2: TimeSeriesRow = new TimeSeriesRow('1964', 5);
     const row3: TimeSeriesRow = new TimeSeriesRow('1965', 6);
     return new TimeSeries([ row1, row2, row3 ], Helper.DATE_COLUMN_VALUE, Helper.VALUE_COLUMN_VALUE, 'yyyy');
+  }
+
+  static buildForecastAccuracyResult(): number {
+    return 78.123;
   }
 
   static buildExpectedRequestChartLine(): ChartLine {
@@ -191,6 +265,10 @@ class Helper {
     expect(lineChartComponent.yAxisLabel).toEqual(Helper.VALUE_COLUMN_VALUE);
     expect(lineChartComponent.autoScale).toBeTrue();
     expect(lineChartComponent.timeline).toBeTrue();
+  }
+
+  static expectCorrectForecastMessage(nativeElement: HTMLElement): void {
+    expect(nativeElement.textContent).toEqual('Forecast Accuracy: 78.123%');
   }
 
 }

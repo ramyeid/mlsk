@@ -20,7 +20,7 @@ import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request
 })
 export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
-  @Output() timeSeriesResultEmitter = new EventEmitter<[TimeSeries, TimeSeriesType]>();
+  @Output() resultEmitter = new EventEmitter<[TimeSeries | number, TimeSeriesType]>();
   @Output() newRequestEmitter = new EventEmitter<undefined>();
   private readonly formBuilder: FormBuilder;
   private readonly requestBuilder: TimeSeriesRequestBuilderService;
@@ -64,6 +64,10 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     this.postNewRequest(request => this.service.forecastVsActual(request));
   }
 
+  computeForecastAccuracy(): void {
+    this.postNewRequest(request => this.service.computeForecastAccuracy(request));
+  }
+
   onUpload(event: Event): void {
     const input = event.target as HTMLInputElement;
 
@@ -72,7 +76,7 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     }
   }
 
-  private postNewRequest(serviceCall: (request: TimeSeriesAnalysisRequest) => Observable<TimeSeries>): void {
+  private postNewRequest(serviceCall: (request: TimeSeriesAnalysisRequest) => Observable<TimeSeries | number>): void {
     const dateColumnName: string = this.settingsForm.get(Constants.DATE_COLUMN_NAME_FORM)?.value;
     const valueColumnName: string = this.settingsForm.get(Constants.VALUE_COLUMN_NAME_FORM)?.value;
     const dateFormat: string = this.settingsForm.get(Constants.DATE_FORMAT_FORM)?.value;
@@ -84,11 +88,11 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
       .buildTimeSeriesAnalysisRequest(this.csvFile, dateColumnName, valueColumnName, dateFormat, numberOfValues)
       .pipe(
         switchMap(request => {
-          this.timeSeriesResultEmitter.emit([request.timeSeries, TimeSeriesType.REQUEST]);
+          this.resultEmitter.emit([request.timeSeries, TimeSeriesType.REQUEST]);
           return serviceCall(request);
         })
       ).subscribe({
-        next: (timeSeries: TimeSeries) => this.onSuccess(timeSeries),
+        next: (result: TimeSeries | number) => this.onSuccess(result),
         error: err => this.onError(err)
       });
   }
@@ -109,8 +113,8 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     });
   }
 
-  private onSuccess(timeSeriesResult: TimeSeries): void {
-    this.timeSeriesResultEmitter.emit([timeSeriesResult, TimeSeriesType.RESULT]);
+  private onSuccess(result: TimeSeries | number): void {
+    this.resultEmitter.emit([result, TimeSeriesType.RESULT]);
     this.isWaitingForResult = false;
   }
 
