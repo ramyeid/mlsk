@@ -23,7 +23,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
   beforeEach(() => {
     mockRequestBuilderService = jasmine.createSpyObj<TimeSeriesRequestBuilderService>(['buildTimeSeriesAnalysisRequest']);
-    mockService = jasmine.createSpyObj<TimeSeriesAnalysisService>(['forecast', 'predict', 'forecastVsActual']);
+    mockService = jasmine.createSpyObj<TimeSeriesAnalysisService>(['forecast', 'predict', 'forecastVsActual', 'computeForecastAccuracy']);
 
     TestBed.configureTestingModule({
       imports: [ ReactiveFormsModule, FormsModule, MatIconModule ],
@@ -178,7 +178,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       expect(FormHelper.ACTUAL_EMITTED_ITEMS[1]).toEqual([ FactoryHelper.buildTimeSeriesResult(), TimeSeriesType.RESULT ]);
     }));
 
-    it('should call service on and set error message on build time series analysis request failure', fakeAsync(() => {
+    it('should set error message on build time series analysis request failure', fakeAsync(() => {
       FormHelper.setupEmittedItemsSubscriber(fixture);
       FormHelper.setupNewRequestSubscriber(fixture);
       FormHelper.prepareValidForm(fixture);
@@ -258,7 +258,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       expect(FormHelper.ACTUAL_EMITTED_ITEMS[1]).toEqual([ FactoryHelper.buildTimeSeriesResult(), TimeSeriesType.RESULT ]);
     }));
 
-    it('should call service on and set error message on build time series analysis request failure', fakeAsync(() => {
+    it('should set error message on build time series analysis request failure', fakeAsync(() => {
       FormHelper.setupEmittedItemsSubscriber(fixture);
       FormHelper.setupNewRequestSubscriber(fixture);
       FormHelper.prepareValidForm(fixture);
@@ -338,7 +338,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       expect(FormHelper.ACTUAL_EMITTED_ITEMS[1]).toEqual([ FactoryHelper.buildTimeSeriesResult(), TimeSeriesType.RESULT ]);
     }));
 
-    it('should call service on and set error message on build time series analysis request failure', fakeAsync(() => {
+    it('should set error message on build time series analysis request failure', fakeAsync(() => {
       FormHelper.setupEmittedItemsSubscriber(fixture);
       FormHelper.setupNewRequestSubscriber(fixture);
       FormHelper.prepareValidForm(fixture);
@@ -396,16 +396,96 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
   });
 
+
+  describe('Compute Forecast Accuracy Submission', () => {
+
+    it('should call service and output result on compute forecast accuracy success', fakeAsync(() => {
+      FormHelper.setupEmittedItemsSubscriber(fixture);
+      FormHelper.setupNewRequestSubscriber(fixture);
+      FormHelper.prepareValidForm(fixture);
+      mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(FactoryHelper.buildTimeSeriesAnalysisRequestObservable());
+      mockService.computeForecastAccuracy.and.returnValue(FactoryHelper.buildAccuracyResultObserable());
+
+      component.computeForecastAccuracy();
+
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS.length).toEqual(2);
+      AssertionHelper.expectValidForm(fixture);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('');
+      expect(mockRequestBuilderService.buildTimeSeriesAnalysisRequest).toHaveBeenCalled();
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS[0]).toEqual([ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesType.REQUEST ]);
+      expect(mockService.computeForecastAccuracy).toHaveBeenCalled();
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS[1]).toEqual([ FactoryHelper.buildAccuracyResult(), TimeSeriesType.RESULT ]);
+    }));
+
+    it('should set error message on build time series analysis request failure', fakeAsync(() => {
+      FormHelper.setupEmittedItemsSubscriber(fixture);
+      FormHelper.setupNewRequestSubscriber(fixture);
+      FormHelper.prepareValidForm(fixture);
+      mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(FactoryHelper.buildTimeSeriesAnalysisRequestErrorObservable());
+
+      component.computeForecastAccuracy();
+
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS.length).toEqual(0);
+      AssertionHelper.expectValidForm(fixture);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from request builder');
+      expect(mockRequestBuilderService.buildTimeSeriesAnalysisRequest).toHaveBeenCalled();
+      expect(mockService.computeForecastAccuracy).not.toHaveBeenCalled();
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS).toEqual([]);
+    }));
+
+    it('should call service and set error message on compute forecast accuracy failure', fakeAsync(() => {
+      FormHelper.setupEmittedItemsSubscriber(fixture);
+      FormHelper.setupNewRequestSubscriber(fixture);
+      FormHelper.prepareValidForm(fixture);
+      mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(FactoryHelper.buildTimeSeriesAnalysisRequestObservable());
+      mockService.computeForecastAccuracy.and.returnValue(FactoryHelper.buildAccuracyErrorObservable());
+
+      component.computeForecastAccuracy();
+
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS.length).toEqual(1);
+      AssertionHelper.expectValidForm(fixture);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from service');
+      expect(mockRequestBuilderService.buildTimeSeriesAnalysisRequest).toHaveBeenCalled();
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS[0]).toEqual([ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesType.REQUEST ]);
+      expect(mockService.computeForecastAccuracy).toHaveBeenCalled();
+    }));
+
+    it('should reset error message on compute forecast accuracy after first compute forecast accuracy fail', fakeAsync(() => {
+      FormHelper.setupEmittedItemsSubscriber(fixture);
+      FormHelper.setupNewRequestSubscriber(fixture);
+      FormHelper.prepareValidForm(fixture);
+      mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(FactoryHelper.buildTimeSeriesAnalysisRequestErrorObservable());
+      component.computeForecastAccuracy();
+      mockRequestBuilderService.buildTimeSeriesAnalysisRequest.and.returnValue(FactoryHelper.buildTimeSeriesAnalysisRequestObservable());
+      mockService.computeForecastAccuracy.and.returnValue(FactoryHelper.buildAccuracyResultObserable());
+
+      component.computeForecastAccuracy();
+
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS.length).toEqual(2);
+      AssertionHelper.expectValidForm(fixture);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('');
+      expect(mockRequestBuilderService.buildTimeSeriesAnalysisRequest).toHaveBeenCalledTimes(2);
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS[0]).toEqual([ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesType.REQUEST ]);
+      expect(mockService.computeForecastAccuracy).toHaveBeenCalledTimes(1);
+      expect(FormHelper.ACTUAL_EMITTED_ITEMS[1]).toEqual([ FactoryHelper.buildAccuracyResult(), TimeSeriesType.RESULT ]);
+    }));
+
+  });
+
 });
 
 class FormHelper {
 
-  static ACTUAL_EMITTED_ITEMS: [TimeSeries, TimeSeriesType][] = [];
+  static ACTUAL_EMITTED_ITEMS: [TimeSeries | number, TimeSeriesType][] = [];
   static IS_NEW_REQUEST_EMITTED = false;
 
   static setupEmittedItemsSubscriber(fixture: ComponentFixture<TimeSeriesAnalysisInputComponent>): void {
     FormHelper.ACTUAL_EMITTED_ITEMS = [];
-    fixture.componentInstance.timeSeriesResultEmitter.subscribe(value => FormHelper.ACTUAL_EMITTED_ITEMS.push(value));
+    fixture.componentInstance.resultEmitter.subscribe(value => FormHelper.ACTUAL_EMITTED_ITEMS.push(value));
   }
 
   static setupNewRequestSubscriber(fixture: ComponentFixture<TimeSeriesAnalysisInputComponent>): void {
@@ -455,6 +535,7 @@ class AssertionHelper {
     AssertionHelper.expectEnabledButton(fixture, Constants.PREDICT_BTN, 'Launch predict');
     AssertionHelper.expectEnabledButton(fixture, Constants.FORECAST_BTN, 'Launch forecast');
     AssertionHelper.expectEnabledButton(fixture, Constants.FORECAST_VS_ACTUAL_BTN, 'Launch forecast vs actual');
+    AssertionHelper.expectEnabledButton(fixture, Constants.COMPUTE_FORECAST_ACCURACY_BTN, 'Launch compute forecast accuracy');
     expect(fixture.componentInstance.settingsForm.valid).toBeTrue();
   }
 
@@ -464,6 +545,7 @@ class AssertionHelper {
     AssertionHelper.expectDisabledButton(fixture, Constants.PREDICT_BTN);
     AssertionHelper.expectDisabledButton(fixture, Constants.FORECAST_BTN);
     AssertionHelper.expectDisabledButton(fixture, Constants.FORECAST_VS_ACTUAL_BTN);
+    AssertionHelper.expectDisabledButton(fixture, Constants.COMPUTE_FORECAST_ACCURACY_BTN);
     expect(fixture.componentInstance.settingsForm.valid).toBeFalse();
   }
 
@@ -519,4 +601,19 @@ class FactoryHelper {
       observer.error(new Error('error from service'));
     });
   }
+
+  static buildAccuracyResult(): number {
+    return 98.55;
+  }
+
+  static buildAccuracyResultObserable(): Observable<number> {
+    return of(FactoryHelper.buildAccuracyResult());
+  }
+
+  static buildAccuracyErrorObservable(): Observable<number> {
+    return new Observable<number>(observer => {
+      observer.error(new Error('error from service'));
+    });
+  }
+
 }

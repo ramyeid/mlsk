@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  serverPort: '6766'
+  serverPort: '8080'
 };
 
 /*

@@ -13,8 +13,8 @@ export class TimeSeriesAnalysisComponent {
 
   @ViewChild(TimeSeriesAnalysisOutputComponent) outputComponent: TimeSeriesAnalysisOutputComponent;
 
-  onTimeSeriesResult(timeSeriesAndType: [TimeSeries, TimeSeriesType]): void {
-    this.outputComponent.onTimeSeriesResult(timeSeriesAndType);
+  onResult(resultAndType: [TimeSeries | number, TimeSeriesType]): void {
+    this.outputComponent.onResult(resultAndType);
   }
 
   onNewRequest(): void {

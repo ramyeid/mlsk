@@ -8,6 +8,8 @@ export class Constants {
   static readonly PREDICT_BTN: string = 'predictBtn';
   static readonly FORECAST_BTN: string = 'forecastBtn';
   static readonly FORECAST_VS_ACTUAL_BTN: string = 'forecastVsActualBtn';
+  static readonly COMPUTE_FORECAST_ACCURACY_BTN: string = 'computeForecastAccuracyBtn';
+  static readonly ACCURACY_RESULT_P: string = 'accuracyResult';
 
   private constructor() { }
 

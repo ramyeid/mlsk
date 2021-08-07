@@ -32,8 +32,12 @@ export class TimeSeriesAnalysisService {
     return this.postAndCatchError('forecast-vs-actual', body);
   }
 
-  private postAndCatchError(resource: string, body: TimeSeriesAnalysisRequest): Observable<TimeSeries> {
-    return this.httpClient.post<TimeSeries>(`${TimeSeriesAnalysisService.BASE_URL}/${resource}`, body)
+  computeForecastAccuracy(body: TimeSeriesAnalysisRequest): Observable<number> {
+    return this.postAndCatchError('forecast-accuracy', body);
+  }
+
+  private postAndCatchError<T>(resource: string, body: TimeSeriesAnalysisRequest): Observable<T> {
+    return this.httpClient.post<T>(`${TimeSeriesAnalysisService.BASE_URL}/${resource}`, body)
       .pipe(
         catchError(this.handleError)
       );
