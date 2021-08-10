@@ -11,7 +11,8 @@ import static org.mlsk.ui.ServiceConfiguration.getServiceInformation;
 
 public class TimeSeriesPanel extends JPanel {
 
-  private final JPanel plotPanel;
+  private final TimeSeriesInputPanel inputPanel;
+  private final TimeSeriesOutputPanel outputPanel;
 
   public TimeSeriesPanel() {
     this(new TimeSeriesAnalysisServiceClient(getServiceInformation()));
@@ -19,19 +20,22 @@ public class TimeSeriesPanel extends JPanel {
 
   @VisibleForTesting
   public TimeSeriesPanel(TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient) {
-    this.plotPanel = new JPanel();
     this.setLayout(new BorderLayout());
+    this.outputPanel = new TimeSeriesOutputPanel();
+    this.inputPanel = new TimeSeriesInputPanel();
+    this.inputPanel.setActionListener(new TimeSeriesActionListener(inputPanel, timeSeriesAnalysisServiceClient, this::onResult));
 
-    TimeSeriesInputPanel timeSeriesInputPanel = new TimeSeriesInputPanel();
-    timeSeriesInputPanel.setActionListener(new TimeSeriesActionListener(timeSeriesInputPanel, timeSeriesAnalysisServiceClient, this::addTimeSeriesPlot));
-    this.add(timeSeriesInputPanel, BorderLayout.NORTH);
-
-    this.add(plotPanel, BorderLayout.CENTER);
+    this.add(inputPanel, BorderLayout.NORTH);
+    this.add(outputPanel, BorderLayout.CENTER);
   }
 
-  private void addTimeSeriesPlot(TimeSeries initial, TimeSeries computed, String title) {
-    this.plotPanel.removeAll();
-    this.plotPanel.add(new TimeSeriesPlotPanel(initial, computed, title));
+  private void onResult(TimeSeries initial, Object result, String title) {
+    this.outputPanel.removeAll();
+    if (result instanceof TimeSeries) {
+      this.outputPanel.onTimeSeriesResult(initial, (TimeSeries) result, title);
+    } else if (result instanceof Double) {
+      this.outputPanel.onForecastAccuracyResult((Double) result);
+    }
     SwingUtilities.updateComponentTreeUI(this);
   }
 }

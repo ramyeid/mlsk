@@ -9,11 +9,11 @@ import java.awt.*;
 import java.awt.event.ActionListener;
 import java.util.StringJoiner;
 
-import static org.mlsk.ui.helper.timeseries.CsvToTimeSeries.toTimeSeries;
 import static org.mlsk.ui.components.timeseries.TimeSeriesActionListener.*;
 import static org.mlsk.ui.components.utils.ComponentBuilder.newJButton;
 import static org.mlsk.ui.components.utils.ErrorPopup.tryPopup;
 import static org.mlsk.ui.components.utils.GridBagUtils.buildGridBagConstraints;
+import static org.mlsk.ui.helper.timeseries.CsvToTimeSeries.toTimeSeries;
 
 public class TimeSeriesInputPanel extends JPanel {
 
@@ -25,6 +25,7 @@ public class TimeSeriesInputPanel extends JPanel {
   private final JButton predictButton;
   private final JButton forecastButton;
   private final JButton forecastAndActualButton;
+  private final JButton forecastAccuracyActualButton;
 
   public TimeSeriesInputPanel() {
     this.csvAbsolutePathValue = new JTextField(20);
@@ -34,7 +35,8 @@ public class TimeSeriesInputPanel extends JPanel {
     this.numberOfValuesValue = new JTextField(4);
     this.predictButton = newJButton(PREDICT_COMMAND);
     this.forecastButton = newJButton(FORECAST_COMMAND);
-    this.forecastAndActualButton = newJButton(FORECAST_VS_ACTUAL);
+    this.forecastAndActualButton = newJButton(FORECAST_VS_ACTUAL_COMMAND);
+    this.forecastAccuracyActualButton = newJButton(FORECAST_ACCURACY_COMMAND);
 
     this.setLayout(new GridBagLayout());
 
@@ -49,6 +51,7 @@ public class TimeSeriesInputPanel extends JPanel {
     buttonsPanel.add(predictButton, buildGridBagConstraints(0, 0));
     buttonsPanel.add(forecastButton, buildGridBagConstraints(1, 0));
     buttonsPanel.add(forecastAndActualButton, buildGridBagConstraints(2, 0));
+    buttonsPanel.add(forecastAccuracyActualButton, buildGridBagConstraints(3, 0));
     return buttonsPanel;
   }
 
@@ -80,6 +83,7 @@ public class TimeSeriesInputPanel extends JPanel {
     predictButton.addActionListener(actionListener);
     forecastButton.addActionListener(actionListener);
     forecastAndActualButton.addActionListener(actionListener);
+    forecastAccuracyActualButton.addActionListener(actionListener);
   }
 
   public TimeSeriesAnalysisRequest buildTimeSeriesRequest() {

@@ -26,9 +26,11 @@ public class TimeSeriesActionListenerTest {
   @Mock
   private TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient;
   @Mock
-  private TriFunction<TimeSeries, TimeSeries, String> onResults;
+  private TriFunction<TimeSeries, Object, String> onResults;
+
   private static final TimeSeriesAnalysisRequest TIME_SERIES_ANALYSIS_REQUEST = buildTimeSeriesRequest();
   private static final TimeSeries TIME_SERIES_RESULT = buildTimeSeriesResult();
+  private static final Double FORECAST_ACCURACY_RESULT = buildForecastAccuracyResult();
 
   @BeforeEach
   public void setup() {
@@ -62,10 +64,21 @@ public class TimeSeriesActionListenerTest {
     when(timeSeriesAnalysisServiceClient.forecastVsActual(any())).thenReturn(TIME_SERIES_RESULT);
     TimeSeriesActionListener timeSeriesActionListener = new TimeSeriesActionListener(timeSeriesInputPanel, timeSeriesAnalysisServiceClient, onResults);
 
-    timeSeriesActionListener.actionPerformed(new ActionEvent(newJButton(FORECAST_VS_ACTUAL), 0, FORECAST_VS_ACTUAL));
+    timeSeriesActionListener.actionPerformed(new ActionEvent(newJButton(FORECAST_VS_ACTUAL_COMMAND), 0, FORECAST_VS_ACTUAL_COMMAND));
 
     verify(timeSeriesAnalysisServiceClient).forecastVsActual(TIME_SERIES_ANALYSIS_REQUEST);
     verify(onResults).apply(TIME_SERIES_ANALYSIS_REQUEST.getTimeSeries(), TIME_SERIES_RESULT, FORECAST_COMMAND.toLowerCase());
+  }
+
+  @Test
+  public void should_delegate_call_to_forecast_accuracy() {
+    when(timeSeriesAnalysisServiceClient.computeForecastAccuracy(any())).thenReturn(FORECAST_ACCURACY_RESULT);
+    TimeSeriesActionListener timeSeriesActionListener = new TimeSeriesActionListener(timeSeriesInputPanel, timeSeriesAnalysisServiceClient, onResults);
+
+    timeSeriesActionListener.actionPerformed(new ActionEvent(newJButton(FORECAST_ACCURACY_COMMAND), 0, FORECAST_ACCURACY_COMMAND));
+
+    verify(timeSeriesAnalysisServiceClient).computeForecastAccuracy(TIME_SERIES_ANALYSIS_REQUEST);
+    verify(onResults).apply(TIME_SERIES_ANALYSIS_REQUEST.getTimeSeries(), FORECAST_ACCURACY_RESULT, FORECAST_ACCURACY_COMMAND.toLowerCase());
   }
 
   private static TimeSeriesAnalysisRequest buildTimeSeriesRequest() {
@@ -75,5 +88,9 @@ public class TimeSeriesActionListenerTest {
 
   private static TimeSeries buildTimeSeriesResult() {
     return new TimeSeries(newArrayList(new TimeSeriesRow("date2", 2.)), "Date", "Value", "yy");
+  }
+
+  private static Double buildForecastAccuracyResult() {
+    return 95.34;
   }
 }
