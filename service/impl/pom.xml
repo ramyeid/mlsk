@@ -60,6 +60,10 @@
         </dependency>
         <dependency>
             <groupId>machine-learning-swissknife</groupId>
+            <artifactId>mlsk-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>machine-learning-swissknife</groupId>
             <artifactId>mlsk-service-model</artifactId>
         </dependency>
         <dependency>

@@ -55,9 +55,7 @@ public class TimeSeriesAnalysisServiceClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed to post forecast to service", exception.getMessage());
-      assertInstanceOf(RuntimeException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisServiceRequestException(exception, "Failed to post forecast to service");
     }
   }
 
@@ -70,9 +68,7 @@ public class TimeSeriesAnalysisServiceClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed on post forecast to service:\nOriginal Forecast Exception Message", exception.getMessage());
-      assertInstanceOf(HttpServerErrorException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisServiceRequestExceptionWithServerError(exception, "Failed on post forecast to service:\nOriginal Forecast Exception Message");
     }
   }
 
@@ -99,9 +95,7 @@ public class TimeSeriesAnalysisServiceClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed to post forecast vs actual to service", exception.getMessage());
-      assertInstanceOf(RuntimeException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisServiceRequestException(exception, "Failed to post forecast vs actual to service");
     }
   }
 
@@ -114,9 +108,7 @@ public class TimeSeriesAnalysisServiceClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed on post forecast vs actual to service:\nOriginal Forecast Vs Actual Exception Message", exception.getMessage());
-      assertInstanceOf(HttpServerErrorException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisServiceRequestExceptionWithServerError(exception, "Failed on post forecast vs actual to service:\nOriginal Forecast Vs Actual Exception Message");
     }
   }
 
@@ -142,9 +134,7 @@ public class TimeSeriesAnalysisServiceClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed to post compute forecast accuracy to service", exception.getMessage());
-      assertInstanceOf(RuntimeException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisServiceRequestException(exception, "Failed to post compute forecast accuracy to service");
     }
   }
 
@@ -157,9 +147,7 @@ public class TimeSeriesAnalysisServiceClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed on post compute forecast accuracy to service:\nOriginal Forecast Accuracy Exception Message", exception.getMessage());
-      assertInstanceOf(HttpServerErrorException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisServiceRequestExceptionWithServerError(exception, "Failed on post compute forecast accuracy to service:\nOriginal Forecast Accuracy Exception Message");
     }
   }
 
@@ -185,10 +173,8 @@ public class TimeSeriesAnalysisServiceClientTest {
       client.predict(mock(TimeSeriesAnalysisRequest.class));
       fail("should fail");
 
-    } catch (TimeSeriesAnalysisServiceRequestException exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed to post predict to service", exception.getMessage());
-      assertInstanceOf(RuntimeException.class, exception.getCause());
+    } catch (Exception exception) {
+      assertOnTimeSeriesAnalysisServiceRequestException(exception, "Failed to post predict to service");
     }
   }
 
@@ -201,9 +187,7 @@ public class TimeSeriesAnalysisServiceClientTest {
       fail("should fail");
 
     } catch (Exception exception) {
-      assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
-      assertEquals("Failed on post predict to service:\nOriginal Predict Exception Message", exception.getMessage());
-      assertInstanceOf(HttpServerErrorException.class, exception.getCause());
+      assertOnTimeSeriesAnalysisServiceRequestExceptionWithServerError(exception, "Failed on post predict to service:\nOriginal Predict Exception Message");
     }
   }
 
@@ -217,5 +201,17 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   private static HttpServerErrorException buildHttpServerErrorException(String exceptionMessage) {
     return new HttpServerErrorException("message", HttpStatus.INTERNAL_SERVER_ERROR, "status", null, exceptionMessage.getBytes(), null);
+  }
+
+  private static void assertOnTimeSeriesAnalysisServiceRequestException(Exception exception, String exceptionMessage) {
+    assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
+    assertEquals(exceptionMessage, exception.getMessage());
+    assertInstanceOf(RuntimeException.class, exception.getCause());
+  }
+
+  private static void assertOnTimeSeriesAnalysisServiceRequestExceptionWithServerError(Exception exception, String exceptionMessage) {
+    assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception);
+    assertEquals(exceptionMessage, exception.getMessage());
+    assertInstanceOf(HttpServerErrorException.class, exception.getCause());
   }
 }
