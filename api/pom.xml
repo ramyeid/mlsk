@@ -40,35 +40,39 @@
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>5.0.0-beta2</version>
+                <configuration>
+                    <generatorName>spring</generatorName>
+                    <output>${basedir}/target/generated-sources</output>
+                    <generateApis>true</generateApis>
+                    <generateApiTests>false</generateApiTests>
+                    <generateApiDocumentation>false</generateApiDocumentation>
+                    <generateModels>true</generateModels>
+                    <generateModelTests>false</generateModelTests>
+                    <generateModelDocumentation>false</generateModelDocumentation>
+                    <generateSupportingFiles>false</generateSupportingFiles>
+
+                    <configOptions>
+                        <openApiNullable>false</openApiNullable>
+                        <java8>true</java8>
+                        <skipDefaultInterface>true</skipDefaultInterface>
+                        <sourceFolder>src/main/java</sourceFolder>
+                        <useBeanValidation>false</useBeanValidation>
+                        <interfaceOnly>true</interfaceOnly>
+                    </configOptions>
+                </configuration>
                 <executions>
                     <execution>
+                        <id>time-series-analysis</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
-                            <generatorName>spring</generatorName>
                             <inputSpec>
                                 ${basedir}/src/main/java/org/mlsk/api/timeseries/service/TimeSeriesAnalysisServiceApi.yaml
                             </inputSpec>
-                            <output>${basedir}/target/generated-sources</output>
-                            <generateApis>true</generateApis>
-                            <generateApiTests>false</generateApiTests>
-                            <generateApiDocumentation>false</generateApiDocumentation>
-                            <generateModels>true</generateModels>
-                            <generateModelTests>false</generateModelTests>
-                            <generateModelDocumentation>false</generateModelDocumentation>
-                            <generateSupportingFiles>false</generateSupportingFiles>
                             <apiPackage>org.mlsk.api.timeseries.api</apiPackage>
                             <modelPackage>org.mlsk.api.timeseries.model</modelPackage>
-                            <configOptions>
-                                <openApiNullable>false</openApiNullable>
-                                <java8>true</java8>
-                                <skipDefaultInterface>true</skipDefaultInterface>
-                                <sourceFolder>src/main/java</sourceFolder>
-                                <useBeanValidation>false</useBeanValidation>
-                                <interfaceOnly>true</interfaceOnly>
-                            </configOptions>
                         </configuration>
                     </execution>
                 </executions>
