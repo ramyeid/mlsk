@@ -2,6 +2,8 @@ package org.mlsk.lib.model;
 
 import java.util.Objects;
 
+import static java.lang.String.format;
+
 public class ServiceInformation {
 
   private final String host;
@@ -13,7 +15,7 @@ public class ServiceInformation {
   }
 
   public String getUrl() {
-    return String.format("http://%s:%s/", host, port);
+    return format("http://%s:%s/", host, port);
   }
 
   public String getPort() {

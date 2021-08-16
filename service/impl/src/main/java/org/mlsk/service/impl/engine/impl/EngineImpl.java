@@ -3,56 +3,44 @@ package org.mlsk.service.impl.engine.impl;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mlsk.lib.engine.ResilientEngine;
+import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.service.Engine;
-import org.mlsk.service.impl.engine.impl.timeseries.TimeSeriesAnalysisEngineCaller;
+import org.mlsk.service.impl.engine.client.EngineClientFactory;
+import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
+import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 import org.mlsk.service.model.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-import static org.mlsk.service.impl.ServiceConfiguration.getEnginePath;
-import static org.mlsk.service.impl.ServiceConfiguration.getLogsPath;
-import static org.mlsk.service.model.EngineState.COMPUTING;
-import static org.mlsk.service.model.EngineState.WAITING;
-import static org.mlsk.service.utils.TimeSeriesAnalysisAlgorithmNames.*;
+import static java.lang.String.format;
+import static org.mlsk.service.impl.configuration.ServiceConfiguration.getEnginePath;
+import static org.mlsk.service.impl.configuration.ServiceConfiguration.getLogsPath;
+import static org.mlsk.service.model.EngineState.*;
+import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
 public class EngineImpl implements Engine {
 
   private static final Logger LOGGER = LogManager.getLogger(EngineImpl.class);
 
-  private final ResilientEngine engineProcess;
+  private final ResilientEngineProcess resilientEngineProcess;
   private final ServiceInformation serviceInformation;
   private final AtomicReference<EngineState> state;
-  private final TimeSeriesAnalysisEngineCaller timeSeriesAnalysisEngineCaller;
+  private final EngineClientFactory engineClientFactory;
 
-  public EngineImpl(ServiceInformation serviceInformation) throws IOException, InterruptedException {
-    this.serviceInformation = serviceInformation;
-    this.state = new AtomicReference<>(WAITING);
-    this.engineProcess = new ResilientEngine(serviceInformation, getLogsPath(), getEnginePath(), this::onProcessKilled);
-    this.timeSeriesAnalysisEngineCaller = new TimeSeriesAnalysisEngineCaller(serviceInformation);
+  public EngineImpl(ServiceInformation serviceInformation) {
+    this(new EngineClientFactory(), serviceInformation, new ResilientEngineProcess(serviceInformation, getLogsPath(), getEnginePath()), new AtomicReference<>(OFF));
   }
 
   @VisibleForTesting
-  public EngineImpl(ResilientEngine engineProcess, ServiceInformation serviceInformation, AtomicReference<EngineState> state, TimeSeriesAnalysisEngineCaller timeSeriesAnalysisEngineCaller) {
-    this.engineProcess = engineProcess;
+  public EngineImpl(EngineClientFactory engineClientFactory, ServiceInformation serviceInformation, ResilientEngineProcess resilientEngineProcess, AtomicReference<EngineState> state) {
+    this.resilientEngineProcess = resilientEngineProcess;
     this.serviceInformation = serviceInformation;
     this.state = state;
-    this.timeSeriesAnalysisEngineCaller = timeSeriesAnalysisEngineCaller;
-  }
-
-  @Override
-  public synchronized EngineState getState() {
-    return this.state.get();
-  }
-
-  @Override
-  public void bookEngine() {
-    this.state.set(EngineState.BOOKED);
+    this.engineClientFactory = engineClientFactory;
   }
 
   @Override
@@ -60,52 +48,75 @@ public class EngineImpl implements Engine {
     return serviceInformation;
   }
 
-  public void onProcessKilled() {
-    LOGGER.error(String.format("Engine %s died unexpectedly", this.serviceInformation));
-    LOGGER.info(String.format("[Start] Relaunching engine %s", this.serviceInformation));
-    this.state.set(EngineState.OFF);
-    try {
-      engineProcess.launchEngine();
-      LOGGER.info(String.format("Engine %s relaunched succesfully", this.serviceInformation));
-      this.state.set(EngineState.WAITING);
-    } catch (Exception exception) {
-      LOGGER.error(String.format("Error while relaunching engine: %s", this.serviceInformation), exception);
-    } finally {
-      LOGGER.info(String.format("[End] Relaunching engine %s", this.serviceInformation));
+  @Override
+  public EngineState getState() {
+    return this.state.get();
+  }
+
+  @Override
+  public synchronized void bookEngine() {
+    this.state.set(BOOKED);
+  }
+
+  @Override
+  public synchronized void launchEngine() {
+    if (this.state.get() == OFF || !this.resilientEngineProcess.isEngineUp()) {
+      try {
+        LOGGER.info("[Start] Launching engine: {}", this.serviceInformation);
+        this.resilientEngineProcess.launchEngine(this::onEngineKilled);
+        this.state.set(WAITING);
+      } catch (Exception exception) {
+        LOGGER.error(format("Error while creating engine: %s", this.serviceInformation), exception);
+        String message = format("Unable to launch engine %s", serviceInformation);
+        this.state.set(OFF);
+        throw new UnableToLaunchEngineException(message, exception);
+      } finally {
+        LOGGER.info("[End] Launching engine: {}", this.serviceInformation);
+      }
     }
   }
 
   @Override
-  public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    return callOnEngine(() -> timeSeriesAnalysisEngineCaller.forecast(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST);
+  public synchronized void onEngineKilled() {
+    LOGGER.error("Engine {} died unexpectedly ", this.serviceInformation);
+    LOGGER.info("Relaunching engine {}", this.serviceInformation);
+    this.state.set(OFF);
+    try {
+      this.launchEngine();
+    } catch (Exception exception) {
+      LOGGER.error(format("Error while relaunching engine: %s", this.serviceInformation), exception);
+    }
   }
 
   @Override
-  public TimeSeries forecastVsActual(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    return callOnEngine(() -> timeSeriesAnalysisEngineCaller.forecastVsActual(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_VS_ACTUAL);
+  public synchronized TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
+    return callOnEngine(() -> engineClient.forecast(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST);
   }
 
   @Override
-  public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    return callOnEngine(() -> timeSeriesAnalysisEngineCaller.computeForecastAccuracy(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_ACCURACY);
+  public synchronized Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
+    return callOnEngine(() -> engineClient.computeForecastAccuracy(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_ACCURACY);
   }
 
   @Override
-  public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    return callOnEngine(() -> timeSeriesAnalysisEngineCaller.predict(timeSeriesAnalysisRequest), TIME_SERIES_PREDICT);
+  public synchronized TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
+    return callOnEngine(() -> engineClient.predict(timeSeriesAnalysisRequest), TIME_SERIES_PREDICT);
   }
 
   private <Result> Result callOnEngine(Supplier<Result> supplier, String actionName) {
     try {
-      LOGGER.info(String.format("Engine %s computing request: %s", this.serviceInformation, actionName));
+      LOGGER.info("Engine {} computing request: {}", this.serviceInformation, actionName);
       this.state.set(COMPUTING);
       return supplier.get();
     } catch (Exception exception) {
-      LOGGER.error(String.format("Error while launching: %s on engine %s: %s", actionName, serviceInformation, exception.getMessage()));
+      LOGGER.error("Error while launching: {} on engine {}: {}", actionName, serviceInformation, exception.getMessage());
       throw exception;
     } finally {
       this.state.set(WAITING);
-      LOGGER.info(String.format("Engine %s in waiting mode after computing request: %s", this.serviceInformation, actionName));
+      LOGGER.info("Engine {} in waiting mode after computing request: {}", this.serviceInformation, actionName);
     }
   }
 }

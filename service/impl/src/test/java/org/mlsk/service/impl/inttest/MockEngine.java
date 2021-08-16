@@ -11,9 +11,9 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class MockEngine {
 
+  private final List<MockedRequest> mockedRequests;
   private boolean isWaitUntilEngineCallEnabled;
   private CountDownLatch waitUntilEngineCallLatch;
-  private final List<MockedRequest> mockedRequests;
 
   MockEngine() {
     this.isWaitUntilEngineCallEnabled = false;

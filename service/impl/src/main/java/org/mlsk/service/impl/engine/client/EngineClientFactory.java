@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.engine.client;
 
-import org.mlsk.service.impl.engine.client.timeseries.TimeSeriesAnalysisEngineClient;
 import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 
 public class EngineClientFactory {
 
