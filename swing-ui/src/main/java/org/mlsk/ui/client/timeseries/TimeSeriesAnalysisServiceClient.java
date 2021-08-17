@@ -2,16 +2,16 @@ package org.mlsk.ui.client.timeseries;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.mlsk.lib.rest.RestClient;
-import org.mlsk.service.TimeSeriesAnalysis;
+import org.mlsk.service.timeseries.TimeSeriesAnalysisService;
 import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static java.lang.String.format;
-import static org.mlsk.service.utils.TimeSeriesAnalysisUrls.*;
+import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
-public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysis {
+public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisService {
 
   private final RestClient restClient;
 

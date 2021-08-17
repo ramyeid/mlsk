@@ -7,11 +7,11 @@ import org.mlsk.api.timeseries.api.TimeSeriesAnalysisApi;
 import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.api.timeseries.model.TimeSeriesModel;
 import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
-import org.mlsk.service.impl.Orchestrator;
-import org.mlsk.service.impl.controllers.timeseries.TimeSeriesAnalysisApiImpl;
-import org.mlsk.service.impl.exceptions.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.impl.inttest.MockEngine.MockedRequest;
-import org.mlsk.service.impl.mapper.timeseries.TimeSeriesModelHelper;
+import org.mlsk.service.impl.timeseries.api.TimeSeriesAnalysisApiImpl;
+import org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper;
+import org.mlsk.service.impl.timeseries.service.TimeSeriesAnalysisServiceImpl;
+import org.mlsk.service.impl.timeseries.service.exception.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
@@ -21,22 +21,19 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.*;
-import static org.mlsk.service.impl.mapper.timeseries.TimeSeriesModelHelper.buildTimeSeriesModel;
-import static org.mlsk.service.impl.mapper.timeseries.TimeSeriesModelHelper.buildTimeSeriesRowModel;
+import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper.buildTimeSeriesModel;
+import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper.buildTimeSeriesRowModel;
 import static org.mlsk.service.model.EngineState.WAITING;
-import static org.mlsk.service.utils.TimeSeriesAnalysisUrls.*;
+import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
@@ -45,10 +42,10 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   private TimeSeriesAnalysisApi timeSeriesAnalysisApi;
 
   @BeforeEach
-  public void setUp() throws IOException {
-    super.setup();
-    Orchestrator orchestrator = buildOrchestrator(newArrayList(SERVICE_INFO1, SERVICE_INFO2));
-    timeSeriesAnalysisApi = new TimeSeriesAnalysisApiImpl(orchestrator);
+  public void setUp() throws Exception {
+    super.setup(newArrayList(SERVICE_INFO1, SERVICE_INFO2));
+    TimeSeriesAnalysisServiceImpl service = new TimeSeriesAnalysisServiceImpl(orchestrator);
+    timeSeriesAnalysisApi = new TimeSeriesAnalysisApiImpl(service);
   }
 
   // --------------------------------------------
@@ -69,7 +66,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_forecast() {
     TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
-    HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while forecasting: NullPointer");
+    HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while forecasting: NullPointer");
     MockedRequest forecastMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_URL, buildTimeSeriesAnalysisRequest(), exceptionToThrow);
     mockEngine.registerRequests(forecastMockedRequest);
 
@@ -188,7 +185,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     MockedRequest predicateMockedRequest = buildMockRequest(SERVICE_INFO2, PREDICATE_URL, buildTimeSeriesAnalysisRequest(), buildTimeSeriesResult2());
     mockEngine.registerRequests(forecastMockedRequest, predicateMockedRequest);
 
-    CompletableFuture<ResponseEntity<TimeSeriesModel>> actualForecastFuture = supplyAsync(() -> timeSeriesAnalysisApi.forecast(forecastRequestModel));
+    CompletableFuture<ResponseEntity<TimeSeriesModel>> actualForecastFuture = supplyAsync(() -> timeSeriesAnalysisApi.forecast(forecastRequestModel), executor);
     mockEngine.waitUntilEngineCall();
     ResponseEntity<TimeSeriesModel> actualPredict = timeSeriesAnalysisApi.predict(predictRequestModel);
     forecastMockedRequest.countDownLatch.countDown();
@@ -196,8 +193,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     assertOnResponseEntity(actualForecast, buildTimeSeriesModelResult());
     assertOnResponseEntity(actualPredict, buildTimeSeriesModelResult2());
-    assertEquals(WAITING, engines.get(0).getState());
-    assertEquals(WAITING, engines.get(1).getState());
+    assertEquals(WAITING, getEngine(0).getState());
+    assertEquals(WAITING, getEngine(1).getState());
   }
 
   @Test
@@ -209,7 +206,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     MockedRequest predicateMockedRequest = buildMockRequest(SERVICE_INFO2, PREDICATE_URL, buildTimeSeriesAnalysisRequest(), buildTimeSeriesResult2());
     mockEngine.registerRequests(forecastMockedRequest, predicateMockedRequest);
 
-    CompletableFuture<ResponseEntity<TimeSeriesModel>> actualForecastFuture = supplyAsync(() -> timeSeriesAnalysisApi.forecast(forecastRequestModel));
+    CompletableFuture<ResponseEntity<TimeSeriesModel>> actualForecastFuture = supplyAsync(() -> timeSeriesAnalysisApi.forecast(forecastRequestModel), executor);
     mockEngine.waitUntilEngineCall();
     timeSeriesAnalysisApi.predict(predictRequestModel);
     forecastMockedRequest.countDownLatch.countDown();
@@ -232,7 +229,6 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     mockEngine.registerRequests(forecastMockedRequest, forecastAccuracyMockedRequest);
 
     try {
-      ExecutorService executor = Executors.newFixedThreadPool(2);
       supplyAsync(() -> timeSeriesAnalysisApi.forecast(forecastRequestModel), executor);
       mockEngine.waitUntilEngineCall();
       supplyAsync(() -> timeSeriesAnalysisApi.computeForecastAccuracy(forecastRequestModel), executor);

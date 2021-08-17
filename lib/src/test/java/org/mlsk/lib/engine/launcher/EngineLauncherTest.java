@@ -25,7 +25,7 @@ public class EngineLauncherTest {
   private EngineLauncher engineLauncher;
 
   @BeforeEach
-  void setUp() {
+  public void setUp() {
     engineLauncher = new EngineLauncher(processBuilder);
     when(processBuilder.command(ArgumentMatchers.<String>any())).thenReturn(processBuilder);
     when(processBuilder.directory(any())).thenReturn(processBuilder);

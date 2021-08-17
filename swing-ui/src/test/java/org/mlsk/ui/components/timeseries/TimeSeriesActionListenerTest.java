@@ -33,7 +33,7 @@ public class TimeSeriesActionListenerTest {
   private static final Double FORECAST_ACCURACY_RESULT = buildForecastAccuracyResult();
 
   @BeforeEach
-  public void setup() {
+  public void setUp() {
     when(timeSeriesInputPanel.buildTimeSeriesRequest()).thenReturn(TIME_SERIES_ANALYSIS_REQUEST);
   }
 

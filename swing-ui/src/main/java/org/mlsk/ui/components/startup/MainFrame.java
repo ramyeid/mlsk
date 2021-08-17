@@ -8,7 +8,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import static org.mlsk.service.utils.TimeSeriesAnalysisAlgorithmNames.TIME_SERIES_ANALYSIS;
+import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.TIME_SERIES_ANALYSIS;
 import static org.mlsk.ui.components.utils.ComponentBuilder.newJButton;
 
 public class MainFrame extends JFrame implements ActionListener {
