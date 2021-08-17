@@ -29,9 +29,9 @@ Below is the architecture of this application (Components might be added while d
 ## Components
 
 > - [Api](resources/documentation/md/Api.md)
-> - [Engine](./resources/documentation/Engine.md)
-> - [Service](./resources/documentation/Service.md)
-> - [Web UI](./resources/documentation/WebUI.md)
+> - [Engine](./resources/documentation/md/Engine.md)
+> - [Service](./resources/documentation/md/Service.md)
+> - [Web UI](./resources/documentation/md/WebUI.md)
 
 ## Package and run
 
