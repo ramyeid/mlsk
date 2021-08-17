@@ -2,9 +2,9 @@ package org.mlsk.service.impl.orchestrator;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mlsk.service.Engine;
+import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException;
-import org.mlsk.service.model.EngineState;
+import org.mlsk.service.model.engine.EngineState;
 
 import java.util.List;
 import java.util.Optional;

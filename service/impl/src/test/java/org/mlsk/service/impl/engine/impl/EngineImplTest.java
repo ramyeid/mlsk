@@ -8,7 +8,7 @@ import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
-import org.mlsk.service.model.EngineState;
+import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
-import static org.mlsk.service.model.EngineState.*;
+import static org.mlsk.service.model.engine.EngineState.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

@@ -3,7 +3,7 @@ package org.mlsk.service.impl.timeseries.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.service.Engine;
+import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mlsk.service.impl.timeseries.service.exception.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.model.timeseries.TimeSeries;
