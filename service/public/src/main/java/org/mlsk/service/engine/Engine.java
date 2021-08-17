@@ -1,7 +1,7 @@
-package org.mlsk.service;
+package org.mlsk.service.engine;
 
 import org.mlsk.lib.model.ServiceInformation;
-import org.mlsk.service.model.EngineState;
+import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.timeseries.TimeSeriesAnalysisEngine;
 
 public interface Engine extends TimeSeriesAnalysisEngine {

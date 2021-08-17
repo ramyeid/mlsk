@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.*;
 import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper.buildTimeSeriesModel;
 import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper.buildTimeSeriesRowModel;
-import static org.mlsk.service.model.EngineState.WAITING;
+import static org.mlsk.service.model.engine.EngineState.WAITING;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 import static org.springframework.http.HttpStatus.OK;
 

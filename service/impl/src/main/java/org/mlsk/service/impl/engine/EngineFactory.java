@@ -3,7 +3,7 @@ package org.mlsk.service.impl.engine;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.model.ServiceInformation;
-import org.mlsk.service.Engine;
+import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.impl.EngineImpl;
 
 

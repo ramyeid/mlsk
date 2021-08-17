@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.model.timeseries.TimeSeriesTest.buildTimeSeriesPassengers;
+import static org.mlsk.service.model.timeseries.TimeSeriesUtils.buildTimeSeriesPassengers;
 
 public class TimeSeriesAnalysisRequestTest {
 

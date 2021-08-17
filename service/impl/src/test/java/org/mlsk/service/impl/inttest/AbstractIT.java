@@ -4,7 +4,7 @@ import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.engine.launcher.EngineLauncher;
 import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.lib.rest.RestClient;
-import org.mlsk.service.Engine;
+import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.EngineFactory;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.EngineImpl;
@@ -30,7 +30,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
 import static org.mlsk.service.impl.configuration.ServiceConfiguration.buildServiceConfiguration;
-import static org.mlsk.service.model.EngineState.OFF;
+import static org.mlsk.service.model.engine.EngineState.OFF;
 import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)

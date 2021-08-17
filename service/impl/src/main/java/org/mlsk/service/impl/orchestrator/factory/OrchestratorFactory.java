@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.orchestrator.factory;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.service.Engine;
+import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.EngineFactory;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.springframework.beans.factory.annotation.Autowired;

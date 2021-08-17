@@ -4,7 +4,7 @@ import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mlsk.lib.model.ServiceInformation;
-import org.mlsk.service.Engine;
+import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.impl.EngineImpl;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;

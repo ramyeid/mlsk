@@ -5,11 +5,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.model.ServiceInformation;
-import org.mlsk.service.Engine;
+import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
-import org.mlsk.service.model.EngineState;
+import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 
@@ -19,7 +19,7 @@ import java.util.function.Supplier;
 import static java.lang.String.format;
 import static org.mlsk.service.impl.configuration.ServiceConfiguration.getEnginePath;
 import static org.mlsk.service.impl.configuration.ServiceConfiguration.getLogsPath;
-import static org.mlsk.service.model.EngineState.*;
+import static org.mlsk.service.model.engine.EngineState.*;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
 public class EngineImpl implements Engine {
