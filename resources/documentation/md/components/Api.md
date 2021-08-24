@@ -10,24 +10,26 @@ There are number of tools we gain by using swagger/open api:
     - API Validation
     - etc.
 
-
 ## Java Code Generation
 
-We can find the code generation plugin and configuration options under [api/pom.xml](../../../api/pom.xml)
+We can find the code generation plugin and configuration options under [api/pom.xml](../../../../api/pom.xml)
 
 We wanted a code generation plugin that will generate:
+
 > - Models with annotation and equals and hashcode
+>
 > - Generated Api should have spring annotations and documentation
+>
 > - Skip generation of Implementations
 
 The different generators languages can be found [here](https://openapi-generator.tech/docs/generators)
 
 ### Remarks
+
 - There are a number of Java Server Stubs _language_ we can use (MSF4J, Spring, Undertow, JAX-RS: CDI, CXF, Inflector, Jersey, RestEasy, Play Framework, PKMST, Vert.x)
 - _spring_ was chosen since it matches the requirements needed
 - Currently we are using a previous version of the plugin, **some problems were faced with the newest version**
 - The different configuration option for spring language can be found [here](https://openapi-generator.tech/docs/generators/spring)
-
 
 ## APIs
 
@@ -37,19 +39,19 @@ The different generators languages can be found [here](https://openapi-generator
 
 ### Time Series Analysis
 
-- [Service API](../../../api/src/main/java/org/mlsk/api/timeseries/service/TimeSeriesAnalysisServiceApi.yaml)
-- [Engine API](../../../api/src/main/java/org/mlsk/api/timeseries/engine/TimeSeriesAnalysisEngineApi.yaml)
-
+- [Service API](../../../../api/src/main/java/org/mlsk/api/timeseries/service/TimeSeriesAnalysisServiceApi.yaml)
+- [Engine API](../../../../api/src/main/java/org/mlsk/api/timeseries/engine/TimeSeriesAnalysisEngineApi.yaml)
 
 ## References & Documentation
-```
+
+```text
 https://editor.swagger.io
 https://openapi-generator.tech/docs/generators
 ```
 
+## Problems found with different JAVA languages Server Stubs code generation
 
-## Problems found with different JAVA languages Server Stubs code generation:
-- _spring_ 
+- _spring_
   - GOOD.
   - Equals and hashcode in models.
   - API Interface.

@@ -1,0 +1,26 @@
+version: "3.9"
+services:
+  jenkins-master:
+    container_name: jenkins-master
+    image: ramyeid/mlsk-jenkins
+    ports:
+      - "8788:8080"
+      - "50000:5000"
+    volumes:
+      - ./.volumes/jenkins_home:/var/jenkins_home
+      - ./jenkins/jenkins.yaml:/var/jenkins_home/jenkins.yaml
+    environment:
+      - CASC_JENKINS_CONFIG=/var/jenkins_home/jenkins.yaml
+    restart: always
+  # In order to be able to export docker api, to run agents on jenkins.
+  socat:
+    container_name: docker-forwarder-socat
+    image: bobrik/socat
+    command: tcp-listen:2375,fork unix-connect:/var/run/docker.sock
+    ports:
+      - "127.0.0.1:2375:2375"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    restart: always
+    depends_on:
+      - "jenkins-master"

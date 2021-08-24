@@ -1,0 +1,64 @@
+credentials:
+  system:
+    domainCredentials:
+    - credentials:
+      - usernamePassword:
+          id: "github-token"
+          password: "{AQAAABAAAAAwNZzcFHT/VpE8cKvdvVFDGqyKcpcEYPOT5UsY/nrKxckI7xEdAVurw8bxlyoJ1+ma8fZvATo5IiF3kOPjc5mUew==}"
+          scope: GLOBAL
+          username: "ramyeid"
+jenkins:
+  clouds:
+  - docker:
+      name: "docker-engine"
+      containerCap: 2
+      dockerApi:
+        connectTimeout: 60
+        dockerHost:
+          uri: "tcp://docker.for.mac.host.internal:2375"
+        readTimeout: 60
+      templates:
+      - connector: "attach"
+        labelString: "docker"
+        dockerTemplateBase:
+          image: "ramyeid/mlsk-build-agent"
+          mounts:
+          - "type=volume,src=mlsk_agent_m2_repo,dst=/root/.m2/repository/"
+          - "type=volume,src=mlsk_agent_node_modules,dst=/root/.mlsk_node_modules/node_modules/"
+          mountsString: |-
+            type=volume,src=mlsk_agent_m2_repo,dst=/root/.m2/repository/
+            type=volume,src=mlsk_agent_node_modules,dst=/root/.mlsk_node_modules/node_modules/
+        instanceCapStr: "2"
+        pullStrategy: PULL_ALWAYS
+        pullTimeout: 300
+unclassified:
+  globalLibraries:
+    libraries:
+    - defaultVersion: "master"
+      name: "mlsk-shared-library"
+      retriever:
+        modernSCM:
+          libraryPath: "ci/shared-library/"
+          scm:
+            git:
+              credentialsId: "github-token"
+              id: "36d4dcfb-27ce-4861-ac0b-4090987cceaf"
+              remote: "https://github.com/ramyeid/mlsk.git"
+              traits:
+              - cleanAfterCheckoutTrait:
+                  extension:
+                    deleteUntrackedNestedRepositories: true
+              - cleanBeforeCheckoutTrait:
+                  extension:
+                    deleteUntrackedNestedRepositories: true
+              - "pruneStaleBranchTrait"
+              - "pruneStaleTagTrait"
+              - "wipeWorkspaceTrait"
+tool:
+  git:
+    installations:
+    - home: "git"
+      name: "Default"
+  mavenGlobalConfig:
+    globalSettingsProvider: "standard"
+    settingsProvider: "standard"
