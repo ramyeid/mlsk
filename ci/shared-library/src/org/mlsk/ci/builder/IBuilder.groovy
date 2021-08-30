@@ -7,5 +7,7 @@ interface IBuilder {
   void test();
 
   void publishTestReports();
+
+  void checkQualityGate();
 }
 

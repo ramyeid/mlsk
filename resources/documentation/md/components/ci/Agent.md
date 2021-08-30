@@ -15,6 +15,7 @@ This image contain all tools needed to build and test Java, Python and Angular p
 - _npm_
 - _ng_
 - _chrome (for testing)_
+- _sonar-scanner_
 
 ## Configuration
 

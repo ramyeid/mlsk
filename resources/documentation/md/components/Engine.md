@@ -45,6 +45,12 @@ python -m pytest -s
 python -m pytest -s test/services/test_time_series_analysis_service.py::TestTimeSeriesAnalysisService::test_forecast_service
 ```
 
+### Run all tests with coverage and junit report
+
+```bash
+python3 -m pytest -s --junitxml=python-test-reports.xml --cov=. --cov-report xml:coverage.xml
+```
+
 ### Run Lint
 
 ```bash

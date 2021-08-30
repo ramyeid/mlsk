@@ -1,11 +1,12 @@
-@Library('mlsk-shared-library') _
+@Library('mlsk-shared-library@ci/sonar') _
 
 
 pipeline {
 
   options {
-    buildDiscarder(logRotator(numToKeepStr: "3"))
+    buildDiscarder(logRotator(numToKeepStr: '3'))
     disableConcurrentBuilds()
+    skipStagesAfterUnstable()
   }
 
   agent {
@@ -89,5 +90,36 @@ pipeline {
       }
     }
 
+    stage('Quality Gate - Service') {
+      steps {
+        dir('service/impl') {
+          javaCheckQualityGate()
+        }
+      }
+    }
+
+    stage('Quality Gate - Java UI') {
+      steps {
+        dir('swing-ui') {
+          javaCheckQualityGate()
+        }
+      }
+    }
+
+    stage('Quality Gate - Engine') {
+      steps {
+        dir('engine') {
+          pythonCheckQualityGate()
+        }
+      }
+    }
+
+    stage('Quality Gate - Web UI') {
+      steps {
+        dir('web-ui') {
+          angularCheckQualityGate()
+        }
+      }
+    }
   }
 }

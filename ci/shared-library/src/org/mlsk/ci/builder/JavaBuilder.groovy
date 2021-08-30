@@ -10,7 +10,7 @@ class JavaBuilder implements IBuilder {
 
   @Override
   public void build() {
-    steps.sh "mvn clean package -DskipTests";
+    steps.sh 'mvn clean install -DskipTests';
   }
 
   @Override
@@ -21,6 +21,19 @@ class JavaBuilder implements IBuilder {
   @Override
   public void publishTestReports() {
     steps.junit '**/target/*reports/**/*.xml'
+  }
+
+  @Override
+  public void checkQualityGate() {
+    steps.withSonarQubeEnv('SonarqubeServer') {
+      steps.sh 'mvn sonar:sonar \
+                -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                -Dsonar.language=java \
+                -Dsonar.dynamicAnalysis=reuseReports'
+    }
+    steps.timeout(time: 1, unit: 'HOURS') {
+      steps.waitForQualityGate abortPipeline: true
+    }
   }
 }
 

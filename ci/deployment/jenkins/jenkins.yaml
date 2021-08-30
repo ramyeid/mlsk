@@ -4,9 +4,13 @@ credentials:
     - credentials:
       - usernamePassword:
           id: "github-token"
-          password: "{AQAAABAAAAAwNZzcFHT/VpE8cKvdvVFDGqyKcpcEYPOT5UsY/nrKxckI7xEdAVurw8bxlyoJ1+ma8fZvATo5IiF3kOPjc5mUew==}"
+          password: "{AQAAABAAAABwUmvQ6tbH4hQ3KOXzd8X75QH6wWG9W+dbGLerjILvFUrAtF3uRIsK0dnwGCsnN4aoPr/e8Xzw7+W8b/YMV6Lw+JPpUFH/7b6xstQNvzukd050OXA6TqDUDO9XUb33N0FK78lUfTLvFeh/LNpc0DteGPpHav4L8qb4aKpXFSIQc7M=}"
           scope: GLOBAL
           username: "ramyeid"
+      - string:
+          id: "SonarServer"
+          scope: GLOBAL
+          secret: "{AQAAABAAAAAwYppIvfdBzj0awXgsfiYvcq8+6DqlwAJkIWfZdThpjoARUE6uahsUjc3Spc0wrTDzmtOdEAxc+kA9vBXxYrQVDQ==}"
 jenkins:
   clouds:
   - docker:
@@ -54,6 +58,15 @@ unclassified:
               - "pruneStaleBranchTrait"
               - "pruneStaleTagTrait"
               - "wipeWorkspaceTrait"
+  sonarGlobalConfiguration:
+    buildWrapperEnabled: false
+    installations:
+    - name: "SonarqubeServer"
+      serverUrl: "http://docker.for.mac.host.internal:8789"
+      credentialsId: "SonarServer"
+      triggers:
+        skipScmCause: false
+        skipUpstreamCause: false
 tool:
   git:
     installations:

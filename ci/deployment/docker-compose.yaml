@@ -1,26 +1,70 @@
-version: "3.9"
+version: '3.9'
 services:
   jenkins-master:
     container_name: jenkins-master
     image: ramyeid/mlsk-jenkins
     ports:
-      - "8788:8080"
-      - "50000:5000"
+      - '8788:8080'
+      - '50000:5000'
+    networks:
+      - default
     volumes:
       - ./.volumes/jenkins_home:/var/jenkins_home
       - ./jenkins/jenkins.yaml:/var/jenkins_home/jenkins.yaml
     environment:
       - CASC_JENKINS_CONFIG=/var/jenkins_home/jenkins.yaml
     restart: always
+
   # In order to be able to export docker api, to run agents on jenkins.
   socat:
     container_name: docker-forwarder-socat
     image: bobrik/socat
     command: tcp-listen:2375,fork unix-connect:/var/run/docker.sock
     ports:
-      - "127.0.0.1:2375:2375"
+      - '127.0.0.1:2375:2375'
+    networks:
+      - default
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
     restart: always
     depends_on:
-      - "jenkins-master"
+      - 'jenkins-master'
+
+  sonarqube:
+    container_name: sonarqube
+    image: sonarqube
+    expose:
+      - 9000
+    ports:
+      - '8789:9000'
+    networks:
+      - default
+    environment:
+      - sonar.jdbc.url=jdbc:postgresql://db:5432/sonar
+      - sonar.jdbc.username=sonar
+      - sonar.jdbc.password=sonar
+    volumes:
+      - ./.volumes/sonarqube/conf:/opt/sonarqube/conf
+      - ./.volumes/sonarqube/data:/opt/sonarqube/data
+      - ./.volumes/sonarqube/extensions:/opt/sonarqube/extensions
+      - ./.volumes/sonarqube/bundled-plugins:/opt/sonarqube/lib/bundled-plugins
+    restart: always
+    depends_on:
+      - 'db'
+
+  db:
+    container_name: sonarqube-db
+    image: postgres
+    networks:
+      - default
+    environment:
+      - POSTGRES_USER=sonar
+      - POSTGRES_PASSWORD=sonar
+    volumes:
+      - ./.volumes/postgresql/postgresql:/var/lib/postgresql
+      - ./.volumes/postgresql/data:/var/lib/postgresql/data
+    restart: always
+
+networks:
+  default:
+

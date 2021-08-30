@@ -10,17 +10,32 @@ class PythonBuilder implements IBuilder {
 
   @Override
   public void build() {
-    steps.sh "python3 -m compileall -f .";
+    steps.sh 'python3 -m compileall -f .';
   }
 
   @Override
   public void test() {
-    steps.sh 'python3 -m pytest -s --junitxml=python-test-reports.xml'
+    steps.sh 'python3 -m pytest -s --junitxml=python-test-reports.xml --cov=. --cov-report xml:coverage.xml'
   }
 
   @Override
   public void publishTestReports() {
-    steps.junit '**/python-test-reports.xml'
+    steps.junit 'python-test-reports.xml'
+  }
+
+  @Override
+  public void checkQualityGate() {
+    steps.withSonarQubeEnv('SonarqubeServer') {
+      steps.sh 'sonar-scanner \
+                -Dsonar.language=python \
+                -Dsonar.projectKey=engine \
+                -Dsonar.projectName=engine \
+                -Dsonar.python.xunit.reportPath=python-test-reports.xml \
+                -Dsonar.python.coverage.reportPaths=coverage.xml'
+    }
+    steps.timeout(time: 1, unit: 'HOURS') {
+      steps.waitForQualityGate abortPipeline: true
+    }
   }
 }
 
