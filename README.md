@@ -28,10 +28,11 @@ Below is the architecture of this application (Components might be added while d
 
 ## Components
 
-> - [Api](resources/documentation/md/Api.md)
-> - [Engine](./resources/documentation/md/Engine.md)
-> - [Service](./resources/documentation/md/Service.md)
-> - [Web UI](./resources/documentation/md/WebUI.md)
+> - [Api](resources/documentation/md/components/Api.md)
+> - [Engine](./resources/documentation/md/components/Engine.md)
+> - [Service](./resources/documentation/md/components/Service.md)
+> - [Web UI](./resources/documentation/md/components/WebUI.md)
+> - [Continous Integration](./resources/documentation/md/components/CI.md)
 
 ## Package and run
 
@@ -41,23 +42,30 @@ We worked hard to make machine learning easy and accessible for everyone. Packag
 
 ## Miscellaneous
 
-* To find process that is listening/using a port
+- To find process that is listening/using a port
+
   ```bash
   lsof -i tcp:6765 
   ```
 
-* Date Formatter
-  * Java
+- Date Formatter
+
+  - Java
+
     ```text
     https://docs.oracle.com/javase/8/docs/api/java/time/format/DateTimeFormatter.html
     => "Patterns for Formatting and Parsing"
     ```
-  * Python
+
+  - Python
+  
     ```text
     https://docs.python.org/3/library/datetime.html
     => "strftime() and strptime() Format Codes"
     ```
-  * Angular
+
+  - Angular
+
     ```text
     https://angular.io/api/common/DatePipe
     => "Custom format options"

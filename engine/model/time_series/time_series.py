@@ -39,6 +39,14 @@ class TimeSeries:
         return self.date_format
 
 
+    def __str__(self) -> str:
+        return str(self.to_json())
+
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
     def __eq__(self, other):
         return isinstance(other, TimeSeries) and self.date_column_name == other.date_column_name \
                and self.value_column_name == other.value_column_name and self.date_format == other.date_format \

@@ -105,7 +105,7 @@ def compile_angular():
 def compile_angular_and_run_tests():
     compile_angular()
     print("  Running Angular tests")
-    command = "cd ../web-ui && ng test --watch=false"
+    command = "cd ../web-ui && ng test --watch=false --browsers=ChromeHeadlessNoSandbox"
     launch_command(command, "Angular test failed")
 
 

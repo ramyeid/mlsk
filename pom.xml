@@ -72,22 +72,22 @@
             <dependency>
                 <groupId>machine-learning-swissknife</groupId>
                 <artifactId>mlsk-api</artifactId>
-                <version>${parent.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>machine-learning-swissknife</groupId>
                 <artifactId>mlsk-lib</artifactId>
-                <version>${parent.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>machine-learning-swissknife</groupId>
                 <artifactId>mlsk-service-public</artifactId>
-                <version>${parent.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>machine-learning-swissknife</groupId>
                 <artifactId>mlsk-service-model</artifactId>
-                <version>${parent.version}</version>
+                <version>${project.parent.version}</version>
             </dependency>
             <dependency>
                 <groupId>org.springframework.boot</groupId>

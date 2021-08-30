@@ -10,6 +10,7 @@ module.exports = function (config) {
       require('karma-chrome-launcher'),
       require('karma-jasmine-html-reporter'),
       require('karma-coverage'),
+      require('karma-junit-reporter'),
       require('@angular-devkit/build-angular/plugins/karma')
     ],
     client: {
@@ -32,13 +33,34 @@ module.exports = function (config) {
         { type: 'text-summary' }
       ]
     },
-    reporters: ['progress', 'kjhtml'],
+    reporters: ['progress', 'kjhtml', 'junit'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'ChromeHeadlessNoSandbox'],
+    browserNoActivityTimeout: 60000,
     singleRun: false,
-    restartOnFileChange: true
+    restartOnFileChange: true,
+    customLaunchers:{
+      ChromeHeadlessNoSandbox: {
+        base:'ChromeHeadless',
+        flags:[
+          '--no-sandbox',
+          '--disable-web-security',
+          '--disable-gpu',
+          '--remote-debugging-port=9222'
+        ]
+      }
+    },
+    junitReporter: {
+      outputDir:'.',
+      outputFile:'angular-junit-report.xml',
+      suite:'',
+      useBrowserName:false,
+      properties:{
+      }
+    }
+
   });
 };

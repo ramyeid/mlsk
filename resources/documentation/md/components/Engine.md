@@ -4,7 +4,7 @@ The Engine is a python project that is easy to launch that will offer endpoints 
 
 ## Algorithms
 
-> - [Time Series Analysis](TimeSeriesAnalysisService.md)
+> - [Time Series Analysis](services/TimeSeriesAnalysisService.md)
 
 ## Python
 

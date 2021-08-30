@@ -3,12 +3,13 @@
 import unittest
 import json
 from datetime import datetime
-import engine
+from engine.engine import app
 from model.time_series.time_series import TimeSeries
 from model.time_series.time_series_row import TimeSeriesRow
+from test.test_utils.assertion_utils import assert_with_diff, assert_on_time_series_with_diff
 
 
-test_app = engine.app.test_client()
+test_app = app.test_client()
 
 
 class TestTimeSeriesAnalysisController(unittest.TestCase):
@@ -49,7 +50,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         time_series_row = TimeSeriesRow(datetime(1952, 1, 1), 185.0)
         time_series_row1 = TimeSeriesRow(datetime(1952, 2, 1), 199.0)
         expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
-        assert expected_time_series == actual_time_series
+        assert_on_time_series_with_diff(expected_time_series, actual_time_series, 2)
 
 
     def test_forecast_exception(self):
@@ -102,7 +103,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
         actual_accuracy = float(response.data)
 
         # Then
-        assert 98.39 == actual_accuracy
+        assert_with_diff(98.39, actual_accuracy, 2) # Assertion can fail, depending on machine.
 
 
     def test_compute_forecast_accuracy_exception(self):

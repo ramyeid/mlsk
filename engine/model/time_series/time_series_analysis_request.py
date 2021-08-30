@@ -26,9 +26,21 @@ class TimeSeriesAnalysisRequest:
         return self.number_of_values
 
 
+    def __str__(self) -> str:
+        return str(self.to_json())
+
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
     def __eq__(self, other):
         return isinstance(other, TimeSeriesAnalysisRequest) and self.time_series == other.time_series\
                and self.number_of_values == other.number_of_values
+
+
+    def to_json(self) -> dict:
+        return dict(time_series=self.time_series, number_of_values=self.number_of_values)
 
 
     @classmethod

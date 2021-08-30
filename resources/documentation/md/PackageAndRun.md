@@ -17,8 +17,7 @@ To package the solution a script is offered under packaging/.
 The packaging will create a build directory containing the launcher scripts for different services, a configuration file (mlsk.ini) & the jars and the python module under build/components
 
 > It is recommended to launch a python virtual environment locally \
-> to do so [Setup venv](./Engine.md#Setup-Python-Environment)
-
+> to do so [Setup venv](./components/Engine.md#Setup-Python-Environment)
 
 ```bash
 source .venv/bin/activate

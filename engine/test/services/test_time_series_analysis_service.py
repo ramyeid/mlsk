@@ -5,6 +5,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 from pandas.testing import assert_frame_equal
 from services.time_series_analysis_service import TimeSeriesAnalysisService
+from test.test_utils.assertion_utils import assert_with_diff
 
 
 class TestTimeSeriesAnalysisService(unittest.TestCase):
@@ -66,7 +67,7 @@ class TestTimeSeriesAnalysisService(unittest.TestCase):
         actual_accuracy = tsa.compute_forecast_accuracy()
 
         # Test
-        assert 89.74 == actual_accuracy
+        assert_with_diff(89.74, actual_accuracy, 2) # Assertion can fail, depending on machine.
 
 
 if __name__ == "__main__":

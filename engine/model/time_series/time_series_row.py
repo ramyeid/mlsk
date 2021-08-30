@@ -27,6 +27,14 @@ class TimeSeriesRow:
         return self.value
 
 
+    def __str__(self) -> str:
+        return str(self.to_json(''))
+
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
+
     def __eq__(self, other):
         return isinstance(other, TimeSeriesRow) and self.date == other.date and int(self.value) == int(other.value)
 

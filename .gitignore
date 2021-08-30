@@ -232,3 +232,4 @@ gradle-app.setting
 .venv
 .idea
 venv
+ci/deployment/.volumes
