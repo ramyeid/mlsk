@@ -1,4 +1,4 @@
-@Library('mlsk-shared-library@ci/sonar') _
+@Library('mlsk-shared-library') _
 
 
 pipeline {
