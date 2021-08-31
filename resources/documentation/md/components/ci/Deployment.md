@@ -71,3 +71,17 @@ docker-compose down
 [Docker compose](https://docs.docker.com/compose/)
 
 [Configuration as Code](https://www.jenkins.io/projects/jcasc/)
+
+## Remarks
+
+- To list all plugins installed
+  1. Go to _http://[jenkins-url]/script_
+
+  2. Launch the following script
+
+      ```text
+      Jenkins.instance.pluginManager.plugins.each{
+        plugin -> 
+          println "${plugin.getShortName()}:${plugin.getVersion()}"
+      }
+      ```

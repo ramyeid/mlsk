@@ -41,7 +41,8 @@ ng build --prod
 ### Run test
 
 ```bash
-ng test --watch=false --browsers=[Chrome|ChromeHeadlessNoSandbox] --reporters=[junit|progress]
+ng test --watch=false --browsers=[Chrome|ChromeHeadlessNoSandbox] --reporters=[junit|progress] --code-coverage 
+
 ng e2e
 ```
 

@@ -4,3 +4,4 @@ statsmodels
 python-dateutil
 datetime
 pytest
+pytest-cov
