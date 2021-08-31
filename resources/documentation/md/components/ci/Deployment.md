@@ -74,8 +74,12 @@ docker-compose down
 
 ## Remarks
 
+- You probably have to regenerate the Sonar Token with our jenkins as code configuration.
+
+  Please check [here](Sonar.md#Configuration)
+
 - To list all plugins installed
-  1. Go to _http://[jenkins-url]/script_
+  1. Go to _http://${jenkins-url}/script_
 
   2. Launch the following script
 
