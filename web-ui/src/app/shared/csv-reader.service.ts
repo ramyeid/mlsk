@@ -34,8 +34,6 @@ export class CsvReaderService {
         } catch (error) {
           observable.error(error);
         }
-
-        return;
       };
 
       fileReader.onerror = (error) => observable.error(error);
