@@ -4,7 +4,7 @@ from datetime import datetime
 from statsmodels.tsa.arima.model import ARIMA
 import pandas as pd
 import numpy as np
-from utils import date
+from engine.utils import date
 
 
 class TimeSeriesAnalysisService:

@@ -4,8 +4,8 @@ import unittest
 from datetime import datetime, timedelta
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from model.time_series.time_series import TimeSeries
-from model.time_series.time_series_row import TimeSeriesRow
+from engine.model.time_series.time_series import TimeSeries
+from engine.model.time_series.time_series_row import TimeSeriesRow
 
 
 class TestTimeSeries(unittest.TestCase):

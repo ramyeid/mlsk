@@ -2,7 +2,7 @@
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from exception.engine_computation_exception import EngineComputationException
+from engine.exception.engine_computation_exception import EngineComputationException
 
 
 def handle_engine_computation_exception(err: EngineComputationException) -> ResponseReturnValue:

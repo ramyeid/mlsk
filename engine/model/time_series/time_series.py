@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 import pandas as pd
-from model.time_series.time_series_row import TimeSeriesRow
+from engine.model.time_series.time_series_row import TimeSeriesRow
 
 
 class TimeSeries:

@@ -2,9 +2,9 @@
 
 import unittest
 from datetime import datetime
-from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
-from model.time_series.time_series import TimeSeries
-from model.time_series.time_series_row import TimeSeriesRow
+from engine.model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
+from engine.model.time_series.time_series import TimeSeries
+from engine.model.time_series.time_series_row import TimeSeriesRow
 
 
 class TestTimeSeriesAnalysisRequest(unittest.TestCase):

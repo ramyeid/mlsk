@@ -3,10 +3,10 @@
 import unittest
 import json
 from datetime import datetime
-from engine.engine import app
-from model.time_series.time_series import TimeSeries
-from model.time_series.time_series_row import TimeSeriesRow
-from test.test_utils.assertion_utils import assert_with_diff, assert_on_time_series_with_diff
+from engine.engine_service import app
+from engine.model.time_series.time_series import TimeSeries
+from engine.model.time_series.time_series_row import TimeSeriesRow
+from engine.test.test_utils.assertion_utils import assert_with_diff, assert_on_time_series_with_diff
 
 
 test_app = app.test_client()

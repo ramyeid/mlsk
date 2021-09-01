@@ -18,7 +18,7 @@ Also Python Libraries are very rich with machine learning algorithms
 ### Setup Python Environment
 
 ```bash
-cd machine-learning-swissknife
+cd mlsk
 python3 -m venv .venv
 source .venv/bin/activate
 pip install --upgrade pip
@@ -66,5 +66,5 @@ python -m pydoc {file}
 ### Launch an engine
 
 ```bash
-python engine.py --port 6767 --logs-path /Users/ramyeid/Documents/machine-learning-swissknife/build/logs/
+python engine_service.py --port 6767 --logs-path /Users/ramyeid/Documents/mlsk/build/logs/
 ```

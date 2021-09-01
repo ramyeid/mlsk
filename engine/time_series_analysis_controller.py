@@ -2,12 +2,12 @@
 
 import json
 from flask import request
-from utils.json_complex_encoder import JsonComplexEncoder
-from utils.logger import get_logger
-from services.time_series_analysis_service import TimeSeriesAnalysisService
-from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
-from model.time_series.time_series import TimeSeries
-from exception.engine_computation_exception import EngineComputationException
+from engine.utils.json_complex_encoder import JsonComplexEncoder
+from engine.utils.logger import get_logger
+from engine.services.time_series_analysis_service import TimeSeriesAnalysisService
+from engine.model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
+from engine.model.time_series.time_series import TimeSeries
+from engine.exception.engine_computation_exception import EngineComputationException
 
 
 def forecast() -> str:

@@ -1,7 +1,8 @@
 #!/usr/bin/python3
 
 from argparse import ArgumentParser
-from debug.time_series_analysis_engine_debug import launch_time_series_analysis, build_time_series_analysis_arguments
+from engine.debug.time_series_analysis_engine_debug import launch_time_series_analysis, build_time_series_analysis_arguments
+
 
 if __name__ == "__main__":
   parser = ArgumentParser()

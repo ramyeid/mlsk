@@ -3,10 +3,11 @@
 import sys
 from argparse import ArgumentParser, Namespace
 import pandas as pd
-from services.time_series_analysis_service import TimeSeriesAnalysisService
-from utils import csv
-from debug.debug_utils import throw_exception_if_argument_null
-from debug.engine_debug_exception import EngineDebugException
+from engine.services.time_series_analysis_service import TimeSeriesAnalysisService
+from engine.utils import csv
+from engine.debug.debug_utils import throw_exception_if_argument_null
+from engine.debug.engine_debug_exception import EngineDebugException
+
 
 def build_time_series_analysis_arguments(parser: ArgumentParser):
   parser.add_argument("--csv", dest="csv_input",

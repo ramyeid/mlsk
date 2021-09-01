@@ -2,7 +2,7 @@
 
 import unittest
 from datetime import datetime
-from model.time_series.time_series_row import TimeSeriesRow
+from engine.model.time_series.time_series_row import TimeSeriesRow
 
 
 class TestTimeSeriesRow(unittest.TestCase):

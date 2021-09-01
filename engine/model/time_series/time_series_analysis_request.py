@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from model.time_series.time_series import TimeSeries
+from engine.model.time_series.time_series import TimeSeries
 
 
 class TimeSeriesAnalysisRequest:
