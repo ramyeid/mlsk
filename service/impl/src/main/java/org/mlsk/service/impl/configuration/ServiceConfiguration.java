@@ -10,7 +10,7 @@ import static java.util.stream.Collectors.toList;
 
 public class ServiceConfiguration {
 
-  private static ServiceConfiguration SERVICE_CONFIGURATION = null;
+  private static ServiceConfiguration instance = null;
 
   private final String logsPath;
   private final String enginePath;
@@ -23,15 +23,15 @@ public class ServiceConfiguration {
   }
 
   public static String getLogsPath() {
-    return SERVICE_CONFIGURATION.logsPath;
+    return instance.logsPath;
   }
 
   public static String getEnginePath() {
-    return SERVICE_CONFIGURATION.enginePath;
+    return instance.enginePath;
   }
 
   public static List<ServiceInformation> getEnginesServiceInformation() {
-    return SERVICE_CONFIGURATION.enginePorts.stream().map(port-> new ServiceInformation("localhost", port)).collect(toList());
+    return instance.enginePorts.stream().map(port-> new ServiceInformation("localhost", port)).collect(toList());
   }
 
   public static void buildServiceConfiguration(String... args) throws ParseException {
@@ -58,6 +58,6 @@ public class ServiceConfiguration {
         .map(String::trim)
         .collect(toList());
 
-    SERVICE_CONFIGURATION = new ServiceConfiguration(logsPath, enginePath, enginePorts);
+    instance = new ServiceConfiguration(logsPath, enginePath, enginePorts);
   }
 }
