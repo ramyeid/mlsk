@@ -79,7 +79,7 @@ docker-compose down
   Please check [here](Sonar.md#Configuration)
 
 - To list all plugins installed
-  1. Go to _http://${jenkins-url}/script_
+  1. Go to ```_http://${jenkins-url}/script_```
 
   2. Launch the following script
 

@@ -20,18 +20,18 @@ app.register_error_handler(EngineComputationException, exception_handler.handle_
 
 
 def on_shutdown():
-    get_logger().info("Engine will shutdown")
+  get_logger().info("Engine will shutdown")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--port", dest="port", help="port to run python engine", required=True)
-    parser.add_argument("--logs-path", dest="logs_path", help="location to dump logs", required=True)
-    args = parser.parse_args()
+  parser = argparse.ArgumentParser()
+  parser.add_argument("--port", dest="port", help="port to run python engine", required=True)
+  parser.add_argument("--logs-path", dest="logs_path", help="location to dump logs", required=True)
+  args = parser.parse_args()
 
-    logger = setup_logger(args.logs_path, args.port)
-    atexit.register(on_shutdown)
-    signal.signal(signal.SIGTERM, on_shutdown)
-    signal.signal(signal.SIGINT, on_shutdown)
-    logger.info("Engine is up")
-    app.run(host='0.0.0.0', port=args.port)
+  logger = setup_logger(args.logs_path, args.port)
+  atexit.register(on_shutdown)
+  signal.signal(signal.SIGTERM, on_shutdown)
+  signal.signal(signal.SIGINT, on_shutdown)
+  logger.info("Engine is up")
+  app.run(host='0.0.0.0', port=args.port)

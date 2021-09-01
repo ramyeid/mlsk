@@ -93,7 +93,9 @@ pipeline {
     stage('Quality Gate - Service') {
       steps {
         dir('service/impl') {
-          javaCheckQualityGate()
+          catchError(message: 'Service Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+            javaCheckQualityGate()
+          }
         }
       }
     }
@@ -101,7 +103,9 @@ pipeline {
     stage('Quality Gate - Java UI') {
       steps {
         dir('swing-ui') {
-          javaCheckQualityGate()
+          catchError(message: 'Swing UI Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+            javaCheckQualityGate()
+          }
         }
       }
     }
@@ -109,7 +113,9 @@ pipeline {
     stage('Quality Gate - Engine') {
       steps {
         dir('engine') {
-          pythonCheckQualityGate()
+          catchError(message: 'Engine Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+            pythonCheckQualityGate()
+          }
         }
       }
     }
@@ -117,7 +123,9 @@ pipeline {
     stage('Quality Gate - Web UI') {
       steps {
         dir('web-ui') {
-          angularCheckQualityGate()
+          catchError(message: 'Web UI Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+            angularCheckQualityGate()
+          }
         }
       }
     }
