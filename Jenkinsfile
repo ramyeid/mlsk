@@ -45,7 +45,7 @@ pipeline {
 
     stage('Test Java') {
       steps {
-        catchError(message: 'Java tests failed', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+        warnError(message: 'Java tests failed') {
           javaTest()
         }
       }
@@ -59,7 +59,7 @@ pipeline {
     stage('Test Python') {
       steps {
         dir('engine') {
-          catchError(message: 'Python tests failed', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+          warnError(message: 'Python tests failed') {
             pythonTest()
           }
         }
@@ -76,7 +76,7 @@ pipeline {
     stage('Test Angular') {
       steps {
         dir('web-ui') {
-          catchError(message: 'Angular tests failed', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+          warnError(message: 'Angular tests failed') {
             angularTest()
           }
         }
@@ -93,7 +93,7 @@ pipeline {
     stage('Quality Gate - Service') {
       steps {
         dir('service/impl') {
-          catchError(message: 'Service Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+          warnError(message: 'Service Quality Gate Breached') {
             javaCheckQualityGate()
           }
         }
@@ -103,7 +103,7 @@ pipeline {
     stage('Quality Gate - Java UI') {
       steps {
         dir('swing-ui') {
-          catchError(message: 'Swing UI Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+          warnError(message: 'Swing UI Quality Gate Breached') {
             javaCheckQualityGate()
           }
         }
@@ -113,7 +113,7 @@ pipeline {
     stage('Quality Gate - Engine') {
       steps {
         dir('engine') {
-          catchError(message: 'Engine Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+          warnError(message: 'Engine Quality Gate Breached') {
             pythonCheckQualityGate()
           }
         }
@@ -123,7 +123,7 @@ pipeline {
     stage('Quality Gate - Web UI') {
       steps {
         dir('web-ui') {
-          catchError(message: 'Web UI Quality Gate Breached', buildResult: 'UNSTABLE', stageResult: 'UNSTABLE') {
+          warnError(message: 'Web UI Quality Gate Breached') {
             angularCheckQualityGate()
           }
         }
