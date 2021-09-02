@@ -22,9 +22,9 @@ describe('ValidationMessageGenerator', () => {
     const actualResult = validationMessageGenerator.generateErrorMessages(form);
 
     const expectedResult = {
-      formName1: 'formName1MinErrorMessage ',
-      formName2: 'formName2InvalidErrorMessage formName2RequiredErrorMessage ',
-      formName3: 'formName3MinErrorMessage formName3InvalidErrorMessage formName3RequiredErrorMessage '
+      formName1: 'formName1MinErrorMessage',
+      formName2: 'formName2InvalidErrorMessage formName2RequiredErrorMessage',
+      formName3: 'formName3MinErrorMessage formName3InvalidErrorMessage formName3RequiredErrorMessage'
     };
     expect(actualResult).toEqual(expectedResult);
   });
@@ -39,7 +39,7 @@ describe('ValidationMessageGenerator', () => {
     const expectedResult = {
       formName1: '',
       formName2: '',
-      formName3: 'formName3MinErrorMessage '
+      formName3: 'formName3MinErrorMessage'
     };
     expect(actualResult).toEqual(expectedResult);
   });

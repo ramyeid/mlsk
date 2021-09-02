@@ -1,4 +1,4 @@
-import { FormGroup } from '@angular/forms';
+import { FormControl, FormGroup } from '@angular/forms';
 
 import { ValidationMessages } from './validation-messages';
 
@@ -15,22 +15,33 @@ export class ValidationMessageGenerator {
     for (const controlKey in container.controls) {
       const control = container.controls[controlKey];
       if (control instanceof FormGroup) {
-        const containerErrorMessages = this.generateErrorMessages(control);
-        Object.assign(messages, containerErrorMessages);
-      } else {
+        Object.assign(messages, this.generateErrorMessages(control));
+      } else if (control instanceof FormControl) {
         if (this.validationMessages.has(controlKey)) {
-          messages[controlKey] = '';
-          if ((control.dirty || control.touched) && control.errors) {
-            Object.keys(control.errors).forEach(messageKey => {
-              if (this.validationMessages.hasError(controlKey, messageKey)) {
-                messages[controlKey] += `${this.validationMessages.getError(controlKey, messageKey)} `;
-              }
-            });
-          }
+          messages[controlKey] = this.retrieveErrorMessages(control, controlKey);
         }
       }
     }
     return messages;
   }
 
+  private retrieveErrorMessages(control: FormControl, controlKey: string): string {
+    if (this.isDirtyOrTouched(control) && control.errors) {
+      return Object.keys(control.errors)
+        .map(messageKey => this.retrieveErrorMessage(controlKey, messageKey))
+        .filter(errorMessage => errorMessage && errorMessage.length != 0)
+        .join(' ');
+    }
+
+    return '';
+  }
+
+  private retrieveErrorMessage(controlKey: string, messageKey: string): string | undefined {
+    return this.validationMessages.hasError(controlKey, messageKey) ?
+      this.validationMessages.getError(controlKey, messageKey) : undefined;
+  }
+
+  private isDirtyOrTouched(control: FormControl): boolean {
+    return control.dirty || control.touched;
+  }
 }

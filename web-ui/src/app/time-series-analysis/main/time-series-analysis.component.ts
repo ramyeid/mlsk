@@ -6,8 +6,7 @@ import { TimeSeriesAnalysisOutputComponent } from '../output/time-series-analysi
 
 @Component({
   selector: 'app-time-series-analysis',
-  templateUrl: './time-series-analysis.component.html',
-  styleUrls: ['./time-series-analysis.component.css']
+  templateUrl: './time-series-analysis.component.html'
 })
 export class TimeSeriesAnalysisComponent {
 
