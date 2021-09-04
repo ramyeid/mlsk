@@ -78,6 +78,7 @@ pipeline {
         dir('web-ui') {
           warnError(message: 'Angular tests failed') {
             angularTest()
+            sleep(time:1, unit:"SECONDS") // Needed bcs publishReport was failing.
           }
         }
       }

@@ -21,6 +21,8 @@ All pull requests should be open after running the following steps
 
 - Package with tests
 
+- Deploy with push option and update remote image
+
 - Run your end-to-end test case
 
 - Update _Board.csv_
