@@ -12,6 +12,10 @@ def deploy_web_ui(should_push_deployment: bool):
   deploy(should_push_deployment, const.DOCKER_DEPLOYMENT_WEB_UI_DIRECTORY, const.WEB_UI_IMAGE)
 
 
+def deploy_swing_ui(should_push_deployment: bool):
+  deploy(should_push_deployment, const.DOCKER_DEPLOYMENT_SWING_UI_DIRECTORY, const.SWING_UI_IMAGE)
+
+
 def deploy(should_push_deployment: bool, path:str, image_name: str):
   try_remove_old_image(image_name)
   helper.launch_command('cd {} && docker build -t {} .'.format(path, image_name), 'Unable to build image')

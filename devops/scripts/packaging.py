@@ -39,7 +39,7 @@ def copy_packaging_library():
 
 def copy_launchers():
   file_helper.copy_file('{}launch_service.py'.format(const.PACKAGING_DIRECTORY), const.BUILD_DIRECTORY)
-  file_helper.copy_file('{}launch_ui.py'.format(const.PACKAGING_DIRECTORY), const.BUILD_DIRECTORY)
+  file_helper.copy_file('{}launch_swing_ui.py'.format(const.PACKAGING_DIRECTORY), const.BUILD_DIRECTORY)
   file_helper.copy_file('{}launch_web_ui.py'.format(const.PACKAGING_DIRECTORY), const.BUILD_DIRECTORY)
   file_helper.copy_file('{}__init__.py'.format(const.PACKAGING_DIRECTORY), const.BUILD_DIRECTORY)
 
@@ -80,7 +80,7 @@ if __name__ == '__main__':
       helper.print_start_step('COPY JAVA')
       helper.print_inner_step('Copying jars', 1)
       java_builder.copy_service_jar(const.BUILD_COMPONENTS_DIRECTORY)
-      java_builder.copy_ui_jar(const.BUILD_COMPONENTS_DIRECTORY)
+      java_builder.copy_swing_ui_jar(const.BUILD_COMPONENTS_DIRECTORY)
       helper.print_end_step('COPY JAVA')
 
       helper.print_start_step('OVERWRITE PROD ENV FILE ANGULAR')

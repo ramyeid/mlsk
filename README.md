@@ -32,6 +32,7 @@ Below is the architecture of this application (Components might be added while d
 > - [Engine](./resources/documentation/md/components/Engine.md)
 > - [Service](./resources/documentation/md/components/Service.md)
 > - [Web UI](./resources/documentation/md/components/WebUI.md)
+> - [Swing UI](./resources/documentation/md/components/SwingUI.md)
 > - [DevOps](./resources/documentation/md/components/DevOps.md)
 
 ## Package and run

@@ -25,6 +25,11 @@ def create_web_ui_directory():
     file_helper.create_dir(const.DOCKER_DEPLOYMENT_WEB_UI_DIRECTORY)
 
 
+def create_swing_ui_directory():
+  if not file_helper.does_dir_exist(const.DOCKER_DEPLOYMENT_SWING_UI_DIRECTORY):
+    file_helper.create_dir(const.DOCKER_DEPLOYMENT_SWING_UI_DIRECTORY)
+
+
 def delete_deployment_directory():
   if file_helper.does_dir_exist(const.DOCKER_DEPLOYMENT_DIRECTORY):
     file_helper.remove_dir(const.DOCKER_DEPLOYMENT_DIRECTORY)
@@ -48,6 +53,8 @@ if __name__ == '__main__':
       create_service_directory()
       helper.print_inner_step('Creating web-ui directory', 1)
       create_web_ui_directory()
+      helper.print_inner_step('Creating swing-ui directory', 1)
+      create_swing_ui_directory()
       helper.print_end_step('CREATING DIRECTORIES')
 
       helper.print_start_step('DEPLOY SERVICE')
@@ -56,10 +63,10 @@ if __name__ == '__main__':
       java_builder.compile_java_and_run_tests()
       helper.print_end_step('COMPILE JAVA')
 
-      helper.print_start_step('COPY JAVA')
-      helper.print_inner_step('Copying java directory', 1)
+      helper.print_start_step('COPY SERVICE')
+      helper.print_inner_step('Copying service jar', 1)
       java_builder.copy_service_jar(const.DOCKER_DEPLOYMENT_SERVICE_DIRECTORY)
-      helper.print_end_step('COPY JAVA')
+      helper.print_end_step('COPY SERVICE')
 
       helper.print_start_step('COMPILE PYTHON')
       python_builder.compile_python_and_run_tests()
@@ -107,6 +114,25 @@ if __name__ == '__main__':
       helper.print_end_step('BUILD WEB UI IMAGE')
 
       helper.print_end_step('DEPLOY WEB UI')
+
+
+      helper.print_start_step('DEPLOY SWING UI')
+
+      helper.print_start_step('COPY SWING UI')
+      helper.print_inner_step('Copying swing ui jar', 1)
+      java_builder.copy_swing_ui_jar(const.DOCKER_DEPLOYMENT_SWING_UI_DIRECTORY)
+      helper.print_end_step('COPY SWING UI')
+
+      helper.print_start_step('COPY DOCKERFILE SWING UI')
+      helper.print_inner_step('Copying Dockerfile', 1)
+      file_helper.copy_file('{}Dockerfile'.format(const.DEPLOYMENT_SWING_UI_DIRECTORY), const.DOCKER_DEPLOYMENT_SWING_UI_DIRECTORY)
+      helper.print_end_step('COPY DOCKERFILE SWING UI')
+
+      helper.print_start_step('BUILD SWING UI IMAGE')
+      deployment_helper.deploy_swing_ui(args.should_push_deployment)
+      helper.print_end_step('BUILD SWING UI IMAGE')
+
+      helper.print_end_step('DEPLOY SWING UI')
 
     except Exception as exception:
       print('\n'*5)

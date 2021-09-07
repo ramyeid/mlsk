@@ -31,14 +31,20 @@ MLSK owns many docker images
   - [remote](https://hub.docker.com/repository/docker/ramyeid/mlsk-build-agent)
   - [documentation](devops/ci/Agent.md)
 
+- **ramyeid/mlsk-service**
+  > This serves as the image of the service component
+  - [locally](../../../../devops/scripts/deployment/service/Dockerfile)
+  - [remote](https://hub.docker.com/repository/docker/ramyeid/mlsk-service)
+  - [documentation](devops/scripts/Deployment.md)
+
 - **ramyeid/mlsk-web-ui**
   > This serves as the image of the web ui component
   - [locally](../../../../devops/scripts/deployment/web-ui/Dockerfile)
   - [remote](https://hub.docker.com/repository/docker/ramyeid/mlsk-web-ui)
   - [documentation](devops/scripts/Deployment.md)
 
-- **ramyeid/mlsk-service**
-  > This serves as the image of the service component
-  - [locally](../../../../devops/scripts/deployment/service/Dockerfile)
-  - [remote](https://hub.docker.com/repository/docker/ramyeid/mlsk-service)
+- **ramyeid/mlsk-swing-ui**
+  > This serves as the image of the java swing ui component
+  - [locally](../../../../devops/scripts/deployment/swing-ui/Dockerfile)
+  - [remote](https://hub.docker.com/repository/docker/ramyeid/mlsk-swing-ui)
   - [documentation](devops/scripts/Deployment.md)
