@@ -2,6 +2,8 @@
 
 The Web UI is a angular project that is easy to write and launch and should offer better graphics and easier UI experience
 
+> **_NOTE:_**  You will be able to modify the url (host & port) of the *server* in a configuration page in the ui.
+
 ## Angular
 
 Angular is very easy to use, launch and debug.
@@ -79,3 +81,9 @@ To launch the web ui we need to build and open the index.html this is automated 
 ```bash
 ng serve -o --port [port]
 ```
+
+## Docker Image
+
+This service is deployed on docker under [ramyeid/mlsk-web-ui](https://hub.docker.com/repository/docker/ramyeid/mlsk-web-ui)
+
+> Information on how to launch a container can be found [here](devops/scripts/Deployment.md)

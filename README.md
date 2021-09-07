@@ -32,13 +32,19 @@ Below is the architecture of this application (Components might be added while d
 > - [Engine](./resources/documentation/md/components/Engine.md)
 > - [Service](./resources/documentation/md/components/Service.md)
 > - [Web UI](./resources/documentation/md/components/WebUI.md)
-> - [Continous Integration](./resources/documentation/md/components/CI.md)
+> - [DevOps](./resources/documentation/md/components/DevOps.md)
 
 ## Package and run
 
 We worked hard to make machine learning easy and accessible for everyone. Packaging and running the solution should also be easy.
 
-> [Package & run](resources/documentation/md/PackageAndRun.md)
+> [Package & run](resources/documentation/md/components/devops/scripts/Packaging.md)
+
+## Docker deployment
+
+We worked hard to make maching learning easy and accessible for everyone. Already deployed solution and running it should also be easy.
+
+> [Pull & run](resources/documentation/md/components/devops/scripts/Deployment.md)
 
 ## Miscellaneous
 

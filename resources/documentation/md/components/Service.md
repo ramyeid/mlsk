@@ -17,3 +17,9 @@ java -Dserver.port=6766 -jar service.jar --engine-ports 6767,6768 --logs-path  /
 ### Engines
 
 The Service owns the engines; this means that it is the service that will launch and destroy the engines.
+
+## Docker Image
+
+This service is deployed on docker under [ramyeid/mlsk-serivce](https://hub.docker.com/repository/docker/ramyeid/mlsk-service)
+
+> Information on how to launch a container can be found [here](devops/scripts/Deployment.md)
