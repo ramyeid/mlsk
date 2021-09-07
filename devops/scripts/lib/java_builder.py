@@ -17,8 +17,8 @@ def compile_java_and_run_tests():
   helper.launch_command(command, 'Java test failed')
 
 
-def copy_ui_jar(output: str):
-  file_helper.copy_file(get_jar_path(const.UI_JAR), output)
+def copy_swing_ui_jar(output: str):
+  file_helper.copy_file(get_jar_path(const.SWING_UI_JAR), output)
 
 
 def copy_service_jar(output: str):

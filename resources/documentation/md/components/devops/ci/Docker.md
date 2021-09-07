@@ -58,6 +58,12 @@ docker start [Container Id]
 docker exec -it [Container id] bash
 ```
 
+### Copy file to container
+
+```bash
+docker cp [file] [Container Id]:[Container Folder]
+```
+
 ## docker-compose
 
 ### Launch

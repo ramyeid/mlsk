@@ -12,4 +12,4 @@ JAVA_PROJECTS = '../..'
 
 #Files
 SERVICE_JAR = 'mlsk-service-impl.jar'
-UI_JAR = 'mlsk-ui-jar-with-dependencies.jar'
+SWING_UI_JAR = 'mlsk-ui-jar-with-dependencies.jar'

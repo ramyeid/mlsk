@@ -51,3 +51,27 @@ The dockerfile of this image can be found [here](../../../../../../devops/script
 ```bash
 docker run -d -p 6765:80 ramyeid/mlsk-web-ui
 ```
+
+## Launch Swing UI
+
+We offer an image for [MLSK-Swing-UI](https://hub.docker.com/repository/docker/ramyeid/mlsk-swing-ui).
+
+The dockerfile of this image can be found [here](../../../../../../devops/scripts/deployment/swing-ui/Dockerfile).
+
+> By default we are connecting to the service under port **6766**. (*The URL of the service can be modified in the configuration page of the service*)
+
+### Terminal - 1
+
+```bash
+socat TCP-LISTEN:6000,reuseaddr,fork UNIX-CLIENT:\"$DISPLAY\"
+```
+
+### Terminal - 2
+
+```bash
+docker run -d -v /Users/ramyeid/Documents/FYP/V1/mlsk/docker_deployment/swing-ui/.x11-unix:/tmp/.X11-unix -e DISPLAY=$(ipconfig getifaddr en0):0 ramyeid/mlsk-swing-ui
+```
+
+### Reference
+
+[How to dockerize a Java GUI Application](https://learnwell.medium.com/how-to-dockerize-a-java-gui-application-bce560abf62a)
