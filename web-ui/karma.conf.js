@@ -41,6 +41,8 @@ module.exports = function (config) {
     autoWatch: true,
     browsers: ['Chrome', 'ChromeHeadlessNoSandbox'],
     browserNoActivityTimeout: 60000,
+    browserDisconnectTimeout: 60000,
+    browserDisconnectTolerance: 10,
     singleRun: false,
     restartOnFileChange: true,
     customLaunchers:{

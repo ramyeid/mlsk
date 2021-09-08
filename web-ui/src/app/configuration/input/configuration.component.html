@@ -1,0 +1,98 @@
+<div class="card">
+  <form novalidate [formGroup]="configurationForm">
+
+    <div id="Server">
+
+      <div class="card-header">
+        Server
+      </div>
+
+      <div class="card-body">
+
+        <div class="form-group row mb-2">
+          <label class="col-md-2 col-form-label"
+                for="serverHost">Host</label>
+          <div class="col-md-4">
+            <input class="form-control"
+                  id="serverHost"
+                  type="text"
+                  placeholder="Server Host"
+                  formControlName="serverHost"
+                  [ngClass]="{'is-invalid': errorMessagePerInput.serverHost}" />
+            <span class="invalid-feedback">
+              {{ errorMessagePerInput.serverHost }}
+            </span>
+          </div>
+        </div>
+
+        <div class="form-group row mb-2">
+          <label class="col-md-2 col-form-label"
+                for="serverPort">Port</label>
+          <div class="col-md-4">
+            <input class="form-control"
+                  id="serverPort"
+                  type="number"
+                  placeholder="Server Port"
+                  formControlName="serverPort"
+                  [ngClass]="{'is-invalid': errorMessagePerInput.serverPort }" />
+            <span class="invalid-feedback">
+              {{ errorMessagePerInput.serverPort }}
+            </span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <div id="Other">
+      <div class="card-header">
+        Other
+      </div>
+      <div class="card-body">
+      </div>
+    </div>
+
+
+    <div id="Buttons">
+
+      <div class="card-header">
+        Save or Cancel
+      </div>
+
+      <div class="card-body">
+
+        <div class="form-group row mb-2">
+
+          <div class="col-md-1">
+            <button class="btn btn-outline-primary"
+                    id="saveBtn"
+                    type="button"
+                    style="width:80px"
+                    [title]="configurationForm.valid ? 'Save' : 'Disabled until the form is valid'"
+                    [disabled]="!configurationForm.valid"
+                    (click)="save()">
+              Save
+            </button>
+          </div>
+
+          <div class="col-md-2">
+            <button class="btn btn-outline-primary"
+                    id="cancelBtn"
+                    type="button"
+                    style="width:100px"
+                    [title]="configurationForm.valid ? 'Cancel' : 'Disabled until the form is valid'"
+                    [disabled]="!configurationForm.valid"
+                    (click)="cancel()">
+              Cancel
+            </button>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </form>
+</div>

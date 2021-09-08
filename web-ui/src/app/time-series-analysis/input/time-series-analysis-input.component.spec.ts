@@ -58,8 +58,10 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
       const expectedErrorMessagePerInput = {
         [ Constants.DATE_COLUMN_NAME_FORM ]: 'Date column name is required.',
-        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
-        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '',
+        [ Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '',
+        [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
@@ -71,8 +73,10 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
       const expectedErrorMessagePerInput = {
         [ Constants.DATE_COLUMN_NAME_FORM ]: '',
-        [ Constants.VALUE_COLUMN_NAME_FORM ]: 'Value column name is required.', [Constants.DATE_FORMAT_FORM ]: '',
-        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: 'Value column name is required.',
+        [ Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '',
+        [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
@@ -84,8 +88,10 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
       const expectedErrorMessagePerInput = {
         [ Constants.DATE_COLUMN_NAME_FORM ]: '',
-        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: 'Date format is required.',
-        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '',
+        [ Constants.DATE_FORMAT_FORM ]: 'Date format is required.',
+        [ Constants.CSV_LOCATION_FORM ]: '',
+        [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
@@ -97,8 +103,10 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
       const expectedErrorMessagePerInput = {
         [ Constants.DATE_COLUMN_NAME_FORM ]: '',
-        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: 'Date format should follow the date format pattern.',
-        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '',
+        [ Constants.DATE_FORMAT_FORM ]: 'Date format should follow the date format pattern.',
+        [ Constants.CSV_LOCATION_FORM ]: '',
+        [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
@@ -110,8 +118,10 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
       const expectedErrorMessagePerInput = {
         [ Constants.DATE_COLUMN_NAME_FORM ]: '',
-        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
-        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: 'Number of values is required.'
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '',
+        [ Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '',
+        [ Constants.NUMBER_OF_VALUES_FORM ]: 'Number of values is required.'
       };
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
@@ -123,8 +133,10 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
       const expectedErrorMessagePerInput = {
         [ Constants.DATE_COLUMN_NAME_FORM ]: '',
-        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
-        [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: 'Number of values should be a positive number.'
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '',
+        [ Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: '',
+        [ Constants.NUMBER_OF_VALUES_FORM ]: 'Number of values should be a positive number.'
       };
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
@@ -136,8 +148,10 @@ describe('TimeSeriesAnalysisInputComponent', () => {
 
       const expectedErrorMessagePerInput = {
         [ Constants.DATE_COLUMN_NAME_FORM ]: '',
-        [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
-        [ Constants.CSV_LOCATION_FORM ]: 'CSV Location is required.', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
+        [ Constants.VALUE_COLUMN_NAME_FORM ]: '',
+        [ Constants.DATE_FORMAT_FORM ]: '',
+        [ Constants.CSV_LOCATION_FORM ]: 'CSV Location is required.',
+        [ Constants.NUMBER_OF_VALUES_FORM ]: ''
       };
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
@@ -528,8 +542,10 @@ class AssertionHelper {
   static expectValidForm(fixture: ComponentFixture<TimeSeriesAnalysisInputComponent>): void {
     const expectedErrorMessagePerInput = {
       [ Constants.DATE_COLUMN_NAME_FORM ]: '',
-      [ Constants.VALUE_COLUMN_NAME_FORM ]: '', [Constants.DATE_FORMAT_FORM ]: '',
-      [ Constants.CSV_LOCATION_FORM ]: '', [ Constants.NUMBER_OF_VALUES_FORM ]: ''
+      [ Constants.VALUE_COLUMN_NAME_FORM ]: '',
+      [ Constants.DATE_FORMAT_FORM ]: '',
+      [ Constants.CSV_LOCATION_FORM ]: '',
+      [ Constants.NUMBER_OF_VALUES_FORM ]: ''
     };
     expect(fixture.componentInstance.errorMessagePerInput).toEqual(expectedErrorMessagePerInput);
     AssertionHelper.expectEnabledButton(fixture, Constants.PREDICT_BTN, 'Launch predict');

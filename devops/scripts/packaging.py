@@ -84,7 +84,7 @@ if __name__ == '__main__':
       helper.print_end_step('COPY JAVA')
 
       helper.print_start_step('OVERWRITE PROD ENV FILE ANGULAR')
-      angular_builder.overwrite_angular_prod_environment_file(config_helper.read_service_port())
+      angular_builder.overwrite_angular_prod_environment_file(config_helper.read_service_host(), config_helper.read_service_port())
       helper.print_end_step('OVERWRITE PROD ENV FILE ANGULAR')
       helper.print_start_step('COMPILE ANGULAR')
       helper.print_inner_step('Compiling angular', 1) if args.should_skip_tests else helper.print_inner_step('Compiling and testing angular', 1)

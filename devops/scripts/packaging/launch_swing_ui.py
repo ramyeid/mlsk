@@ -8,12 +8,19 @@ from packaging import config_helper
 
 if __name__ == '__main__':
   if config_helper.configuration_file_exists():
+    service_host = config_helper.read_service_host()
     service_port = config_helper.read_service_port()
 
     helper.print_inner_step('launching swing ui', 0)
+    helper.print_inner_step('with service host: {}'.format(service_host), 1)
     helper.print_inner_step('with service port: {}'.format(service_port), 1)
-    helper.launch_command('java -jar {}{} --service-port {}'
-                          .format(const.COMPONENTS_DIRECTORY, lib_const.SWING_UI_JAR, service_port),
+    helper.launch_command('java -jar {}{} --service-host {} --service-port {}'
+                          .format(
+                            const.COMPONENTS_DIRECTORY,
+                            lib_const.SWING_UI_JAR,
+                            service_host,
+                            service_port
+                            ),
                           'Swing UI stopped')
 
   else:

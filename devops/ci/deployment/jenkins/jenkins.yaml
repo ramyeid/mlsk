@@ -15,7 +15,7 @@ jenkins:
   clouds:
   - docker:
       name: "docker-engine"
-      containerCap: 2
+      containerCap: 1
       dockerApi:
         connectTimeout: 60
         dockerHost:
@@ -32,7 +32,7 @@ jenkins:
           mountsString: |-
             type=volume,src=mlsk_agent_m2_repo,dst=/root/.m2/repository/
             type=volume,src=mlsk_agent_node_modules,dst=/root/.mlsk_node_modules/node_modules/
-        instanceCapStr: "2"
+        instanceCapStr: "1"
         pullStrategy: PULL_ALWAYS
         pullTimeout: 300
 unclassified:

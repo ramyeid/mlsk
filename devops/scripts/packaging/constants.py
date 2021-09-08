@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 #Configuration file
+HOST_SECTION = 'host'
 PORT_SECTION = 'port'
 PORTS_SECTION = 'ports'
 SERVICE_SECTION = 'SERVICE'
@@ -9,6 +10,7 @@ WEB_UI_SECTION = 'WEB_UI'
 WEB_UI_PORT_OPTION = 'webui_port'
 ENGINE_PORTS_OPTION = 'engine_ports'
 SERVICE_PORT_OPTION = 'service_port'
+SERVICE_HOST_OPTION = 'service_host'
 
 #Paths
 BUILD_DIRECTORY = '../../build/'

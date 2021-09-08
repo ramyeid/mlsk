@@ -5,6 +5,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
+import { ConfigurationModule } from './configuration/configuration.module';
 import { TimeSeriesAnalysisModule } from './time-series-analysis/time-series-analysis.module';
 import { HomeModule } from './home/home.module';
 import { SharedModule } from './shared/shared.module';
@@ -17,6 +18,7 @@ import { appRoutes } from './routes';
     HttpClientModule,
     SharedModule,
     HomeModule,
+    ConfigurationModule,
     TimeSeriesAnalysisModule,
     RouterModule.forRoot(appRoutes)
   ],

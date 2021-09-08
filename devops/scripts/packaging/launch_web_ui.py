@@ -20,8 +20,12 @@ def create_bs_config_json(web_ui_port: str, base_dir: str):
 if __name__ == '__main__':
   if config_helper.configuration_file_exists():
     web_ui_port = config_helper.read_web_ui_port()
+    service_host = config_helper.read_service_host()
+    service_port = config_helper.read_service_port()
 
     helper.print_inner_step('launching web ui', 0)
+    helper.print_inner_step('with service host: {}'.format(service_host), 1)
+    helper.print_inner_step('with service port: {}'.format(service_port), 1)
     helper.print_inner_step('with angular port: {}'.format(web_ui_port), 1)
     helper.print_inner_step('with dist folder: {}'.format(const.DIST_DIRECTORY), 1)
     create_bs_config_json(web_ui_port, const.COMPONENTS_WEB_UI_DIST_DIRECTORY)

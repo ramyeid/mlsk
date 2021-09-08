@@ -9,7 +9,9 @@ def read_angular_prod_environment_file() -> str:
   return file_helper.read_file('{}/src/environments/environment.prod.ts'.format(const.WEB_UI_DIRECTORY))
 
 
-def overwrite_angular_prod_environment_file(service_port: str):
+def overwrite_angular_prod_environment_file(service_host: str, service_port: str):
+  file_helper.replace_placeholder_in_file('{}/src/environments/environment.prod.ts'.format(const.WEB_UI_DIRECTORY),
+                                      const.ANGULAR_SERVER_HOST_OPTION, service_host)
   file_helper.replace_placeholder_in_file('{}/src/environments/environment.prod.ts'.format(const.WEB_UI_DIRECTORY),
                                       const.ANGULAR_SERVER_PORT_OPTION, service_port)
 

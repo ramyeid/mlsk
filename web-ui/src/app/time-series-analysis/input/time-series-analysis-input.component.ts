@@ -41,7 +41,7 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     const validationMessages = TimeSeriesAnalysisValidationMessages.buildTimeSeriesValidationMessages();
     this.validationMessageGenrator = new ValidationMessageGenerator(validationMessages);
     this.isWaitingForResult = false;
-    this.buildForm();
+    this.settingsForm = this.buildForm();
   }
 
   ngAfterViewInit(): void {
@@ -103,8 +103,8 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     this.isWaitingForResult = true;
   }
 
-  private buildForm(): void {
-    this.settingsForm = this.formBuilder.group({
+  private buildForm(): FormGroup {
+    return this.formBuilder.group({
       [ Constants.DATE_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.VALUE_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.DATE_FORMAT_FORM ]: [ '', [ Validators.required, DateFormatValidator.validateDateFormat ] ],
