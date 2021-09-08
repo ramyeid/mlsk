@@ -92,7 +92,7 @@ if __name__ == '__main__':
       helper.print_start_step('DEPLOY WEB UI')
 
       helper.print_start_step('OVERWRITE PROD ENV FILE ANGULAR')
-      angular_builder.overwrite_angular_prod_environment_file(const.DEFAULT_SERVICE_PORT)
+      angular_builder.overwrite_angular_prod_environment_file(const.DEFAULT_SERVICE_HOST, const.DEFAULT_SERVICE_PORT)
       helper.print_end_step('OVERWRITE PROD ENV FILE ANGULAR')
 
       helper.print_start_step('COMPILE ANGULAR')

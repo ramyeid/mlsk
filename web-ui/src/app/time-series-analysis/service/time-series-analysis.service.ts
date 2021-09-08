@@ -3,16 +3,14 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 
+import { environment } from 'src/environments/environment';
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 import { TimeSeries } from '../model/time-series';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class TimeSeriesAnalysisService {
-
-  private static readonly BASE_URL = `http://localhost:${environment.serverPort}/time-series-analysis`;
 
   private readonly httpClient: HttpClient;
 
@@ -37,7 +35,8 @@ export class TimeSeriesAnalysisService {
   }
 
   private postAndCatchError<T>(resource: string, body: TimeSeriesAnalysisRequest): Observable<T> {
-    return this.httpClient.post<T>(`${TimeSeriesAnalysisService.BASE_URL}/${resource}`, body)
+    const baseUrl: string = this.buildBaseUrl();
+    return this.httpClient.post<T>(`${baseUrl}/${resource}`, body)
       .pipe(
         catchError(this.handleError)
       );
@@ -49,5 +48,9 @@ export class TimeSeriesAnalysisService {
       message = `Error while calling Service; code ${err.status}: ${err.error.message}`;
     }
     return throwError(new Error(message));
+  }
+
+  private buildBaseUrl(): string {
+    return `http://${environment.serverHost}:${environment.serverPort}/time-series-analysis`;
   }
 }
