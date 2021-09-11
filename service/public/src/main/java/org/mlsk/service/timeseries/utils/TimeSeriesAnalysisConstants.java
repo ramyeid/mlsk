@@ -7,7 +7,6 @@ public final class TimeSeriesAnalysisConstants {
   public static final String FORECAST_ACCURACY_URL = "/time-series-analysis/forecast-accuracy";
   public static final String PREDICATE_URL = "/time-series-analysis/predict";
 
-  public static final String TIME_SERIES_ANALYSIS = "Time Series Analysis";
   public static final String TIME_SERIES_FORECAST = "time-series-forecast";
   public static final String TIME_SERIES_FORECAST_VS_ACTUAL = "time-series-forecast-vs-actual";
   public static final String TIME_SERIES_FORECAST_ACCURACY = "time-series-compute-accuracy";

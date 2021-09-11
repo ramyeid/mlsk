@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -180,7 +179,7 @@ public class TimeSeriesAnalysisApiImplTest {
   private static TimeSeriesModel buildTimeSeriesModelResult() {
     TimeSeriesRowModel row1 = TimeSeriesModelHelper.buildTimeSeriesRowModel("date3", valueOf(77272.123));
     TimeSeriesRowModel row2 = TimeSeriesModelHelper.buildTimeSeriesRowModel("date4", valueOf(989823.124));
-    ArrayList<TimeSeriesRowModel> rows = newArrayList(row1, row2);
+    List<TimeSeriesRowModel> rows = newArrayList(row1, row2);
 
     return TimeSeriesModelHelper.buildTimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy");
   }

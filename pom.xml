@@ -15,7 +15,7 @@
         <spring.boot.version>2.5.2</spring.boot.version>
         <spring.version>5.3.8</spring.version>
         <junit.version>5.8.0-M1</junit.version>
-        <mockito.version>3.5.2</mockito.version>
+        <mockito.version>3.5.6</mockito.version>
         <log4j.version>2.14.1</log4j.version>
         <jackson.version>2.11.2</jackson.version>
     </properties>
@@ -87,6 +87,7 @@
                             <failOnWarning>true</failOnWarning>
                             <ignoredDependencies>
                                 <ignoredDependency>org.junit.jupiter</ignoredDependency>
+                                <ignoredDependency>org.mockito</ignoredDependency>
                                 <ignoredDependency>com.fasterxml.jackson.core</ignoredDependency>
                                 <ignoredDependency>org.springframework.boot</ignoredDependency>
                                 <!-- due to unused imports in code gen -->
@@ -226,6 +227,12 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
+                <version>${mockito.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>
+                <artifactId>mockito-inline</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
             </dependency>

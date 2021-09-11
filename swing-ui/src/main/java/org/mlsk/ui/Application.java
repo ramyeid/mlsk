@@ -1,9 +1,9 @@
 package org.mlsk.ui;
 
 import org.apache.commons.cli.ParseException;
-import org.mlsk.ui.components.startup.MainFrame;
+import org.mlsk.ui.component.MainFrame;
 
-import static org.mlsk.ui.ServiceConfiguration.buildServiceConfiguration;
+import static org.mlsk.ui.configuration.ServiceConfiguration.buildServiceConfiguration;
 
 public class Application {
 
