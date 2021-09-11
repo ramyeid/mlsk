@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.configuration;
+package org.mlsk.service.impl.setup;
 
 import org.apache.commons.cli.ParseException;
 import org.apache.logging.log4j.core.config.builder.api.*;
@@ -12,7 +12,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.apache.logging.log4j.Level.INFO;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.buildServiceConfiguration;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.buildServiceConfiguration;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)

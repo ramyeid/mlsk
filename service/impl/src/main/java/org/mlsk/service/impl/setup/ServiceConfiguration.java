@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.configuration;
+package org.mlsk.service.impl.setup;
 
 import org.apache.commons.cli.*;
 import org.mlsk.lib.model.ServiceInformation;
@@ -31,7 +31,10 @@ public class ServiceConfiguration {
   }
 
   public static List<ServiceInformation> getEnginesServiceInformation() {
-    return instance.enginePorts.stream().map(port-> new ServiceInformation("localhost", port)).collect(toList());
+    return instance.enginePorts.stream()
+        .map(Long::parseLong)
+        .map(ServiceConfiguration::buildServiceInformation)
+        .collect(toList());
   }
 
   public static void buildServiceConfiguration(String... args) throws ParseException {
@@ -53,11 +56,15 @@ public class ServiceConfiguration {
 
     String logsPath = cmd.getOptionValue("logsPath");
     String enginePath = cmd.getOptionValue("enginePath");
-    List<String> enginePorts = Arrays.stream(cmd.getOptionValue("enginePorts")
-        .split(","))
+    List<String> enginePorts = Arrays
+        .stream(cmd.getOptionValue("enginePorts").split(","))
         .map(String::trim)
         .collect(toList());
 
     instance = new ServiceConfiguration(logsPath, enginePath, enginePorts);
+  }
+
+  private static ServiceInformation buildServiceInformation(Long port) {
+    return new ServiceInformation("localhost", port);
   }
 }

@@ -23,7 +23,7 @@ public class ResilientEngineProcessTest {
 
   private static final String LOGS_PATH = "LogsPath";
   private static final String ENGINE_PATH = "EnginePath";
-  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("localhost", "6767");
+  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("localhost", 6767L);
 
   @Mock
   private EngineLauncher engineLauncher;

@@ -1,4 +1,4 @@
-package org.mlsk.ui.configuration;
+package org.mlsk.ui.setup;
 
 import org.apache.commons.cli.*;
 import org.mlsk.lib.model.ServiceInformation;
@@ -9,14 +9,18 @@ public class ServiceConfiguration {
 
   private static ServiceConfiguration instance = null;
 
-  private final ServiceInformation serviceInformation;
+  private ServiceInformation serviceInformation;
 
   private ServiceConfiguration(ServiceInformation serviceInformation) {
     this.serviceInformation = serviceInformation;
   }
 
-  public static ServiceInformation getServiceInformation() {
+  public static synchronized ServiceInformation getServiceInformation() {
     return instance.serviceInformation;
+  }
+
+  public static synchronized void setServiceInformation(String host, Long port) {
+    instance.serviceInformation = new ServiceInformation(host, port);
   }
 
   public static void buildServiceConfiguration(String... args) throws ParseException {
@@ -33,7 +37,7 @@ public class ServiceConfiguration {
     CommandLine cmd;
 
     cmd = parser.parse(options, args);
-    String port = cmd.getOptionValue("port");
+    Long port = Long.valueOf(cmd.getOptionValue("port"));
     String host = ofNullable(cmd.getOptionValue("host")).orElse("localhost");
 
     instance = new ServiceConfiguration(new ServiceInformation(host, port));

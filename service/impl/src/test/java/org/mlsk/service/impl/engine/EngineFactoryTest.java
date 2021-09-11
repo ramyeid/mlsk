@@ -9,7 +9,7 @@ import org.mlsk.service.impl.engine.impl.EngineImpl;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.buildServiceConfiguration;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.buildServiceConfiguration;
 
 public class EngineFactoryTest {
 
@@ -22,8 +22,8 @@ public class EngineFactoryTest {
 
   @Test
   public void should_build_engine() throws ParseException {
-    buildServiceConfiguration("", "--engine-ports", "port1", "--logs-path", "logsPath", "-engine-path", "enginePath");
-    ServiceInformation serviceInformation = new ServiceInformation("host", "port");
+    buildServiceConfiguration("", "--engine-ports", "4564", "--logs-path", "logsPath", "-engine-path", "enginePath");
+    ServiceInformation serviceInformation = new ServiceInformation("host", 4564L);
 
     Engine engine = engineFactory.buildEngine(serviceInformation);
 

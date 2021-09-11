@@ -11,7 +11,7 @@ import static org.mockito.Mockito.*;
 
 public class RestClientTest {
 
-  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("hp123", "6767");
+  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("hp123", 6767L);
 
   @Test
   public void should_delegate_post_call_to_rest_template() {

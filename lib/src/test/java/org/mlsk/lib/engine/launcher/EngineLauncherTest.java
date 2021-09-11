@@ -33,14 +33,14 @@ public class EngineLauncherTest {
 
   @Test
   public void should_call_process_builder_on_launch_engine() throws IOException {
-    ServiceInformation serviceInformation = new ServiceInformation("host", "port");
+    ServiceInformation serviceInformation = new ServiceInformation("host", 123L);
     String logsPath = "logsPath";
     String enginePath = "enginePath";
 
     engineLauncher.launchEngine(serviceInformation, logsPath, enginePath);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(processBuilder).command("python3", "engine.py", "--port", "port", "--logs-path", logsPath);
+    inOrder.verify(processBuilder).command("python3", "engine.py", "--port", "123", "--logs-path", logsPath);
     inOrder.verify(processBuilder).directory(new File(enginePath));
     inOrder.verify(processBuilder).start();
     inOrder.verifyNoMoreInteractions();

@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.configuration;
+package org.mlsk.service.impl.setup;
 
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
@@ -6,7 +6,7 @@ import org.mlsk.lib.model.ServiceInformation;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.*;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.*;
 
 public class ServiceConfigurationTest {
 
@@ -18,8 +18,8 @@ public class ServiceConfigurationTest {
 
     buildServiceConfiguration("", "--engine-ports", enginePorts, "--logs-path", logsPath, "-engine-path", enginePath);
 
-    ServiceInformation serviceInformation1 = new ServiceInformation("localhost", "6767");
-    ServiceInformation serviceInformation2 = new ServiceInformation("localhost", "6768");
+    ServiceInformation serviceInformation1 = new ServiceInformation("localhost", 6767L);
+    ServiceInformation serviceInformation2 = new ServiceInformation("localhost", 6768L);
     assertEquals(newArrayList(serviceInformation1, serviceInformation2), getEnginesServiceInformation());
     assertEquals(logsPath, getLogsPath());
     assertEquals(enginePath, getEnginePath());

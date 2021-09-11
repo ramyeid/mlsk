@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.configuration;
+package org.mlsk.service.impl.setup;
 
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.logging.log4j.core.config.Configurator;
@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
 import static org.apache.logging.log4j.Level.INFO;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.getLogsPath;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.getLogsPath;
 
 public class LoggerInitialization implements ApplicationContextInitializer<ConfigurableApplicationContext> {
 

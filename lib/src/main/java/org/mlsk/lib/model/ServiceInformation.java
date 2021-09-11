@@ -7,9 +7,9 @@ import static java.lang.String.format;
 public class ServiceInformation {
 
   private final String host;
-  private final String port;
+  private final Long port;
 
-  public ServiceInformation(String host, String port) {
+  public ServiceInformation(String host, Long port) {
     this.host = host;
     this.port = port;
   }
@@ -18,7 +18,11 @@ public class ServiceInformation {
     return format("http://%s:%s/", host, port);
   }
 
-  public String getPort() {
+  public String getHost() {
+    return host;
+  }
+
+  public Long getPort() {
     return port;
   }
 
