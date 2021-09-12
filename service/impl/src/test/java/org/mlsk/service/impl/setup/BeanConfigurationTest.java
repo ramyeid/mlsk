@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.configuration;
+package org.mlsk.service.impl.setup;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

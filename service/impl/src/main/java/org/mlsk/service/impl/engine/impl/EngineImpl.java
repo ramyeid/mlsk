@@ -17,8 +17,8 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 import static java.lang.String.format;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.getEnginePath;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.getLogsPath;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.getEnginePath;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.getLogsPath;
 import static org.mlsk.service.model.engine.EngineState.*;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 

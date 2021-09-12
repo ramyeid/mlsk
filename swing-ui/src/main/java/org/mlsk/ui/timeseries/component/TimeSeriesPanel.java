@@ -10,7 +10,7 @@ import java.awt.*;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
-import static org.mlsk.ui.configuration.ServiceConfiguration.getServiceInformation;
+import static org.mlsk.ui.setup.ServiceConfiguration.getServiceInformation;
 
 public class TimeSeriesPanel extends JPanel {
 

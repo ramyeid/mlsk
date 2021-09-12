@@ -1,8 +1,8 @@
 package org.mlsk.service.impl;
 
 import org.apache.commons.cli.ParseException;
-import org.mlsk.service.impl.configuration.LoggerInitialization;
-import org.mlsk.service.impl.configuration.ServiceConfiguration;
+import org.mlsk.service.impl.setup.LoggerInitialization;
+import org.mlsk.service.impl.setup.ServiceConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 

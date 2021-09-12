@@ -29,15 +29,15 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.util.stream.Collectors.joining;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.buildServiceConfiguration;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.buildServiceConfiguration;
 import static org.mlsk.service.model.engine.EngineState.OFF;
 import static org.mockito.Mockito.*;
 
 @MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractIT {
 
-  protected static final ServiceInformation SERVICE_INFO1 = new ServiceInformation("localhost", "port1");
-  protected static final ServiceInformation SERVICE_INFO2 = new ServiceInformation("localhost", "port2");
+  protected static final ServiceInformation SERVICE_INFO1 = new ServiceInformation("localhost", 6768L);
+  protected static final ServiceInformation SERVICE_INFO2 = new ServiceInformation("localhost", 6767L);
   protected static final String LOGS_PATH = "logsPath";
   protected static final String ENGINE_PATH = "enginePath";
 
@@ -59,7 +59,7 @@ public abstract class AbstractIT {
   }
 
   protected void setup(List<ServiceInformation> serviceInformationList) throws Exception {
-    String ports = serviceInformationList.stream().map(ServiceInformation::getPort).collect(joining(","));
+    String ports = serviceInformationList.stream().map(ServiceInformation::getPort).map(Object::toString).collect(joining(","));
     buildServiceConfiguration("", "--engine-ports", ports, "--logs-path", LOGS_PATH, "-engine-path", ENGINE_PATH);
 
     onRestTemplatePostForObjectCallMockEngine();

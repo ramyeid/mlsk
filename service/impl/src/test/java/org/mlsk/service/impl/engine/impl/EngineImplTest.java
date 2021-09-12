@@ -28,7 +28,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class EngineImplTest {
 
-  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("host", "port");
+  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("host",  1231L);
 
   @Mock
   private ResilientEngineProcess resilientEngineProcess;
@@ -95,7 +95,7 @@ public class EngineImplTest {
 
     } catch (Exception exception) {
       assertInstanceOf(UnableToLaunchEngineException.class, exception);
-      assertEquals("Unable to launch engine ServiceInformation{host='host', port='port'}", exception.getMessage());
+      assertEquals("Unable to launch engine ServiceInformation{host='host', port='1231'}", exception.getMessage());
       assertEquals(OFF, engineStateSpy.get());
     }
   }

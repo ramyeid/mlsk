@@ -6,6 +6,8 @@ import org.mlsk.lib.model.ServiceInformation;
 import java.io.File;
 import java.io.IOException;
 
+import static java.lang.String.valueOf;
+
 public class EngineLauncher {
 
   private final ProcessBuilder processBuilder;
@@ -21,7 +23,7 @@ public class EngineLauncher {
 
     public Process launchEngine(ServiceInformation serviceInformation, String logsPath, String enginePath) throws IOException {
     return processBuilder
-        .command("python3", "engine.py", "--port", serviceInformation.getPort(), "--logs-path", logsPath)
+        .command("python3", "engine.py", "--port", valueOf(serviceInformation.getPort()), "--logs-path", logsPath)
         .directory(new File(enginePath))
         .start();
   }

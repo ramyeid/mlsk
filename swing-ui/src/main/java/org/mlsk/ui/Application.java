@@ -3,7 +3,7 @@ package org.mlsk.ui;
 import org.apache.commons.cli.ParseException;
 import org.mlsk.ui.component.MainFrame;
 
-import static org.mlsk.ui.configuration.ServiceConfiguration.buildServiceConfiguration;
+import static org.mlsk.ui.setup.ServiceConfiguration.buildServiceConfiguration;
 
 public class Application {
 

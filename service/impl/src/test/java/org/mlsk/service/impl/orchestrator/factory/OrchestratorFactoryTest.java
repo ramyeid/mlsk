@@ -12,7 +12,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static java.lang.String.format;
-import static org.mlsk.service.impl.configuration.ServiceConfiguration.buildServiceConfiguration;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.buildServiceConfiguration;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,8 +30,8 @@ public class OrchestratorFactoryTest {
 
   @Test
   public void should_build_and_launch_engines() throws ParseException {
-    ServiceInformation engineInfo1 = new ServiceInformation("localhost", "port1");
-    ServiceInformation engineInfo2 = new ServiceInformation("localhost", "port2");
+    ServiceInformation engineInfo1 = new ServiceInformation("localhost", 6768L);
+    ServiceInformation engineInfo2 = new ServiceInformation("localhost", 6769L);
     String ports = format("%s,%s", engineInfo1.getPort(), engineInfo2.getPort());
     Engine engine1 = mock(Engine.class);
     Engine engine2 = mock(Engine.class);

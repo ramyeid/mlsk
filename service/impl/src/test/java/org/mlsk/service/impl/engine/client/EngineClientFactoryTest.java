@@ -28,7 +28,7 @@ public class EngineClientFactoryTest {
   }
 
   private static ServiceInformation buildServiceInformation() {
-    return new ServiceInformation("host", "port");
+    return new ServiceInformation("host", 495L);
   }
 
 }
