@@ -38,7 +38,7 @@ public class TimeSeriesMapperTest {
     } catch (Exception exception) {
       assertInstanceOf(MappingTimeSeriesException.class, exception);
       assertInstanceOf(ParseException.class, exception.getCause());
-      assertEquals("Error while mapping time series: Unparseable date: \"1990-01\"", exception.getMessage());
+      assertEquals("java.text.ParseException: Unparseable date: \"1990-01\"", exception.getMessage());
     }
   }
 

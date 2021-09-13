@@ -18,8 +18,8 @@ public class TimeSeriesPlotPanel extends JPanel {
   public TimeSeriesPlotPanel(org.mlsk.service.model.timeseries.TimeSeries initialTimeSeries,
                              org.mlsk.service.model.timeseries.TimeSeries computedTimeSeries,
                              String computedTitle) {
-    TimeSeries initialValues = tryPopup(() -> toTimeSeries(initialTimeSeries, "initial"), "Could not map time series");
-    TimeSeries computedValues = tryPopup(() -> toTimeSeries(computedTimeSeries, computedTitle), "Could not map time series");
+    TimeSeries initialValues = tryPopup(() -> toTimeSeries(initialTimeSeries, "initial"), "Mapping Initial Time Series");
+    TimeSeries computedValues = tryPopup(() -> toTimeSeries(computedTimeSeries, computedTitle), "Mapping Computed Time Series");
     linkComputedToInitialTimeSeries(initialValues, computedValues);
 
     TimeSeriesCollection timeSeriesCollection = new TimeSeriesCollection();

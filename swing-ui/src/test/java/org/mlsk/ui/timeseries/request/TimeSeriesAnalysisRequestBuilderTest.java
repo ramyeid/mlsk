@@ -55,7 +55,7 @@ public class TimeSeriesAnalysisRequestBuilderTest {
     } catch (Exception exception) {
       assertInstanceOf(TimeSeriesAnalysisRequestBuilderException.class, exception);
       assertInstanceOf(NumberFormatException.class, exception.getCause());
-      assertEquals("Unable to build request: For input string: \"NotAnInt\"", exception.getMessage());
+      assertEquals("java.lang.NumberFormatException: For input string: \"NotAnInt\"", exception.getMessage());
     }
   }
 
@@ -75,7 +75,7 @@ public class TimeSeriesAnalysisRequestBuilderTest {
       } catch (Exception exception) {
         assertInstanceOf(TimeSeriesAnalysisRequestBuilderException.class, exception);
         assertInstanceOf(CsvParsingException.class, exception.getCause());
-        assertEquals("Unable to build request: exceptionMessage", exception.getMessage());
+        assertEquals("org.mlsk.ui.exception.CsvParsingException: exceptionMessage", exception.getMessage());
       }
     }
   }

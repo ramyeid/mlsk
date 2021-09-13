@@ -46,8 +46,10 @@ public class ErrorPopupTest {
         tryPopup(callable, "errorMessageParameter");
 
       } catch (Exception exception) {
-        String title = "UnsupportedOperationException: errorMessageParameter";
-        String errorMessage = "errorMessageParameter\nCause:\n\t\texceptionMessage";
+        String title = "UnsupportedOperationException";
+        String errorMessage = "Error while errorMessageParameter\n" +
+            "\tException:\n\t\tUnsupportedOperationException\n" +
+            "\tCause:\n\t\texceptionMessage";
         verifyShowMessageDialog(mockedStatic, title, errorMessage);
         assertOnException(exception, "exceptionMessage");
       }
@@ -75,8 +77,10 @@ public class ErrorPopupTest {
         tryPopupVoid(runnable, "errorMessageParameter");
 
       } catch (Exception exception) {
-        String title = "UnsupportedOperationException: errorMessageParameter";
-        String errorMessage = "errorMessageParameter\nCause:\n\t\texceptionMessage";
+        String title = "UnsupportedOperationException";
+        String errorMessage = "Error while errorMessageParameter" +
+            "\n\tException:\n\t\tUnsupportedOperationException" +
+            "\n\tCause:\n\t\texceptionMessage";
         verifyShowMessageDialog(mockedStatic, title, errorMessage);
         assertOnException(exception, "exceptionMessage");
       }

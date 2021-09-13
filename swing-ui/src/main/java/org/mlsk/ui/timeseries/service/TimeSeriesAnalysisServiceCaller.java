@@ -27,7 +27,7 @@ public class TimeSeriesAnalysisServiceCaller {
 
       onResults.apply(timeSeriesAnalysisRequest.getTimeSeries(), result, getTimeSeriesTitle(command));
     } catch (Exception exception) {
-      throw new TimeSeriesAnalysisServiceException(exception.getMessage(), exception);
+      throw new TimeSeriesAnalysisServiceException(exception);
     }
   }
 

@@ -27,7 +27,7 @@ public final class TimeSeriesMapper {
 
       return series;
     } catch (Exception exception) {
-      throw new MappingTimeSeriesException(format("Error while mapping time series: %s", exception.getMessage()), exception);
+      throw new MappingTimeSeriesException(exception);
     }
   }
 }
