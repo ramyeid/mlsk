@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.util.concurrent.Callable;
 
 import static java.lang.String.format;
+import static java.util.Optional.ofNullable;
 import static javax.swing.JOptionPane.ERROR_MESSAGE;
 
 public final class ErrorPopup {
@@ -15,26 +16,30 @@ public final class ErrorPopup {
     JOptionPane.showMessageDialog(null, errorMessage, title, ERROR_MESSAGE);
   }
 
-  public static <Return> Return tryPopup(Callable<Return> callable, String errorMessageIn) {
+  public static <Return> Return tryPopup(Callable<Return> callable, String action) {
     try {
       return callable.call();
     } catch (Exception exception) {
-      return showErrorPopupAndRethrow(errorMessageIn, exception);
+      return showErrorPopupAndRethrow(action, exception);
     }
   }
 
-  public static void tryPopupVoid(Runnable runnable, String errorMessageIn) {
+  public static void tryPopupVoid(Runnable runnable, String action) {
     try {
       runnable.run();
     } catch (Exception exception) {
-      showErrorPopupAndRethrow(errorMessageIn, exception);
+      showErrorPopupAndRethrow(action, exception);
     }
   }
 
-  private static <Return> Return showErrorPopupAndRethrow(String errorMessageIn, Exception exception) {
-    String errorMessage = format("%s%nCause:%n\t\t%s", errorMessageIn, exception.getMessage());
-    String title = format("%s: %s", exception.getClass().getSimpleName(), errorMessageIn);
-    showErrorPopup(title, errorMessage);
-    throw new RuntimeException(exception.getCause() == null ? exception : exception.getCause());
+  private static <Return> Return showErrorPopupAndRethrow(String action, Exception exception) {
+    Throwable mainException = ofNullable(exception.getCause()).orElse(exception);
+    String exceptionClass = mainException.getClass().getSimpleName();
+
+    String fullErrorMessage = format("Error while %s%n\tException:%n\t\t%s%n\tCause:%n\t\t%s", action, exceptionClass, exception.getMessage());
+
+    showErrorPopup(exceptionClass, fullErrorMessage);
+
+    throw new RuntimeException(mainException);
   }
 }

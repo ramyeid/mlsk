@@ -71,11 +71,11 @@ public class TimeSeriesInputPanel extends JPanel implements ActionListener {
 
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = tryPopup(() ->
             requestBuilder.buildRequest(dateColumnName, valueColumnName, dateFormat, csvLocation, numberOfValues),
-        "Could not build request");
+        "Building Request");
 
     tryPopupVoid(
         () -> serviceCaller.callService(command, timeSeriesAnalysisRequest),
-        format("Could not complete %s service", command));
+        format("Calling Service: %s", command));
   }
 
   private void onCsvFileChosen(String csvPath) {

@@ -18,7 +18,7 @@ public class ConfigurationService {
     try {
       saveServiceConfiguration(serviceConfigurationPanel);
     } catch (Exception exception) {
-      throw new ConfigurationServiceException(format("Error while saving configuration: %s", exception.getMessage()), exception);
+      throw new ConfigurationServiceException(exception);
     }
   }
 

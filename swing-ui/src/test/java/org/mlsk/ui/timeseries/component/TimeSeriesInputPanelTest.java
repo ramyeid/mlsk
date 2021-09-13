@@ -80,7 +80,7 @@ public class TimeSeriesInputPanelTest {
       onGetTextReturn(valueColumnNameValue, "Value");
       onGetTextReturn(dateFormatValue, "dateFormat");
       onGetTextReturn(numberOfValuesValue, "123");
-      doThrowExceptionOnBuildRequest(new TimeSeriesAnalysisRequestBuilderException("errorMessage", new UnsupportedOperationException("errorMessage2")));
+      doThrowExceptionOnBuildRequest(new TimeSeriesAnalysisRequestBuilderException(new UnsupportedOperationException("errorMessage2")));
 
       try {
         timeSeriesInputPanel.actionPerformed(actionEvent);
@@ -90,7 +90,11 @@ public class TimeSeriesInputPanelTest {
         assertInstanceOf(RuntimeException.class, exception);
         assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
         assertEquals("java.lang.UnsupportedOperationException: errorMessage2", exception.getMessage());
-        mockedStatic.verify(() -> JOptionPane.showMessageDialog(null, "Could not build request\nCause:\n\t\terrorMessage", "TimeSeriesAnalysisRequestBuilderException: Could not build request", ERROR_MESSAGE));
+        String title = "UnsupportedOperationException";
+        String errorMessage = "Error while Building Request\n" +
+            "\tException:\n\t\tUnsupportedOperationException\n" +
+            "\tCause:\n\t\tjava.lang.UnsupportedOperationException: errorMessage2";
+        mockedStatic.verify(() -> JOptionPane.showMessageDialog(null, errorMessage, title, ERROR_MESSAGE));
       }
     }
   }
@@ -104,7 +108,7 @@ public class TimeSeriesInputPanelTest {
       onGetTextReturn(valueColumnNameValue, "Value");
       onGetTextReturn(dateFormatValue, "dateFormat");
       onGetTextReturn(numberOfValuesValue, "123");
-      doThrowExceptionOnCallService(new TimeSeriesAnalysisServiceException("errorMessage", new UnsupportedOperationException("errorMessage2")));
+      doThrowExceptionOnCallService(new TimeSeriesAnalysisServiceException(new UnsupportedOperationException("errorMessage2")));
 
       try {
         timeSeriesInputPanel.actionPerformed(actionEvent);
@@ -114,7 +118,11 @@ public class TimeSeriesInputPanelTest {
         assertInstanceOf(RuntimeException.class, exception);
         assertInstanceOf(UnsupportedOperationException.class, exception.getCause());
         assertEquals("java.lang.UnsupportedOperationException: errorMessage2", exception.getMessage());
-        mockedStatic.verify(() -> JOptionPane.showMessageDialog(null, "Could not complete PREDICT service\nCause:\n\t\terrorMessage", "TimeSeriesAnalysisServiceException: Could not complete PREDICT service", ERROR_MESSAGE));
+        String title = "UnsupportedOperationException";
+        String errorMessage = "Error while Calling Service: PREDICT\n" +
+            "\tException:\n\t\tUnsupportedOperationException\n" +
+            "\tCause:\n\t\tjava.lang.UnsupportedOperationException: errorMessage2";
+        mockedStatic.verify(() -> JOptionPane.showMessageDialog(null, errorMessage, title, ERROR_MESSAGE));
       }
     }
   }

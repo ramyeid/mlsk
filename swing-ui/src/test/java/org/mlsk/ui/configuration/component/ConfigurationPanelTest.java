@@ -48,7 +48,7 @@ public class ConfigurationPanelTest {
   public void should_show_popup_if_save_fails() {
     try (MockedStatic<JOptionPane> mockedStatic = Mockito.mockStatic(JOptionPane.class)) {
       ActionEvent actionEvent = mockActionEvent(SAVE);
-      doThrowExceptionOnSave(new ConfigurationServiceException("Error while saving", new NumberFormatException("numberFormatException")));
+      doThrowExceptionOnSave(new ConfigurationServiceException(new NumberFormatException("numberFormatException")));
 
       try {
         configurationPanel.actionPerformed(actionEvent);
@@ -58,7 +58,11 @@ public class ConfigurationPanelTest {
         assertInstanceOf(RuntimeException.class, exception);
         assertInstanceOf(NumberFormatException.class, exception.getCause());
         assertEquals("java.lang.NumberFormatException: numberFormatException", exception.getMessage());
-        mockedStatic.verify(() -> JOptionPane.showMessageDialog(null, "Unable to save configuration\nCause:\n\t\tError while saving", "ConfigurationServiceException: Unable to save configuration", ERROR_MESSAGE));
+        String title = "NumberFormatException";
+        String errorMessage = "Error while Saving Configuration\n" +
+            "\tException:\n\t\tNumberFormatException\n" +
+            "\tCause:\n\t\tjava.lang.NumberFormatException: numberFormatException";
+        mockedStatic.verify(() -> JOptionPane.showMessageDialog(null, errorMessage, title, ERROR_MESSAGE));
       }
     }
   }

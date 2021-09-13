@@ -61,7 +61,7 @@ public class TimeSeriesAnalysisServiceCallerTest {
     } catch (Exception exception) {
       assertInstanceOf(TimeSeriesAnalysisServiceException.class, exception);
       assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception.getCause());
-      assertEquals("errorMessage", exception.getMessage());
+      assertEquals("org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException: errorMessage", exception.getMessage());
     }
   }
 
@@ -90,7 +90,7 @@ public class TimeSeriesAnalysisServiceCallerTest {
     } catch (Exception exception) {
       assertInstanceOf(TimeSeriesAnalysisServiceException.class, exception);
       assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception.getCause());
-      assertEquals("errorMessage", exception.getMessage());
+      assertEquals("org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException: errorMessage", exception.getMessage());
     }
   }
 
@@ -119,7 +119,7 @@ public class TimeSeriesAnalysisServiceCallerTest {
     } catch (Exception exception) {
       assertInstanceOf(TimeSeriesAnalysisServiceException.class, exception);
       assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception.getCause());
-      assertEquals("errorMessage", exception.getMessage());
+      assertEquals("org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException: errorMessage", exception.getMessage());
     }
   }
 
@@ -148,7 +148,7 @@ public class TimeSeriesAnalysisServiceCallerTest {
     } catch (Exception exception) {
       assertInstanceOf(TimeSeriesAnalysisServiceException.class, exception);
       assertInstanceOf(TimeSeriesAnalysisServiceRequestException.class, exception.getCause());
-      assertEquals("errorMessage", exception.getMessage());
+      assertEquals("org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException: errorMessage", exception.getMessage());
     }
   }
 

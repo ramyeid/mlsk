@@ -41,7 +41,7 @@ public class ConfigurationPanel extends JPanel implements ActionListener {
   public void actionPerformed(ActionEvent e) {
     ConfigurationCommand configurationCommand = fromString(e.getActionCommand());
     if (SAVE == configurationCommand) {
-      tryPopupVoid(() -> configurationService.save(serviceConfigurationPanel), "Unable to save configuration");
+      tryPopupVoid(() -> configurationService.save(serviceConfigurationPanel), "Saving Configuration");
     } else if (CANCEL == configurationCommand) {
       configurationService.restore(serviceConfigurationPanel);
     }

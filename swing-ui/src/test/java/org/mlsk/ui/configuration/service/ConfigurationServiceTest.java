@@ -64,7 +64,7 @@ public class ConfigurationServiceTest {
       fail("should fail since service host input is null");
 
     } catch (Exception exception) {
-      assertOnConfigurationServiceException(exception, InvalidObjectException.class, "Error while saving configuration: The serviceHost value can not be null");
+      assertOnConfigurationServiceException(exception, InvalidObjectException.class, "java.io.InvalidObjectException: The serviceHost value can not be null");
     }
   }
 
@@ -78,7 +78,7 @@ public class ConfigurationServiceTest {
       fail("should fail since service port input is blank");
 
     } catch (Exception exception) {
-      assertOnConfigurationServiceException(exception, InvalidObjectException.class, "Error while saving configuration: The servicePort value can not be null");
+      assertOnConfigurationServiceException(exception, InvalidObjectException.class, "java.io.InvalidObjectException: The servicePort value can not be null");
     }
   }
 
@@ -92,7 +92,7 @@ public class ConfigurationServiceTest {
       fail("should fail since service port input is non numeric");
 
     } catch (Exception exception) {
-      assertOnConfigurationServiceException(exception, NumberFormatException.class, "Error while saving configuration: For input string: \"nonNumeric\"");
+      assertOnConfigurationServiceException(exception, NumberFormatException.class, "java.lang.NumberFormatException: For input string: \"nonNumeric\"");
     }
   }
 

@@ -100,7 +100,7 @@ pipeline {
       }
     }
 
-    stage('Quality Gate - Java UI') {
+    stage('Quality Gate - Swing UI') {
       steps {
         dir('swing-ui') {
           warnError(message: 'Swing UI Quality Gate Breached') {

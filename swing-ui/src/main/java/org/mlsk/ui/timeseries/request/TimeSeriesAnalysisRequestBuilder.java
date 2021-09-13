@@ -17,7 +17,7 @@ public class TimeSeriesAnalysisRequestBuilder {
 
       return new TimeSeriesAnalysisRequest(timeSeries, numberOfValues);
     } catch (Exception exception) {
-      throw new TimeSeriesAnalysisRequestBuilderException(format("Unable to build request: %s", exception.getMessage()), exception);
+      throw new TimeSeriesAnalysisRequestBuilderException(exception);
     }
   }
 }
