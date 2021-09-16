@@ -21,8 +21,8 @@ class TestExceptionHandler(unittest.TestCase):
       actual_result = handle_engine_computation_exception(exception)
 
       # Then
-      assert 500 == actual_result[1]
-      assert isinstance(actual_result[0], Response)
+      self.assertEqual(500, actual_result[1])
+      self.assertIsInstance(actual_result[0], Response)
 
 
 if __name__ == "__main__":

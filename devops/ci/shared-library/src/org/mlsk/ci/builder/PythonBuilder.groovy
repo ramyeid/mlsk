@@ -31,7 +31,8 @@ class PythonBuilder implements IBuilder {
                 -Dsonar.projectKey=engine \
                 -Dsonar.projectName=engine \
                 -Dsonar.python.xunit.reportPath=python-test-reports.xml \
-                -Dsonar.python.coverage.reportPaths=coverage.xml'
+                -Dsonar.python.coverage.reportPaths=coverage.xml \
+                -Dsonar.exclusions=debug/*'
     }
     steps.timeout(time: 1, unit: 'HOURS') {
       steps.waitForQualityGate abortPipeline: true

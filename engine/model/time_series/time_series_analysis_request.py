@@ -8,8 +8,8 @@ class TimeSeriesAnalysisRequest:
   Represents the request that will be sent to the time_series_analysis_service
 
   Attributes
-      - time_series (TimeSeries) : time series object that is equivalent to a csv
-      - number_of_values (int)   : count of values to forecast
+    time_series (TimeSeries) - time series object that is equivalent to a csv
+    number_of_values (int)   - count of values to forecast
   """
 
 

@@ -1,28 +1,20 @@
 #!/usr/bin/python3
 
-import sys
 from argparse import ArgumentParser, Namespace
 import pandas as pd
-from services.time_series_analysis_service import TimeSeriesAnalysisService
+from services.time_series.time_series_analysis_service import TimeSeriesAnalysisService
 from utils import csv
-from debug.debug_utils import throw_exception_if_argument_null
-from debug.engine_debug_exception import EngineDebugException
+from debug.debug_utils import throw_exception_if_argument_null, get_or_create_output_file
+from debug.engine_debug_exception import build_action_not_valid_exception
+
 
 def build_time_series_analysis_arguments(parser: ArgumentParser):
-  parser.add_argument("--csv", dest="csv_input",
-                      help="Location of the csv file to analyze", required=False)
-  parser.add_argument("--dateColumnName", dest="date_column_name",
+  parser.add_argument("-dateColumnName", "--dateColumnName", dest="date_column_name",
                       help="Name of the column containing dates", required=False)
-  parser.add_argument("--valueColumnName", dest="value_column_name",
+  parser.add_argument("-valueColumnName", "--valueColumnName", dest="value_column_name",
                       help="Name of the column containing the values", required=False)
-  parser.add_argument("--dateFormat", dest="date_format",
+  parser.add_argument("-dateFormat", "--dateFormat", dest="date_format",
                       help="Date format of the Date values", required=False)
-  parser.add_argument("--numberOfValues", dest="number_of_values",
-                      help="number of values to predict/forecast", required=False)
-  parser.add_argument("--action", dest="action",
-                      help="action to compute: FORECAST/ FORECAST_ACCURACY/ PREDICT", required=False)
-  parser.add_argument("--output", dest="csv_output",
-                      help="Location of the csv output with values", required=False)
 
 
 def launch_time_series_analysis(args: Namespace):
@@ -59,12 +51,4 @@ def launch_time_series_analysis(args: Namespace):
     print(csv.write(csv_output, result_data_frame, date_column_name, date_format))
 
   else:
-    raise EngineDebugException("Action not valid: {}. Please choose between FORECAST/ FORECAST_ACCURACY/ PREDICT"
-                    .format(args.action))
-
-
-def get_or_create_output_file(args: Namespace):
-  if args.csv_output is None:
-    return args.csv_input.replace(".csv", "_output.csv")
-
-  return args.csv_output
+    raise build_action_not_valid_exception(["FORECAST", "FORECAST_ACCURACY", "PREDICT"], args.action)
