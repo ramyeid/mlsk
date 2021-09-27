@@ -11,19 +11,19 @@ from exception.engine_computation_exception import EngineComputationException
 
 
 def forecast() -> str:
-  """
+  '''
   Forecast values and add the forecasted values to the learning data to predict the next value
 
   Arguments
-    time_series_analysis_request_json (str) - json corresponding to time_series_analysis_request_json
-                                              file path of the csv input file
+    time_series_analysis_request_json (str) - json corresponding to TimeSeriesAnalysisRequest
+                                              containing time series rows, column names and number of values
 
   Returns
     time_series -> time_series corresponding to the forecasted values and dates.
-  """
+  '''
 
   try:
-    get_logger().info("[Start] forecast request")
+    get_logger().info('[Start] forecast request')
     time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
 
     time_series = time_series_analysis_request.get_time_series()
@@ -43,31 +43,31 @@ def forecast() -> str:
     return json.dumps(forecasted_time_series, cls=JsonComplexEncoder)
 
   except Exception as exception:
-    error_message = "Exception %s raised while forecasting: %s" % (type(exception).__name__, exception)
+    error_message = 'Exception %s raised while forecasting: %s' % (type(exception).__name__, exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info("[End] forecast request")
+    get_logger().info('[End] forecast request')
 
 
 def compute_accuracy_of_forecast() -> str:
-  """
+  '''
   Test forecast with the current values of the csv passed
   Forecast the last {number_of_values} elements and compare them to the actual value
   And compute the accuracy for this algorithm
 
   Arguments
-    time_series_analysis_request_json (str) - json corresponding to time_series_analysis_request_json
-                                              file path of the csv input file
+    time_series_analysis_request_json (str) - json corresponding to TimeSeriesAnalysisRequest
+                                              containing time series rows, column names and number of values
 
   Returns
     float -> accuracy of the forecast algorithm percentage
-  """
+  '''
 
   try:
-    get_logger().info("[Start] compute forecast accuracy request")
+    get_logger().info('[Start] compute forecast accuracy request')
     time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
 
     time_series = time_series_analysis_request.get_time_series()
@@ -81,29 +81,29 @@ def compute_accuracy_of_forecast() -> str:
     return str(time_series_analysis_service.compute_forecast_accuracy())
 
   except Exception as exception:
-    error_message = "Exception %s raised while computing forecast accuracy: %s" % (type(exception).__name__, exception)
+    error_message = 'Exception %s raised while computing forecast accuracy: %s' % (type(exception).__name__, exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info("[End] compute forecast accuracy request")
+    get_logger().info('[End] compute forecast accuracy request')
 
 
 def predict() -> str:
-  """
+  '''
   Predict exact values.
 
   Arguments
-    time_series_analysis_request_json (str) - json corresponding to time_series_analysis_request_json
-                                              file path of the csv input file
+    time_series_analysis_request_json (str) - json corresponding to TimeSeriesAnalysisRequest
+                                              containing time series rows, column names and number of values
 
   Returns
     time_series -> time_series corresponding to the predicted values and dates.
-  """
+  '''
 
   try:
-    get_logger().info("[Start] predict request")
+    get_logger().info('[Start] predict request')
     time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
 
     time_series = time_series_analysis_request.get_time_series()
@@ -123,10 +123,10 @@ def predict() -> str:
     return json.dumps(predicted_time_series, cls=JsonComplexEncoder)
 
   except Exception as exception:
-    error_message = "Exception %s raised while predicting: %s" % (type(exception).__name__, exception)
+    error_message = 'Exception %s raised while predicting: %s' % (type(exception).__name__, exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info("[End] predict request")
+    get_logger().info('[End] predict request')

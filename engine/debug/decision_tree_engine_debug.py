@@ -9,10 +9,10 @@ from debug.engine_debug_exception import build_action_not_valid_exception
 
 
 def build_decision_tree_argument(parser: ArgumentParser) -> None:
-  parser.add_argument("-actionColumnNames", "--actionColumnNames", dest="action_column_names",
-                      help="Names of the action column (comma seperated)", required=False)
-  parser.add_argument("-predictionColumnName", "--predictionColumnName", dest="prediction_column_name",
-                      help="Name of the column to predict", required=False)
+  parser.add_argument('-actionColumnNames', '--actionColumnNames', dest='action_column_names',
+                      help='Names of the action column (comma seperated)', required=False)
+  parser.add_argument('-predictionColumnName', '--predictionColumnName', dest='prediction_column_name',
+                      help='Name of the column to predict', required=False)
 
 
 def launch_decision_tree(args: Namespace) -> None:
@@ -23,7 +23,7 @@ def launch_decision_tree(args: Namespace) -> None:
   throw_exception_if_argument_null('action', args.action)
 
   csv_input = str(args.csv_input)
-  action_column_names = str(args.action_column_names).split(",")
+  action_column_names = str(args.action_column_names).split(',')
   prediction_column_name = str(args.prediction_column_name)
   number_of_values = int(args.number_of_values)
   action = str(args.action)
@@ -33,18 +33,18 @@ def launch_decision_tree(args: Namespace) -> None:
 
   decision_tree_service = DecisionTreeService(data_frame, action_column_names, prediction_column_name, number_of_values)
 
-  if action == "PREDICT":
+  if action == 'PREDICT':
     predicted_data_frame = decision_tree_service.predict()
 
     data_frame[prediction_column_name+'_Predicted'] = build_predicted_and_actual_values(data_frame, predicted_data_frame, prediction_column_name, number_of_values)
 
     print(csv.write(csv_output, data_frame))
 
-  elif action == "PREDICT_ACCURACY":
-    print("Accuracy: {} %".format(decision_tree_service.compute_predict_accuracy()))
+  elif action == 'PREDICT_ACCURACY':
+    print('Accuracy: {} %'.format(decision_tree_service.compute_predict_accuracy()))
 
   else:
-    raise build_action_not_valid_exception(["PREDICT", "PREDICT_ACCURACY"], args.action)
+    raise build_action_not_valid_exception(['PREDICT', 'PREDICT_ACCURACY'], args.action)
 
 
 def build_predicted_and_actual_values(data_frame: pd.DataFrame, predicted_data_frame: pd.DataFrame, prediction_column_name: str, number_of_values: int) -> [float]:
