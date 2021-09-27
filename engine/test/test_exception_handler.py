@@ -12,7 +12,7 @@ test_app = app
 class TestExceptionHandler(unittest.TestCase):
 
 
-  def test_handle_engine_computation_exception(self):
+  def test_handle_engine_computation_exception(self) -> None:
     with test_app.app_context():
       # Given
       exception = EngineComputationException("Exception Message")

@@ -12,7 +12,7 @@ class TestTimeSeries(unittest.TestCase):
 
   DATE_FORMAT = "yyyy-MM-dd HH:mm:ss"
 
-  def test_to_json(self):
+  def test_to_json(self) -> None:
     # Given
     time_series_row1 = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
     time_series_row2 = TimeSeriesRow(datetime(1949, 2, 1), 118.0)
@@ -33,7 +33,7 @@ class TestTimeSeries(unittest.TestCase):
     self.assertEqual(expected_json, actual_json)
 
 
-  def test_from_json(self):
+  def test_from_json(self) -> None:
     # Given
     json = dict(dateColumnName='Date',
                 valueColumnName='Passengers',
@@ -54,7 +54,7 @@ class TestTimeSeries(unittest.TestCase):
     self.assertEqual(expected_time_series, actual_time_series)
 
 
-  def test_from_data_frame(self):
+  def test_from_data_frame(self) -> None:
     # Given
     initial_data = {"Date": [datetime.strptime("1960-08-01 11:00:00", "%Y-%m-%d %H:%M:%S") + timedelta(hours=i)
                               for i in range(0, 3)],
@@ -73,7 +73,7 @@ class TestTimeSeries(unittest.TestCase):
     self.assertEqual(expected_time_series, actual_time_series)
 
 
-  def test_to_data_frame(self):
+  def test_to_data_frame(self) -> None:
     # Given
     time_series_row1 = TimeSeriesRow(datetime(1960, 8, 1, 11, 0, 0), 112.0)
     time_series_row2 = TimeSeriesRow(datetime(1960, 8, 1, 12, 0, 0), 118.0)

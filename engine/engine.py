@@ -6,7 +6,7 @@ import signal
 from flask import Flask
 from utils.logger import setup_logger, get_logger
 from exception.engine_computation_exception import EngineComputationException
-import time_series_analysis_controller
+from controller.time_series import time_series_analysis_controller
 import exception_handler
 
 app = Flask(__name__)
@@ -19,7 +19,7 @@ app.add_url_rule("/time-series-analysis/predict", methods=['POST'],
 app.register_error_handler(EngineComputationException, exception_handler.handle_engine_computation_exception)
 
 
-def on_shutdown():
+def on_shutdown() -> None:
   get_logger().info("Engine will shutdown")
 
 

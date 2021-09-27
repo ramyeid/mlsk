@@ -10,7 +10,7 @@ from model.time_series.time_series_row import TimeSeriesRow
 class TestTimeSeriesAnalysisRequest(unittest.TestCase):
 
 
-  def test_from_json(self):
+  def test_from_json(self) -> None:
     # Given
     json = dict(timeSeries=dict(dateColumnName='Date',
                                 valueColumnName='Passengers',

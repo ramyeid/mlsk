@@ -2,20 +2,20 @@
 
 from argparse import ArgumentParser, Namespace
 import pandas as pd
-from services.classifier.decision_tree_service import DecisionTreeService
+from service.classifier.decision_tree_service import DecisionTreeService
 from utils import csv
 from debug.debug_utils import throw_exception_if_argument_null, get_or_create_output_file
 from debug.engine_debug_exception import build_action_not_valid_exception
 
 
-def build_decision_tree_argument(parser: ArgumentParser):
+def build_decision_tree_argument(parser: ArgumentParser) -> None:
   parser.add_argument("-actionColumnNames", "--actionColumnNames", dest="action_column_names",
                       help="Names of the action column (comma seperated)", required=False)
   parser.add_argument("-predictionColumnName", "--predictionColumnName", dest="prediction_column_name",
                       help="Name of the column to predict", required=False)
 
 
-def launch_decision_tree(args: Namespace):
+def launch_decision_tree(args: Namespace) -> None:
   throw_exception_if_argument_null('csv_input', args.csv_input)
   throw_exception_if_argument_null('action_column_names', args.action_column_names)
   throw_exception_if_argument_null('prediction_column_name', args.prediction_column_name)

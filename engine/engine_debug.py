@@ -5,7 +5,7 @@ from debug.time_series_analysis_engine_debug import launch_time_series_analysis,
 from debug.decision_tree_engine_debug import launch_decision_tree, build_decision_tree_argument
 
 
-def build_common_arguments(parser: ArgumentParser):
+def build_common_arguments(parser: ArgumentParser) -> None:
   parser.add_argument("-csv", "--csv", dest="csv_input",
                     help="Location of the csv file to analyze", required=False)
   parser.add_argument("-numberOfValues", "--numberOfValues", dest="number_of_values",

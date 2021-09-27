@@ -4,7 +4,7 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.metrics import accuracy_score
 import numpy as np
 import pandas as pd
-from services.classifier.classifier_exception import ClassifierException
+from service.classifier.classifier_exception import ClassifierException
 
 
 class DecisionTreeService:
@@ -158,7 +158,7 @@ class DecisionTreeService:
     return new_data
 
 
-  def __throw_exception_if_target_test_contains_nan(self, array: np.ndarray):
+  def __throw_exception_if_target_test_contains_nan(self, array: np.ndarray) -> None:
     if np.isnan(array).any():
       raise ClassifierException("Error: Actual values are not present.")
 

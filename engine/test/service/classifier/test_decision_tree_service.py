@@ -4,12 +4,12 @@ import unittest
 import pandas as pd
 import numpy as np
 from pandas.testing import assert_frame_equal
-from services.classifier.decision_tree_service import DecisionTreeService
-from services.classifier.classifier_exception import ClassifierException
+from service.classifier.decision_tree_service import DecisionTreeService
+from service.classifier.classifier_exception import ClassifierException
 
 class TestDecisionTreeService(unittest.TestCase):
 
-  def test_predict_service(self):
+  def test_predict_service(self) -> None:
     # Given
     initial_data = { "col0": pd.Series([0, 0, 0, 0, 1, 1, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
                      "col1": pd.Series([0, 0, 1, 1, 0, 0, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
@@ -25,7 +25,7 @@ class TestDecisionTreeService(unittest.TestCase):
     assert_frame_equal(expected_data_frame, actual_data_frame)
 
 
-  def test_predict_service_even_if_value_present(self):
+  def test_predict_service_even_if_value_present(self) -> None:
     # Given
     initial_data = { "col0": pd.Series([0, 0, 0, 0, 1, 1, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
                      "col1": pd.Series([0, 0, 1, 1, 0, 0, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
@@ -41,7 +41,7 @@ class TestDecisionTreeService(unittest.TestCase):
     assert_frame_equal(expected_data_frame, actual_data_frame)
 
 
-  def test_predict_accuracy(self):
+  def test_predict_accuracy(self) -> None:
     # Given
     initial_data = { "col0": pd.Series([0, 0, 0, 0, 1, 1, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
                      "col1": pd.Series([0, 0, 1, 1, 0, 0, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
@@ -56,7 +56,7 @@ class TestDecisionTreeService(unittest.TestCase):
     self.assertEqual(expected_accuracy, actual_accuracy)
 
 
-  def test_predict_accuracy_throw_exception_if_actual_values_missing(self):
+  def test_predict_accuracy_throw_exception_if_actual_values_missing(self) -> None:
     # Given
     initial_data = { "col0": pd.Series([0, 0, 0, 0, 1, 1, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
                      "col1": pd.Series([0, 0, 1, 1, 0, 0, 1, 1, 0], index=["0", "1", "2", "3", "4","5", "6", "7", "8"]),
