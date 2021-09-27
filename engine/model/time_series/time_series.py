@@ -9,10 +9,10 @@ class TimeSeries:
   Represents the object that will be analyzed by time_series_analysis_service
 
   Attributes
-      - rows (list[TimeSeriesRow]) : rows corresponding to the csv file
-      - date_column_name (str)     : name of the column that contains the date values
-      - value_column_name (str)    : name of the column that contains the value that will be predicted
-      - dateFormat (str)           : date format of the date values (according to Java format)
+    rows (list[TimeSeriesRow]) - rows corresponding to the csv file
+    date_column_name (str)     - name of the column that contains the date values
+    value_column_name (str)    - name of the column that contains the value that will be predicted
+    dateFormat (str)           - date format of the date values (according to Java format)
   """
 
 

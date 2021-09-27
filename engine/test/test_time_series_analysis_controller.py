@@ -68,8 +68,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
                               content_type=self.CONTENT_TYPE)
 
     # Then
-    assert b'"Exception ValueError raised while forecasting: ' \
-            b'time data \'1949-01\' does not match format \'%Y-%m-%d\'"\n' == response.data
+    self.assertEqual(b'"Exception ValueError raised while forecasting: ' \
+            b'time data \'1949-01\' does not match format \'%Y-%m-%d\'"\n', response.data)
 
 
   def test_compute_forecast_accuracy(self):
@@ -120,8 +120,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     response = test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
     # Then
-    assert b'"Exception ValueError raised while computing forecast accuracy: ' \
-            b'time data \'1949-01\' does not match format \'%Y-%m-%H\'"\n' == response.data
+    self.assertEqual(b'"Exception ValueError raised while computing forecast accuracy: ' \
+            b'time data \'1949-01\' does not match format \'%Y-%m-%H\'"\n', response.data)
 
 
   def test_predict(self):
@@ -159,7 +159,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     time_series_row = TimeSeriesRow(datetime(1952, 1, 1), 179.0)
     time_series_row1 = TimeSeriesRow(datetime(1952, 2, 1), 189.0)
     expected_time_series = TimeSeries([time_series_row, time_series_row1], "Date", "Passengers", "yyyy-MM")
-    assert expected_time_series == actual_time_series
+    self.assertEqual(expected_time_series, actual_time_series)
 
 
   def test_predict_exception(self):
@@ -176,8 +176,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
                               content_type=self.CONTENT_TYPE)
 
     # Then
-    assert b'"Exception ValueError raised while predicting: ' \
-            b'time data \'1949-01\' does not match format \'%Y-%m-SS\'"\n' == response.data
+    self.assertEqual(b'"Exception ValueError raised while predicting: ' \
+            b'time data \'1949-01\' does not match format \'%Y-%m-SS\'"\n', response.data)
 
 
 if __name__ == "__main__":

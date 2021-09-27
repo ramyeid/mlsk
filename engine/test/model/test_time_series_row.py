@@ -17,7 +17,7 @@ class TestTimeSeriesRow(unittest.TestCase):
 
     # Then
     expected_json = dict(date='1949-01', value=112.0)
-    assert expected_json == actual_json
+    self.assertEqual(expected_json, actual_json)
 
 
   def test_from_json(self):
@@ -29,7 +29,7 @@ class TestTimeSeriesRow(unittest.TestCase):
 
     # Then
     expected_time_series_row = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
-    assert expected_time_series_row == actual_time_series_row
+    self.assertEqual(expected_time_series_row, actual_time_series_row)
 
 
 if __name__ == "__main__":

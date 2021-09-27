@@ -11,7 +11,7 @@ def handle_engine_computation_exception(err: EngineComputationException) -> Resp
   This method will help us raise clear exception to other services.
 
   Arguments
-    - err : error caught containing message information
+    err - error caught containing message information
 
   Returns
     json message with error code

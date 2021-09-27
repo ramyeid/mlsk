@@ -1,6 +1,7 @@
 flask
 pandas
 statsmodels
+sklearn
 python-dateutil
 datetime
 pytest

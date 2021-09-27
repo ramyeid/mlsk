@@ -10,12 +10,12 @@ def read(csv_input_file: str, date_column_name: str, date_format: str) -> pd.Dat
   we suppose that the first column is the date.
 
   Arguments
-      - csv_input_file (str)   : location of the csv file
-      - date_column_name (str) : name of the column containing date
-      - date_format (str)      : format of the date (e.g.: %Y-%m -- according to Python datetime.strftime())
+    csv_input_file (str)   - location of the csv file
+    date_column_name (str) - name of the column containing date
+    date_format (str)      - format of the date (e.g.: %Y-%m -- according to Python datetime.strftime())
 
   Returns
-      pandas.DataFrame -> data frame read from the csv file
+    pandas.DataFrame -> data frame read from the csv file
   """
 
   date_parser = lambda date: datetime.strptime(date, date_format)
@@ -27,15 +27,45 @@ def write(csv_output_file: str, data: pd.DataFrame, date_column_name: str,  date
   create and write data to_output_file
 
   Arguments
-      - csv_output_file (str)   : location of the output file where the result will be written
-      - data (pandas.DataFrame) : initial data as panda frame
-      - date_column_name (str)  : name of the column containing date
-      - date_format (str)       : format of the date (e.g.: %Y-%m)
+    csv_output_file (str)   - location of the output file where the result will be written
+    data (pandas.DataFrame) - data as panda frame
+    date_column_name (str)  - name of the column containing date
+    date_format (str)       - format of the date (e.g.: %Y-%m)
 
   Returns
-      str -> csv_output_file; location of the file created.
+    str -> csv_output_file; location of the file created.
   """
 
   data[date_column_name] = pd.to_datetime(data[date_column_name]).dt.strftime(date_format)
+  data.to_csv(csv_output_file, index=False)
+  return csv_output_file
+
+
+def read(csv_input_file: str, column_names: [str]) -> pd.DataFrame:
+  """
+  from csv file to data frame containing all columns (column_names) and values
+
+  Arguments
+    csv_input_file (str)   - location of the csv file
+    column_names (str)     - names of the columns to create the data frame
+
+  Returns
+    pandas.DataFrame -> data frame read from the csv file
+  """
+
+  return pd.read_csv(csv_input_file, usecols = column_names)
+
+
+def write(csv_output_file: str, data: pd.DataFrame) -> str:
+  """
+  create and write data to_output_file
+
+  Arguments
+    csv_output_file (str)   - location of the output file where the result will be written
+    data (pandas.DataFrame) - data as panda frame
+
+  Returns
+    str -> csv_output_file; location of the file created.
+  """
   data.to_csv(csv_output_file, index=False)
   return csv_output_file

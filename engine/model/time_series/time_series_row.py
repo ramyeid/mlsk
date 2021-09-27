@@ -9,8 +9,8 @@ class TimeSeriesRow:
   Represents each row in the TimeSeries that will be analyzed by time_series_analysis_service
 
   Attributes
-      - date (datetime) : date in the row
-      - value (float)   : corresponding value
+    date (datetime) - date in the row
+    value (float)   - corresponding value
   """
 
 

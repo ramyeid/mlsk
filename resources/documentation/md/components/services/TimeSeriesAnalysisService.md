@@ -2,7 +2,7 @@
 
 Extract values at a certain rate and a certain time interval and predict according to the variation of the parameters that is being evaluated.
 
-This Services offers two end points; forecast and predict
+This Services offers three end points; predict, forecast and forecast accuracy
 
 ![Forecast vs Predict](../../images/services/forecast_vs_prediction_air_Passengers_file.png)
 

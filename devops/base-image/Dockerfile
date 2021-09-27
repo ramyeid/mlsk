@@ -22,6 +22,7 @@ RUN chmod -R 777 /usr/local/lib
 RUN pip3 install flask
 RUN pip3 install pandas
 RUN pip3 install statsmodels
+RUN pip3 install sklearn
 RUN pip3 install python-dateutil
 RUN pip3 install datetime
 RUN pip3 install pytest

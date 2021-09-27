@@ -30,7 +30,7 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               "Date", "Passengers", "yyyy-MM")
     expected_time_series_analysis_request = TimeSeriesAnalysisRequest(time_series, 5)
-    assert expected_time_series_analysis_request == actual_time_series_analysis_request
+    self.assertEqual(expected_time_series_analysis_request, actual_time_series_analysis_request)
 
 
 if __name__ == "__main__":

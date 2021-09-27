@@ -4,7 +4,7 @@ import json
 from flask import request
 from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
-from services.time_series_analysis_service import TimeSeriesAnalysisService
+from services.time_series.time_series_analysis_service import TimeSeriesAnalysisService
 from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
 from model.time_series.time_series import TimeSeries
 from exception.engine_computation_exception import EngineComputationException
@@ -15,11 +15,11 @@ def forecast() -> str:
   Forecast values and add the forecasted values to the learning data to predict the next value
 
   Arguments
-      - time_series_analysis_request_json (str) : json corresponding to time_series_analysis_request_json
-                                                  file path of the csv input file
+    time_series_analysis_request_json (str) - json corresponding to time_series_analysis_request_json
+                                              file path of the csv input file
 
   Returns
-      time_series -> time_series corresponding to the forecasted values and dates.
+    time_series -> time_series corresponding to the forecasted values and dates.
   """
 
   try:
@@ -59,11 +59,11 @@ def compute_accuracy_of_forecast() -> str:
   And compute the accuracy for this algorithm
 
   Arguments
-      - time_series_analysis_request_json (str) : json corresponding to time_series_analysis_request_json
-                                                  file path of the csv input file
+    time_series_analysis_request_json (str) - json corresponding to time_series_analysis_request_json
+                                              file path of the csv input file
 
   Returns
-      float -> accuracy of the forecast algorithm percentage
+    float -> accuracy of the forecast algorithm percentage
   """
 
   try:
@@ -95,11 +95,11 @@ def predict() -> str:
   Predict exact values.
 
   Arguments
-      - time_series_analysis_request_json (str) : json corresponding to time_series_analysis_request_json
-                                                  file path of the csv input file
+    time_series_analysis_request_json (str) - json corresponding to time_series_analysis_request_json
+                                              file path of the csv input file
 
   Returns
-      time_series -> time_series corresponding to the predicted values and dates.
+    time_series -> time_series corresponding to the predicted values and dates.
   """
 
   try:

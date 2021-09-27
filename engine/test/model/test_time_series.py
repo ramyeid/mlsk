@@ -30,7 +30,7 @@ class TestTimeSeries(unittest.TestCase):
                           rows=[dict(date='1949-01', value=112.0),
                                 dict(date='1949-02', value=118.0),
                                 dict(date='1949-03', value=132.0)])
-    assert expected_json == actual_json
+    self.assertEqual(expected_json, actual_json)
 
 
   def test_from_json(self):
@@ -51,7 +51,7 @@ class TestTimeSeries(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 1, 1, 11, 0, 3), 132.0)
     expected_time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                                       "Date", "Passengers", self.DATE_FORMAT)
-    assert expected_time_series == actual_time_series
+    self.assertEqual(expected_time_series, actual_time_series)
 
 
   def test_from_data_frame(self):
@@ -70,7 +70,7 @@ class TestTimeSeries(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1960, 8, 1, 13, 0, 0), 132.0)
     expected_time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                                       "Date", "Passengers", self.DATE_FORMAT)
-    assert expected_time_series == actual_time_series
+    self.assertEqual(expected_time_series, actual_time_series)
 
 
   def test_to_data_frame(self):

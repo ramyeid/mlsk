@@ -10,12 +10,12 @@ def get_next_dates(first_date: datetime, second_date: datetime, count: int) -> [
   With first_date < second_date
 
   Arguments
-      - first_date (datetime.datetime)  : first date
-      - second_date (datetime.datetime) : second date
-      - count (int)                     : number of dates to generate
+    first_date (datetime.datetime)  - first date
+    second_date (datetime.datetime) - second date
+    count (int)                     - number of dates to generate
 
   Returns
-      list[datetime.datetime] -> list containing the next [count] dates
+    list[datetime.datetime] -> list containing the next [count] dates
   """
 
   return [second_date + i * relativedelta.relativedelta(second_date, first_date) for i in range (1, count + 1)]
@@ -35,10 +35,10 @@ def to_python_date_format(java_date_format: str) -> str:
     S   = milliseconds (SSS)
 
   Arguments
-      - java_date_format (str) : string representing the java date format
+    java_date_format (str) - string representing the java date format
 
   Returns
-        str -> string representing the python date format
+    str -> string representing the python date format
   """
 
   mapping = {'yyyy': '%Y', 'yy': '%Y',
