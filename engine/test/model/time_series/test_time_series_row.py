@@ -8,7 +8,7 @@ from model.time_series.time_series_row import TimeSeriesRow
 class TestTimeSeriesRow(unittest.TestCase):
 
 
-  def test_to_json(self):
+  def test_to_json(self) -> None:
     # Given
     time_series_row = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
 
@@ -20,7 +20,7 @@ class TestTimeSeriesRow(unittest.TestCase):
     self.assertEqual(expected_json, actual_json)
 
 
-  def test_from_json(self):
+  def test_from_json(self) -> None:
     # Given
     json = dict(date='1949-01', value=112.0)
 

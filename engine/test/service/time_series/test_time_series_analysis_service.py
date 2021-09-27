@@ -4,7 +4,7 @@ import unittest
 from datetime import datetime, timedelta
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from services.time_series.time_series_analysis_service import TimeSeriesAnalysisService
+from service.time_series.time_series_analysis_service import TimeSeriesAnalysisService
 from test.test_utils.assertion_utils import assert_with_diff
 
 
@@ -13,7 +13,7 @@ class TestTimeSeriesAnalysisService(unittest.TestCase):
   DATE = "1960-08-01 11:00:00"
   DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
 
-  def test_predict_service(self):
+  def test_predict_service(self) -> None:
     # Given
     initial_data = {"Date": [datetime.strptime(self.DATE, self.DATE_FORMAT) + timedelta(hours=i)
                               for i in range(0, 37)],
@@ -34,7 +34,7 @@ class TestTimeSeriesAnalysisService(unittest.TestCase):
     assert_frame_equal(expected_data_frame_with_predicted_values, actual_data_frame_with_predicted_values, check_exact=False, rtol=3)
 
 
-  def test_forecast_service(self):
+  def test_forecast_service(self) -> None:
     # Given
     initial_data = {"Date": [datetime.strptime(self.DATE, self.DATE_FORMAT) + timedelta(days=i)
                               for i in range(0, 37)],
@@ -55,7 +55,7 @@ class TestTimeSeriesAnalysisService(unittest.TestCase):
     assert_frame_equal(expected_data_frame_with_forecasted, actual_data_frame_with_forecasted_values, check_exact=False, rtol=3)
 
 
-  def test_compute_forecast_accuracy(self):
+  def test_compute_forecast_accuracy(self) -> None:
     # Given
     initial_data = {"Date": [datetime.strptime(self.DATE, self.DATE_FORMAT) + timedelta(days=i)
                               for i in range(0, 37)],

@@ -4,11 +4,11 @@ from model.time_series.time_series_row import TimeSeriesRow
 from model.time_series.time_series import TimeSeries
 
 
-def assert_with_diff(actual: float, expected: float, diff: int):
+def assert_with_diff(actual: float, expected: float, diff: int) -> None:
   assert abs(expected - actual) < diff
 
 
-def assert_on_time_series_with_diff(actual: TimeSeries, expected: TimeSeries, diff: int):
+def assert_on_time_series_with_diff(actual: TimeSeries, expected: TimeSeries, diff: int) -> None:
   assert actual.get_date_column_name() == expected.get_date_column_name()
   assert actual.get_value_column_name() == expected.get_value_column_name()
   assert actual.get_date_format() == expected.get_date_format()

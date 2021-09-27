@@ -8,7 +8,7 @@ from utils import date
 class TestDateUtils(unittest.TestCase):
 
 
-  def test_return_empty_list_if_count_is_zero(self):
+  def test_return_empty_list_if_count_is_zero(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=1)
@@ -20,7 +20,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([], actual_next_dates)
 
 
-  def test_get_next_date_with_seconds_difference(self):
+  def test_get_next_date_with_seconds_difference(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=1)
@@ -34,7 +34,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date1, expected_next_date2], actual_next_dates)
 
 
-  def test_get_next_date_with_minutes_difference(self):
+  def test_get_next_date_with_minutes_difference(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=10, day=2, hour=10, minute=6, second=0)
@@ -49,7 +49,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date1, expected_next_date2, expected_next_date3], actual_next_dates)
 
 
-  def test_get_next_date_with_hours_difference(self):
+  def test_get_next_date_with_hours_difference(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=10, day=2, hour=11, minute=5, second=0)
@@ -62,7 +62,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date], actual_next_dates)
 
 
-  def test_get_next_date_with_days_difference(self):
+  def test_get_next_date_with_days_difference(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=10, day=3, hour=10, minute=5, second=0)
@@ -76,7 +76,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date1, expected_next_date2], actual_next_dates)
 
 
-  def test_get_next_date_with_months_difference_with_30_days(self):
+  def test_get_next_date_with_months_difference_with_30_days(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=9, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=0)
@@ -91,7 +91,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date1, expected_next_date2, expected_next_date3], actual_next_dates)
 
 
-  def test_get_next_date_with_months_difference_with_31_days(self):
+  def test_get_next_date_with_months_difference_with_31_days(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=10, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=11, day=2, hour=10, minute=5, second=0)
@@ -108,7 +108,7 @@ class TestDateUtils(unittest.TestCase):
             , actual_next_dates)
 
 
-  def test_get_next_date_with_months_difference_with_february_as_second_date(self):
+  def test_get_next_date_with_months_difference_with_february_as_second_date(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=2, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1960, month=3, day=2, hour=10, minute=5, second=0)
@@ -125,7 +125,7 @@ class TestDateUtils(unittest.TestCase):
             , actual_next_dates)
 
 
-  def test_get_next_date_with_months_difference_and_month_is_december(self):
+  def test_get_next_date_with_months_difference_and_month_is_december(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=11, day=1, hour=0, minute=0, second=0)
     date_2 = datetime(year=1960, month=12, day=1, hour=0, minute=0, second=0)
@@ -140,7 +140,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date1, expected_next_date2, expected_next_date3], actual_next_dates)
 
 
-  def test_get_next_date_with_year_difference(self):
+  def test_get_next_date_with_year_difference(self) -> None:
     # Given
     date_1 = datetime(year=1960, month=2, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1961, month=2, day=2, hour=10, minute=5, second=0)
@@ -154,7 +154,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date1, expected_next_date2], actual_next_dates)
 
 
-  def test_get_next_date_with_leap_year_difference(self):
+  def test_get_next_date_with_leap_year_difference(self) -> None:
     # Given
     date_1 = datetime(year=1962, month=2, day=2, hour=10, minute=5, second=0)
     date_2 = datetime(year=1963, month=2, day=2, hour=10, minute=5, second=0)
@@ -169,7 +169,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual([expected_next_date1, expected_next_date2, expected_next_date3], actual_next_dates)
 
 
-  def test_to_python_date_format(self):
+  def test_to_python_date_format(self) -> None:
     # Given
     java_date_format = "yyyy-MM"
 
@@ -180,7 +180,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual("%Y-%m", actual_python_date_format)
 
 
-  def test_to_python_date_format_with_complex_date_format(self):
+  def test_to_python_date_format_with_complex_date_format(self) -> None:
     # Given
     java_date_format = "yyyy-MM-dd HH:mm:ss.SSS"
 
@@ -191,7 +191,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual("%Y-%m-%d %H:%M:%S.%f", actual_python_date_format)
 
 
-  def test_to_python_date_format_with_complex_date_format2(self):
+  def test_to_python_date_format_with_complex_date_format2(self) -> None:
     # Given
     java_date_format = "yy-MM-dd hh:mm:ss.SSS"
 
@@ -202,7 +202,7 @@ class TestDateUtils(unittest.TestCase):
     self.assertEqual("%Y-%m-%d %H:%M:%S.%f", actual_python_date_format)
 
 
-  def test_to_python_date_format_with_complex_date_format_3(self):
+  def test_to_python_date_format_with_complex_date_format_3(self) -> None:
     # Given
     java_date_format = "dd/MM/yy hh:mm:ss.SSS"
 

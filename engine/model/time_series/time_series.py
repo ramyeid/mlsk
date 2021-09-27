@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 import pandas as pd
 from model.time_series.time_series_row import TimeSeriesRow
 
@@ -47,7 +48,7 @@ class TimeSeries:
     return self.__str__()
 
 
-  def __eq__(self, other):
+  def __eq__(self, other) -> bool:
     return isinstance(other, TimeSeries) and self.date_column_name == other.date_column_name \
             and self.value_column_name == other.value_column_name and self.date_format == other.date_format \
             and self.rows == other.rows
@@ -67,7 +68,7 @@ class TimeSeries:
 
 
   @classmethod
-  def from_json(cls, json: dict):
+  def from_json(cls, json: dict) -> TimeSeries:
     date_column_name = str(json["dateColumnName"])
     value_column_name = str(json["valueColumnName"])
     date_format = str(json["dateFormat"])
@@ -76,7 +77,7 @@ class TimeSeries:
 
 
   @classmethod
-  def from_data_frame(cls, data_frame: pd.DataFrame, date_column_name: str, value_column_name, date_format: str):
+  def from_data_frame(cls, data_frame: pd.DataFrame, date_column_name: str, value_column_name, date_format: str) -> TimeSeries:
     dates = data_frame[date_column_name].values
     values = data_frame[value_column_name].values
 

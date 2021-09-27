@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 from model.time_series.time_series import TimeSeries
 
 
@@ -34,7 +35,7 @@ class TimeSeriesAnalysisRequest:
     return self.__str__()
 
 
-  def __eq__(self, other):
+  def __eq__(self, other) -> bool:
     return isinstance(other, TimeSeriesAnalysisRequest) and self.time_series == other.time_series\
             and self.number_of_values == other.number_of_values
 
@@ -44,6 +45,6 @@ class TimeSeriesAnalysisRequest:
 
 
   @classmethod
-  def from_json(cls, data: dict):
+  def from_json(cls, data: dict) -> TimeSeriesAnalysisRequest:
     time_series = TimeSeries.from_json(data["timeSeries"])
     return cls(time_series, int(data["numberOfValues"]))

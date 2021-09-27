@@ -16,7 +16,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
   CONTENT_TYPE = "application/json"
 
-  def test_forecast(self):
+  def test_forecast(self) -> None:
     # Given
     body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0),
                                       dict(date="1949-03", value=132.0), dict(date="1949-04", value=129.0),
@@ -54,7 +54,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     assert_on_time_series_with_diff(expected_time_series, actual_time_series, 2)
 
 
-  def test_forecast_exception(self):
+  def test_forecast_exception(self) -> None:
     # Given
     body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0)],
                                 dateColumnName='Date',
@@ -72,7 +72,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
             b'time data \'1949-01\' does not match format \'%Y-%m-%d\'"\n', response.data)
 
 
-  def test_compute_forecast_accuracy(self):
+  def test_compute_forecast_accuracy(self) -> None:
     # Given
     body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0),
                                       dict(date="1949-03", value=132.0), dict(date="1949-04", value=129.0),
@@ -107,7 +107,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     assert_with_diff(98.39, actual_accuracy, 2) # Assertion can fail, depending on machine.
 
 
-  def test_compute_forecast_accuracy_exception(self):
+  def test_compute_forecast_accuracy_exception(self) -> None:
     # Given
     body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0)],
                                 dateColumnName='Date',
@@ -124,7 +124,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
             b'time data \'1949-01\' does not match format \'%Y-%m-%H\'"\n', response.data)
 
 
-  def test_predict(self):
+  def test_predict(self) -> None:
     # Given
     body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0),
                                       dict(date="1949-03", value=132.0), dict(date="1949-04", value=129.0),
@@ -162,7 +162,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     self.assertEqual(expected_time_series, actual_time_series)
 
 
-  def test_predict_exception(self):
+  def test_predict_exception(self) -> None:
     # Given
     body = dict(timeSeries=dict(rows=[dict(date="1949-01", value=112.0), dict(date="1949-02", value=118.0)],
                                 dateColumnName='Date',

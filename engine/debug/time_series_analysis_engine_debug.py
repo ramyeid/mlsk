@@ -2,13 +2,13 @@
 
 from argparse import ArgumentParser, Namespace
 import pandas as pd
-from services.time_series.time_series_analysis_service import TimeSeriesAnalysisService
+from service.time_series.time_series_analysis_service import TimeSeriesAnalysisService
 from utils import csv
 from debug.debug_utils import throw_exception_if_argument_null, get_or_create_output_file
 from debug.engine_debug_exception import build_action_not_valid_exception
 
 
-def build_time_series_analysis_arguments(parser: ArgumentParser):
+def build_time_series_analysis_arguments(parser: ArgumentParser) -> None:
   parser.add_argument("-dateColumnName", "--dateColumnName", dest="date_column_name",
                       help="Name of the column containing dates", required=False)
   parser.add_argument("-valueColumnName", "--valueColumnName", dest="value_column_name",
@@ -17,7 +17,7 @@ def build_time_series_analysis_arguments(parser: ArgumentParser):
                       help="Date format of the Date values", required=False)
 
 
-def launch_time_series_analysis(args: Namespace):
+def launch_time_series_analysis(args: Namespace) -> None:
   throw_exception_if_argument_null('csv_input', args.csv_input)
   throw_exception_if_argument_null('date_column_name', args.date_column_name)
   throw_exception_if_argument_null('value_column_name', args.value_column_name)

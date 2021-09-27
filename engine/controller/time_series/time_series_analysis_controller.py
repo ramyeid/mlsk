@@ -4,7 +4,7 @@ import json
 from flask import request
 from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
-from services.time_series.time_series_analysis_service import TimeSeriesAnalysisService
+from service.time_series.time_series_analysis_service import TimeSeriesAnalysisService
 from model.time_series.time_series_analysis_request import TimeSeriesAnalysisRequest
 from model.time_series.time_series import TimeSeries
 from exception.engine_computation_exception import EngineComputationException

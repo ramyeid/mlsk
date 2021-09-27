@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+from __future__ import annotations
 from datetime import datetime
 from utils.date import to_python_date_format
 
@@ -35,7 +36,7 @@ class TimeSeriesRow:
     return self.__str__()
 
 
-  def __eq__(self, other):
+  def __eq__(self, other) -> bool:
     return isinstance(other, TimeSeriesRow) and self.date == other.date and int(self.value) == int(other.value)
 
 
@@ -45,6 +46,6 @@ class TimeSeriesRow:
 
 
   @classmethod
-  def from_json(cls, data: dict, date_format: str):
+  def from_json(cls, data: dict, date_format: str) -> TimeSeriesRow:
     date = datetime.strptime(data["date"], to_python_date_format(date_format))
     return cls(date, float(data["value"]))
