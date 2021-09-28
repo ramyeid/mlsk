@@ -15,7 +15,7 @@ class TestExceptionHandler(unittest.TestCase):
   def test_handle_engine_computation_exception(self) -> None:
     with test_app.app_context():
       # Given
-      exception = EngineComputationException("Exception Message")
+      exception = EngineComputationException('Exception Message')
 
       # When
       actual_result = handle_engine_computation_exception(exception)
@@ -25,5 +25,5 @@ class TestExceptionHandler(unittest.TestCase):
       self.assertIsInstance(actual_result[0], Response)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   unittest.main()

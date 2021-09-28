@@ -6,6 +6,8 @@ This Services offers two end points;  predict and predict accuracy
 
 ## Predict
 
+```decision-tree/start```
+```decision-tree/data```
 ```decision-tree/predict```
 
 Predict the next x values.
@@ -13,6 +15,8 @@ Given a csv input this service will compute the last x values.
 
 ## Accuracy for Predict
 
+```decision-tree/start```
+```decision-tree/data```
 ```decision-tree/predict-accuracy```
 
 Compute accuracy for Predict.

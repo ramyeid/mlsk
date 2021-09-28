@@ -5,7 +5,7 @@ from dateutil import relativedelta
 
 
 def get_next_dates(first_date: datetime, second_date: datetime, count: int) -> [datetime]:
-  """
+  '''
   Compute the next [count] dates given the difference of dates
   With first_date < second_date
 
@@ -16,13 +16,13 @@ def get_next_dates(first_date: datetime, second_date: datetime, count: int) -> [
 
   Returns
     list[datetime.datetime] -> list containing the next [count] dates
-  """
+  '''
 
   return [second_date + i * relativedelta.relativedelta(second_date, first_date) for i in range (1, count + 1)]
 
 
 def to_python_date_format(java_date_format: str) -> str:
-  """
+  '''
   Map the java date format to python date format.
   The Java format is as follows:
     y   = year   (yy or yyyy)
@@ -39,7 +39,7 @@ def to_python_date_format(java_date_format: str) -> str:
 
   Returns
     str -> string representing the python date format
-  """
+  '''
 
   mapping = {'yyyy': '%Y', 'yy': '%Y',
               'MM': '%m',

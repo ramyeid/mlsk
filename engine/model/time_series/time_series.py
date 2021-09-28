@@ -6,7 +6,7 @@ from model.time_series.time_series_row import TimeSeriesRow
 
 
 class TimeSeries:
-  """
+  '''
   Represents the object that will be analyzed by time_series_analysis_service
 
   Attributes
@@ -14,7 +14,7 @@ class TimeSeries:
     date_column_name (str)     - name of the column that contains the date values
     value_column_name (str)    - name of the column that contains the value that will be predicted
     dateFormat (str)           - date format of the date values (according to Java format)
-  """
+  '''
 
 
   def __init__(self, rows: [TimeSeriesRow], date_column_name: str, value_column_name: str, date_format: str):
@@ -68,11 +68,11 @@ class TimeSeries:
 
 
   @classmethod
-  def from_json(cls, json: dict) -> TimeSeries:
-    date_column_name = str(json["dateColumnName"])
-    value_column_name = str(json["valueColumnName"])
-    date_format = str(json["dateFormat"])
-    rows = list(map(lambda json_in: TimeSeriesRow.from_json(json_in, date_format), json["rows"]))
+  def from_json(cls, data: dict) -> TimeSeries:
+    date_column_name = str(data['dateColumnName'])
+    value_column_name = str(data['valueColumnName'])
+    date_format = str(data['dateFormat'])
+    rows = list(map(lambda json_in: TimeSeriesRow.from_json(json_in, date_format), data['rows']))
     return cls(rows, date_column_name, value_column_name, date_format)
 
 

@@ -8,7 +8,7 @@ from service.classifier.classifier_exception import ClassifierException
 
 
 class DecisionTreeService:
-  """
+  '''
   Service that will predict the values using decision tree algorithm
 
   Attributes
@@ -17,7 +17,7 @@ class DecisionTreeService:
     action_column_names ([str])  - name of the columns that are used to predict
     prediction_column_name (str)  - name of the column that contains the data to predict
     number_of_values (int)  - predict how many values in the future.
-  """
+  '''
 
   def __init__(self, data: pd.DataFrame, action_column_names: [str],
                 prediction_column_name: str, number_of_values: int):
@@ -29,13 +29,13 @@ class DecisionTreeService:
 
 
   def predict(self) -> pd.DataFrame:
-    """
+    '''
     Predict the next {number_of_values} values to come using Decision Tree algorithm
     This method will compute Decision tree with feature and target values taken from [data]
 
     Returns
       pandas.DataFrame -> data frame containing one column with predicted values only
-    """
+    '''
     new_data = self.__reindex_and_normalize()
 
     features_train, features_test = self.__split_to_features_train_and_test(new_data)
@@ -47,13 +47,13 @@ class DecisionTreeService:
 
 
   def compute_predict_accuracy(self) -> float:
-    """
+    '''
     Compute the accuracy of the predict service.
     Predict the last {number_of_values} values and compare them to the actual values
 
     Returns
       float -> computed accuracy of the predict service
-    """
+    '''
     new_data = self.__reindex_and_normalize()
 
     features_train, features_test = self.__split_to_features_train_and_test(new_data)
@@ -66,7 +66,7 @@ class DecisionTreeService:
 
 
   def __predict(self, features_train: np.ndarray, target_train: np.ndarray, features_test: np.ndarray) -> np.ndarray:
-    """
+    '''
     Call decision tree service predict
 
     Arguments
@@ -76,13 +76,13 @@ class DecisionTreeService:
 
     Returns
       np.ndarray -> predicted values with length = {number_of_values}
-    """
+    '''
     self.decision_tree_classifier.fit(features_train, target_train)
     return self.decision_tree_classifier.predict(features_test)
 
 
   def __split_to_features_train_and_test(self, data_frame: pd.DataFrame) -> [np.ndarray, np.ndarray]:
-    """
+    '''
     Split data frame into feature train and test ndarrays
 
     Arguments
@@ -90,7 +90,7 @@ class DecisionTreeService:
 
     Returns
       [np.ndarray, np.ndarray] -> features_train, features_test
-    """
+    '''
     size = len(data_frame[self.action_column_names[0]])
 
     features = data_frame.values[:,:len(self.action_column_names)]
@@ -101,7 +101,7 @@ class DecisionTreeService:
 
 
   def __split_to_target_train(self, data_frame: pd.DataFrame) -> np.ndarray:
-    """
+    '''
     Split data frame into target train ndarray
 
     Arguments
@@ -109,7 +109,7 @@ class DecisionTreeService:
 
     Returns
       np.ndarray -> target_train
-    """
+    '''
     size = len(data_frame[self.action_column_names[0]])
 
     target = data_frame.values[:,len(self.action_column_names)]
@@ -119,7 +119,7 @@ class DecisionTreeService:
 
 
   def __split_to_target_test(self, data_frame: pd.DataFrame) -> np.ndarray:
-    """
+    '''
     Split data frame into target test ndarray containing `actual` values
 
     Arguments
@@ -127,7 +127,7 @@ class DecisionTreeService:
 
     Returns
       np.ndarray -> target_test
-    """
+    '''
     size = len(data_frame[self.action_column_names[0]])
 
     target = data_frame.values[:,len(self.action_column_names)]
@@ -139,13 +139,13 @@ class DecisionTreeService:
 
 
   def __reindex_and_normalize(self) -> pd.DataFrame:
-    """
+    '''
     Reindex data frame by putting the prediction_column_name at the end.
     Normalize the feature values.
 
     Returns
       pandas.DataFrame -> data frame reindexed and normalized
-    """
+    '''
     columns = self.action_column_names.copy()
     columns.append(self.prediction_column_name)
     new_data = self.data.reindex(columns, axis= 1)
@@ -160,6 +160,6 @@ class DecisionTreeService:
 
   def __throw_exception_if_target_test_contains_nan(self, array: np.ndarray) -> None:
     if np.isnan(array).any():
-      raise ClassifierException("Error: Actual values are not present.")
+      raise ClassifierException('Error: Actual values are not present.')
 
 

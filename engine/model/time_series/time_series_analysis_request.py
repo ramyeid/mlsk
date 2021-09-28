@@ -5,13 +5,13 @@ from model.time_series.time_series import TimeSeries
 
 
 class TimeSeriesAnalysisRequest:
-  """
+  '''
   Represents the request that will be sent to the time_series_analysis_service
 
   Attributes
     time_series (TimeSeries) - time series object that is equivalent to a csv
     number_of_values (int)   - count of values to forecast
-  """
+  '''
 
 
   def __init__(self, time_series: TimeSeries, number_of_values: int):
@@ -41,10 +41,10 @@ class TimeSeriesAnalysisRequest:
 
 
   def to_json(self) -> dict:
-    return dict(time_series=self.time_series, number_of_values=self.number_of_values)
+    return dict(timeSeries=self.time_series.to_json(), numberOfValues=self.number_of_values)
 
 
   @classmethod
   def from_json(cls, data: dict) -> TimeSeriesAnalysisRequest:
-    time_series = TimeSeries.from_json(data["timeSeries"])
-    return cls(time_series, int(data["numberOfValues"]))
+    time_series = TimeSeries.from_json(data['timeSeries'])
+    return cls(time_series, int(data['numberOfValues']))

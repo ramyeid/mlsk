@@ -171,47 +171,47 @@ class TestDateUtils(unittest.TestCase):
 
   def test_to_python_date_format(self) -> None:
     # Given
-    java_date_format = "yyyy-MM"
+    java_date_format = 'yyyy-MM'
 
     # When
     actual_python_date_format = date.to_python_date_format(java_date_format)
 
     # Then
-    self.assertEqual("%Y-%m", actual_python_date_format)
+    self.assertEqual('%Y-%m', actual_python_date_format)
 
 
   def test_to_python_date_format_with_complex_date_format(self) -> None:
     # Given
-    java_date_format = "yyyy-MM-dd HH:mm:ss.SSS"
+    java_date_format = 'yyyy-MM-dd HH:mm:ss.SSS'
 
     # When
     actual_python_date_format = date.to_python_date_format(java_date_format)
 
     # Then
-    self.assertEqual("%Y-%m-%d %H:%M:%S.%f", actual_python_date_format)
+    self.assertEqual('%Y-%m-%d %H:%M:%S.%f', actual_python_date_format)
 
 
   def test_to_python_date_format_with_complex_date_format2(self) -> None:
     # Given
-    java_date_format = "yy-MM-dd hh:mm:ss.SSS"
+    java_date_format = 'yy-MM-dd hh:mm:ss.SSS'
 
     # When
     actual_python_date_format = date.to_python_date_format(java_date_format)
 
     # Then
-    self.assertEqual("%Y-%m-%d %H:%M:%S.%f", actual_python_date_format)
+    self.assertEqual('%Y-%m-%d %H:%M:%S.%f', actual_python_date_format)
 
 
   def test_to_python_date_format_with_complex_date_format_3(self) -> None:
     # Given
-    java_date_format = "dd/MM/yy hh:mm:ss.SSS"
+    java_date_format = 'dd/MM/yy hh:mm:ss.SSS'
 
     # When
     actual_python_date_format = date.to_python_date_format(java_date_format)
 
     # Then
-    self.assertEqual("%d/%m/%Y %H:%M:%S.%f", actual_python_date_format)
+    self.assertEqual('%d/%m/%Y %H:%M:%S.%f', actual_python_date_format)
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
   unittest.main()

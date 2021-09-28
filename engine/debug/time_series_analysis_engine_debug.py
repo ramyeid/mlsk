@@ -9,12 +9,12 @@ from debug.engine_debug_exception import build_action_not_valid_exception
 
 
 def build_time_series_analysis_arguments(parser: ArgumentParser) -> None:
-  parser.add_argument("-dateColumnName", "--dateColumnName", dest="date_column_name",
-                      help="Name of the column containing dates", required=False)
-  parser.add_argument("-valueColumnName", "--valueColumnName", dest="value_column_name",
-                      help="Name of the column containing the values", required=False)
-  parser.add_argument("-dateFormat", "--dateFormat", dest="date_format",
-                      help="Date format of the Date values", required=False)
+  parser.add_argument('-dateColumnName', '--dateColumnName', dest='date_column_name',
+                      help='Name of the column containing dates', required=False)
+  parser.add_argument('-valueColumnName', '--valueColumnName', dest='value_column_name',
+                      help='Name of the column containing the values', required=False)
+  parser.add_argument('-dateFormat', '--dateFormat', dest='date_format',
+                      help='Date format of the Date values', required=False)
 
 
 def launch_time_series_analysis(args: Namespace) -> None:
@@ -37,18 +37,18 @@ def launch_time_series_analysis(args: Namespace) -> None:
   time_series_analysis_service = TimeSeriesAnalysisService(data_frame, date_column_name,
                                                             value_column_name, number_of_values)
 
-  if action == "FORECAST":
+  if action == 'FORECAST':
     forecasted_data_frame = time_series_analysis_service.forecast()
     result_data_frame = pd.concat([data_frame, forecasted_data_frame], ignore_index=True, sort=False)
     print(csv.write(csv_output, result_data_frame, date_column_name, date_format))
 
-  elif action == "FORECAST_ACCURACY":
-    print("Accuracy: {} %".format(time_series_analysis_service.compute_forecast_accuracy()))
+  elif action == 'FORECAST_ACCURACY':
+    print('Accuracy: {} %'.format(time_series_analysis_service.compute_forecast_accuracy()))
 
-  elif action == "PREDICT":
+  elif action == 'PREDICT':
     prediction_data_frame = time_series_analysis_service.predict()
     result_data_frame = pd.concat([data_frame, prediction_data_frame], ignore_index=True, sort=False)
     print(csv.write(csv_output, result_data_frame, date_column_name, date_format))
 
   else:
-    raise build_action_not_valid_exception(["FORECAST", "FORECAST_ACCURACY", "PREDICT"], args.action)
+    raise build_action_not_valid_exception(['FORECAST', 'FORECAST_ACCURACY', 'PREDICT'], args.action)
