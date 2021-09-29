@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
-from model.time_series.time_series_row import TimeSeriesRow
-from model.time_series.time_series import TimeSeries
+from time_series.model.time_series_row import TimeSeriesRow
+from time_series.model.time_series import TimeSeries
 
 
 def assert_with_diff(actual: float, expected: float, diff: int) -> None:

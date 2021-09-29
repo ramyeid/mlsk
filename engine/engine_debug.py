@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
 from argparse import ArgumentParser
-from debug.time_series_analysis_engine_debug import launch_time_series_analysis, build_time_series_analysis_arguments
-from debug.decision_tree_engine_debug import launch_decision_tree, build_decision_tree_argument
+from time_series.debug.time_series_analysis_engine_debug import launch_time_series_analysis, build_time_series_analysis_arguments
+from classifier.debug.decision_tree_engine_debug import launch_decision_tree, build_decision_tree_argument
 
 
 def build_common_arguments(parser: ArgumentParser) -> None:
