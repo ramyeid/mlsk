@@ -6,10 +6,9 @@ import signal
 from flask import Flask
 from utils.logger import setup_logger, get_logger
 from exception.engine_computation_exception import EngineComputationException
-from controller.time_series import time_series_analysis_controller
-from controller.classifier import decision_tree_controller
 import exception_handler
-
+from time_series.controller import time_series_analysis_controller
+from classifier.controller import decision_tree_controller
 
 app = Flask(__name__)
 
