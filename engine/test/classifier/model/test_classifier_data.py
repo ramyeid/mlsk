@@ -145,7 +145,6 @@ class TestClassifierDataRequest(unittest.TestCase):
     actual_str = actual_classifier_data.__str__()
 
     # Then
-    print(actual_str)
     self.assertEqual("{'predictionColumnName': 'pred', 'actionColumnNames': ['col0', 'col1'], "\
       "'numberOfValues': 2, 'data': {'col0': [0, 1, 0, 1, 1], 'col1': [1, 1, 1, 1, 1]}}", actual_str)
 
@@ -162,7 +161,6 @@ class TestClassifierDataRequest(unittest.TestCase):
     actual_str = actual_classifier_data.__repr__()
 
     # Then
-    print(actual_str)
     self.assertEqual("{'predictionColumnName': 'pred', 'actionColumnNames': ['col0', 'col1'], "\
       "'numberOfValues': 2, 'data': {'col0': [0, 1, 0, 1, 1], 'col1': [1, 1, 1, 1, 1]}}", actual_str)
 

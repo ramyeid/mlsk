@@ -155,6 +155,28 @@ def compute_accuracy_of_predict() -> str:
     get_logger().info('[End] Decision Tree Predict accuracy')
 
 
+def cancel() -> str:
+  '''
+  Cancel request and resets state
+  '''
+
+  try:
+    get_logger().info('[Start] Cancel Decision Tree Request')
+    __reset_state()
+
+    return 'Ok'
+
+  except Exception as exception:
+    __reset_state()
+    error_message = 'Exception %s raised while cancelling decision tree: %s' % (type(exception).__name__, exception)
+    get_logger().error(error_message)
+    get_logger().exception(exception)
+    raise EngineComputationException(error_message)
+
+  finally:
+    get_logger().info('[End] Cancel Decision Tree Request')
+
+
 def __throw_exception_if_data_is_none_on_computation() -> None:
   global classifier_data_builder
 
