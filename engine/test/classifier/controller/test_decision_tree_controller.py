@@ -18,6 +18,7 @@ class TestDecisionTreeController(unittest.TestCase):
   DATA_RESOURCE = '/decision-tree/data'
   PREDICT_RESOURCE = '/decision-tree/predict'
   PREDICT_ACCURACY_RESOURCE = '/decision-tree/predict-accuracy'
+  CANCEL_RESOURCE = '/decision-tree/cancel'
 
 
   def setUp(self) -> None:
@@ -238,6 +239,54 @@ class TestDecisionTreeController(unittest.TestCase):
     self.assert_on_empty_state()
     self.assertEqual(b'"Exception ClassifierException raised while computing predict accuracy: '\
             b'Error: Actual values are not present."\n', response.data)
+
+
+  def test_reset_state_on_cancel(self) -> None:
+    # Given
+    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body_as_string = json.dumps(start_body)
+    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body_as_string = json.dumps(sex_data_body)
+    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+
+    # When
+    response = test_app.post(self.CANCEL_RESOURCE)
+
+    # Then
+    self.assert_on_empty_state()
+    self.assertEqual(b'Ok', response.data)
+
+
+  def test_reset_state_on_cancel_and_start_new_request(self) -> None:
+    # Given
+    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body_as_string = json.dumps(start_body)
+    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body_as_string = json.dumps(sex_data_body)
+    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+
+    # When
+    test_app.post(self.CANCEL_RESOURCE)
+    start_body_2 = dict(predictionColumnName='Width', actionColumnNames=['Sex', 'Height'], numberOfValues=1)
+    start_body_2_as_string = json.dumps(start_body_2)
+    test_app.post(self.START_RESOURCE, data=start_body_2_as_string, content_type=self.CONTENT_TYPE)
+
+    # Then
+    self.assert_on_state('Width', ['Sex', 'Height'], 1, {})
+
+
+  def test_throw_exception_on_cancel(self) -> None:
+    # Given
+    decision_tree_controller.classifier_data_builder = None # Will never be the case but for testing purposes
+
+    # When
+    response = test_app.post(self.CANCEL_RESOURCE)
+
+    # Then
+    expected = b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n'
+    self.assertEqual(expected, response.data)
 
 
 def set_start_data(prediction_column_name: str, action_column_names: [str], number_of_values: int) -> None:

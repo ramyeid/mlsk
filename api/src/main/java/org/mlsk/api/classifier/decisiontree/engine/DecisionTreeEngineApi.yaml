@@ -78,3 +78,16 @@ paths:
                 type: number
         '500':
           description: Engine Computation Exception with detailed exception message.
+  '/decision-tree/cancel':
+    post:
+      tags:
+        - DecisionTree
+      summary: Decision Tree Cancel Request
+      operationId: cancel
+      description: |
+        Cancel any request data currently on the engine - Clears state.
+      responses:
+        '200':
+          description: Returns Ok, data has been cleared.
+        '500':
+          description: Engine Computation Exception with detailed exception message.

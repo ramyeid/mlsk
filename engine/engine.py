@@ -27,6 +27,8 @@ app.add_url_rule('/decision-tree/predict', methods=['POST'],
                  view_func=decision_tree_controller.predict, endpoint='dt_predict')
 app.add_url_rule('/decision-tree/predict-accuracy', methods=['POST'],
                  view_func=decision_tree_controller.compute_accuracy_of_predict, endpoint='dt_predict_accuracy')
+app.add_url_rule('/decision-tree/cancel', methods=['POST'],
+                 view_func=decision_tree_controller.cancel, endpoint='dt_cancel')
 
 app.register_error_handler(EngineComputationException, exception_handler.handle_engine_computation_exception)
 
