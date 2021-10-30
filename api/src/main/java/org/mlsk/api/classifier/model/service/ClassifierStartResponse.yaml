@@ -1,0 +1,13 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierStartResponse
+  description: This is the yaml detailing the ClassifierStartResponse
+paths: {}
+definitions:
+  ClassifierStartResponseModel:
+    type: object
+    properties:
+      requestId:
+        type: string
+        description: Request Id to be used in follwing api calls to specify which engine to direct the call to

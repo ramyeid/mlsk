@@ -1,0 +1,85 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: MLSK - DecisionTree - Service
+  description: This is the API detailing all endpoints
+    of the Machine Learning Swiss Knife, Decision Tree, Service side.
+    The Service is written in JAVA
+tags:
+  - name: DecisionTree
+paths:
+  '/decision-tree/start':
+    post:
+      tags:
+        - DecisionTree
+      summary: Decision Tree Start Request
+      operationId: start
+      description: Notify Service that a decision tree algorithm will be launched
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../../model/ClassifierStartRequest.yaml#/definitions/ClassifierStartRequestModel'
+      responses:
+        '200':
+          description: |
+            Returns request id; to be used in the next calls to specify the engine to direct the calls to.
+          content:
+            application/json:
+              schema:
+                $ref: '../../model/service/ClassifierStartResponse.yaml#/definitions/ClassifierStartResponseModel'
+        '500':
+          description: Decision Tree Service Exception with detailed exception message.
+  '/decision-tree/data':
+    post:
+      tags:
+        - DecisionTree
+      summary: Decision Tree Data Request
+      operationId: data
+      description: Incrementally send the data of the current decision tree data
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../../model/service/ClassifierDataRequest.yaml#/definitions/ClassifierDataRequestModel'
+      responses:
+        '200':
+          description: Returns Ok, data has been set.
+        '500':
+          description: Decision Tree Service Exception with detailed exception message.
+  '/decision-tree/predict':
+    post:
+      tags:
+        - DecisionTree
+      summary: Decision Tree Predict
+      operationId: predict
+      description: Predict the values with Decision Tree algorithm.
+      responses:
+        '200':
+          description: Returns the predicted values.
+          content:
+            application/json:
+              schema:
+                $ref: '../../model/ClassifierDataResponse.yaml#/definitions/ClassifierDataResponseModel'
+        '500':
+          description: Decision Tree Service Exception with detailed exception message.
+  '/decision-tree/predict-accuracy':
+    post:
+      tags:
+        - DecisionTree
+      summary: Decision Tree Predict Accuracy
+      operationId: computePredictAccuracy
+      description: |
+        Compute Predict Accuracy with Decision Tree Algorithm using the last {numberOfValues}.
+        Predict the last {numberOfValues} and compare to actual data.
+      responses:
+        '200':
+          description: Returns the accuracy of the predict algorithm.
+          content:
+            application/json:
+              schema:
+                type: number
+        '500':
+          description: Decision Tree Service Exception with detailed exception message.

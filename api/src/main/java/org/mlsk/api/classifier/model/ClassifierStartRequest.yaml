@@ -1,0 +1,21 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierStartRequest
+  description: This is the yaml detailing the ClassifierStartRequest
+paths: {}
+definitions:
+  ClassifierStartRequestModel:
+    type: object
+    properties:
+      predictionColumnName:
+        type: string
+        description: Name of the column to use for prediction
+      actionColumnNames:
+        type: array
+        description: Name of the columns to use as features columns
+        items:
+          type: string
+      numberOfValues:
+        type: integer
+        description: Number Of values to predict/etc. using the algorithm
