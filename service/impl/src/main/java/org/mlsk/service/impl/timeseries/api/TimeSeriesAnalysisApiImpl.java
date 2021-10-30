@@ -16,7 +16,6 @@ import java.math.BigDecimal;
 import static java.math.BigDecimal.valueOf;
 import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesAnalysisRequestMapper.toTimeSeriesAnalysisRequest;
 import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesMapper.toTimeSeriesModel;
-import static org.springframework.http.HttpStatus.OK;
 
 @RestController
 public class TimeSeriesAnalysisApiImpl implements TimeSeriesAnalysisApi {
@@ -34,27 +33,27 @@ public class TimeSeriesAnalysisApiImpl implements TimeSeriesAnalysisApi {
   public ResponseEntity<TimeSeriesModel> forecast(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
     LOGGER.info("Forecast request received");
     TimeSeries result = service.forecast(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
-    return ResponseEntity.status(OK).body(toTimeSeriesModel(result));
+    return ResponseEntity.ok(toTimeSeriesModel(result));
   }
 
   @Override
   public ResponseEntity<TimeSeriesModel> forecastVsActual(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
     LOGGER.info("Forecast vs Actual request received");
     TimeSeries result = service.forecastVsActual(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
-    return ResponseEntity.status(OK).body(toTimeSeriesModel(result));
+    return ResponseEntity.ok(toTimeSeriesModel(result));
   }
 
   @Override
   public ResponseEntity<BigDecimal> computeForecastAccuracy(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
     LOGGER.info("Compute Forecast Accuracy request received");
     Double result = service.computeForecastAccuracy(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
-    return ResponseEntity.status(OK).body(valueOf(result));
+    return ResponseEntity.ok(valueOf(result));
   }
 
   @Override
   public ResponseEntity<TimeSeriesModel> predict(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
     LOGGER.info("Predict request received");
     TimeSeries result = service.predict(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
-    return ResponseEntity.status(OK).body(toTimeSeriesModel(result));
+    return ResponseEntity.ok(toTimeSeriesModel(result));
   }
 }

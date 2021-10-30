@@ -21,11 +21,10 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisApiImplTest {
@@ -59,7 +58,7 @@ public class TimeSeriesAnalysisApiImplTest {
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.forecast(model);
 
-    assertOnResponseEntity(actualResponse);
+    assertOnResponseEntity(buildTimeSeriesModelResult(), actualResponse);
   }
 
   @Test
@@ -81,7 +80,7 @@ public class TimeSeriesAnalysisApiImplTest {
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.forecastVsActual(model);
 
-    assertOnResponseEntity(actualResponse);
+    assertOnResponseEntity(buildTimeSeriesModelResult(), actualResponse);
   }
 
   @Test
@@ -103,8 +102,7 @@ public class TimeSeriesAnalysisApiImplTest {
 
     ResponseEntity<BigDecimal> actualResponse = timeSeriesAnalysisApi.computeForecastAccuracy(model);
 
-    assertEquals(OK, actualResponse.getStatusCode());
-    assertEquals(valueOf(1239.124), actualResponse.getBody());
+    assertOnResponseEntity(valueOf(1239.124), actualResponse);
   }
 
   @Test
@@ -126,7 +124,7 @@ public class TimeSeriesAnalysisApiImplTest {
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.predict(model);
 
-    assertOnResponseEntity(actualResponse);
+    assertOnResponseEntity(buildTimeSeriesModelResult(), actualResponse);
   }
 
   private InOrder buildInOrder() {
@@ -182,10 +180,5 @@ public class TimeSeriesAnalysisApiImplTest {
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2);
 
     return TimeSeriesModelHelper.buildTimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy");
-  }
-
-  private static void assertOnResponseEntity(ResponseEntity<TimeSeriesModel> actualResponse) {
-    assertEquals(OK, actualResponse.getStatusCode());
-    assertEquals(buildTimeSeriesModelResult(), actualResponse.getBody());
   }
 }

@@ -1,0 +1,18 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierDataRequestModel
+  description: This is the yaml detailing the ClassifierDataRequest
+paths: {}
+definitions:
+  ClassifierDataRequestModel:
+    type: object
+    properties:
+      values:
+        type: array
+        description: values of current column name
+        items:
+          type: integer
+      columnName:
+        type: string
+        description: name of the current data column

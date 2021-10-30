@@ -30,11 +30,11 @@ import static java.math.BigDecimal.valueOf;
 import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.*;
+import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper.buildTimeSeriesModel;
 import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper.buildTimeSeriesRowModel;
 import static org.mlsk.service.model.engine.EngineState.WAITING;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
-import static org.springframework.http.HttpStatus.OK;
 
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisIT extends AbstractIT {
@@ -60,7 +60,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.forecast(requestModel);
 
-    assertOnResponseEntity(actualResponse, buildTimeSeriesModelResult());
+    assertOnResponseEntity(buildTimeSeriesModelResult(), actualResponse);
   }
 
   @Test
@@ -91,7 +91,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.predict(requestModel);
 
-    assertOnResponseEntity(actualResponse, buildTimeSeriesModelResult2());
+    assertOnResponseEntity(buildTimeSeriesModelResult2(), actualResponse);
   }
 
   @Test
@@ -122,7 +122,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     ResponseEntity<BigDecimal> actualResponse = timeSeriesAnalysisApi.computeForecastAccuracy(requestModel);
 
-    assertOnResponseEntity(actualResponse, valueOf(2.0));
+    assertOnResponseEntity(valueOf(2.0), actualResponse);
   }
 
   @Test
@@ -153,7 +153,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.forecastVsActual(requestModel);
 
-    assertOnResponseEntity(actualResponse, buildTimeSeriesModelResult());
+    assertOnResponseEntity(buildTimeSeriesModelResult(), actualResponse);
   }
 
   @Test
@@ -191,8 +191,8 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     forecastMockedRequest.countDownLatch.countDown();
     ResponseEntity<TimeSeriesModel> actualForecast = actualForecastFuture.join();
 
-    assertOnResponseEntity(actualForecast, buildTimeSeriesModelResult());
-    assertOnResponseEntity(actualPredict, buildTimeSeriesModelResult2());
+    assertOnResponseEntity(buildTimeSeriesModelResult(), actualForecast);
+    assertOnResponseEntity(buildTimeSeriesModelResult2(), actualPredict);
     assertEquals(WAITING, getEngine(0).getState());
     assertEquals(WAITING, getEngine(1).getState());
   }
@@ -310,10 +310,5 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
   private static void assertOnTimeSeriesAnalysisServiceException(Exception exception, String exceptionMessage) {
     assertInstanceOf(TimeSeriesAnalysisServiceException.class, exception);
     assertEquals(exceptionMessage, exception.getMessage());
-  }
-
-  private static <T> void assertOnResponseEntity(ResponseEntity<T> actualResponse, T expectedBody) {
-    assertEquals(OK, actualResponse.getStatusCode());
-    assertEquals(expectedBody, actualResponse.getBody());
   }
 }

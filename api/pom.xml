@@ -75,6 +75,20 @@
                             <modelPackage>org.mlsk.api.timeseries.model</modelPackage>
                         </configuration>
                     </execution>
+                    <execution>
+                        <id>decision-tree</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/classifier/decisiontree/service/DecisionTreeServiceApi.yaml
+                            </inputSpec>
+                            <apiPackage>org.mlsk.api.decisiontree.api</apiPackage>
+                            <modelPackage>org.mlsk.api.classifier.model</modelPackage>
+                        </configuration>
+                    </execution>
                 </executions>
             </plugin>
         </plugins>
