@@ -5,22 +5,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.engine.Engine;
+import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
+import org.mlsk.service.model.classifier.ClassifierDataRequest;
+import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierStartRequest;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 
 import java.util.concurrent.atomic.AtomicReference;
-import java.util.function.Supplier;
 
 import static java.lang.String.format;
 import static org.mlsk.service.impl.setup.ServiceConfiguration.getEnginePath;
 import static org.mlsk.service.impl.setup.ServiceConfiguration.getLogsPath;
 import static org.mlsk.service.model.engine.EngineState.*;
-import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
 public class EngineImpl implements Engine {
 
@@ -54,8 +57,18 @@ public class EngineImpl implements Engine {
   }
 
   @Override
+  public synchronized void markAsWaiting() {
+    this.state.set(WAITING);
+  }
+
+  @Override
   public synchronized void bookEngine() {
     this.state.set(BOOKED);
+  }
+
+  @Override
+  public synchronized void markAsComputing() {
+    this.state.set(COMPUTING);
   }
 
   @Override
@@ -64,7 +77,7 @@ public class EngineImpl implements Engine {
       try {
         LOGGER.info("[Start] Launching engine: {}", this.serviceInformation);
         this.resilientEngineProcess.launchEngine(this::onEngineKilled);
-        this.state.set(WAITING);
+        this.markAsWaiting();
       } catch (Exception exception) {
         LOGGER.error(format("Error while creating engine: %s", this.serviceInformation), exception);
         String message = format("Unable to launch engine %s", serviceInformation);
@@ -91,32 +104,48 @@ public class EngineImpl implements Engine {
   @Override
   public synchronized TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
-    return callOnEngine(() -> engineClient.forecast(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST);
+    return engineClient.forecast(timeSeriesAnalysisRequest);
   }
 
   @Override
   public synchronized Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
-    return callOnEngine(() -> engineClient.computeForecastAccuracy(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_ACCURACY);
+    return engineClient.computeForecastAccuracy(timeSeriesAnalysisRequest);
   }
 
   @Override
   public synchronized TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
-    return callOnEngine(() -> engineClient.predict(timeSeriesAnalysisRequest), TIME_SERIES_PREDICT);
+    return engineClient.predict(timeSeriesAnalysisRequest);
   }
 
-  private <Result> Result callOnEngine(Supplier<Result> supplier, String actionName) {
-    try {
-      LOGGER.info("Engine {} computing request: {}", this.serviceInformation, actionName);
-      this.state.set(COMPUTING);
-      return supplier.get();
-    } catch (Exception exception) {
-      LOGGER.error("Error while launching: {} on engine {}: {}", actionName, serviceInformation, exception.getMessage());
-      throw exception;
-    } finally {
-      this.state.set(WAITING);
-      LOGGER.info("Engine {} in waiting mode after computing request: {}", this.serviceInformation, actionName);
-    }
+  @Override
+  public synchronized Void start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
+    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(serviceInformation);
+    return classifierEngineClient.start(classifierStartRequest, classifierType);
+  }
+
+  @Override
+  public synchronized Void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
+    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(serviceInformation);
+    return classifierEngineClient.data(classifierDataRequest, classifierType);
+  }
+
+  @Override
+  public synchronized ClassifierDataResponse predict(ClassifierType classifierType) {
+    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(serviceInformation);
+    return classifierEngineClient.predict(classifierType);
+  }
+
+  @Override
+  public synchronized Double computePredictAccuracy(ClassifierType classifierType) {
+    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(serviceInformation);
+    return classifierEngineClient.computePredictAccuracy(classifierType);
+  }
+
+  @Override
+  public synchronized Void cancel(ClassifierType classifierType) {
+    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(serviceInformation);
+    return classifierEngineClient.cancel(classifierType);
   }
 }

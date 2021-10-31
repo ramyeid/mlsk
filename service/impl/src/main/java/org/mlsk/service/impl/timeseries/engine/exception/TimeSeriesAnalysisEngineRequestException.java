@@ -1,4 +1,4 @@
-package org.mlsk.service.impl.timeseries.engine.exceptions;
+package org.mlsk.service.impl.timeseries.engine.exception;
 
 public class TimeSeriesAnalysisEngineRequestException extends RuntimeException {
 

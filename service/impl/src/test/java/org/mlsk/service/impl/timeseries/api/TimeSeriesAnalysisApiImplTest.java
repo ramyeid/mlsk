@@ -7,10 +7,10 @@ import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.api.timeseries.model.TimeSeriesModel;
 import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper;
-import org.mlsk.service.impl.timeseries.service.TimeSeriesAnalysisServiceImpl;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
+import org.mlsk.service.timeseries.TimeSeriesAnalysisService;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,7 +30,7 @@ import static org.mockito.Mockito.when;
 public class TimeSeriesAnalysisApiImplTest {
 
   @Mock
-  private TimeSeriesAnalysisServiceImpl service;
+  private TimeSeriesAnalysisService service;
 
   private TimeSeriesAnalysisApiImpl timeSeriesAnalysisApi;
 

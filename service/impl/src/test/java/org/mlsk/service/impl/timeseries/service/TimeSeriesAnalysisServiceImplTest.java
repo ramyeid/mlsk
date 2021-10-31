@@ -14,14 +14,16 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
-import java.util.function.Function;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mlsk.service.impl.testhelper.OrchestratorHelper.doThrowExceptionOnRunOnEngine;
+import static org.mlsk.service.impl.testhelper.OrchestratorHelper.onRunOnEngineCallMethod;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.inOrder;
+import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisServiceImplTest {
@@ -41,7 +43,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_forecast() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     service.forecast(request);
@@ -55,7 +57,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_forecast() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     TimeSeries actualForecast = service.forecast(request);
@@ -66,7 +68,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_forecast_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine("exception message");
+    doThrowExceptionOnRunOnEngine(orchestrator, "exception message");
 
     try {
       service.forecast(request);
@@ -80,7 +82,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_forecast_vs_actual() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     service.forecastVsActual(request);
@@ -94,7 +96,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_forecast_vs_actual() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     TimeSeries actualForecast = service.forecastVsActual(request);
@@ -105,7 +107,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_forecast_vs_actual_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine("exception message for forecast vs actual");
+    doThrowExceptionOnRunOnEngine(orchestrator, "exception message for forecast vs actual");
 
     try {
       service.forecastVsActual(request);
@@ -119,7 +121,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_compute_forecast_accuracy() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEngineComputeForecastAccuracyReturn(58.123);
 
     service.computeForecastAccuracy(request);
@@ -133,7 +135,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_compute_forecast_accuracy() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEngineComputeForecastAccuracyReturn(1239.124);
 
     Double actualAccuracy = service.computeForecastAccuracy(request);
@@ -144,7 +146,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_compute_forecast_accuracy_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine("exception message for compute forecast accuracy");
+    doThrowExceptionOnRunOnEngine(orchestrator, "exception message for compute forecast accuracy");
 
     try {
       service.computeForecastAccuracy(request);
@@ -158,7 +160,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_predict() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEnginePredictReturn(buildTimeSeriesResult());
 
     service.predict(request);
@@ -172,7 +174,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_predict() {
     TimeSeriesAnalysisRequest model = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod();
+    onRunOnEngineCallMethod(orchestrator, engine);
     onEnginePredictReturn(buildTimeSeriesResult());
 
     TimeSeries actualPredict = service.predict(model);
@@ -183,7 +185,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_predict_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine("exception message for predict");
+    doThrowExceptionOnRunOnEngine(orchestrator, "exception message for predict");
 
     try {
       service.predict(request);
@@ -198,19 +200,6 @@ public class TimeSeriesAnalysisServiceImplTest {
     return inOrder(orchestrator, engine);
   }
 
-  @SuppressWarnings("unchecked")
-  private void onRunOnEngineCallMethod() {
-    when(orchestrator.runOnEngine(any(), any()))
-        .thenAnswer(invocation -> {
-          Function<Engine, ?> function = (Function<Engine, ?>) invocation.getArguments()[0];
-          return function.apply(engine);
-        });
-  }
-
-  private void doThrowExceptionOnRunOnEngine(String exceptionMessage) {
-    doThrow(new RuntimeException(exceptionMessage)).when(orchestrator).runOnEngine(any(), any());
-  }
-
   private void onEngineForecastReturn(TimeSeries timeSeries) {
     when(engine.forecast(any())).thenReturn(timeSeries);
   }
@@ -220,7 +209,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   }
 
   private void onEnginePredictReturn(TimeSeries timeSeries) {
-    when(engine.predict(any())).thenReturn(timeSeries);
+    when(engine.predict(any(TimeSeriesAnalysisRequest.class))).thenReturn(timeSeries);
   }
 
   private static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest() {

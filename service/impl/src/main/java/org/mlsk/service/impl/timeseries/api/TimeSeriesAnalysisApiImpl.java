@@ -5,8 +5,8 @@ import org.apache.logging.log4j.Logger;
 import org.mlsk.api.timeseries.api.TimeSeriesAnalysisApi;
 import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.service.impl.timeseries.service.TimeSeriesAnalysisServiceImpl;
 import org.mlsk.service.model.timeseries.TimeSeries;
+import org.mlsk.service.timeseries.TimeSeriesAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,10 +22,10 @@ public class TimeSeriesAnalysisApiImpl implements TimeSeriesAnalysisApi {
 
   private static final Logger LOGGER = LogManager.getLogger(TimeSeriesAnalysisApiImpl.class);
 
-  private final TimeSeriesAnalysisServiceImpl service;
+  private final TimeSeriesAnalysisService service;
 
   @Autowired
-  public TimeSeriesAnalysisApiImpl(TimeSeriesAnalysisServiceImpl service) {
+  public TimeSeriesAnalysisApiImpl(TimeSeriesAnalysisService service) {
     this.service = service;
   }
 
