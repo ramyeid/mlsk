@@ -4,11 +4,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.lib.rest.RestClient;
-import org.mlsk.service.impl.timeseries.engine.exceptions.TimeSeriesAnalysisEngineRequestException;
+import org.mlsk.service.impl.timeseries.engine.exception.TimeSeriesAnalysisEngineRequestException;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
-import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -19,9 +18,9 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mlsk.service.impl.testhelper.RestClientHelper.*;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
 
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisEngineClientTest {
@@ -42,20 +41,21 @@ public class TimeSeriesAnalysisEngineClientTest {
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
     TimeSeries responseTimeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
-    onPostReturn(responseTimeSeries);
+    onPostWithBodyWithResponseReturn(restClient, FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class, responseTimeSeries);
 
     TimeSeries actualForecasted = client.forecast(timeSeriesAnalysisRequest);
 
-    verifyPostCalled(timeSeriesAnalysisRequest, FORECAST_URL, TimeSeries.class);
+    verifyPostWithBodyWithResponseCalled(restClient, FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     assertEquals(responseTimeSeries, actualForecasted);
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_forecast_failure() {
-    doThrowExceptionOnPost(new InvalidParameterException());
+    TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, FORECAST_URL, request, TimeSeries.class, new InvalidParameterException());
 
     try {
-      client.forecast(mock(TimeSeriesAnalysisRequest.class));
+      client.forecast(request);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -65,10 +65,11 @@ public class TimeSeriesAnalysisEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_forecast_failure_with_http_server_error_exception() {
-    doThrowExceptionOnPost(buildHttpServerErrorException("Original Forecast Exception Message"));
+    TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, FORECAST_URL, request, TimeSeries.class, buildHttpServerErrorException("Original Forecast Exception Message"));
 
     try {
-      client.forecast(mock(TimeSeriesAnalysisRequest.class));
+      client.forecast(request);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -81,20 +82,21 @@ public class TimeSeriesAnalysisEngineClientTest {
     List<TimeSeriesRow> timeSeriesRows = newArrayList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
-    onPostReturn(2.);
+    onPostWithBodyWithResponseReturn(restClient, FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class, 2.);
 
     Double actualAccuracy = client.computeForecastAccuracy(timeSeriesAnalysisRequest);
 
-    verifyPostCalled(timeSeriesAnalysisRequest, FORECAST_ACCURACY_URL, Double.class);
+    verifyPostWithBodyWithResponseCalled(restClient, FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
     assertEquals(2.d, actualAccuracy);
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_forecast_accuracy_failure() {
-    doThrowExceptionOnPost(new InvalidParameterException());
+    TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, FORECAST_ACCURACY_URL, request, Double.class, new InvalidParameterException());
 
     try {
-      client.computeForecastAccuracy(mock(TimeSeriesAnalysisRequest.class));
+      client.computeForecastAccuracy(request);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -104,10 +106,11 @@ public class TimeSeriesAnalysisEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_forecast_accuracy_failure_with_http_server_error_exception() {
-    doThrowExceptionOnPost(buildHttpServerErrorException("Original Forecast Accuracy Exception Message"));
+    TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, FORECAST_ACCURACY_URL, request, Double.class, buildHttpServerErrorException("Original Forecast Accuracy Exception Message"));
 
     try {
-      client.computeForecastAccuracy(mock(TimeSeriesAnalysisRequest.class));
+      client.computeForecastAccuracy(request);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -121,20 +124,21 @@ public class TimeSeriesAnalysisEngineClientTest {
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
     TimeSeries responseTimeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
-    onPostReturn(responseTimeSeries);
+    onPostWithBodyWithResponseReturn(restClient, PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class, responseTimeSeries);
 
     TimeSeries actualPredicted = client.predict(timeSeriesAnalysisRequest);
 
-    verifyPostCalled(timeSeriesAnalysisRequest, PREDICATE_URL, TimeSeries.class);
+    verifyPostWithBodyWithResponseCalled(restClient, PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     assertEquals(responseTimeSeries, actualPredicted);
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_predict_failure() {
-    doThrowExceptionOnPost(new InvalidParameterException());
+    TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, PREDICATE_URL, request, TimeSeries.class, new InvalidParameterException());
 
     try {
-      client.predict(mock(TimeSeriesAnalysisRequest.class));
+      client.predict(request);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -144,23 +148,16 @@ public class TimeSeriesAnalysisEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_predict_failure_with_http_server_error_exception() {
-    doThrowExceptionOnPost(buildHttpServerErrorException("Original Predict Exception Message"));
+    TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, PREDICATE_URL, request, TimeSeries.class, buildHttpServerErrorException("Original Predict Exception Message"));
 
     try {
-      client.predict(mock(TimeSeriesAnalysisRequest.class));
+      client.predict(request);
       fail("should fail");
 
     } catch (Exception exception) {
       assertOnTimeSeriesAnalysisEngineRequestExceptionWithServerError(exception, "Failed on post predict to engine: Original Predict Exception Message");
     }
-  }
-
-  private void onPostReturn(Object object) {
-    when(restClient.post(any(), any(), any())).thenReturn(object);
-  }
-
-  private void doThrowExceptionOnPost(Exception exception) {
-    when(restClient.post(any(), any(), any())).thenThrow(exception);
   }
 
   private static HttpServerErrorException buildHttpServerErrorException(String exceptionMessage) {
@@ -177,11 +174,5 @@ public class TimeSeriesAnalysisEngineClientTest {
     assertInstanceOf(TimeSeriesAnalysisEngineRequestException.class, exception);
     assertEquals(exceptionMessage, exception.getMessage());
     assertInstanceOf(HttpServerErrorException.class, exception.getCause());
-  }
-
-  private <T> void verifyPostCalled(TimeSeriesAnalysisRequest request, String resource, Class<T> bodyType) {
-    InOrder inOrder = inOrder(restClient);
-    inOrder.verify(restClient).post(resource, request, bodyType);
-    inOrder.verifyNoMoreInteractions();
   }
 }

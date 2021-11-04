@@ -4,6 +4,7 @@ import json
 from flask import request
 from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
+from utils.controller_utils import build_default_response
 from exception.engine_computation_exception import EngineComputationException
 from classifier.service.decision_tree_service import DecisionTreeService
 from classifier.model.classifier_start_request import ClassifierStartRequest
@@ -37,7 +38,8 @@ def start() -> str:
     number_of_values = classifier_start_request.get_number_of_values()
     classifier_data_builder.set_start_data(prediction_column_name, action_column_names, number_of_values)
 
-    return 'Ok'
+    return build_default_response()
+
   except Exception as exception:
     __reset_state()
     error_message = 'Exception %s raised while starting decision tree: %s' % (type(exception).__name__, exception)
@@ -70,7 +72,8 @@ def on_data_received() -> str:
     values = classifier_data_request.get_values()
     classifier_data_builder.add_data(column_name, values)
 
-    return 'Ok'
+    return build_default_response()
+
   except Exception as exception:
     __reset_state()
     error_message = 'Exception %s raised while receiving decision tree data: %s' % (type(exception).__name__, exception)
@@ -106,6 +109,7 @@ def predict() -> str:
     predicted_data_frame = decision_tree_service.predict()
 
     predicted_classifier_data = ClassifierDataResponse.from_data_frame(predicted_data_frame, prediction_column_name)
+
     return json.dumps(predicted_classifier_data, cls=JsonComplexEncoder)
 
   except Exception as exception:
@@ -164,7 +168,7 @@ def cancel() -> str:
     get_logger().info('[Start] Cancel Decision Tree Request')
     __reset_state()
 
-    return 'Ok'
+    return build_default_response()
 
   except Exception as exception:
     __reset_state()

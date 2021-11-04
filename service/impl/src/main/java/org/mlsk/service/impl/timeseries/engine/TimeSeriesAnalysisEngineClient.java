@@ -3,7 +3,7 @@ package org.mlsk.service.impl.timeseries.engine;
 import com.google.common.annotations.VisibleForTesting;
 import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.lib.rest.RestClient;
-import org.mlsk.service.impl.timeseries.engine.exceptions.TimeSeriesAnalysisEngineRequestException;
+import org.mlsk.service.impl.timeseries.engine.exception.TimeSeriesAnalysisEngineRequestException;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.timeseries.TimeSeriesAnalysisEngine;

@@ -1,0 +1,13 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierRequestModel
+  description: This is the yaml detailing the ClassifierRequest
+paths: { }
+definitions:
+  ClassifierRequestModel:
+    type: object
+    properties:
+      requestId:
+        type: string
+        description: Request Id to specify which engine to direct the call to

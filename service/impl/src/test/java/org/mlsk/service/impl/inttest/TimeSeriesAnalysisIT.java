@@ -237,7 +237,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
       fail("should fail since three requests sent and two engines are busy");
 
     } catch (Exception exception) {
-      assertOnTimeSeriesAnalysisServiceException(exception, "No available engine to run time-series-predict please try again later");
+      assertOnTimeSeriesAnalysisServiceException(exception, "No available engine to run time-series-predict, please try again later");
     }
   }
 

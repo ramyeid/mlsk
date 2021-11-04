@@ -3,6 +3,7 @@ package org.mlsk.service.impl.engine.client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
@@ -25,6 +26,16 @@ public class EngineClientFactoryTest {
 
     assertNotNull(actualClient);
     assertInstanceOf(TimeSeriesAnalysisEngineClient.class, actualClient);
+  }
+
+  @Test
+  public void should_build_classifier_engine_client() {
+    ServiceInformation serviceInformation = buildServiceInformation();
+
+    ClassifierEngineClient actualClient = engineClientFactory.buildClassifierEngineClient(serviceInformation);
+
+    assertNotNull(actualClient);
+    assertInstanceOf(ClassifierEngineClient.class, actualClient);
   }
 
   private static ServiceInformation buildServiceInformation() {

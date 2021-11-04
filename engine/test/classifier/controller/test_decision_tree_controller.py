@@ -45,10 +45,11 @@ class TestDecisionTreeController(unittest.TestCase):
     body_as_string = build_start_body_as_string()
 
     # When
-    test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
+    response = test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_state('Sex', ['Width', 'Height'], 5, {})
+    self.assertEqual(b'{"Status":"Ok"}', response.data)
 
 
   def test_exception_thrown_if_start_data_exists_on_start(self) -> None:
@@ -86,10 +87,11 @@ class TestDecisionTreeController(unittest.TestCase):
     data_body_as_string = build_data_body_as_string()
 
     # When
-    test_app.post(self.DATA_RESOURCE, data=data_body_as_string, content_type=self.CONTENT_TYPE)
+    response = test_app.post(self.DATA_RESOURCE, data=data_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_state('Sex', ['Width', 'Height'], 5, {'Sex': [1, 0, 1, 0 ,0]})
+    self.assertEqual(b'{"Status":"Ok"}', response.data)
 
 
   def test_exception_thrown_if_data_does_not_exists_on_data(self) -> None:
@@ -255,7 +257,7 @@ class TestDecisionTreeController(unittest.TestCase):
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'Ok', response.data)
+    self.assertEqual(b'{"Status":"Ok"}', response.data)
 
 
   def test_reset_state_on_cancel_and_start_new_request(self) -> None:
