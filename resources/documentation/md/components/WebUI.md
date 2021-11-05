@@ -33,6 +33,21 @@ npm install --global lite-server
 
 > for more information on [_lite-server_](https://www.npmjs.com/package/lite-server)
 
+### Install all dependencies
+
+```bash
+cd web-ui
+npm install
+```
+
+### Upgrade all dependencies in package.json
+
+```bash
+cd web-ui
+npx npm-check-updates -u
+npm install
+```
+
 ### Build
 
 ```bash

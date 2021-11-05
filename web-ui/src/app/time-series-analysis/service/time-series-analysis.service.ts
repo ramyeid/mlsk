@@ -47,7 +47,7 @@ export class TimeSeriesAnalysisService {
     if (err.error.message) {
       message = `Error while calling Service; code ${err.status}: ${err.error.message}`;
     }
-    return throwError(new Error(message));
+    return throwError(() => new Error(message));
   }
 
   private buildBaseUrl(): string {
