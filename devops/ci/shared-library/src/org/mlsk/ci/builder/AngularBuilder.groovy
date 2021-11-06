@@ -41,6 +41,14 @@ class AngularBuilder implements IBuilder {
     }
   }
 
+  public void generateNodeModules() {
+    steps.dir('web-ui') {
+      steps.sh 'cd /root/.mlsk_node_modules/node_modules/ && rm -rf *'
+      steps.sh 'npm install --force'
+      steps.sh 'cp -r node_modules/* /root/.mlsk_node_modules/node_modules/'
+    }
+  }
+
   public void linkNodeModules() {
     steps.sh 'ln -s /root/.mlsk_node_modules/node_modules/ ./web-ui/'
   }

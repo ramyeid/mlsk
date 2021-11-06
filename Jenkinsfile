@@ -9,6 +9,10 @@ pipeline {
     skipStagesAfterUnstable()
   }
 
+  parameters {
+    booleanParam(name: "GENERATE_NODE_MODULES", description: 'Regenerate and overwrite node_modules (in case of updated and new dependencies)', defaultValue: false)
+  }
+
   agent {
     label 'docker'
   }
@@ -17,7 +21,7 @@ pipeline {
 
     stage('SetUp') {
       steps {
-        angularLinkNodeModules()
+        angularLinkOrGenerateNodeModules()
       }
     }
 
