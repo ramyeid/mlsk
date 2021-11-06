@@ -19,7 +19,7 @@ export class CsvReaderService {
 
       fileReader.onload = () => {
         const content = fileReader.result;
-        const contentLines = (content as string)?.split(CsvReaderService.END_LINE);
+        const contentLines = (content as string)?.split(CsvReaderService.END_LINE).map(line => line.replace('\r', ''));
 
         const columnIndexes: number[] = this.toColumnIndexes(contentLines, columns);
         if (columnIndexes.includes(-1)) {

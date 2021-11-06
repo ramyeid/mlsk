@@ -11,11 +11,11 @@ RUN apt-get install python3-pip -y
 
 RUN apt-get install npm -y
 RUN npm cache clean -f
-RUN npm install -g npm@7.19.1
+RUN npm install -g npm@8.1.0
 RUN npm install -g n
 RUN n stable
-RUN npm install -g @angular/cli@12.1.2
-RUN npm install --save-dev @angular-devkit/build-angular
+RUN npm install -g @angular/cli@13.0.1
+RUN npm install -g @angular-devkit/build-angular
 
 RUN chmod -R 777 /usr/local/lib
 

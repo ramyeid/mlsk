@@ -234,3 +234,6 @@ gradle-app.setting
 venv
 devops/ci/deployment/.volumes
 docker_deployment/
+.settings
+.factorypath
+.angular/
