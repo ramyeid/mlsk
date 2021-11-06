@@ -6,9 +6,9 @@ def call() {
 
   if (params.GENERATE_NODE_MODULES) {
     echo 'Generating node_modules'
-    angularBuilder.generateNodeModules();
-  } else {
-    echo 'Linking to cached node_modules'
-    angularBuilder.linkNodeModules();
+    angularBuilder.regenerateNodeModules();
   }
+
+  echo 'Linking to cached node_modules'
+  angularBuilder.linkNodeModules();
 }
