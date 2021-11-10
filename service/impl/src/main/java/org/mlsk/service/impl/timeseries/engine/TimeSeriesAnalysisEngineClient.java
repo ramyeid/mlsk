@@ -30,10 +30,9 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
     try {
       return restClient.post(FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post forecast to engine: %s", exception.getResponseBodyAsString());
-      throw new TimeSeriesAnalysisEngineRequestException(engineException, exception);
+      throw buildTimeSeriesAnalysisEngineRequestException(exception, "forecast");
     } catch (Exception exception) {
-      throw new TimeSeriesAnalysisEngineRequestException("Failed to post forecast to engine", exception);
+      throw buildTimeSeriesAnalysisEngineRequestException(exception, "forecast");
     }
   }
 
@@ -42,10 +41,9 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
     try {
       return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post computeForecastAccuracy to engine: %s", exception.getResponseBodyAsString());
-      throw new TimeSeriesAnalysisEngineRequestException(engineException, exception);
+      throw buildTimeSeriesAnalysisEngineRequestException(exception, "computeForecastAccuracy");
     } catch (Exception exception) {
-      throw new TimeSeriesAnalysisEngineRequestException("Failed to post computeForecastAccuracy to engine", exception);
+      throw buildTimeSeriesAnalysisEngineRequestException(exception, "computeForecastAccuracy");
     }
   }
 
@@ -54,10 +52,17 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
     try {
       return restClient.post(PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post predict to engine: %s", exception.getResponseBodyAsString());
-      throw new TimeSeriesAnalysisEngineRequestException(engineException, exception);
+      throw buildTimeSeriesAnalysisEngineRequestException(exception, "predict");
     } catch (Exception exception) {
-      throw new TimeSeriesAnalysisEngineRequestException("Failed to post predict to engine", exception);
+      throw buildTimeSeriesAnalysisEngineRequestException(exception, "predict");
     }
+  }
+
+  private static TimeSeriesAnalysisEngineRequestException buildTimeSeriesAnalysisEngineRequestException(Exception exception, String action) {
+    return new TimeSeriesAnalysisEngineRequestException(format("Failed to post %s to engine", action), exception);
+  }
+
+  private static TimeSeriesAnalysisEngineRequestException buildTimeSeriesAnalysisEngineRequestException(HttpServerErrorException exception, String action) {
+    return new TimeSeriesAnalysisEngineRequestException(format("Failed on post %s to engine: %s", action, exception.getResponseBodyAsString()), exception);
   }
 }

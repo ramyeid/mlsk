@@ -1,6 +1,5 @@
 package org.mlsk.service.impl.classifier.service;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.service.classifier.ClassifierService;
@@ -11,7 +10,11 @@ import org.mlsk.service.model.classifier.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 import static java.lang.String.format;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 
 @Service
 public class ClassifierServiceImpl implements ClassifierService {
@@ -27,13 +30,15 @@ public class ClassifierServiceImpl implements ClassifierService {
 
   @Override
   public ClassifierStartResponse start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
+    Optional<String> requestIdOptional = empty();
     try {
       LOGGER.info("[Start] Start Request - Book Engine");
-      Pair<String, Void> requestIdAndResult = orchestrator.runOnEngineAndBlock(engine -> engine.start(classifierStartRequest, classifierType), classifierType.getStartAction());
-      return new ClassifierStartResponse(requestIdAndResult.getLeft());
+      requestIdOptional = of(orchestrator.bookEngine(classifierType.getStartAction()));
+      orchestrator.runOnEngine(requestIdOptional.get(), engine -> engine.start(classifierStartRequest, classifierType), classifierType.getStartAction());
+      return new ClassifierStartResponse(requestIdOptional.get());
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while starting request: %s", exception.getMessage()), exception);
-      throw new ClassifierServiceException(exception.getMessage());
+      requestIdOptional.ifPresent(requestId -> cancelRequestAndReleaseEngine(requestId, classifierType.getStartAction(), classifierType));
+      throw logAndBuildException(exception, "starting request");
     } finally {
       LOGGER.info("[End] Start Request - Book Engine");
     }
@@ -43,10 +48,10 @@ public class ClassifierServiceImpl implements ClassifierService {
   public void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
     try {
       LOGGER.info("[Start] Data Request - Sending data to Engine");
-      orchestrator.runOnEngineAndBlock(classifierDataRequest.getRequestId(), engine -> engine.data(classifierDataRequest, classifierType), classifierType.getDataAction());
+      orchestrator.runOnEngine(classifierDataRequest.getRequestId(), engine -> engine.data(classifierDataRequest, classifierType), classifierType.getDataAction());
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while sending data to engine: %s", exception.getMessage()), exception);
-      throw new ClassifierServiceException(exception.getMessage());
+      cancelRequestAndReleaseEngine(classifierDataRequest.getRequestId(), classifierType.getDataAction(), classifierType);
+      throw logAndBuildException(exception, "sending data to engine");
     } finally {
       LOGGER.info("[End] Data Request - Sending data to Engine");
     }
@@ -56,11 +61,12 @@ public class ClassifierServiceImpl implements ClassifierService {
   public ClassifierDataResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     try {
       LOGGER.info("[Start] Predict Request");
-      return orchestrator.runOnEngineAndUnblock(classifierRequest.getRequestId(), engine -> engine.predict(classifierType), classifierType.getPredictAction());
+      return orchestrator.runOnEngine(classifierRequest.getRequestId(), engine -> engine.predict(classifierType), classifierType.getPredictAction());
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while predicting on engine: %s", exception.getMessage()), exception);
-      throw new ClassifierServiceException(exception.getMessage());
+      cancelRequest(classifierRequest.getRequestId(), classifierType.getPredictAction(), classifierType);
+      throw logAndBuildException(exception, "predicting on engine");
     } finally {
+      releaseEngine(classifierRequest.getRequestId(), classifierType.getPredictAction());
       LOGGER.info("[End] Predict Request");
     }
   }
@@ -69,12 +75,34 @@ public class ClassifierServiceImpl implements ClassifierService {
   public Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     try {
       LOGGER.info("[Start] Compute Predict Accuracy Request");
-      return orchestrator.runOnEngineAndUnblock(classifierRequest.getRequestId(), engine -> engine.computePredictAccuracy(classifierType), classifierType.getPredictAccuracyAction());
+      return orchestrator.runOnEngine(classifierRequest.getRequestId(), engine -> engine.computePredictAccuracy(classifierType), classifierType.getPredictAccuracyAction());
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while compute predict accuracy on engine: %s", exception.getMessage()), exception);
-      throw new ClassifierServiceException(exception.getMessage());
+      cancelRequest(classifierRequest.getRequestId(), classifierType.getPredictAccuracyAction(), classifierType);
+      throw logAndBuildException(exception, "compute predict accuracy on engine");
     } finally {
+      releaseEngine(classifierRequest.getRequestId(), classifierType.getPredictAccuracyAction());
       LOGGER.info("[End] Compute Predict Accuracy Request");
     }
+  }
+
+  private void cancelRequestAndReleaseEngine(String requestId, String actionName, ClassifierType classifierType) {
+    cancelRequest(requestId, actionName, classifierType);
+
+    releaseEngine(requestId, actionName);
+  }
+
+  private void cancelRequest(String requestId, String actionName, ClassifierType classifierType) {
+    LOGGER.info("Cancelling request on engine with id {} and action {}", requestId, actionName);
+    orchestrator.runOnEngine(requestId, engine -> engine.cancel(classifierType), classifierType.getCancelAction());
+  }
+
+  private void releaseEngine(String requestId, String actionName) {
+    LOGGER.info("Releasing engine with request {} and action {}", requestId, actionName);
+    orchestrator.releaseEngine(requestId, actionName);
+  }
+
+  private static ClassifierServiceException logAndBuildException(Exception exception, String action) {
+    LOGGER.error(format("Exception while %s: %s", action, exception.getMessage()), exception);
+    return new ClassifierServiceException(exception.getMessage());
   }
 }

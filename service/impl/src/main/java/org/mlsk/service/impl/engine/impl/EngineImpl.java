@@ -57,7 +57,7 @@ public class EngineImpl implements Engine {
   }
 
   @Override
-  public synchronized void markAsWaiting() {
+  public synchronized void markAsWaitingForRequest() {
     this.state.set(WAITING);
   }
 
@@ -77,7 +77,7 @@ public class EngineImpl implements Engine {
       try {
         LOGGER.info("[Start] Launching engine: {}", this.serviceInformation);
         this.resilientEngineProcess.launchEngine(this::onEngineKilled);
-        this.markAsWaiting();
+        this.markAsWaitingForRequest();
       } catch (Exception exception) {
         LOGGER.error(format("Error while creating engine: %s", this.serviceInformation), exception);
         String message = format("Unable to launch engine %s", serviceInformation);

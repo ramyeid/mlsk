@@ -4,6 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.EngineFactory;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
+import org.mlsk.service.impl.orchestrator.impl.OrchestratorImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +33,7 @@ public class OrchestratorFactory {
         .stream()
         .map(engineFactory::buildEngine)
         .collect(toList());
-    Orchestrator orchestrator = new Orchestrator(engines);
+    Orchestrator orchestrator = new OrchestratorImpl(engines);
     orchestrator.launchEngines();
     return orchestrator;
   }

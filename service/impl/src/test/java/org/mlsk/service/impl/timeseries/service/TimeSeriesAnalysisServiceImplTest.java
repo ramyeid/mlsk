@@ -68,7 +68,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_forecast_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, "exception message");
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-forecast", "exception message");
 
     try {
       service.forecast(request);
@@ -107,7 +107,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_forecast_vs_actual_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, "exception message for forecast vs actual");
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-forecast-vs-actual", "exception message for forecast vs actual");
 
     try {
       service.forecastVsActual(request);
@@ -146,7 +146,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_compute_forecast_accuracy_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, "exception message for compute forecast accuracy");
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-compute-accuracy", "exception message for compute forecast accuracy");
 
     try {
       service.computeForecastAccuracy(request);
@@ -185,7 +185,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_predict_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, "exception message for predict");
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-predict", "exception message for predict");
 
     try {
       service.predict(request);

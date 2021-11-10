@@ -72,7 +72,7 @@ public class EngineImplTest {
   @Test
   public void should_set_state_as_waiting() {
 
-    engineImpl.markAsWaiting();
+    engineImpl.markAsWaitingForRequest();
 
     assertEquals(WAITING, engineImpl.getState());
     assertEquals(WAITING, engineStateSpy.get());

@@ -9,7 +9,7 @@ public interface Engine extends TimeSeriesAnalysisEngine, ClassifierEngine {
 
   void launchEngine();
 
-  void markAsWaiting();
+  void markAsWaitingForRequest();
 
   void bookEngine();
 
