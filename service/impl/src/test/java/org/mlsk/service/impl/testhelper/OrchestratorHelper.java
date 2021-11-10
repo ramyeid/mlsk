@@ -1,6 +1,5 @@
 package org.mlsk.service.impl.testhelper;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mockito.invocation.InvocationOnMock;
@@ -10,7 +9,6 @@ import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public final class OrchestratorHelper {
@@ -18,40 +16,36 @@ public final class OrchestratorHelper {
   private OrchestratorHelper() {
   }
 
+  public static void onBookEngineReturn(Orchestrator orchestrator, String requestId) {
+    when(orchestrator.bookEngine(any())).thenReturn(requestId);
+  }
+
   public static void onRunOnEngineCallMethod(Orchestrator orchestrator, Engine engine) {
     when(orchestrator.runOnEngine(any(), any()))
         .thenAnswer(invocation -> buildAnswer(engine, invocation));
   }
 
-  public static void onRunOnEngineAndBlockCallMethod(Orchestrator orchestrator, Engine engine, String requestId) {
-    when(orchestrator.runOnEngineAndBlock(any(), any()))
-        .thenAnswer(invocation -> Pair.of(requestId, buildAnswer(engine, invocation)));
-  }
-
-  public static void onRunOnEngineAndBlockWithIdCallMethod(Orchestrator orchestrator, Engine engine, String requestId) {
-    when(orchestrator.runOnEngineAndBlock(eq(requestId), any(), any()))
+  public static void onRunOnEngineCallMethod(Orchestrator orchestrator, Engine engine, String requestId) {
+    when(orchestrator.runOnEngine(eq(requestId), any(), any()))
         .thenAnswer(invocation -> buildAnswer(engine, invocation));
   }
 
-  public static void onRunOnEngineAndUnblockCallMethod(Orchestrator orchestrator, Engine engine, String requestId) {
-    when(orchestrator.runOnEngineAndUnblock(eq(requestId), any(), any()))
-        .thenAnswer(invocation -> buildAnswer(engine, invocation));
+  public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, Engine engine, String actionName, String exceptionMessage) {
+    when(orchestrator.runOnEngine(any(), any()))
+        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, exceptionMessage, invocation));
   }
 
-  public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, String exceptionMessage) {
-    doThrow(new RuntimeException(exceptionMessage)).when(orchestrator).runOnEngine(any(), any());
+  public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, Engine engine, String requestId, String actionName, String exceptionMessage) {
+    when(orchestrator.runOnEngine(eq(requestId), any(), any()))
+        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, exceptionMessage, invocation));
   }
 
-  public static void doThrowExceptionOnRunOnEngineAndBlock(Orchestrator orchestrator, String exceptionMessage) {
-    doThrow(new RuntimeException(exceptionMessage)).when(orchestrator).runOnEngineAndBlock(any(), any());
-  }
-
-  public static void doThrowExceptionOnRunOnEngineAndBlockWithId(Orchestrator orchestrator, String requestId, String exceptionMessage) {
-    doThrow(new RuntimeException(exceptionMessage)).when(orchestrator).runOnEngineAndBlock(eq(requestId), any(), any());
-  }
-
-  public static void doThrowExceptionOnRunOnEngineAndUnblock(Orchestrator orchestrator, String requestId, String exceptionMessage) {
-    doThrow(new RuntimeException(exceptionMessage)).when(orchestrator).runOnEngineAndUnblock(eq(requestId), any(), any());
+  private static Object buildAnswerWithException(Engine engine, String actionName, String exceptionMessage, InvocationOnMock invocation) {
+    Object result = buildAnswer(engine, invocation);
+    if (invocation.getArgument(invocation.getArguments().length - 1).equals(actionName)) {
+      throw new RuntimeException(exceptionMessage);
+    }
+    return result;
   }
 
   @SuppressWarnings("unchecked")

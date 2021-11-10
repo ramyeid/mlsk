@@ -34,8 +34,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
       LOGGER.info("[Start] forecast request");
       return orchestrator.runOnEngine(engine -> engine.forecast(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST);
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while forecasting: %s", exception.getMessage()), exception);
-      throw new TimeSeriesAnalysisServiceException(exception.getMessage());
+      throw logAndBuildException(exception, "forecasting");
     } finally {
       LOGGER.info("[End] forecast request");
     }
@@ -48,8 +47,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
       TimeSeriesAnalysisRequest newRequest = removeLastRows(timeSeriesAnalysisRequest);
       return orchestrator.runOnEngine(engine -> engine.forecast(newRequest), TIME_SERIES_FORECAST_VS_ACTUAL);
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while forecasting: %s", exception.getMessage()), exception);
-      throw new TimeSeriesAnalysisServiceException(exception.getMessage());
+      throw logAndBuildException(exception, "forecasting");
     } finally {
       LOGGER.info("[End] forecast vs actual request");
     }
@@ -61,8 +59,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
       LOGGER.info("[Start] compute forecast accuracy request");
       return orchestrator.runOnEngine(engine -> engine.computeForecastAccuracy(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_ACCURACY);
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while computing forecast accuracy: %s", exception.getMessage()), exception);
-      throw new TimeSeriesAnalysisServiceException(exception.getMessage());
+      throw logAndBuildException(exception, "computing forecast accuracy");
     } finally {
       LOGGER.info("[End] compute forecast accuracy request");
     }
@@ -74,8 +71,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
       LOGGER.info("[Start] predict request");
       return orchestrator.runOnEngine(engine -> engine.predict(timeSeriesAnalysisRequest), TIME_SERIES_PREDICT);
     } catch (Exception exception) {
-      LOGGER.error(format("Exception while predicting: %s", exception.getMessage()), exception);
-      throw new TimeSeriesAnalysisServiceException(exception.getMessage());
+      throw logAndBuildException(exception, "predicting");
     } finally {
       LOGGER.info("[End] predict request");
     }
@@ -91,4 +87,8 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
     return new TimeSeriesAnalysisRequest(newTimeSeries, numberOfValues);
   }
 
+  private static TimeSeriesAnalysisServiceException logAndBuildException(Exception exception, String action) {
+    LOGGER.error(format("Exception while %s: %s", action, exception.getMessage()), exception);
+    return new TimeSeriesAnalysisServiceException(exception.getMessage());
+  }
 }

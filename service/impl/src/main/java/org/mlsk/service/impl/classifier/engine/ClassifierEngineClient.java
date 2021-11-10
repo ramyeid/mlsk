@@ -31,10 +31,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
     try {
       return restClient.post(classifierType.getStartUrl(), classifierStartRequest);
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post start to engine: %s", exception.getResponseBodyAsString());
-      throw new ClassifierEngineRequestException(engineException, exception);
+      throw buildClassifierEngineRequestException(exception, "start");
     } catch (Exception exception) {
-      throw new ClassifierEngineRequestException("Failed to post start to engine", exception);
+      throw buildClassifierEngineRequestException(exception, "start");
     }
   }
 
@@ -43,10 +42,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
     try {
       return restClient.post(classifierType.getDataUrl(), classifierDataRequest);
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post data to engine: %s", exception.getResponseBodyAsString());
-      throw new ClassifierEngineRequestException(engineException, exception);
+      throw buildClassifierEngineRequestException(exception, "data");
     } catch (Exception exception) {
-      throw new ClassifierEngineRequestException("Failed to post data to engine", exception);
+      throw buildClassifierEngineRequestException(exception, "data");
     }
   }
 
@@ -55,10 +53,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
     try {
       return restClient.post(classifierType.getPredictUrl(), ClassifierDataResponse.class);
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post predict to engine: %s", exception.getResponseBodyAsString());
-      throw new ClassifierEngineRequestException(engineException, exception);
+      throw buildClassifierEngineRequestException(exception, "predict");
     } catch (Exception exception) {
-      throw new ClassifierEngineRequestException("Failed to post predict to engine", exception);
+      throw buildClassifierEngineRequestException(exception, "predict");
     }
   }
 
@@ -67,22 +64,30 @@ public class ClassifierEngineClient implements ClassifierEngine {
     try {
       return restClient.post(classifierType.getPredictAccuracyUrl(), Double.class);
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post predict accuracy to engine: %s", exception.getResponseBodyAsString());
-      throw new ClassifierEngineRequestException(engineException, exception);
+      throw buildClassifierEngineRequestException(exception, "predict accuracy");
     } catch (Exception exception) {
-      throw new ClassifierEngineRequestException("Failed to post predict accuracy to engine", exception);
+      throw buildClassifierEngineRequestException(exception, "predict accuracy");
     }
   }
+
 
   @Override
   public Void cancel(ClassifierType classifierType) {
     try {
       return restClient.post(classifierType.getCancelUrl());
     } catch (HttpServerErrorException exception) {
-      String engineException = format("Failed on post cancel to engine: %s", exception.getResponseBodyAsString());
-      throw new ClassifierEngineRequestException(engineException, exception);
+      throw buildClassifierEngineRequestException(exception, "cancel");
     } catch (Exception exception) {
-      throw new ClassifierEngineRequestException("Failed to post cancel to engine", exception);
+      throw buildClassifierEngineRequestException(exception, "cancel");
     }
+  }
+
+  private static ClassifierEngineRequestException buildClassifierEngineRequestException(Exception exception, String action) {
+    return new ClassifierEngineRequestException(format("Failed to post %s to engine", action), exception);
+  }
+
+  private static ClassifierEngineRequestException buildClassifierEngineRequestException(HttpServerErrorException exception, String action) {
+    String message = format("Failed on post %s to engine: %s", action, exception.getResponseBodyAsString());
+    return new ClassifierEngineRequestException(message, exception);
   }
 }
