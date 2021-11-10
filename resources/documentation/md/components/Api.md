@@ -55,8 +55,6 @@ https://openapi-generator.tech/docs/generators
   - GOOD.
   - Equals and hashcode in models.
   - API Interface.
-  - Dependency to springfox, contains unecessary logs at runtime on service.log.
-  - Previous versions of the plugin do not contain this dependency.
 - _java-msf4j_
   - OK.
   - Generates default implementation of the API and injects a Service that needs to be implemented.
