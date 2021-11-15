@@ -18,6 +18,8 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static java.util.Collections.unmodifiableList;
+import static java.util.Optional.empty;
+import static java.util.Optional.of;
 import static org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException.*;
 
 public class OrchestratorImpl implements Orchestrator {
@@ -62,15 +64,14 @@ public class OrchestratorImpl implements Orchestrator {
 
   @Override
   public <Result> Result runOnEngine(Function<Engine, Result> action, String actionName) {
-    String requestId = bookEngine(actionName);
-
-    Engine availableEngine = retrieveEngine(requestId, actionName);
-
-    Result result = callOnEngine(availableEngine, requestId, action, actionName);
-
-    releaseEngine(requestId, actionName);
-
-    return result;
+    Optional<String> requestIdOptional = empty();
+    try {
+      requestIdOptional = of(bookEngine(actionName));
+      Engine availableEngine = retrieveEngine(requestIdOptional.get(), actionName);
+      return callOnEngine(availableEngine, requestIdOptional.get(), action, actionName);
+    } finally {
+      requestIdOptional.ifPresent(requestId -> releaseEngine(requestId, actionName));
+    }
   }
 
   @Override
