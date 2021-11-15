@@ -14,12 +14,18 @@ RUN npm cache clean -f
 RUN npm install -g npm@8.1.0
 RUN npm install -g n
 RUN n stable
-RUN npm install -g @angular/cli@13.0.1
+RUN npm install -g @angular/cli@13.0.2
 RUN npm install -g @angular-devkit/build-angular
 
 RUN chmod -R 777 /usr/local/lib
 
+RUN apt-get install libblas3 liblapack3 liblapack-dev libblas-dev -y
+RUN apt-get install gfortran -y
+RUN apt-get install libatlas-base-dev -y
+
 RUN pip3 install flask
+RUN pip3 install numpy
+RUN pip3 install scipy
 RUN pip3 install pandas
 RUN pip3 install statsmodels
 RUN pip3 install sklearn
