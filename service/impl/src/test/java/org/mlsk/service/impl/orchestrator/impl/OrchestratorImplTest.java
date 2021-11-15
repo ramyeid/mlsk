@@ -97,6 +97,34 @@ public class OrchestratorImplTest {
   }
 
   @Test
+  public void should_release_engine__if_action_fails_on_run_on_engine() {
+    String requestId = "requestId";
+    onRegisterNewRequestReturn(SERVICE_INFO2, requestId);
+    onGetRequest(requestId, SERVICE_INFO2);
+    onGetServiceInformationReturn(engine1, SERVICE_INFO1);
+    onGetServiceInformationReturn(engine2, SERVICE_INFO2);
+    onGetStateReturn(engine1, COMPUTING);
+    onGetStateReturn(engine2, WAITING);
+    throwExceptionOnAction(engine2, new IllegalArgumentException("runtime exception"));
+
+    try {
+      orchestrator.runOnEngine(buildFunction(), ACTION);
+      fail("should fail since engine threw an exception");
+
+    } catch (Exception ignored) {
+    }
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engine2).bookEngine();
+    inOrder.verify(requestHandler).registerNewRequest(ACTION, SERVICE_INFO2);
+    inOrder.verify(engine2).markAsComputing();
+    inOrder.verify(engine2).predict(any(TimeSeriesAnalysisRequest.class));
+    inOrder.verify(requestHandler, times(2)).getRequest(requestId);
+    inOrder.verify(engine2).markAsWaitingForRequest();
+    inOrder.verify(requestHandler).removeRequest(requestId);
+    inOrder.verifyNoMoreInteractions();
+  }
+
+  @Test
   public void should_push_action_on_available_engine_on_run_on_engine() {
     String requestId = "requestId";
     onRegisterNewRequestReturn(SERVICE_INFO2, requestId);

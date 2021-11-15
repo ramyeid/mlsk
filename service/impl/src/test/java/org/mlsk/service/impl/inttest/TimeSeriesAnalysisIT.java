@@ -24,6 +24,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
@@ -239,6 +240,35 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     } catch (Exception exception) {
       assertOnTimeSeriesAnalysisServiceException(exception, "No available engine to run time-series-predict, please try again later");
     }
+  }
+
+  @Test
+  public void should_handle_three_requests_with_one_failure() throws Exception {
+    mockEngine.setupWaitUntilEngineCall();
+    TimeSeriesAnalysisRequestModel forecastRequestModel = buildTimeSeriesAnalysisRequestModel();
+    TimeSeriesAnalysisRequestModel forecastAccuracyRequestModel = buildTimeSeriesAnalysisRequestModel();
+    TimeSeriesAnalysisRequestModel forecastVsActualRequestModel = buildTimeSeriesAnalysisRequestModel();
+    MockedRequest forecastMockedRequest = buildFailingMockRequest(SERVICE_INFO1, FORECAST_URL, buildTimeSeriesAnalysisRequest(), new RuntimeException("Exception On Forecast"));
+    MockedRequest forecastAccuracyMockedRequest = buildHangingMockRequest(SERVICE_INFO1, FORECAST_ACCURACY_URL, buildTimeSeriesAnalysisRequest(), 2.);
+    MockedRequest forecastVsActualMockedRequest = buildHangingMockRequest(SERVICE_INFO2, FORECAST_URL, buildTimeSeriesAnalysisExpectedRequestForecastVsActual(), buildTimeSeriesResult());
+    mockEngine.registerRequests(forecastMockedRequest, forecastAccuracyMockedRequest, forecastVsActualMockedRequest);
+
+    try {
+      timeSeriesAnalysisApi.forecast(forecastRequestModel);
+      fail("should fail since forecast is a failing request");
+    } catch (Exception ignored) {
+    }
+    CompletableFuture<ResponseEntity<BigDecimal>> actualForecastAccuracyFuture = supplyAsync(() -> timeSeriesAnalysisApi.computeForecastAccuracy(forecastAccuracyRequestModel), executor);
+    mockEngine.waitUntilEngineCall();
+    CompletableFuture<ResponseEntity<TimeSeriesModel>> actualForecastVsActualFuture = supplyAsync(() -> timeSeriesAnalysisApi.forecastVsActual(forecastVsActualRequestModel), executor);
+    mockEngine.waitUntilEngineCall();
+    forecastAccuracyMockedRequest.countDownLatch.countDown();
+    forecastVsActualMockedRequest.countDownLatch.countDown();
+    actualForecastAccuracyFuture.join();
+    actualForecastVsActualFuture.join();
+
+    assertOnResponseEntity(valueOf(2.), actualForecastAccuracyFuture.get());
+    assertOnResponseEntity(buildTimeSeriesModelResult(), actualForecastVsActualFuture.get());
   }
 
   private static TimeSeries buildTimeSeriesResult() {
