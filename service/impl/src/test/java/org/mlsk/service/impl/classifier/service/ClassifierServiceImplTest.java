@@ -7,6 +7,7 @@ import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.classifier.service.exception.ClassifierServiceException;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
+import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
 import org.mlsk.service.model.classifier.*;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -110,6 +111,24 @@ public class ClassifierServiceImplTest {
   }
 
   @Test
+  public void should_ignore_if_release_throws_no_booked_engine_exception_on_start_failure() {
+    ClassifierStartRequest request = buildClassifierStartRequest();
+    onBookEngineReturn(orchestrator, REQUEST_ID);
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "startAction", "start exception message");
+    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "startAction", new NoBlockedEngineException("ignored exception"));
+    when(classifierType.getStartAction()).thenReturn("startAction");
+    when(classifierType.getCancelAction()).thenReturn("cancelAction");
+
+    try {
+      service.start(request, classifierType);
+      fail("should throw exception");
+
+    } catch (Exception exception) {
+      assertOnClassifierServiceException(exception, "start exception message");
+    }
+  }
+
+  @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_data() {
     ClassifierDataRequest request = buildClassifierDataRequest();
     onRunOnEngineCallMethod(orchestrator, engine, REQUEST_ID);
@@ -151,6 +170,23 @@ public class ClassifierServiceImplTest {
   public void should_throw_classifier_service_exception_on_data_failure() {
     ClassifierDataRequest request = buildClassifierDataRequest();
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "dataAction", "data exception message");
+    when(classifierType.getDataAction()).thenReturn("dataAction");
+    when(classifierType.getCancelAction()).thenReturn("cancelAction");
+
+    try {
+      service.data(request, classifierType);
+      fail("should throw exception");
+
+    } catch (Exception exception) {
+      assertOnClassifierServiceException(exception, "data exception message");
+    }
+  }
+
+  @Test
+  public void should_ignore_if_release_throws_no_booked_engine_exception_on_data_failure() {
+    ClassifierDataRequest request = buildClassifierDataRequest();
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "dataAction", "data exception message");
+    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "dataAction", new NoBlockedEngineException("ignored exception"));
     when(classifierType.getDataAction()).thenReturn("dataAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
 
@@ -230,6 +266,23 @@ public class ClassifierServiceImplTest {
   }
 
   @Test
+  public void should_ignore_if_release_throws_no_booked_engine_exception_on_predict_failure() {
+    ClassifierRequest request = buildClassifierRequest();
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "predictAction", "predict exception message");
+    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "predictAction", new NoBlockedEngineException("ignored exception"));
+    when(classifierType.getPredictAction()).thenReturn("predictAction");
+    when(classifierType.getCancelAction()).thenReturn("cancelAction");
+
+    try {
+      service.predict(request, classifierType);
+      fail("should throw exception");
+
+    } catch (Exception exception) {
+      assertOnClassifierServiceException(exception, "predict exception message");
+    }
+  }
+
+  @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_predict_accuracy() {
     ClassifierRequest request = buildClassifierRequest();
     onRunOnEngineCallMethod(orchestrator, engine, REQUEST_ID);
@@ -283,6 +336,23 @@ public class ClassifierServiceImplTest {
   public void should_throw_classifier_service_exception_on_predict_accuracy_failure() {
     ClassifierRequest request = buildClassifierRequest();
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "predictAccuracyAction", "predict accuracy exception message");
+    when(classifierType.getPredictAccuracyAction()).thenReturn("predictAccuracyAction");
+    when(classifierType.getCancelAction()).thenReturn("cancelAction");
+
+    try {
+      service.computePredictAccuracy(request, classifierType);
+      fail("should throw exception");
+
+    } catch (Exception exception) {
+      assertOnClassifierServiceException(exception, "predict accuracy exception message");
+    }
+  }
+
+  @Test
+  public void should_ignore_if_release_throws_no_booked_engine_exception_on_predict_accuracy_failure() {
+    ClassifierRequest request = buildClassifierRequest();
+    doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "predictAccuracyAction", "predict accuracy exception message");
+    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "predictAccuracyAction", new NoBlockedEngineException("ignored exception"));
     when(classifierType.getPredictAccuracyAction()).thenReturn("predictAccuracyAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
 

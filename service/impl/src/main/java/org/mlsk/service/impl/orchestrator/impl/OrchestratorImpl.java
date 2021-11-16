@@ -7,6 +7,8 @@ import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException;
+import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
+import org.mlsk.service.impl.orchestrator.exception.NoEngineWithInformationException;
 import org.mlsk.service.impl.orchestrator.request.RequestHandler;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
 import org.mlsk.service.model.engine.EngineState;
@@ -20,7 +22,9 @@ import java.util.function.Supplier;
 import static java.util.Collections.unmodifiableList;
 import static java.util.Optional.empty;
 import static java.util.Optional.of;
-import static org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException.*;
+import static org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException.buildNoAvailableEngineException;
+import static org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException.buildNoAvailableBlockedEngineException;
+import static org.mlsk.service.impl.orchestrator.exception.NoEngineWithInformationException.buildNoEngineWithInformationException;
 
 public class OrchestratorImpl implements Orchestrator {
 
@@ -130,7 +134,7 @@ public class OrchestratorImpl implements Orchestrator {
     }
   }
 
-  private Engine getEngine(Predicate<Engine> predicate, Supplier<NoAvailableEngineException> exceptionSupplier) {
+  private Engine getEngine(Predicate<Engine> predicate, Supplier<? extends RuntimeException> exceptionSupplier) {
     return engines.stream().filter(predicate).findFirst().orElseThrow(exceptionSupplier);
   }
 
@@ -141,14 +145,14 @@ public class OrchestratorImpl implements Orchestrator {
     };
   }
 
-  private static Supplier<NoAvailableEngineException> buildNoAvailableBlockedEngineExceptionSupplier(String requestId, String actionName) {
+  private static Supplier<NoBlockedEngineException> buildNoAvailableBlockedEngineExceptionSupplier(String requestId, String actionName) {
     return () -> {
       LOGGER.error("No engine blocked with id {} to treat {}", requestId, actionName);
       return buildNoAvailableBlockedEngineException(requestId, actionName);
     };
   }
 
-  private static Supplier<NoAvailableEngineException> buildNoEngineWithInformationExceptionSupplier(ServiceInformation serviceInformation, String actionName) {
+  private static Supplier<NoEngineWithInformationException> buildNoEngineWithInformationExceptionSupplier(ServiceInformation serviceInformation, String actionName) {
     return () -> {
       LOGGER.error("No engine found with Service Information {}, not expected - please check the logs!", serviceInformation);
       return buildNoEngineWithInformationException(serviceInformation, actionName);

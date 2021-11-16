@@ -50,7 +50,7 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
   @Override
   public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+      return restClient.post(PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     } catch (HttpServerErrorException exception) {
       throw buildTimeSeriesAnalysisEngineRequestException(exception, "predict");
     } catch (Exception exception) {

@@ -64,7 +64,7 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisServic
   @Override
   public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+      return restClient.post(PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     } catch (HttpServerErrorException exception) {
       String serviceException = format("Failed on post predict to service:%n%s", exception.getResponseBodyAsString());
       throw new TimeSeriesAnalysisServiceRequestException(serviceException, exception);

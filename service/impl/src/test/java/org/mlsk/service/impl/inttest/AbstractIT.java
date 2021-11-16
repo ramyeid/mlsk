@@ -5,12 +5,14 @@ import org.mlsk.lib.engine.launcher.EngineLauncher;
 import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.engine.Engine;
+import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.EngineFactory;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.EngineImpl;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mlsk.service.impl.orchestrator.factory.OrchestratorFactory;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
+import org.mlsk.service.model.engine.EngineState;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
@@ -23,12 +25,17 @@ import org.springframework.web.client.RestTemplate;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.stream.Collectors.joining;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static org.mlsk.service.impl.setup.ServiceConfiguration.buildServiceConfiguration;
 import static org.mlsk.service.model.engine.EngineState.OFF;
 import static org.mockito.Mockito.*;
@@ -53,7 +60,7 @@ public abstract class AbstractIT {
   protected final MockEngine mockEngine;
   private final List<MockProcess> processes;
 
-  AbstractIT() {
+  protected AbstractIT() {
     mockEngine = new MockEngine();
     processes = newArrayList();
   }
@@ -71,8 +78,16 @@ public abstract class AbstractIT {
     orchestrator = new OrchestratorFactory(engineFactory).buildAndLaunchOrchestrator();
   }
 
-  protected Engine getEngine(int index) {
-    return orchestrator.getEngines().get(index);
+  protected <T> CompletableFuture<T> async(Supplier<T> supplier) {
+    return supplyAsync(supplier, executor);
+  }
+
+  protected <T> void ignoreException(Supplier<T> supplier) {
+    try {
+      supplier.get();
+      fail("this method was expected to fail");
+    } catch (Exception ignored) {
+    }
   }
 
   protected InOrder buildInOrder() {
@@ -85,8 +100,14 @@ public abstract class AbstractIT {
     }
   }
 
-  void verifyRestTemplateCalledOn(String resource, InOrder inOrder) {
+  protected void verifyRestTemplateCalledOn(String resource, InOrder inOrder) {
     inOrder.verify(restTemplate).postForObject(eq(resource), any(), any());
+  }
+
+  protected void assertOnEngineState(EngineState... states) {
+    for (int i = 0; i < states.length; ++i) {
+      assertEquals(states[i], orchestrator.getEngines().get(i).getState());
+    }
   }
 
   private void setUpEngineFactory() {
@@ -126,9 +147,11 @@ public abstract class AbstractIT {
     RestClient restClient = new RestClient(serviceInformation, restTemplate);
 
     TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(restClient);
+    ClassifierEngineClient classifierEngineClient = new ClassifierEngineClient(restClient);
 
-    EngineClientFactory engineClientFactory = spy(new EngineClientFactory());
+    EngineClientFactory engineClientFactory = mock(EngineClientFactory.class);
     when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation)).thenReturn(timeSeriesAnalysisEngineClient);
+    when(engineClientFactory.buildClassifierEngineClient(serviceInformation)).thenReturn(classifierEngineClient);
     return engineClientFactory;
   }
 }

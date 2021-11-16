@@ -18,12 +18,12 @@ public class DecisionTreeResource implements ClassifierResource {
 
   @Override
   public String getPredictUrl() {
-    return PREDICATE_URL;
+    return PREDICT_URL;
   }
 
   @Override
   public String getPredictAccuracyUrl() {
-    return PREDICATE_ACCURACY_URL;
+    return PREDICT_ACCURACY_URL;
   }
 
   @Override
