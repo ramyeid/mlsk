@@ -111,7 +111,7 @@ public class OrchestratorImpl implements Orchestrator {
 
   private void removeRequestAndMarkAsWaiting(String requestId, String actionName, Request requestToRemove) {
     synchronized (requestToRemove.getServiceInformation()) {
-      LOGGER.info("[{}] Engine {} in waiting mode after computing request: {}", requestId, requestToRemove.getServiceInformation(), requestId);
+      LOGGER.info("[{}] Engine {} in waiting mode after computing action: {}", requestId, requestToRemove.getServiceInformation(), actionName);
       retrieveEngine(requestId, actionName).markAsWaitingForRequest();
       LOGGER.info("[{}] Releasing engine {} with action {}", requestId, requestToRemove.getServiceInformation(), actionName);
       requestHandler.removeRequest(requestId);

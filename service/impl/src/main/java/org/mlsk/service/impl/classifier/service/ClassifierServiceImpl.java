@@ -110,7 +110,7 @@ public class ClassifierServiceImpl implements ClassifierService {
     try {
       runnable.run();
     } catch (NoBlockedEngineException exception) {
-      LOGGER.info("[{}]No blocked engine exception caught for request, {}", requestId, exception.getMessage());
+      LOGGER.info("[{}] No blocked engine exception caught for request, {}", requestId, exception.getMessage());
     }
   }
 

@@ -171,6 +171,75 @@ class TestDecisionTreeController(unittest.TestCase):
             b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
 
 
+  def test_throw_exception_if_not_all_columns_received_on_predict(self) -> None:
+    # Given
+    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body_as_string = json.dumps(start_body)
+    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body_as_string = json.dumps(width_data_body)
+    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body_as_string = json.dumps(height_data_body)
+    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+
+    # When
+    response = test_app.post(self.PREDICT_RESOURCE)
+
+    # Then
+    self.assert_on_empty_state()
+    expected_exception = b'"Exception ClassifierException raised while predicting: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Width\', \'Height\'])"\n'
+    self.assertEqual(expected_exception, response.data)
+
+
+  def test_throw_exception_if_action_columns_do_not_have_same_size_on_predict(self) -> None:
+    # Given
+    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body_as_string = json.dumps(start_body)
+    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body_as_string = json.dumps(sex_data_body)
+    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body_as_string = json.dumps(width_data_body)
+    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+    height_data_body_as_string = json.dumps(height_data_body)
+    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+
+    # When
+    response = test_app.post(self.PREDICT_RESOURCE)
+
+    # Then
+    self.assert_on_empty_state()
+    self.assertEqual(b'"Exception ClassifierException raised while predicting: '\
+            b'Error: Action column sizes are not equal; sizes found: [9, 10]"\n', response.data)
+
+
+  def test_throw_exception_if_actual_values_missing_greater_than_number_of_values_on_predict(self) -> None:
+    # Given
+    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body_as_string = json.dumps(start_body)
+    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0])
+    sex_data_body_as_string = json.dumps(sex_data_body)
+    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body_as_string = json.dumps(width_data_body)
+    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body_as_string = json.dumps(height_data_body)
+    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+
+    # When
+    response = test_app.post(self.PREDICT_RESOURCE)
+
+    # Then
+    self.assert_on_empty_state()
+    self.assertEqual(b'"Exception ClassifierException raised while predicting: '\
+            b'Error: Invalid prediction column size. Prediction: 7, Action: 9, Values to predict: 1"\n', response.data)
+
+
   def test_predict_accuracy_and_reset_state(self) -> None:
     # Given
     start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
@@ -219,6 +288,51 @@ class TestDecisionTreeController(unittest.TestCase):
             b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
 
 
+  def test_throw_exception_if_not_all_columns_received_on_predict_accuracy(self) -> None:
+    # Given
+    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body_as_string = json.dumps(start_body)
+    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1])
+    sex_data_body_as_string = json.dumps(sex_data_body)
+    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body_as_string = json.dumps(height_data_body)
+    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+
+    # When
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+
+    # Then
+    self.assert_on_empty_state()
+    expected_exception = b'"Exception ClassifierException raised while computing predict accuracy: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Sex\', \'Height\'])"\n'
+    self.assertEqual(expected_exception, response.data)
+
+
+  def test_throw_exception_if_action_columns_do_not_have_same_size_on_predict_accuracy(self) -> None:
+    # Given
+    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body_as_string = json.dumps(start_body)
+    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body_as_string = json.dumps(sex_data_body)
+    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body_as_string = json.dumps(width_data_body)
+    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1])
+    height_data_body_as_string = json.dumps(height_data_body)
+    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+
+    # When
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+
+    # Then
+    self.assert_on_empty_state()
+    self.assertEqual(b'"Exception ClassifierException raised while computing predict accuracy: '\
+            b'Error: Action column sizes are not equal; sizes found: [9, 5]"\n', response.data)
+
+
   def test_throw_exception_if_actual_values_missing_on_predict_accuracy(self) -> None:
     # Given
     start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
@@ -240,7 +354,7 @@ class TestDecisionTreeController(unittest.TestCase):
     # Then
     self.assert_on_empty_state()
     self.assertEqual(b'"Exception ClassifierException raised while computing predict accuracy: '\
-            b'Error: Actual values are not present."\n', response.data)
+            b'Error: Invalid prediction column size. Prediction: 8, Action: 9, Values to predict: 1"\n', response.data)
 
 
   def test_reset_state_on_cancel(self) -> None:
