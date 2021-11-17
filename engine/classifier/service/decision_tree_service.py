@@ -36,6 +36,7 @@ class DecisionTreeService:
     Returns
       pandas.DataFrame -> data frame containing one column with predicted values only
     '''
+    self.__throw_exception_if_invalid_arguments_to_predict()
     new_data = self.__reindex_and_normalize()
 
     features_train, features_test = self.__split_to_features_train_and_test(new_data)
@@ -54,6 +55,7 @@ class DecisionTreeService:
     Returns
       float -> computed accuracy of the predict service
     '''
+    self.__throw_exception_if_invalid_arguments_to_compute_predict_accuracy()
     new_data = self.__reindex_and_normalize()
 
     features_train, features_test = self.__split_to_features_train_and_test(new_data)
@@ -133,8 +135,6 @@ class DecisionTreeService:
     target = data_frame.values[:,len(self.action_column_names)]
     target_test = target[size - self.number_of_values:]
 
-    self.__throw_exception_if_target_test_contains_nan(target_test)
-
     return target_test
 
 
@@ -158,8 +158,37 @@ class DecisionTreeService:
     return new_data
 
 
-  def __throw_exception_if_target_test_contains_nan(self, array: np.ndarray) -> None:
-    if np.isnan(array).any():
-      raise ClassifierException('Error: Actual values are not present.')
+  def __throw_exception_if_invalid_arguments_to_predict(self) -> None:
+    self.__throw_exception_if_columns_received_and_expected_are_different()
+    self.__throw_exception_if_action_column_sizes_are_different()
+    self.__throw_exception_if_prediction_column_size_is_invalid(0, self.number_of_values)
 
 
+  def __throw_exception_if_invalid_arguments_to_compute_predict_accuracy(self) -> None:
+    self.__throw_exception_if_columns_received_and_expected_are_different()
+    self.__throw_exception_if_action_column_sizes_are_different()
+    self.__throw_exception_if_prediction_column_size_is_invalid(0, 0)
+
+
+  def __throw_exception_if_columns_received_and_expected_are_different(self) -> None:
+    columns_expected = self.action_column_names + [self.prediction_column_name]
+    columns_received = list(self.data.columns)
+
+    if set(columns_expected) != set(columns_received):
+        raise ClassifierException('Error: Column expected ({}) different than received ({})'.format(columns_expected, columns_received))
+
+
+  def __throw_exception_if_action_column_sizes_are_different(self) -> None:
+    action_column_sizes = list(map(lambda action_column_name: len(self.data[action_column_name].dropna()), self.action_column_names))
+
+    if len(set(action_column_sizes)) != 1:
+        raise ClassifierException('Error: Action column sizes are not equal; sizes found: {}'.format(action_column_sizes))
+
+
+  def __throw_exception_if_prediction_column_size_is_invalid(self, min_diff: int, max_diff: int) -> None:
+    action_column_size = len(self.data[self.action_column_names[0]].dropna())
+    prediction_column_size = len(self.data[self.prediction_column_name].dropna())
+    diff_sizes = action_column_size - prediction_column_size
+
+    if not (diff_sizes >= min_diff and diff_sizes <= max_diff):
+        raise ClassifierException('Error: Invalid prediction column size. Prediction: {}, Action: {}, Values to predict: {}'.format(prediction_column_size, action_column_size, self.number_of_values))
