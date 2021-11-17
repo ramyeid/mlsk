@@ -124,18 +124,18 @@ public class TimeSeriesAnalysisEngineClientTest {
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
     TimeSeries responseTimeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
-    onPostWithBodyWithResponseReturn(restClient, PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class, responseTimeSeries);
+    onPostWithBodyWithResponseReturn(restClient, PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class, responseTimeSeries);
 
     TimeSeries actualPredicted = client.predict(timeSeriesAnalysisRequest);
 
-    verifyPostWithBodyWithResponseCalled(restClient, PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+    verifyPostWithBodyWithResponseCalled(restClient, PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     assertEquals(responseTimeSeries, actualPredicted);
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_predict_failure() {
     TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
-    doThrowExceptionOnPostWithBodyWithResponse(restClient, PREDICATE_URL, request, TimeSeries.class, new InvalidParameterException());
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, PREDICT_URL, request, TimeSeries.class, new InvalidParameterException());
 
     try {
       client.predict(request);
@@ -149,7 +149,7 @@ public class TimeSeriesAnalysisEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_predict_failure_with_http_server_error_exception() {
     TimeSeriesAnalysisRequest request = mock(TimeSeriesAnalysisRequest.class);
-    doThrowExceptionOnPostWithBodyWithResponse(restClient, PREDICATE_URL, request, TimeSeries.class, buildHttpServerErrorException("Original Predict Exception Message"));
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, PREDICT_URL, request, TimeSeries.class, buildHttpServerErrorException("Original Predict Exception Message"));
 
     try {
       client.predict(request);

@@ -9,6 +9,7 @@ import java.util.function.Function;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
 public final class OrchestratorHelper {
@@ -30,20 +31,24 @@ public final class OrchestratorHelper {
         .thenAnswer(invocation -> buildAnswer(engine, invocation));
   }
 
+  public static void doThrowExceptionOnReleaseEngine(Orchestrator orchestrator, String requestId, String actionName, RuntimeException exception) {
+    doThrow(exception).when(orchestrator).releaseEngine(requestId, actionName);
+  }
+
   public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, Engine engine, String actionName, String exceptionMessage) {
     when(orchestrator.runOnEngine(any(), any()))
-        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, exceptionMessage, invocation));
+        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, new RuntimeException(exceptionMessage), invocation));
   }
 
   public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, Engine engine, String requestId, String actionName, String exceptionMessage) {
     when(orchestrator.runOnEngine(eq(requestId), any(), any()))
-        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, exceptionMessage, invocation));
+        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, new RuntimeException(exceptionMessage), invocation));
   }
 
-  private static Object buildAnswerWithException(Engine engine, String actionName, String exceptionMessage, InvocationOnMock invocation) {
+  private static Object buildAnswerWithException(Engine engine, String actionName, RuntimeException exception, InvocationOnMock invocation) {
     Object result = buildAnswer(engine, invocation);
     if (invocation.getArgument(invocation.getArguments().length - 1).equals(actionName)) {
-      throw new RuntimeException(exceptionMessage);
+      throw exception;
     }
     return result;
   }

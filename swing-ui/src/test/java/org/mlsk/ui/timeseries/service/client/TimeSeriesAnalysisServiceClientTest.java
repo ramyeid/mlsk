@@ -162,7 +162,7 @@ public class TimeSeriesAnalysisServiceClientTest {
 
     TimeSeries actual_predicted = client.predict(timeSeriesAnalysisRequest);
 
-    verify(restClient).post(PREDICATE_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+    verify(restClient).post(PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class);
     assertEquals(responseTimeSeries, actual_predicted);
   }
 

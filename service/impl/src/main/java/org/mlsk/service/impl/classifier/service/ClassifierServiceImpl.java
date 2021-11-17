@@ -6,6 +6,7 @@ import org.mlsk.service.classifier.ClassifierService;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.service.exception.ClassifierServiceException;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
+import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
 import org.mlsk.service.model.classifier.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -92,13 +93,25 @@ public class ClassifierServiceImpl implements ClassifierService {
   }
 
   private void cancelRequest(String requestId, String actionName, ClassifierType classifierType) {
-    LOGGER.info("Cancelling request on engine with id {} and action {}", requestId, actionName);
-    orchestrator.runOnEngine(requestId, engine -> engine.cancel(classifierType), classifierType.getCancelAction());
+    catchNoBlockedEngineException(() -> {
+      LOGGER.info("Cancelling request on engine with id {} and action {}", requestId, actionName);
+      orchestrator.runOnEngine(requestId, engine -> engine.cancel(classifierType), classifierType.getCancelAction());
+    }, requestId);
   }
 
   private void releaseEngine(String requestId, String actionName) {
-    LOGGER.info("Releasing engine with request {} and action {}", requestId, actionName);
-    orchestrator.releaseEngine(requestId, actionName);
+    catchNoBlockedEngineException(() -> {
+      LOGGER.info("Releasing engine with request {} and action {}", requestId, actionName);
+      orchestrator.releaseEngine(requestId, actionName);
+    }, requestId);
+  }
+
+  private static void catchNoBlockedEngineException(Runnable runnable, String requestId) {
+    try {
+      runnable.run();
+    } catch (NoBlockedEngineException exception) {
+      LOGGER.info("[{}]No blocked engine exception caught for request, {}", requestId, exception.getMessage());
+    }
   }
 
   private static ClassifierServiceException logAndBuildException(Exception exception, String action) {

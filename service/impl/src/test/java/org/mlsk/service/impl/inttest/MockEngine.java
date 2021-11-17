@@ -8,6 +8,7 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.util.Optional.ofNullable;
 
 public class MockEngine {
 
@@ -24,18 +25,23 @@ public class MockEngine {
     mockedRequests.addAll(List.of(mockedRequestsIn));
   }
 
+  public void overrideRequests(MockedRequest... mockedRequestsIn) {
+    reset();
+    registerRequests(mockedRequestsIn);
+  }
+
   void reset() {
     this.isWaitUntilEngineCallEnabled = false;
     this.waitUntilEngineCallLatch = null;
     this.mockedRequests.clear();
   }
 
-  void setupWaitUntilEngineCall() {
+  public void setupWaitUntilEngineCall() {
     this.isWaitUntilEngineCallEnabled = true;
     this.waitUntilEngineCallLatch = new CountDownLatch(1);
   }
 
-  void waitUntilEngineCall() throws InterruptedException {
+  public void waitUntilEngineCall() throws InterruptedException {
     waitUntilEngineCallLatch.await();
     setupWaitUntilEngineCall();
   }
@@ -55,7 +61,7 @@ public class MockEngine {
 
   private Optional<MockedRequest> retrieveMatchingRequest(String actualResource, Object actualRequest) {
     Predicate<MockedRequest> matchesResource = mockedRequest -> mockedRequest.resource.equals(actualResource);
-    Predicate<MockedRequest> matchesBody = mockedRequest -> mockedRequest.request.equals(actualRequest);
+    Predicate<MockedRequest> matchesBody = mockedRequest -> (mockedRequest.request == null && actualRequest == null) || (mockedRequest.request != null && mockedRequest.request.equals(actualRequest));
 
     return mockedRequests
         .stream()
@@ -81,7 +87,7 @@ public class MockEngine {
     }
   }
 
-  static class MockedRequest {
+  public static class MockedRequest {
 
     final String resource;
     final Object request;
@@ -97,6 +103,10 @@ public class MockEngine {
       this.exception = exception;
       this.shouldHang = shouldHang;
       this.countDownLatch = new CountDownLatch(1);
+    }
+
+    public void releaseLatch() {
+      countDownLatch.countDown();
     }
 
     public static MockedRequest buildHangingMockRequest(ServiceInformation serviceInformation, String endPoint, Object request, Object result) {

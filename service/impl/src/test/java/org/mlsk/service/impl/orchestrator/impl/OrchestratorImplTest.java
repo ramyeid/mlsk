@@ -6,6 +6,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.lib.model.ServiceInformation;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException;
+import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
+import org.mlsk.service.impl.orchestrator.exception.NoEngineWithInformationException;
 import org.mlsk.service.impl.orchestrator.request.RequestHandler;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
 import org.mlsk.service.model.engine.EngineState;
@@ -348,12 +350,12 @@ public class OrchestratorImplTest {
   }
 
   private static void assertOnNoAvailableBlockedEngineException(Exception exception, String requestId) {
-    assertInstanceOf(NoAvailableEngineException.class, exception);
+    assertInstanceOf(NoBlockedEngineException.class, exception);
     assertEquals(format("No available engine with %s to run %s", requestId, ACTION), exception.getMessage());
   }
 
   private static void assertOnNoEngineWithInformationException(Exception exception) {
-    assertInstanceOf(NoAvailableEngineException.class, exception);
+    assertInstanceOf(NoEngineWithInformationException.class, exception);
     assertEquals(format("No engine found with information ServiceInformation{host='unavailable', port='12345'} to run %s - NOT EXPECTED - check logs!", ACTION), exception.getMessage());
   }
 
