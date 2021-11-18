@@ -44,7 +44,6 @@ Sonar Static code analysis, is already [deployed](Deployment.md) with jenkins
 
     _Administration > Configuration > Webhooks > Create_
     ![Step7](../../../images/devops/ci/Configure_Sonar/Configure_Sonar_7.png)
-    **URL**:
 
 ## Reference
 
@@ -54,4 +53,18 @@ Sonar Static code analysis, is already [deployed](Deployment.md) with jenkins
 
 ## Remarks
 
-> maven projects have to be build with mvn clean install for sonar to work.
+- Maven projects
+
+  > maven projects have to be build with mvn clean install for sonar to work.
+
+- Analysis fails
+
+  > Analysis fails with errors:
+  >
+  > - elastic search - es: `high disk watermark`
+  > - web: `TOO_MANY_REQUESTS`
+  > - engine - ce: `java.lang.IllegalStateException: Unrecoverable indexation failures: 1 errors among 1 requests. Check Elasticsearch logs for further details.`
+
+  ```bash
+  docker system prune
+  ```
