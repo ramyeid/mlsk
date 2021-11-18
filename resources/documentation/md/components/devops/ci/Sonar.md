@@ -44,7 +44,6 @@ Sonar Static code analysis, is already [deployed](Deployment.md) with jenkins
 
     _Administration > Configuration > Webhooks > Create_
     ![Step7](../../../images/devops/ci/Configure_Sonar/Configure_Sonar_7.png)
-    **URL**:
 
 ## Reference
 

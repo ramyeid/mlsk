@@ -1,0 +1,105 @@
+<div class="card">
+  <div class="card-header">
+    Decision Tree Settings
+  </div>
+
+  <div class="card-body">
+    <form novalidate [formGroup]="settingsForm">
+
+      <div class="form-group row mb-2">
+        <label class="col-md-2 col-form-label"
+              for="predictionColumnName">Prediction Column Name</label>
+        <div class="col-md-4">
+          <input class="form-control"
+                id="predictionColumnName"
+                type="text"
+                placeholder="Prediction column name in csv (required)"
+                formControlName="predictionColumnName"
+                [ngClass]="{'is-invalid': errorMessagePerInput.predictionColumnName}" />
+          <span class="invalid-feedback">
+            {{ errorMessagePerInput.predictionColumnName }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group row mb-2">
+        <label class="col-md-2 col-form-label"
+              for="actionColumnNames">Action Column Names</label>
+        <div class="col-md-4">
+          <input class="form-control"
+                id="actionColumnNames"
+                type="text"
+                placeholder="Action column names in csv (required)"
+                formControlName="actionColumnNames"
+                [ngClass]="{'is-invalid': errorMessagePerInput.actionColumnNames }" />
+          <span class="invalid-feedback">
+            {{ errorMessagePerInput.actionColumnNames }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group row mb-2">
+        <label class="col-md-2 col-form-label"
+              for="csvLocation">CSV file</label>
+        <div class="col-md-4">
+          <input class="form-control"
+                id="csvLocation"
+                type="file"
+                accept=".csv"
+                (change)="onUpload($event)"
+                formControlName="csvLocation"
+                [ngClass]="{'is-invalid': errorMessagePerInput.csvLocation }" />
+          <span class="invalid-feedback">
+            {{ errorMessagePerInput.csvLocation }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group row mb-2">
+        <label class="col-md-2 col-form-label"
+              for="numberOfValues">Number of values</label>
+        <div class="col-md-4">
+          <input class="form-control"
+                id="numberOfValues"
+                type="number"
+                placeholder="Number of values for action (required)"
+                formControlName="numberOfValues"
+                [ngClass]="{'is-invalid': errorMessagePerInput.numberOfValues }" />
+          <span class="invalid-feedback">
+            {{ errorMessagePerInput.numberOfValues }}
+          </span>
+        </div>
+      </div>
+
+      <div class="form-group row mb-2">
+        <div class="offset-md-2 col-md-6">
+          <button class="btn btn-outline-primary"
+                  id="predictBtn"
+                  type="button"
+                  style="width:80px"
+                  [title]="settingsForm.valid ? 'Launch predict' : 'Disabled until the form data is valid'"
+                  [disabled]="!settingsForm.valid"
+                  (click)="predict()">
+            Predict
+          </button>
+          <button class="btn btn-outline-primary"
+                  id="computePredictAccuracyBtn"
+                  type="button"
+                  style="width:200px"
+                  [title]="settingsForm.valid ? 'Launch compute predict accuracy' : 'Disabled until the form data is valid'"
+                  [disabled]="!settingsForm.valid"
+                  (click)="computePredictAccuracy()">
+            Predict Accuracy
+          </button>
+        </div>
+        <div class="col-md-4">
+          <mat-spinner diameter="30" strokeWidth="2" color="accent" *ngIf="isWaitingForResult"></mat-spinner>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <div class="alert alert-danger" *ngIf="errorMessage">
+    {{errorMessage}}
+  </div>
+</div>
