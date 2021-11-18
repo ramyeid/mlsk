@@ -80,7 +80,7 @@ describe('ConfigurationComponent', () => {
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
 
-    it('should enable button and set form as value if all forms are valid', fakeAsync(() => {
+    it('should enable button and set form as valid if all forms are valid', fakeAsync(() => {
 
       FormHelper.setValueAndMarkAsTouched(fixture, Constants.SERVER_HOST_FORM, 'myLocalHost');
       FormHelper.setValueAndMarkAsTouched(fixture, Constants.SERVER_PORT_FORM, '123123');

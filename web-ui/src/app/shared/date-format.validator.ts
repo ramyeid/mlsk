@@ -26,7 +26,7 @@ export class DateFormatValidator {
   }
 
   private static doesContainNumber(dateFormat: string): boolean {
-    return /[0-9]/g.test(dateFormat);
+    return /\d/g.test(dateFormat);
   }
 
   private static doesContainPattern(dateFormat: string): boolean {
