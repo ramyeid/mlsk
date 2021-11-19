@@ -156,7 +156,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       AssertionHelper.expectInvalidForm(fixture, expectedErrorMessagePerInput);
     }));
 
-    it('should enable button and set form as value if all forms are valid', fakeAsync(() => {
+    it('should enable button and set form as valid if all forms are valid', fakeAsync(() => {
 
       FormHelper.setValueAndMarkAsTouched(fixture, Constants.DATE_COLUMN_NAME_FORM, 'Date');
       FormHelper.setValueAndMarkAsTouched(fixture, Constants.VALUE_COLUMN_NAME_FORM, 'Passengers');
