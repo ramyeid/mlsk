@@ -31,8 +31,10 @@ class AngularBuilder implements IBuilder {
                 -Dsonar.projectKey=web-ui \
                 -Dsonar.projectName=web-ui \
                 -Dsonar.sources=src \
-                -Dsonar.exclusions=node_modules/*,**/*.spec.ts \
-                -Dsonar.typescript.lcov.reportPaths=coverage/lcov.info'
+                -Dsonar.tests=src \
+                -Dsonar.exclusions=node_modules/** \
+                -Dsonar.test.inclusions=**/*.spec.ts \
+                -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info'
                 // did not link eslint file to discover best practices in sonar for angular.
                 //sonar.typescript.eslint.reportPaths
     }
