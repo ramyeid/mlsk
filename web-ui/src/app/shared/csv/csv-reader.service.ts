@@ -17,7 +17,7 @@ export class CsvReaderService {
     return new Observable((observable) => {
       const fileReader = new FileReader();
 
-      fileReader.onload = () => {
+      fileReader.onload = (): void => {
         const content = fileReader.result;
         const contentLines = (content as string)?.split(CsvReaderService.END_LINE).map(line => line.replace('\r', ''));
 
@@ -36,9 +36,9 @@ export class CsvReaderService {
         }
       };
 
-      fileReader.onerror = (error) => observable.error(error);
-      fileReader.onabort = (error) => observable.error(error);
-      fileReader.onloadend = () => observable.complete();
+      fileReader.onerror = (error): void => observable.error(error);
+      fileReader.onabort = (error): void => observable.error(error);
+      fileReader.onloadend = (): void => observable.complete();
 
       return fileReader.readAsText(file);
     });

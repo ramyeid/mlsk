@@ -1,5 +1,5 @@
 import { ConfigurationValidationMessages } from './configuration-validation-messages';
-import { ValidationMessages } from 'src/app/shared/validation-messages';
+import { ValidationMessages } from 'src/app/shared/validator/message-generator/validation-messages';
 import { Constants } from './constants';
 
 describe('ConfigurationValidationMessages', () => {

@@ -1,19 +1,18 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 
-import { ValidationMessageGenerator } from 'src/app/shared/validation-message-generator';
+import { ValidationMessageGenerator } from 'src/app/shared/validator/message-generator/validation-message-generator';
 import { DecisionTreeValidationMessages } from '../utils/decision-tree-validation-messages';
 import { Constants } from '../utils/constants';
 
 @Component({
-  selector: 'app-decision-tree-input',
+  selector: 'mlsk-decision-tree-input',
   templateUrl: './decision-tree-input.component.html',
   styleUrls: ['./decision-tree-input.component.css']
 })
 export class DecisionTreeInputComponent implements AfterViewInit {
 
-  private readonly formBuilder: FormBuilder;
   private readonly validationMessageGenrator: ValidationMessageGenerator;
   settingsForm: FormGroup;
   errorMessage: string;
@@ -21,13 +20,11 @@ export class DecisionTreeInputComponent implements AfterViewInit {
   private csvFile: File;
   isWaitingForResult: boolean;
 
-
   constructor(formBuilder: FormBuilder) {
-    this.formBuilder = formBuilder;
     const validationMessages = DecisionTreeValidationMessages.buildDecisionTreeValidationMessages();
     this.validationMessageGenrator = new ValidationMessageGenerator(validationMessages);
     this.isWaitingForResult = false;
-    this.settingsForm = this.buildForm();
+    this.settingsForm = formBuilder.group(this.buildFormGroup());
   }
 
   ngAfterViewInit(): void {
@@ -39,9 +36,13 @@ export class DecisionTreeInputComponent implements AfterViewInit {
   }
 
   predict(): void {
+    console.log('Predict');
+    console.log(this.settingsForm.getRawValue());
   }
 
   computePredictAccuracy(): void {
+    console.log('Predict Accuracy');
+    console.log(this.settingsForm.getRawValue());
   }
 
   onUpload(event: Event): void {
@@ -52,12 +53,12 @@ export class DecisionTreeInputComponent implements AfterViewInit {
     }
   }
 
-  private buildForm(): FormGroup {
-    return this.formBuilder.group({
+  private buildFormGroup(): { [key: string]: [string, ValidationErrors[]] } {
+    return {
       [ Constants.PREDICTION_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.ACTION_COLUMN_NAMES_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.CSV_LOCATION_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.NUMBER_OF_VALUES_FORM ]: [ '', [ Validators.required, Validators.min(1) ] ]
-    });
+    };
   }
 }

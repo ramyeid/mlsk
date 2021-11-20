@@ -1,5 +1,5 @@
 <div class="chart-col center">
-  <p id="accuracyResult" *ngIf="forecastAccuracy"><span style="color:green">Forecast Accuracy: {{forecastAccuracy}}%</span></p>
+  <p id="accuracyResult" *ngIf="forecastAccuracy"><span class="green-span">Forecast Accuracy: {{forecastAccuracy}}%</span></p>
   <ngx-charts-line-chart *ngIf="shouldDisplay && chartOptions"
         [view]="chartOptions.view"
         [scheme]="chartOptions.scheme"

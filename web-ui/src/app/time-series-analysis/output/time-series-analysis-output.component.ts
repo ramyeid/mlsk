@@ -1,12 +1,12 @@
 import { Component } from '@angular/core';
 
-import { ChartOptions } from 'src/app/shared/chart-options';
-import { ChartCoordinate, ChartLine, ChartLines , LineHelper } from 'src/app/shared/line-helper';
+import { ChartOptions } from 'src/app/shared/chart/chart-options';
+import { ChartCoordinate, ChartLine, ChartLines , LineHelper } from 'src/app/shared/chart/line-helper';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesType } from '../model/time-series-type';
 
 @Component({
-  selector: 'app-time-series-analysis-output',
+  selector: 'mlsk-time-series-analysis-output',
   templateUrl: './time-series-analysis-output.component.html',
   styleUrls: ['./time-series-analysis-output.component.css']
 })

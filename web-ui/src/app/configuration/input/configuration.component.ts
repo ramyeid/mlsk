@@ -2,14 +2,15 @@ import { Component, AfterViewInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 
-import { ValidationMessageGenerator } from 'src/app/shared/validation-message-generator';
+import { ValidationMessageGenerator } from 'src/app/shared/validator/message-generator/validation-message-generator';
 import { ConfigurationValidationMessages } from '../utils/configuration-validation-messages';
 import { Constants } from '../utils/constants';
 import { ConfigurationService } from '../service/configuration.service';
 
 @Component({
-  selector: 'app-configuration',
-  templateUrl: './configuration.component.html'
+  selector: 'mlsk-configuration',
+  templateUrl: './configuration.component.html',
+  styleUrls: ['./configuration.component.css']
 })
 export class ConfigurationComponent implements AfterViewInit {
 

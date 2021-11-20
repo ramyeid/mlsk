@@ -5,7 +5,7 @@ import { TimeSeriesType } from '../model/time-series-type';
 import { TimeSeriesAnalysisOutputComponent } from '../output/time-series-analysis-output.component';
 
 @Component({
-  selector: 'app-time-series-analysis',
+  selector: 'mlsk-time-series-analysis',
   templateUrl: './time-series-analysis.component.html'
 })
 export class TimeSeriesAnalysisComponent {

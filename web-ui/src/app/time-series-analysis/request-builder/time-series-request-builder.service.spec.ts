@@ -1,7 +1,7 @@
 import { Observable, of } from 'rxjs';
 
 import { TimeSeriesRequestBuilderService } from './time-series-request-builder.service';
-import { CsvReaderService, ValuePerColumnPerLine } from 'src/app/shared/csv-reader.service';
+import { CsvReaderService, ValuePerColumnPerLine } from 'src/app/shared/csv/csv-reader.service';
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
