@@ -65,10 +65,9 @@
         <div class="form-group row mb-2">
 
           <div class="col-md-1">
-            <button class="btn btn-outline-primary"
+            <button class="btn btn-outline-primary action-btn-80"
                     id="saveBtn"
                     type="button"
-                    style="width:80px"
                     [title]="configurationForm.valid ? 'Save' : 'Disabled until the form is valid'"
                     [disabled]="!configurationForm.valid"
                     (click)="save()">
@@ -77,10 +76,9 @@
           </div>
 
           <div class="col-md-2">
-            <button class="btn btn-outline-primary"
+            <button class="btn btn-outline-primary action-btn-100"
                     id="cancelBtn"
                     type="button"
-                    style="width:100px"
                     [title]="configurationForm.valid ? 'Cancel' : 'Disabled until the form is valid'"
                     [disabled]="!configurationForm.valid"
                     (click)="cancel()">

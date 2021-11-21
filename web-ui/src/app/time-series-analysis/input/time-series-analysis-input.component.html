@@ -106,37 +106,33 @@
 
       <div class="form-group row mb-2">
         <div class="offset-md-2 col-md-6">
-          <button class="btn btn-outline-primary"
+          <button class="btn btn-outline-primary action-btn-80"
                   id="predictBtn"
                   type="button"
-                  style="width:80px"
                   [title]="settingsForm.valid ? 'Launch predict' : 'Disabled until the form data is valid'"
                   [disabled]="!settingsForm.valid"
                   (click)="predict()">
             Predict
           </button>
-          <button class="btn btn-outline-primary"
+          <button class="btn btn-outline-primary action-btn-100"
                   id="forecastBtn"
                   type="button"
-                  style="width:100px"
                   [title]="settingsForm.valid ? 'Launch forecast' : 'Disabled until the form data is valid'"
                   [disabled]="!settingsForm.valid"
                   (click)="forecast()">
             Forecast
           </button>
-          <button class="btn btn-outline-primary"
+          <button class="btn btn-outline-primary action-btn-200"
                   id="forecastVsActualBtn"
                   type="button"
-                  style="width:200px"
                   [title]="settingsForm.valid ? 'Launch forecast vs actual' : 'Disabled until the form data is valid'"
                   [disabled]="!settingsForm.valid"
                   (click)="forecastVsActual()">
             Forecast vs Actual
           </button>
-          <button class="btn btn-outline-primary"
+          <button class="btn btn-outline-primary action-btn-200"
                   id="computeForecastAccuracyBtn"
                   type="button"
-                  style="width:200px"
                   [title]="settingsForm.valid ? 'Launch compute forecast accuracy' : 'Disabled until the form data is valid'"
                   [disabled]="!settingsForm.valid"
                   (click)="computeForecastAccuracy()">

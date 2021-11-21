@@ -8,15 +8,15 @@ import { Constants } from '../utils/constants';
 })
 export class ConfigurationService {
 
-  public getServerHost(): string {
+  getServerHost(): string {
     return environment.serverHost;
   }
 
-  public getServerPort(): number {
+  getServerPort(): number {
     return Number(environment.serverPort);
   }
 
-  public saveConfiguration(formValues: { [id: string]: string | number }): void {
+  saveConfiguration(formValues: { [id: string]: string | number }): void {
     this.updateEnvironmentVariable(formValues);
   }
 

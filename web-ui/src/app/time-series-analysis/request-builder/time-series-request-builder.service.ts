@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
-import { ValuePerColumn, ValuePerColumnPerLine, CsvReaderService } from 'src/app/shared/csv-reader.service';
+import { ValuePerColumn, ValuePerColumnPerLine, CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
 
 @Injectable({
   providedIn: 'root'

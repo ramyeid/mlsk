@@ -8,8 +8,8 @@ import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
 import { TimeSeriesType } from '../model/time-series-type';
 import { TimeSeriesAnalysisOutputComponent } from './time-series-analysis-output.component';
-import { ChartCoordinate, ChartLine, ChartLines, LineHelper } from 'src/app/shared/line-helper';
-import { ChartOptions } from 'src/app/shared/chart-options';
+import { ChartCoordinate, ChartLine, ChartLines, LineHelper } from 'src/app/shared/chart/line-helper';
+import { ChartOptions } from 'src/app/shared/chart/chart-options';
 import { Constants } from '../utils/constants';
 
 describe('TimeSeriesAnalysisOutputComponent', () => {

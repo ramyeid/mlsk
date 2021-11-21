@@ -1,3 +1,15 @@
 ::ng-deep .mat-tooltip {
   white-space: pre-line;
 }
+
+.action-btn-80 {
+  width: 80px;
+}
+
+.action-btn-100 {
+  width: 100px;
+}
+
+.action-btn-200 {
+  width: 200px;
+}

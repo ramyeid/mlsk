@@ -20,7 +20,7 @@ describe('TimeSeriesAnalysisComponent', () => {
       schemas: [ NO_ERRORS_SCHEMA ]
     });
     fixture = TestBed.createComponent(TimeSeriesAnalysisComponent);
-    inputComponent = fixture.debugElement.query(By.css('app-time-series-analysis-input'));
+    inputComponent = fixture.debugElement.query(By.css('mlsk-time-series-analysis-input'));
     mockOutputComponent = jasmine.createSpyObj<TimeSeriesAnalysisOutputComponent>(['onNewRequest', 'onResult']);
     fixture.componentInstance.outputComponent = mockOutputComponent;
   });
@@ -31,8 +31,8 @@ describe('TimeSeriesAnalysisComponent', () => {
     it('should link to time series analysis input and output', () => {
       const debugElement = fixture.debugElement;
 
-      const timeSeriesAnalysisInputSelector = debugElement.query(By.css('app-time-series-analysis-input'));
-      const timeSeriesAnalysisOutputSelector = debugElement.query(By.css('app-time-series-analysis-output'));
+      const timeSeriesAnalysisInputSelector = debugElement.query(By.css('mlsk-time-series-analysis-input'));
+      const timeSeriesAnalysisOutputSelector = debugElement.query(By.css('mlsk-time-series-analysis-output'));
 
       expect(timeSeriesAnalysisInputSelector).not.toBeNull();
       expect(timeSeriesAnalysisOutputSelector).not.toBeNull();

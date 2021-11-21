@@ -1,5 +1,5 @@
 import { TimeSeriesAnalysisValidationMessages } from './time-series-analysis-validation-messages';
-import { ValidationMessages } from 'src/app/shared/validation-messages';
+import { ValidationMessages } from 'src/app/shared/validator/message-generator/validation-messages';
 import { Constants } from './constants';
 
 describe('TimeSeriesAnalysisValidationMessages', () => {

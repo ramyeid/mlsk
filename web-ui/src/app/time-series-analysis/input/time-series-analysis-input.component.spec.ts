@@ -497,6 +497,8 @@ class FormHelper {
   static ACTUAL_EMITTED_ITEMS: [TimeSeries | number, TimeSeriesType][] = [];
   static IS_NEW_REQUEST_EMITTED = false;
 
+  private constructor() { }
+
   static setupEmittedItemsSubscriber(fixture: ComponentFixture<TimeSeriesAnalysisInputComponent>): void {
     FormHelper.ACTUAL_EMITTED_ITEMS = [];
     fixture.componentInstance.resultEmitter.subscribe(value => FormHelper.ACTUAL_EMITTED_ITEMS.push(value));
@@ -538,6 +540,8 @@ class AssertionHelper {
 
   static readonly DISABLED = 'disabled';
   static readonly TITLE = 'title';
+
+  private constructor() { }
 
   static expectValidForm(fixture: ComponentFixture<TimeSeriesAnalysisInputComponent>): void {
     const expectedErrorMessagePerInput = {
@@ -581,6 +585,8 @@ class AssertionHelper {
 }
 
 class FactoryHelper {
+
+  private constructor() { }
 
   static buildTimeSeriesRequest(): TimeSeries {
     const row1 = new TimeSeriesRow('1', 1);

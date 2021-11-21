@@ -1,0 +1,27 @@
+<div class="form-control" [ngClass]="{'is-invalid': errorMessage }" >
+  <input [id]="id"
+       [placeholder]="placeholder"
+       type="text"
+       class="item-input"
+       (ngModelChange)="onModification()"
+       [(ngModel)]="currentItem"/>
+
+  <button id="addItemButton"
+          class="modify increase item-add-btn"
+          (click)="addItem()">
+          +
+  </button>
+
+  <div class="btn-group" class="items-div">
+    <button id="rmItemButton"
+            class="item-rm-btn"
+            (click)="deleteItem(item)"
+            *ngFor="let item of value">
+            {{item}} <span class="item-rm-btn-x"> | x</span>
+    </button>
+  </div>
+</div>
+<span id="invalidSpan" class="invalid-feedback">
+  {{ errorMessage }}
+</span>
+

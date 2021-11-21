@@ -1,0 +1,21 @@
+.item-input {
+  width: 95%;
+  height: 100%;
+}
+
+.item-add-btn {
+  width: 5%;
+  height: 100%;
+}
+
+.items-div {
+  width: 100%;
+}
+
+.item-rm-btn {
+  border-radius: 12px;
+}
+
+.item-rm-btn-x {
+  color: #888;
+}

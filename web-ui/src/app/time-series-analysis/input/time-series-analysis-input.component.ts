@@ -1,10 +1,10 @@
 import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, FormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { debounceTime, switchMap } from 'rxjs/operators';
 
-import { DateFormatValidator } from 'src/app/shared/date-format.validator';
-import { ValidationMessageGenerator } from 'src/app/shared/validation-message-generator';
+import { DateFormatValidator } from 'src/app/shared/validator/date-format/date-format.validator';
+import { ValidationMessageGenerator } from 'src/app/shared/validator/message-generator/validation-message-generator';
 import { TimeSeriesAnalysisValidationMessages } from '../utils/time-series-analysis-validation-messages';
 import { TimeSeriesRequestBuilderService } from '../request-builder/time-series-request-builder.service';
 import { TimeSeriesAnalysisService } from '../service/time-series-analysis.service';
@@ -14,7 +14,7 @@ import { TimeSeriesType } from '../model/time-series-type';
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 
 @Component({
-  selector: 'app-time-series-analysis-input',
+  selector: 'mlsk-time-series-analysis-input',
   templateUrl: './time-series-analysis-input.component.html',
   styleUrls: ['./time-series-analysis-input.component.css']
 })
@@ -22,7 +22,6 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
   @Output() resultEmitter = new EventEmitter<[TimeSeries | number, TimeSeriesType]>();
   @Output() newRequestEmitter = new EventEmitter<undefined>();
-  private readonly formBuilder: FormBuilder;
   private readonly requestBuilder: TimeSeriesRequestBuilderService;
   private readonly service: TimeSeriesAnalysisService;
   private readonly validationMessageGenrator: ValidationMessageGenerator;
@@ -35,13 +34,12 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
   constructor(formBuilder: FormBuilder,
               requestBuilder: TimeSeriesRequestBuilderService,
               service: TimeSeriesAnalysisService) {
-    this.formBuilder = formBuilder;
     this.requestBuilder = requestBuilder;
     this.service = service;
     const validationMessages = TimeSeriesAnalysisValidationMessages.buildTimeSeriesValidationMessages();
     this.validationMessageGenrator = new ValidationMessageGenerator(validationMessages);
     this.isWaitingForResult = false;
-    this.settingsForm = this.buildForm();
+    this.settingsForm = formBuilder.group(this.buildFormGroup());
   }
 
   ngAfterViewInit(): void {
@@ -103,14 +101,14 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     this.isWaitingForResult = true;
   }
 
-  private buildForm(): FormGroup {
-    return this.formBuilder.group({
+  private buildFormGroup(): { [key: string]: [string, ValidationErrors[]] } {
+    return {
       [ Constants.DATE_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.VALUE_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.DATE_FORMAT_FORM ]: [ '', [ Validators.required, DateFormatValidator.validateDateFormat ] ],
       [ Constants.CSV_LOCATION_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.NUMBER_OF_VALUES_FORM ]: [ '', [ Validators.required, Validators.min(1) ] ]
-    });
+    };
   }
 
   private onSuccess(result: TimeSeries | number): void {

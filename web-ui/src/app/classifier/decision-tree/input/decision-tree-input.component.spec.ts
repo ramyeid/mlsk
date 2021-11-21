@@ -6,6 +6,7 @@ import { MatIconModule } from '@angular/material/icon';
 
 import { DecisionTreeInputComponent } from './decision-tree-input.component';
 import { Constants } from '../utils/constants';
+import { InputListComponent } from 'src/app/shared/component/input-list/input-list.component';
 
 describe('DecisionTreeInputComponent', () => {
 
@@ -15,7 +16,7 @@ describe('DecisionTreeInputComponent', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [ ReactiveFormsModule, FormsModule, MatIconModule ],
-      declarations: [ DecisionTreeInputComponent ],
+      declarations: [ InputListComponent, DecisionTreeInputComponent ]
     });
 
     fixture = TestBed.createComponent(DecisionTreeInputComponent);
@@ -122,6 +123,8 @@ describe('DecisionTreeInputComponent', () => {
 
 class FormHelper {
 
+  private constructor() { }
+
   static setValueAndMarkAsTouched(fixture: ComponentFixture<DecisionTreeInputComponent>, formName: string, value: string): void {
     const form = fixture.componentInstance.settingsForm.controls[formName];
 
@@ -144,6 +147,8 @@ class AssertionHelper {
 
   static readonly DISABLED = 'disabled';
   static readonly TITLE = 'title';
+
+  private constructor() { }
 
   static expectValidForm(fixture: ComponentFixture<DecisionTreeInputComponent>): void {
     const expectedErrorMessagePerInput = {

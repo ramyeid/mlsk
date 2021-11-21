@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -10,8 +10,11 @@ import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { NgxChartsModule } from '@swimlane/ngx-charts';
 
+import { InputListComponent } from './component/input-list/input-list.component';
+
 @NgModule({
   imports: [
+    FormsModule,
     ReactiveFormsModule,
     MatToolbarModule,
     MatButtonModule,
@@ -24,6 +27,7 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     NgxChartsModule
   ],
   exports: [
+    FormsModule,
     ReactiveFormsModule,
     MatToolbarModule,
     MatButtonModule,
@@ -33,7 +37,11 @@ import { NgxChartsModule } from '@swimlane/ngx-charts';
     MatTooltipModule,
     MatIconModule,
     CommonModule,
-    NgxChartsModule
+    NgxChartsModule,
+    InputListComponent
+  ],
+  declarations: [
+    InputListComponent
   ]
 })
 export class SharedModule { }

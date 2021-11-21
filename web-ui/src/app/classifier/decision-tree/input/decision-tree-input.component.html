@@ -26,15 +26,11 @@
         <label class="col-md-2 col-form-label"
               for="actionColumnNames">Action Column Names</label>
         <div class="col-md-4">
-          <input class="form-control"
-                id="actionColumnNames"
-                type="text"
+          <mlsk-input-list id="actionColumnNames"
                 placeholder="Action column names in csv (required)"
                 formControlName="actionColumnNames"
-                [ngClass]="{'is-invalid': errorMessagePerInput.actionColumnNames }" />
-          <span class="invalid-feedback">
-            {{ errorMessagePerInput.actionColumnNames }}
-          </span>
+                [errorMessage]="errorMessagePerInput.actionColumnNames">
+          </mlsk-input-list>
         </div>
       </div>
 
@@ -73,19 +69,17 @@
 
       <div class="form-group row mb-2">
         <div class="offset-md-2 col-md-6">
-          <button class="btn btn-outline-primary"
+          <button class="btn btn-outline-primary action-btn-80"
                   id="predictBtn"
                   type="button"
-                  style="width:80px"
                   [title]="settingsForm.valid ? 'Launch predict' : 'Disabled until the form data is valid'"
                   [disabled]="!settingsForm.valid"
                   (click)="predict()">
             Predict
           </button>
-          <button class="btn btn-outline-primary"
+          <button class="btn btn-outline-primary action-btn-200"
                   id="computePredictAccuracyBtn"
                   type="button"
-                  style="width:200px"
                   [title]="settingsForm.valid ? 'Launch compute predict accuracy' : 'Disabled until the form data is valid'"
                   [disabled]="!settingsForm.valid"
                   (click)="computePredictAccuracy()">
@@ -102,4 +96,10 @@
   <div class="alert alert-danger" *ngIf="errorMessage">
     {{errorMessage}}
   </div>
+
+  <div class="alert alert-danger">
+    {{settingsForm.value| json}}
+    {{settingsForm}}
+  </div>
+
 </div>
