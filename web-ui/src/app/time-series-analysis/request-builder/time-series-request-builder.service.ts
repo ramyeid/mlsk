@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, switchMap } from 'rxjs';
 
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
-import { ValuePerColumn, ValuePerColumnPerLine, CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
+import { ValuesPerColumn, CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
 
 @Injectable({
   providedIn: 'root'
@@ -17,25 +17,34 @@ export class TimeSeriesRequestBuilderService {
     this.csvReaderService = csvReaderService;
   }
 
-  buildTimeSeriesAnalysisRequest(file: File, dateColumnName: string,
-                                 valueColumnName: string, dateFormat: string,
-                                 numberOfValues: number): Observable<TimeSeriesAnalysisRequest> {
-
-    return new Observable((observable) => {
-      return this.csvReaderService.readCsv(file, [dateColumnName, valueColumnName])
-        .subscribe({
-          next: (nextValue: ValuePerColumnPerLine) => {
-            const timeSeriesRows: TimeSeriesRow[] = nextValue.map((valuePerLine: ValuePerColumn) => {
-              const date: string = valuePerLine[dateColumnName];
-              const value: number = +valuePerLine[valueColumnName];
-              return new TimeSeriesRow(date, value);
-            });
+  public buildTimeSeriesAnalysisRequest(file: File, dateColumnName: string,
+                                        valueColumnName: string, dateFormat: string,
+                                        numberOfValues: number): Observable<TimeSeriesAnalysisRequest> {
+    return this.csvReaderService.readCsv(file, [dateColumnName, valueColumnName])
+      .pipe(
+        switchMap((valuesPerColumn: ValuesPerColumn) => {
+          return new Observable<TimeSeriesAnalysisRequest>(subscriber => {
+            const timeSeriesRows: TimeSeriesRow[] = this.toTimeSeriesRow(valuesPerColumn, dateColumnName, valueColumnName);
             const timeSeries = new TimeSeries(timeSeriesRows, dateColumnName, valueColumnName, dateFormat);
             const timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(numberOfValues, timeSeries);
-            observable.next(timeSeriesAnalysisRequest);
-          },
-          error: err => observable.error(err)
-        });
-    });
+
+            subscriber.next(timeSeriesAnalysisRequest);
+
+            subscriber.complete();
+          });
+        })
+      );
+  }
+
+  private toTimeSeriesRow(valuesPerColumn: ValuesPerColumn, dateColumnName: string, valueColumnName: string): TimeSeriesRow[] {
+    const timeSeriesRows: TimeSeriesRow[] = [];
+
+    for (let i = 0; i < valuesPerColumn[dateColumnName].length; ++i) {
+      const date: string = valuesPerColumn[dateColumnName][i];
+      const value: number = +valuesPerColumn[valueColumnName][i];
+      timeSeriesRows.push(new TimeSeriesRow(date, value));
+    }
+
+    return timeSeriesRows;
   }
 }

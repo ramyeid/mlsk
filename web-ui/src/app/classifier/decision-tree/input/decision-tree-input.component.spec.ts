@@ -3,25 +3,50 @@ import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { By } from '@angular/platform-browser';
 import { DebugElement } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
+import { from, Observable, of } from 'rxjs';
 
 import { DecisionTreeInputComponent } from './decision-tree-input.component';
 import { Constants } from '../utils/constants';
 import { InputListComponent } from 'src/app/shared/component/input-list/input-list.component';
+import { DecisionTreeService } from '../service/decision-tree.service';
+import { ClassifierRequestBuilderService } from '../request-builder/classifier-request-builder.service';
+import { CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
+import { ClassifierStartRequest } from '../model/classifier-start-request';
+import { ClassifierDataRequest } from '../model/classifier-data-request';
+import { ClassifierDataResponse } from '../model/classifier-data-response';
+import { ClassifierEmittedType } from '../model/classifier-emitted-type';
+import { ClassifierStartResponse } from '../model/classifier-start-response';
+import { ClassifierRequest } from '../model/classifier-request';
 
 describe('DecisionTreeInputComponent', () => {
 
   let component: DecisionTreeInputComponent;
   let fixture: ComponentFixture<DecisionTreeInputComponent>;
+  let mockService: jasmine.SpyObj<DecisionTreeService>;
+  let mockRequestBuilderService: jasmine.SpyObj<ClassifierRequestBuilderService>;
+  let mockCsvReaderService: jasmine.SpyObj<CsvReaderService>;
 
   beforeEach(() => {
+    mockService = jasmine.createSpyObj<DecisionTreeService>(['start', 'data', 'predict', 'computePredictAccuracy']);
+    mockRequestBuilderService = jasmine.createSpyObj<ClassifierRequestBuilderService>(['buildClassifierStartRequest', 'buildClassifierDataRequests', 'buildClassifierRequest']);
+    mockCsvReaderService = jasmine.createSpyObj<CsvReaderService>(['throwExceptionIfInvalidCsv']);
+
     TestBed.configureTestingModule({
       imports: [ ReactiveFormsModule, FormsModule, MatIconModule ],
-      declarations: [ InputListComponent, DecisionTreeInputComponent ]
+      declarations: [ InputListComponent, DecisionTreeInputComponent ],
+      providers: [
+        { provide: DecisionTreeService, useValue: mockService },
+        { provide: ClassifierRequestBuilderService, useValue: mockRequestBuilderService },
+        { provide: CsvReaderService, useValue: mockCsvReaderService }
+      ]
     });
 
     fixture = TestBed.createComponent(DecisionTreeInputComponent);
     component = fixture.componentInstance;
     component.ngAfterViewInit();
+
+    FormHelper.setupEmittedItemsSubscriber(fixture);
+    FormHelper.setupNewRequestSubscriber(fixture);
   });
 
 
@@ -52,7 +77,7 @@ describe('DecisionTreeInputComponent', () => {
 
     it('should disable button and set form as invalid if action column names form is empty', fakeAsync(() => {
 
-      FormHelper.setValueAndMarkAsTouched(fixture, Constants.ACTION_COLUMN_NAMES_FORM, '');
+      FormHelper.setValueAndMarkAsTouched(fixture, Constants.ACTION_COLUMN_NAMES_FORM, []);
       FormHelper.detectChangesAndTick(fixture);
 
       const expectedErrorMessagePerInput = {
@@ -108,8 +133,8 @@ describe('DecisionTreeInputComponent', () => {
 
     it('should enable button and set form as valid if all forms are valid', fakeAsync(() => {
 
-      FormHelper.setValueAndMarkAsTouched(fixture, Constants.ACTION_COLUMN_NAMES_FORM, 'Sex');
       FormHelper.setValueAndMarkAsTouched(fixture, Constants.PREDICTION_COLUMN_NAME_FORM, 'Width,Length');
+      FormHelper.setValueAndMarkAsTouched(fixture, Constants.ACTION_COLUMN_NAMES_FORM, ['Sex']);
       FormHelper.setValueAndMarkAsTouched(fixture, Constants.NUMBER_OF_VALUES_FORM, '2');
       FormHelper.clearValidatorForCsvLocation(fixture);
       FormHelper.detectChangesAndTick(fixture);
@@ -119,13 +144,465 @@ describe('DecisionTreeInputComponent', () => {
 
   });
 
+
+  describe('Predict Submission', () => {
+
+    it('should call service and output result on predict success', fakeAsync(() => {
+      TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+      mockService.predict.and.returnValue(FactoryHelper.buildClassifierDataResponseObservable());
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([[ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataResponse(), ClassifierEmittedType.RESULT ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.start).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalledTimes(1);
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.predict).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should set error message on csv validation failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingCsvReaderService(fixture, mockCsvReaderService);
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from csv validation');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).not.toHaveBeenCalled();
+      expect(mockService.start).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).not.toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.predict).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on build classifier start request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingStartRequestBuilderService(fixture, mockCsvReaderService, mockRequestBuilderService);
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from start request builder');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).not.toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.predict).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on start request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingStartRequestService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from start service');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).not.toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.predict).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on build classifier data request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingDataRequestBuilderService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from data request builder');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.predict).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on data request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingDataRequestService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from data service');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalled();
+      expect(mockService.data).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.predict).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on build classifier request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingRequestService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from request builder');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalled();
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalled();
+      expect(mockService.predict).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on predict failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+      mockService.predict.and.returnValue(FactoryHelper.buildClassifierDataResponseErrorObservable());
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from predict');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.start).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalledTimes(1);
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.predict).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should reset error message on predict after first predict fail', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingStartRequestBuilderService(fixture, mockCsvReaderService, mockRequestBuilderService);
+      component.predict();
+      TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+      mockService.predict.and.returnValue(FactoryHelper.buildClassifierDataResponseObservable());
+
+      component.predict();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataResponse(), ClassifierEmittedType.RESULT ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalledTimes(2);
+      expect(mockService.start).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalledTimes(1);
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.predict).toHaveBeenCalledTimes(1);
+    }));
+
+  });
+
+
+  describe('Compute Predict Accuracy Submission', () => {
+
+    it('should call service and output result on compute predict accuracy success', fakeAsync(() => {
+      TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+      mockService.computePredictAccuracy.and.returnValue(FactoryHelper.buildPredictAccuracyResponseObservable());
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([[ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildPredictAccuracyResult(), ClassifierEmittedType.RESULT ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.start).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalledTimes(1);
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.computePredictAccuracy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should set error message on csv validation failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingCsvReaderService(fixture, mockCsvReaderService);
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from csv validation');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).not.toHaveBeenCalled();
+      expect(mockService.start).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).not.toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.computePredictAccuracy).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on build classifier start request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingStartRequestBuilderService(fixture, mockCsvReaderService, mockRequestBuilderService);
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from start request builder');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).not.toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.computePredictAccuracy).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on start request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingStartRequestService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from start service');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).not.toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.computePredictAccuracy).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on build classifier data request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingDataRequestBuilderService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from data request builder');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalled();
+      expect(mockService.data).not.toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.computePredictAccuracy).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on data request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingDataRequestService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from data service');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalled();
+      expect(mockService.data).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierRequest).not.toHaveBeenCalled();
+      expect(mockService.computePredictAccuracy).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on build classifier request failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingRequestService(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from request builder');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalled();
+      expect(mockService.start).toHaveBeenCalled();
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalled();
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalled();
+      expect(mockService.computePredictAccuracy).not.toHaveBeenCalled();
+    }));
+
+    it('should set error message on compute predict accuracy failure', fakeAsync(() => {
+      TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+      mockService.computePredictAccuracy.and.returnValue(FactoryHelper.buildPredictAccuracyResponseErrorObservable());
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('error from predict accuracy');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.start).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalledTimes(1);
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.computePredictAccuracy).toHaveBeenCalledTimes(1);
+    }));
+
+    it('should reset error message on compute predict accuracy after first predict fail', fakeAsync(() => {
+      TestHelper.setupValidFormAndFailingStartRequestBuilderService(fixture, mockCsvReaderService, mockRequestBuilderService);
+      component.computePredictAccuracy();
+      TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
+      mockService.computePredictAccuracy.and.returnValue(FactoryHelper.buildPredictAccuracyResponseObservable());
+
+      component.computePredictAccuracy();
+
+      AssertionHelper.expectValidForm(fixture);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
+        [ FactoryHelper.buildPredictAccuracyResult(), ClassifierEmittedType.RESULT ] ]);
+      expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
+      expect(component.errorMessage).toEqual('');
+      expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierStartRequest).toHaveBeenCalledTimes(2);
+      expect(mockService.start).toHaveBeenCalledTimes(1);
+      expect(mockRequestBuilderService.buildClassifierDataRequests).toHaveBeenCalledTimes(1);
+      expect(mockService.data).toHaveBeenCalledTimes(2);
+      expect(mockRequestBuilderService.buildClassifierRequest).toHaveBeenCalledTimes(1);
+      expect(mockService.computePredictAccuracy).toHaveBeenCalledTimes(1);
+    }));
+
+  });
+
 });
 
-class FormHelper {
+
+class TestHelper {
 
   private constructor() { }
 
-  static setValueAndMarkAsTouched(fixture: ComponentFixture<DecisionTreeInputComponent>, formName: string, value: string): void {
+  static setupValidFormAndSuccessServiceCalls(fixture: ComponentFixture<DecisionTreeInputComponent>,
+                                              mockCsvReaderService: jasmine.SpyObj<CsvReaderService>,
+                                              mockRequestBuilderService: jasmine.SpyObj<ClassifierRequestBuilderService>,
+                                              mockService: jasmine.SpyObj<DecisionTreeService>): void {
+    FormHelper.prepareValidForm(fixture);
+
+    mockCsvReaderService.throwExceptionIfInvalidCsv.and.returnValue(FactoryHelper.buildThrowExceptionIfInvalidCsvObservable());
+
+    mockRequestBuilderService.buildClassifierStartRequest.and.returnValue(FactoryHelper.buildClassifierStartRequestObservable());
+    mockService.start.and.returnValue(FactoryHelper.buildClassifierStartResponseObservable());
+
+    mockRequestBuilderService.buildClassifierDataRequests.and.returnValue(FactoryHelper.buildClassifierDataRequestObservable());
+    mockService.data.and.returnValue(FactoryHelper.buildDataResponseObservable());
+
+    mockRequestBuilderService.buildClassifierRequest.and.returnValue(FactoryHelper.buildClassifierRequestObservable());
+  }
+
+  static setupValidFormAndFailingCsvReaderService(fixture: ComponentFixture<DecisionTreeInputComponent>,
+                                                  mockCsvReaderService: jasmine.SpyObj<CsvReaderService>): void {
+    FormHelper.prepareValidForm(fixture);
+    mockCsvReaderService.throwExceptionIfInvalidCsv.and.returnValue(FactoryHelper.buildThrowExceptionIfInvalidCsvErrorObservable());
+  }
+
+  static setupValidFormAndFailingStartRequestBuilderService(fixture: ComponentFixture<DecisionTreeInputComponent>,
+                                                            mockCsvReaderService: jasmine.SpyObj<CsvReaderService>,
+                                                            mockRequestBuilderService: jasmine.SpyObj<ClassifierRequestBuilderService>): void {
+    FormHelper.prepareValidForm(fixture);
+    mockCsvReaderService.throwExceptionIfInvalidCsv.and.returnValue(FactoryHelper.buildThrowExceptionIfInvalidCsvObservable());
+    mockRequestBuilderService.buildClassifierStartRequest.and.returnValue(FactoryHelper.buildClassifierStartRequestErrorObservable());
+  }
+
+  static setupValidFormAndFailingStartRequestService(fixture: ComponentFixture<DecisionTreeInputComponent>,
+                                                     mockCsvReaderService: jasmine.SpyObj<CsvReaderService>,
+                                                     mockRequestBuilderService: jasmine.SpyObj<ClassifierRequestBuilderService>,
+                                                     mockService: jasmine.SpyObj<DecisionTreeService>): void {
+    FormHelper.prepareValidForm(fixture);
+    mockCsvReaderService.throwExceptionIfInvalidCsv.and.returnValue(FactoryHelper.buildThrowExceptionIfInvalidCsvObservable());
+    mockRequestBuilderService.buildClassifierStartRequest.and.returnValue(FactoryHelper.buildClassifierStartRequestObservable());
+    mockService.start.and.returnValue(FactoryHelper.buildClassifierStartResponseErrorObservable());
+  }
+
+  static setupValidFormAndFailingDataRequestBuilderService(fixture: ComponentFixture<DecisionTreeInputComponent>,
+                                                           mockCsvReaderService: jasmine.SpyObj<CsvReaderService>,
+                                                           mockRequestBuilderService: jasmine.SpyObj<ClassifierRequestBuilderService>,
+                                                           mockService: jasmine.SpyObj<DecisionTreeService>): void {
+    FormHelper.prepareValidForm(fixture);
+    mockCsvReaderService.throwExceptionIfInvalidCsv.and.returnValue(FactoryHelper.buildThrowExceptionIfInvalidCsvObservable());
+    mockRequestBuilderService.buildClassifierStartRequest.and.returnValue(FactoryHelper.buildClassifierStartRequestObservable());
+    mockService.start.and.returnValue(FactoryHelper.buildClassifierStartResponseObservable());
+    mockRequestBuilderService.buildClassifierDataRequests.and.returnValue(FactoryHelper.buildClassifierDataRequestErrorObservable());
+  }
+
+  static setupValidFormAndFailingDataRequestService(fixture: ComponentFixture<DecisionTreeInputComponent>,
+                                                    mockCsvReaderService: jasmine.SpyObj<CsvReaderService>,
+                                                    mockRequestBuilderService: jasmine.SpyObj<ClassifierRequestBuilderService>,
+                                                    mockService: jasmine.SpyObj<DecisionTreeService>): void {
+    FormHelper.prepareValidForm(fixture);
+    mockCsvReaderService.throwExceptionIfInvalidCsv.and.returnValue(FactoryHelper.buildThrowExceptionIfInvalidCsvObservable());
+    mockRequestBuilderService.buildClassifierStartRequest.and.returnValue(FactoryHelper.buildClassifierStartRequestObservable());
+    mockService.start.and.returnValue(FactoryHelper.buildClassifierStartResponseObservable());
+    mockRequestBuilderService.buildClassifierDataRequests.and.returnValue(FactoryHelper.buildClassifierDataRequestObservable());
+    mockService.data.and.returnValue(FactoryHelper.buildDataResponseErrorObservable());
+  }
+
+  static setupValidFormAndFailingRequestService(fixture: ComponentFixture<DecisionTreeInputComponent>,
+                                                mockCsvReaderService: jasmine.SpyObj<CsvReaderService>,
+                                                mockRequestBuilderService: jasmine.SpyObj<ClassifierRequestBuilderService>,
+                                                mockService: jasmine.SpyObj<DecisionTreeService>): void {
+    FormHelper.prepareValidForm(fixture);
+    mockCsvReaderService.throwExceptionIfInvalidCsv.and.returnValue(FactoryHelper.buildThrowExceptionIfInvalidCsvObservable());
+    mockRequestBuilderService.buildClassifierStartRequest.and.returnValue(FactoryHelper.buildClassifierStartRequestObservable());
+    mockService.start.and.returnValue(FactoryHelper.buildClassifierStartResponseObservable());
+    mockRequestBuilderService.buildClassifierDataRequests.and.returnValue(FactoryHelper.buildClassifierDataRequestObservable());
+    mockService.data.and.returnValue(FactoryHelper.buildDataResponseObservable());
+    mockRequestBuilderService.buildClassifierRequest.and.returnValue(FactoryHelper.buildClassifierRequestErrorObservable());
+  }
+}
+
+class FormHelper {
+
+  static ACTUAL_EMITTED_ITEMS: [ ClassifierDataRequest | ClassifierDataResponse | number, ClassifierEmittedType][] = [];
+  static IS_NEW_REQUEST_EMITTED = false;
+
+  private constructor() { }
+
+  static setupEmittedItemsSubscriber(fixture: ComponentFixture<DecisionTreeInputComponent>): void {
+    FormHelper.ACTUAL_EMITTED_ITEMS = [];
+    fixture.componentInstance.resultEmitter.subscribe(value => FormHelper.ACTUAL_EMITTED_ITEMS.push(value));
+  }
+
+  static setupNewRequestSubscriber(fixture: ComponentFixture<DecisionTreeInputComponent>): void {
+    FormHelper.IS_NEW_REQUEST_EMITTED = false;
+    fixture.componentInstance.newRequestEmitter.subscribe(() => FormHelper.IS_NEW_REQUEST_EMITTED = true);
+  }
+
+  static setValueAndMarkAsTouched(fixture: ComponentFixture<DecisionTreeInputComponent>, formName: string, value: string | string[]): void {
     const form = fixture.componentInstance.settingsForm.controls[formName];
 
     form.setValue(value);
@@ -140,6 +617,14 @@ class FormHelper {
   static clearValidatorForCsvLocation(fixture: ComponentFixture<DecisionTreeInputComponent>): void {
     // we can't set a value for file input.
     fixture.componentInstance.settingsForm.controls[Constants.CSV_LOCATION_FORM].clearValidators();
+  }
+
+  static prepareValidForm(fixture: ComponentFixture<DecisionTreeInputComponent>): void {
+    FormHelper.setValueAndMarkAsTouched(fixture, Constants.PREDICTION_COLUMN_NAME_FORM, 'Date');
+    FormHelper.setValueAndMarkAsTouched(fixture, Constants.ACTION_COLUMN_NAMES_FORM, [ 'col0', 'col1' ]);
+    FormHelper.setValueAndMarkAsTouched(fixture, Constants.NUMBER_OF_VALUES_FORM, '2');
+    FormHelper.clearValidatorForCsvLocation(fixture);
+    FormHelper.detectChangesAndTick(fixture);
   }
 }
 
@@ -183,5 +668,111 @@ class AssertionHelper {
 
     expect(button.properties[AssertionHelper.DISABLED]).toBeTrue();
     expect(button.properties[AssertionHelper.TITLE]).toEqual('Disabled until the form data is valid');
+  }
+
+  static assertOnEmittedItems(expectedEmittedItems: [ClassifierDataRequest | ClassifierDataResponse | number, ClassifierEmittedType][]): void {
+    expect(FormHelper.ACTUAL_EMITTED_ITEMS).toEqual(expectedEmittedItems);
+  }
+
+}
+
+class FactoryHelper {
+
+  private constructor() { }
+
+  static buildThrowExceptionIfInvalidCsvObservable(): Observable<undefined> {
+    return of();
+  }
+
+  static buildClassifierDataRequest1(): ClassifierDataRequest {
+    return new ClassifierDataRequest('col0', [ 0, 0, 1 ], 'requestId');
+  }
+
+  static buildClassifierDataRequest2(): ClassifierDataRequest {
+    return new ClassifierDataRequest('col1', [ 1, 1, 0 ], 'requestId');
+  }
+
+  static buildClassifierDataResponse(): ClassifierDataResponse {
+    return new ClassifierDataResponse('prediction', [ 1, 1, 1 ]);
+  }
+
+  static buildThrowExceptionIfInvalidCsvErrorObservable(): Observable<undefined> {
+    return new Observable<undefined>(subscriber => {
+      subscriber.error(new Error('error from csv validation'));
+    });
+  }
+
+  static buildClassifierStartRequestObservable(): Observable<ClassifierStartRequest> {
+    return of(new ClassifierStartRequest('prediction', [ 'col0', 'col1' ], 3));
+  }
+
+  static buildClassifierStartRequestErrorObservable(): Observable<ClassifierStartRequest> {
+    return new Observable<ClassifierStartRequest>(subscriber => {
+      subscriber.error(new Error('error from start request builder'));
+    });
+  }
+
+  static buildClassifierStartResponseObservable(): Observable<ClassifierStartResponse> {
+    return of(new ClassifierStartResponse('requestId'));
+  }
+
+  static buildClassifierStartResponseErrorObservable(): Observable<ClassifierStartResponse> {
+    return new Observable<ClassifierStartResponse>(subscriber => {
+      subscriber.error(new Error('error from start service'));
+    });
+  }
+
+  static buildClassifierDataRequestObservable(): Observable<ClassifierDataRequest> {
+    return from([ this.buildClassifierDataRequest1(), this.buildClassifierDataRequest2() ]);
+  }
+
+  static buildClassifierDataRequestErrorObservable(): Observable<ClassifierDataRequest> {
+    return new Observable<ClassifierDataRequest>(subscriber => {
+      subscriber.error(new Error('error from data request builder'));
+    });
+  }
+
+  static buildDataResponseObservable(): Observable<undefined> {
+    return from([ undefined, undefined ]);
+  }
+
+  static buildDataResponseErrorObservable(): Observable<undefined> {
+    return new Observable<undefined>(subscriber => {
+      subscriber.error(new Error('error from data service'));
+    });
+  }
+
+  static buildClassifierRequestObservable(): Observable<ClassifierRequest> {
+    return of(new ClassifierRequest('requestId'));
+  }
+
+  static buildClassifierRequestErrorObservable(): Observable<ClassifierRequest> {
+    return new Observable<ClassifierRequest>(subscriber => {
+      subscriber.error(new Error('error from request builder'));
+    });
+  }
+
+  static buildClassifierDataResponseObservable(): Observable<ClassifierDataResponse> {
+    return of(this.buildClassifierDataResponse());
+  }
+
+  static buildClassifierDataResponseErrorObservable(): Observable<ClassifierDataResponse> {
+    return new Observable<ClassifierDataResponse>(subscriber => {
+      subscriber.error(new Error('error from predict'));
+    });
+  }
+
+  static buildPredictAccuracyResult(): number {
+    return 98.55;
+  }
+
+  static buildPredictAccuracyResponseObservable(): Observable<number> {
+    return of(this.buildPredictAccuracyResult());
+  }
+
+  static buildPredictAccuracyResponseErrorObservable(): Observable<number> {
+    return new Observable<number>(subscriber => {
+      subscriber.error(new Error('error from predict accuracy'));
+    });
   }
 }

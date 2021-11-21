@@ -1,7 +1,7 @@
 import { Component, ViewChild } from '@angular/core';
 
 import { TimeSeries } from '../model/time-series';
-import { TimeSeriesType } from '../model/time-series-type';
+import { TimeSeriesEmittedType } from '../model/time-series-emitted-type';
 import { TimeSeriesAnalysisOutputComponent } from '../output/time-series-analysis-output.component';
 
 @Component({
@@ -12,7 +12,7 @@ export class TimeSeriesAnalysisComponent {
 
   @ViewChild(TimeSeriesAnalysisOutputComponent) outputComponent: TimeSeriesAnalysisOutputComponent;
 
-  onResult(resultAndType: [TimeSeries | number, TimeSeriesType]): void {
+  onResult(resultAndType: [TimeSeries | number, TimeSeriesEmittedType]): void {
     this.outputComponent.onResult(resultAndType);
   }
 

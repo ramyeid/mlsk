@@ -1,7 +1,7 @@
 import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { FormGroup, FormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { debounceTime, switchMap } from 'rxjs/operators';
+import { debounceTime, last, switchMap } from 'rxjs/operators';
 
 import { DateFormatValidator } from 'src/app/shared/validator/date-format/date-format.validator';
 import { ValidationMessageGenerator } from 'src/app/shared/validator/message-generator/validation-message-generator';
@@ -10,8 +10,9 @@ import { TimeSeriesRequestBuilderService } from '../request-builder/time-series-
 import { TimeSeriesAnalysisService } from '../service/time-series-analysis.service';
 import { TimeSeries } from '../model/time-series';
 import { Constants } from '../utils/constants';
-import { TimeSeriesType } from '../model/time-series-type';
+import { TimeSeriesEmittedType } from '../model/time-series-emitted-type';
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
+import { CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
 
 @Component({
   selector: 'mlsk-time-series-analysis-input',
@@ -20,10 +21,11 @@ import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request
 })
 export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
-  @Output() resultEmitter = new EventEmitter<[TimeSeries | number, TimeSeriesType]>();
+  @Output() resultEmitter = new EventEmitter<[TimeSeries | number, TimeSeriesEmittedType]>();
   @Output() newRequestEmitter = new EventEmitter<undefined>();
   private readonly requestBuilder: TimeSeriesRequestBuilderService;
   private readonly service: TimeSeriesAnalysisService;
+  private readonly csvReaderService: CsvReaderService;
   private readonly validationMessageGenrator: ValidationMessageGenerator;
   settingsForm: FormGroup;
   errorMessage: string;
@@ -33,9 +35,11 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
   constructor(formBuilder: FormBuilder,
               requestBuilder: TimeSeriesRequestBuilderService,
-              service: TimeSeriesAnalysisService) {
+              service: TimeSeriesAnalysisService,
+              csvReaderService: CsvReaderService) {
     this.requestBuilder = requestBuilder;
     this.service = service;
+    this.csvReaderService = csvReaderService;
     const validationMessages = TimeSeriesAnalysisValidationMessages.buildTimeSeriesValidationMessages();
     this.validationMessageGenrator = new ValidationMessageGenerator(validationMessages);
     this.isWaitingForResult = false;
@@ -82,11 +86,12 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
 
     this.onNewRequest();
 
-    this.requestBuilder
-      .buildTimeSeriesAnalysisRequest(this.csvFile, dateColumnName, valueColumnName, dateFormat, numberOfValues)
+    this.csvReaderService.throwExceptionIfInvalidCsv(this.csvFile, [dateColumnName, valueColumnName])
       .pipe(
+        last(null, 'ignored'),
+        switchMap(() => this.requestBuilder.buildTimeSeriesAnalysisRequest(this.csvFile, dateColumnName, valueColumnName, dateFormat, numberOfValues)),
         switchMap(request => {
-          this.resultEmitter.emit([request.timeSeries, TimeSeriesType.REQUEST]);
+          this.resultEmitter.emit([request.timeSeries, TimeSeriesEmittedType.REQUEST]);
           return serviceCall(request);
         })
       ).subscribe({
@@ -101,6 +106,16 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
     this.isWaitingForResult = true;
   }
 
+  private onSuccess(result: TimeSeries | number): void {
+    this.resultEmitter.emit([result, TimeSeriesEmittedType.RESULT]);
+    this.isWaitingForResult = false;
+  }
+
+  private onError(errorMessage: Error): void {
+    this.errorMessage = errorMessage.message;
+    this.isWaitingForResult = false;
+  }
+
   private buildFormGroup(): { [key: string]: [string, ValidationErrors[]] } {
     return {
       [ Constants.DATE_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
@@ -109,15 +124,5 @@ export class TimeSeriesAnalysisInputComponent implements AfterViewInit {
       [ Constants.CSV_LOCATION_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.NUMBER_OF_VALUES_FORM ]: [ '', [ Validators.required, Validators.min(1) ] ]
     };
-  }
-
-  private onSuccess(result: TimeSeries | number): void {
-    this.resultEmitter.emit([result, TimeSeriesType.RESULT]);
-    this.isWaitingForResult = false;
-  }
-
-  private onError(errorMessage: Error): void {
-    this.errorMessage = errorMessage.message;
-    this.isWaitingForResult = false;
   }
 }

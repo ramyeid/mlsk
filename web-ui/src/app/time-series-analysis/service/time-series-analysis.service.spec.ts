@@ -34,9 +34,8 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.forecast(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        error: (err) => {
-          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
-        }
+        next: () => expect(true).toBeFalse(),
+        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast');
       req.error(errorEvent);
@@ -51,10 +50,9 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.forecast(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        next: (actualValue: TimeSeries) => {
-          expect(actualValue).toEqual(Helper.buildTimeSeriesResult());
-          done();
-        }
+        next: (actualValue: TimeSeries) => expect(actualValue).toEqual(Helper.buildTimeSeriesResult()),
+        error: () => expect(true).toBeFalse(),
+        complete: () => done()
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast');
       req.flush(timeSeriesResult);
@@ -77,9 +75,8 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.predict(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        error: (err) => {
-          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
-        }
+        next: () => expect(true).toBeFalse(),
+        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/predict');
       req.error(errorEvent);
@@ -94,10 +91,9 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.predict(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        next: (actualValue: TimeSeries) => {
-          expect(actualValue).toEqual(Helper.buildTimeSeriesResult());
-          done();
-        }
+        next: (actualValue: TimeSeries) => expect(actualValue).toEqual(Helper.buildTimeSeriesResult()),
+        error: () => expect(true).toBeFalse(),
+        complete: () => done()
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/predict');
       req.flush(timeSeriesResult);
@@ -120,9 +116,8 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.forecastVsActual(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        error: (err) => {
-          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
-        }
+        next: () => expect(true).toBeFalse(),
+        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-vs-actual');
       req.error(errorEvent);
@@ -137,10 +132,9 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.forecastVsActual(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        next: (actualValue: TimeSeries) => {
-          expect(actualValue).toEqual(Helper.buildTimeSeriesResult());
-          done();
-        }
+        next: (actualValue: TimeSeries) => expect(actualValue).toEqual(Helper.buildTimeSeriesResult()),
+        error: () => expect(true).toBeFalse(),
+        complete: () => done()
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-vs-actual');
       req.flush(timeSeriesResult);
@@ -163,9 +157,8 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.computeForecastAccuracy(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        error: (err) => {
-          expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message');
-        }
+        next: () => expect(true).toBeFalse(),
+        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-accuracy');
       req.error(errorEvent);
@@ -179,10 +172,9 @@ describe('TimeSeriesAnalysisService', () => {
       const actualResult$ = service.computeForecastAccuracy(timeSeriesAnalysisRequest);
 
       actualResult$.subscribe({
-        next: (actualValue: number) => {
-          expect(actualValue).toEqual(98.55);
-          done();
-        }
+        next: (actualValue: number) => expect(actualValue).toEqual(98.55),
+        error: () => expect(true).toBeFalse(),
+        complete: () => done()
       });
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-accuracy');
       req.flush(98.55);

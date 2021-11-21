@@ -36,10 +36,16 @@ export class TimeSeriesAnalysisService {
 
   private postAndCatchError<T>(resource: string, body: TimeSeriesAnalysisRequest): Observable<T> {
     const baseUrl: string = this.buildBaseUrl();
-    return this.httpClient.post<T>(`${baseUrl}/${resource}`, body)
-      .pipe(
-        catchError(this.handleError)
-      );
+    return new Observable(subscriber => {
+      this.httpClient.post<T>(`${baseUrl}/${resource}`, body)
+        .pipe(
+          catchError(this.handleError)
+        ).subscribe({
+          next: response => subscriber.next(response),
+          error: err => subscriber.error(err),
+          complete: () => subscriber.complete()
+        });
+    });
   }
 
   private handleError(err: HttpErrorResponse): Observable<never> {
