@@ -2,11 +2,11 @@ import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
 import { DecisionTreeService } from './decision-tree.service';
-import { ClassifierStartRequest } from '../model/classifier-start-request';
-import { ClassifierStartResponse } from '../model/classifier-start-response';
-import { ClassifierDataRequest } from '../model/classifier-data-request';
-import { ClassifierRequest } from '../model/classifier-request';
-import { ClassifierDataResponse } from '../model/classifier-data-response';
+import { ClassifierStartRequest } from '../../model/classifier-start-request';
+import { ClassifierStartResponse } from '../../model/classifier-start-response';
+import { ClassifierDataRequest } from '../../model/classifier-data-request';
+import { ClassifierRequest } from '../../model/classifier-request';
+import { ClassifierDataResponse } from '../../model/classifier-data-response';
 
 describe('DecisionTreeService', () => {
 

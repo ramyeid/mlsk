@@ -2,9 +2,9 @@ import { DebugElement, NO_ERRORS_SCHEMA } from '@angular/core';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { By } from '@angular/platform-browser';
 
+import { InputEmitType } from 'src/app/shared/model/input-emit-type';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
-import { TimeSeriesEmittedType } from '../model/time-series-emitted-type';
 import { TimeSeriesAnalysisOutputComponent } from '../output/time-series-analysis-output.component';
 import { TimeSeriesAnalysisComponent } from './time-series-analysis.component';
 
@@ -43,7 +43,7 @@ describe('TimeSeriesAnalysisComponent', () => {
   describe('Input Emitter', () => {
 
     it('should call output on time series result', () => {
-      const type: TimeSeriesEmittedType = TimeSeriesEmittedType.REQUEST;
+      const type: InputEmitType = InputEmitType.REQUEST;
       const row1: TimeSeriesRow = new TimeSeriesRow('1', 1);
       const row2: TimeSeriesRow = new TimeSeriesRow('2', 2);
       const timeSeries: TimeSeries = new TimeSeries([row1, row2], 'date', 'value', 'yyyyMM');
@@ -54,7 +54,7 @@ describe('TimeSeriesAnalysisComponent', () => {
     });
 
     it('should call output on accuracy result', () => {
-      const type: TimeSeriesEmittedType = TimeSeriesEmittedType.REQUEST;
+      const type: InputEmitType = InputEmitType.REQUEST;
       const accuracy = 74.123;
 
       inputComponent.triggerEventHandler('resultEmitter', [accuracy, type]);

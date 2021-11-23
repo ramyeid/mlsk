@@ -4,9 +4,9 @@ import { NoopAnimationsModule } from '@angular/platform-browser/animations';
 import { DebugElement } from '@angular/core';
 import { By } from '@angular/platform-browser';
 
+import { InputEmitType } from 'src/app/shared/model/input-emit-type';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
-import { TimeSeriesEmittedType } from '../model/time-series-emitted-type';
 import { TimeSeriesAnalysisOutputComponent } from './time-series-analysis-output.component';
 import { ChartCoordinate, ChartLine, ChartLines, LineHelper } from 'src/app/shared/chart/line-helper';
 import { ChartOptions } from 'src/app/shared/chart/chart-options';
@@ -43,7 +43,7 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
     it('should render page without chart and accuracy when only request is received', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
 
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
       fixture.detectChanges();
 
       const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
@@ -56,8 +56,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
 
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([timeSeriesResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([timeSeriesResult, InputEmitType.RESULT]);
       fixture.detectChanges();
 
       const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
@@ -71,8 +71,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
 
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([forecastAccuracyResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([forecastAccuracyResult, InputEmitType.RESULT]);
       fixture.detectChanges();
 
       const accuracyResult: DebugElement = fixture.debugElement.query(By.css(`#${Constants.ACCURACY_RESULT_P}`));
@@ -85,8 +85,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
     it('should render page without chart when request and result received and new request', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([timeSeriesResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([timeSeriesResult, InputEmitType.RESULT]);
       fixture.detectChanges();
 
       component.onNewRequest();
@@ -101,8 +101,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
     it('should render page without accuracy when request and result received and new request', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([forecastAccuracyResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([forecastAccuracyResult, InputEmitType.RESULT]);
       fixture.detectChanges();
 
       component.onNewRequest();
@@ -122,7 +122,7 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
     it('should not set display to true when only request is received', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
 
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
 
       expect(component.forecastAccuracy).toBeUndefined();
       expect(component.chartOptions).toEqual(Helper.buildExpectedChartOptions());
@@ -134,8 +134,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
 
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([timeSeriesResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([timeSeriesResult, InputEmitType.RESULT]);
 
       expect(component.forecastAccuracy).toBeUndefined();
       expect(component.chartOptions).toEqual(Helper.buildExpectedChartOptions());
@@ -147,8 +147,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
 
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([forecastAccuracyResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([forecastAccuracyResult, InputEmitType.RESULT]);
 
       expect(component.forecastAccuracy).toBe(String(Helper.buildForecastAccuracyResult()));
       expect(component.chartOptions).toEqual(Helper.buildExpectedChartOptions());
@@ -164,8 +164,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
     it('should reset chart options, chart lines and display on new request after time series result', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const timeSeriesResult: TimeSeries = Helper.buildTimeSeriesResult();
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([timeSeriesResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([timeSeriesResult, InputEmitType.RESULT]);
 
       component.onNewRequest();
 
@@ -178,8 +178,8 @@ describe('TimeSeriesAnalysisOutputComponent', () => {
     it('should reset chart options, chart lines and display on new request after forecast accuracy result', () => {
       const timeSeriesRequest: TimeSeries = Helper.buildTimeSeriesRequest();
       const forecastAccuracyResult: number = Helper.buildForecastAccuracyResult();
-      component.onResult([timeSeriesRequest, TimeSeriesEmittedType.REQUEST]);
-      component.onResult([forecastAccuracyResult, TimeSeriesEmittedType.RESULT]);
+      component.onResult([timeSeriesRequest, InputEmitType.REQUEST]);
+      component.onResult([forecastAccuracyResult, InputEmitType.RESULT]);
 
       component.onNewRequest();
 

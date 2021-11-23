@@ -5,18 +5,18 @@ import { DebugElement } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { from, Observable, of } from 'rxjs';
 
+import { InputListComponent } from 'src/app/shared/component/input-list/input-list.component';
+import { CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
+import { InputEmitType } from 'src/app/shared/model/input-emit-type';
 import { DecisionTreeInputComponent } from './decision-tree-input.component';
 import { Constants } from '../utils/constants';
-import { InputListComponent } from 'src/app/shared/component/input-list/input-list.component';
 import { DecisionTreeService } from '../service/decision-tree.service';
-import { ClassifierRequestBuilderService } from '../request-builder/classifier-request-builder.service';
-import { CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
-import { ClassifierStartRequest } from '../model/classifier-start-request';
-import { ClassifierDataRequest } from '../model/classifier-data-request';
-import { ClassifierDataResponse } from '../model/classifier-data-response';
-import { ClassifierEmittedType } from '../model/classifier-emitted-type';
-import { ClassifierStartResponse } from '../model/classifier-start-response';
-import { ClassifierRequest } from '../model/classifier-request';
+import { ClassifierRequestBuilderService } from '../../request-builder/classifier-request-builder.service';
+import { ClassifierStartRequest } from '../../model/classifier-start-request';
+import { ClassifierDataRequest } from '../../model/classifier-data-request';
+import { ClassifierDataResponse } from '../../model/classifier-data-response';
+import { ClassifierStartResponse } from '../../model/classifier-start-response';
+import { ClassifierRequest } from '../../model/classifier-request';
 
 describe('DecisionTreeInputComponent', () => {
 
@@ -154,9 +154,9 @@ describe('DecisionTreeInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([[ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataResponse(), ClassifierEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([[ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataResponse(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
@@ -246,7 +246,7 @@ describe('DecisionTreeInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from data service');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -264,8 +264,8 @@ describe('DecisionTreeInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from request builder');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -284,8 +284,8 @@ describe('DecisionTreeInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from predict');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
@@ -306,9 +306,9 @@ describe('DecisionTreeInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataResponse(), ClassifierEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataResponse(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
@@ -332,9 +332,9 @@ describe('DecisionTreeInputComponent', () => {
       component.computePredictAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([[ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildPredictAccuracyResult(), ClassifierEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([[ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildPredictAccuracyResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
@@ -424,7 +424,7 @@ describe('DecisionTreeInputComponent', () => {
       component.computePredictAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from data service');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -442,8 +442,8 @@ describe('DecisionTreeInputComponent', () => {
       component.computePredictAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from request builder');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -462,8 +462,8 @@ describe('DecisionTreeInputComponent', () => {
       component.computePredictAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from predict accuracy');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
@@ -484,9 +484,9 @@ describe('DecisionTreeInputComponent', () => {
       component.computePredictAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataRequest2(), ClassifierEmittedType.REQUEST ],
-        [ FactoryHelper.buildPredictAccuracyResult(), ClassifierEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ],
+        [ FactoryHelper.buildPredictAccuracyResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
@@ -587,7 +587,7 @@ class TestHelper {
 
 class FormHelper {
 
-  static ACTUAL_EMITTED_ITEMS: [ ClassifierDataRequest | ClassifierDataResponse | number, ClassifierEmittedType][] = [];
+  static ACTUAL_EMITTED_ITEMS: [ ClassifierDataRequest | ClassifierDataResponse | number, InputEmitType][] = [];
   static IS_NEW_REQUEST_EMITTED = false;
 
   private constructor() { }
@@ -670,7 +670,7 @@ class AssertionHelper {
     expect(button.properties[AssertionHelper.TITLE]).toEqual('Disabled until the form data is valid');
   }
 
-  static assertOnEmittedItems(expectedEmittedItems: [ClassifierDataRequest | ClassifierDataResponse | number, ClassifierEmittedType][]): void {
+  static assertOnEmittedItems(expectedEmittedItems: [ClassifierDataRequest | ClassifierDataResponse | number, InputEmitType][]): void {
     expect(FormHelper.ACTUAL_EMITTED_ITEMS).toEqual(expectedEmittedItems);
   }
 
