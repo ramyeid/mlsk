@@ -30,11 +30,12 @@ export class ConfigurationComponent implements AfterViewInit {
   }
 
   ngAfterViewInit(): void {
-    this.configurationForm.valueChanges.pipe(
-      debounceTime(800)
-    ).subscribe(() => {
-      this.errorMessagePerInput = this.validationMessageGenrator.generateErrorMessages(this.configurationForm);
-    });
+    this.configurationForm.valueChanges
+      .pipe(
+        debounceTime(800)
+      ).subscribe(() => {
+        this.errorMessagePerInput = this.validationMessageGenrator.generateErrorMessages(this.configurationForm);
+      });
   }
 
   save(): void {

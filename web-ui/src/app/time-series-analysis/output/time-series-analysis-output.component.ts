@@ -3,7 +3,7 @@ import { Component } from '@angular/core';
 import { ChartOptions } from 'src/app/shared/chart/chart-options';
 import { ChartCoordinate, ChartLine, ChartLines , LineHelper } from 'src/app/shared/chart/line-helper';
 import { TimeSeries } from '../model/time-series';
-import { TimeSeriesType } from '../model/time-series-type';
+import { TimeSeriesEmittedType } from '../model/time-series-emitted-type';
 
 @Component({
   selector: 'mlsk-time-series-analysis-output',
@@ -24,11 +24,11 @@ export class TimeSeriesAnalysisOutputComponent {
     this.shouldDisplay = false;
   }
 
-  onResult(resultAndType: [TimeSeries | number, TimeSeriesType]): void {
+  onResult(resultAndType: [TimeSeries | number, TimeSeriesEmittedType]): void {
     const result: TimeSeries | number = resultAndType[0];
-    const timeSeriesType: TimeSeriesType = resultAndType[1];
+    const timeSeriesEmittedType: TimeSeriesEmittedType = resultAndType[1];
 
-    if (timeSeriesType == TimeSeriesType.REQUEST && typeof(result) != 'number') {
+    if (timeSeriesEmittedType == TimeSeriesEmittedType.REQUEST && typeof(result) != 'number') {
       this.onTimeSeriesRequest(result);
     } else {
       if (typeof(result) === 'number') {
@@ -40,7 +40,7 @@ export class TimeSeriesAnalysisOutputComponent {
   }
 
   private onTimeSeriesRequest(request: TimeSeries): void {
-    const newLine: ChartLine = this.buildLine(TimeSeriesType.REQUEST, request);
+    const newLine: ChartLine = this.buildLine(TimeSeriesEmittedType.REQUEST, request);
 
     this.chartOptions = ChartOptions.buildDefaultChartOptions(request.dateColumnName, request.valueColumnName);
 
@@ -52,7 +52,7 @@ export class TimeSeriesAnalysisOutputComponent {
   }
 
   private onTimeSeriesResult(result: TimeSeries): void {
-    const newLine: ChartLine = this.buildLine(TimeSeriesType.RESULT, result);
+    const newLine: ChartLine = this.buildLine(TimeSeriesEmittedType.RESULT, result);
     const newConnectedLine: ChartLine = LineHelper.connectLines(this.chartLines[0], newLine);
 
     this.shouldDisplay = true;
@@ -60,8 +60,8 @@ export class TimeSeriesAnalysisOutputComponent {
     this.chartLines = [...this.chartLines, newConnectedLine];
   }
 
-  private buildLine(timeSeriesType: TimeSeriesType, timeSeries: TimeSeries): ChartLine {
-    const lineName: string = timeSeriesType === TimeSeriesType.REQUEST ? 'Data' : 'Result';
+  private buildLine(timeSeriesEmittedType: TimeSeriesEmittedType, timeSeries: TimeSeries): ChartLine {
+    const lineName: string = timeSeriesEmittedType === TimeSeriesEmittedType.REQUEST ? 'Data' : 'Result';
     const points: ChartCoordinate[] = timeSeries.rows.map(row => LineHelper.buildCoordinate(new Date(row.date), row.value));
     return LineHelper.buildLine(lineName, points);
   }
