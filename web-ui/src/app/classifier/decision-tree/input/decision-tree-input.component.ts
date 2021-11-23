@@ -1,58 +1,39 @@
-import { Component, AfterViewInit, Output, EventEmitter } from '@angular/core';
-import { FormGroup, FormBuilder, Validators, ValidationErrors } from '@angular/forms';
+import { Component, Output, EventEmitter } from '@angular/core';
+import { FormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { last, tap, switchMap, debounceTime } from 'rxjs/operators';
+import { last, tap, switchMap } from 'rxjs/operators';
 
-import { ValidationMessageGenerator } from 'src/app/shared/validator/message-generator/validation-message-generator';
+import { AbstractInputComponent } from 'src/app/shared/component/input/abstract-input.component';
+import { InputEmitType } from 'src/app/shared/model/input-emit-type';
 import { CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
 import { DecisionTreeService } from '../service/decision-tree.service';
-import { ClassifierRequestBuilderService } from '../request-builder/classifier-request-builder.service';
+import { ClassifierRequestBuilderService } from '../../request-builder/classifier-request-builder.service';
 import { DecisionTreeValidationMessages } from '../utils/decision-tree-validation-messages';
 import { Constants } from '../utils/constants';
-import { ClassifierRequest } from '../model/classifier-request';
-import { ClassifierDataResponse } from '../model/classifier-data-response';
-import { ClassifierStartResponse } from '../model/classifier-start-response';
-import { ClassifierDataRequest } from '../model/classifier-data-request';
-import { ClassifierEmittedType } from '../model/classifier-emitted-type';
+import { ClassifierRequest } from '../../model/classifier-request';
+import { ClassifierDataResponse } from '../../model/classifier-data-response';
+import { ClassifierStartResponse } from '../../model/classifier-start-response';
+import { ClassifierDataRequest } from '../../model/classifier-data-request';
 
 @Component({
   selector: 'mlsk-decision-tree-input',
   templateUrl: './decision-tree-input.component.html',
   styleUrls: ['./decision-tree-input.component.css']
 })
-export class DecisionTreeInputComponent implements AfterViewInit {
+export class DecisionTreeInputComponent extends AbstractInputComponent<ClassifierDataRequest, ClassifierDataResponse | number> {
 
-  @Output() resultEmitter = new EventEmitter<[ ClassifierDataRequest | ClassifierDataResponse | number, ClassifierEmittedType]>();
+  @Output() resultEmitter = new EventEmitter<[ClassifierDataRequest | ClassifierDataResponse | number,  InputEmitType]>();
   @Output() newRequestEmitter = new EventEmitter<undefined>();
   private readonly requestBuilder: ClassifierRequestBuilderService;
   private readonly service: DecisionTreeService;
-  private readonly csvReaderService: CsvReaderService;
-  private readonly validationMessageGenrator: ValidationMessageGenerator;
-  settingsForm: FormGroup;
-  errorMessage: string;
-  errorMessagePerInput: { [key: string]: string } = {};
-  private csvFile: File;
-  isWaitingForResult: boolean;
 
   constructor(formBuilder: FormBuilder,
               requestBuilder: ClassifierRequestBuilderService,
               service: DecisionTreeService,
               csvReaderService: CsvReaderService) {
-    this.requestBuilder = requestBuilder;
+    super(formBuilder, csvReaderService, DecisionTreeValidationMessages.buildDecisionTreeValidationMessages());
     this.service = service;
-    this.csvReaderService = csvReaderService;
-    const validationMessages = DecisionTreeValidationMessages.buildDecisionTreeValidationMessages();
-    this.validationMessageGenrator = new ValidationMessageGenerator(validationMessages);
-    this.isWaitingForResult = false;
-    this.settingsForm = formBuilder.group(this.buildFormGroup());
-  }
-
-  ngAfterViewInit(): void {
-    this.settingsForm.valueChanges.pipe(
-      debounceTime(800)
-    ).subscribe(() => {
-      this.errorMessagePerInput = this.validationMessageGenrator.generateErrorMessages(this.settingsForm);
-    });
+    this.requestBuilder = requestBuilder;
   }
 
   predict(): void {
@@ -61,14 +42,6 @@ export class DecisionTreeInputComponent implements AfterViewInit {
 
   computePredictAccuracy(): void {
     this.postNewRequest(request => this.service.computePredictAccuracy(request));
-  }
-
-  onUpload(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files?.length) {
-      this.csvFile = input.files[0];
-    }
   }
 
   private postNewRequest(serviceCall: (request: ClassifierRequest) => Observable<ClassifierDataResponse | number>): void {
@@ -87,35 +60,24 @@ export class DecisionTreeInputComponent implements AfterViewInit {
         tap((value: ClassifierStartResponse) => requestId = value.requestId ),
         switchMap(() => this.requestBuilder.buildClassifierDataRequests(this.csvFile, predictionColumnName, actionColumnNames, requestId)),
         switchMap(classifierDataRequest => {
-          this.resultEmitter.emit([classifierDataRequest, ClassifierEmittedType.REQUEST]);
+          this.emitRequest(classifierDataRequest);
           return this.service.data(classifierDataRequest);
         }),
         last(null, 'ignored'),
         switchMap(() => this.requestBuilder.buildClassifierRequest(requestId)),
         switchMap(request => serviceCall(request))
       ).subscribe({
-        next: result => this.onSuccess(result),
+        next: (result: ClassifierDataResponse | number) => this.onSuccess(result),
         error: err => this.onError(err)
       });
   }
 
-  private onNewRequest(): void {
-    this.errorMessage = '';
-    this.newRequestEmitter.emit();
-    this.isWaitingForResult = true;
+  override setEmitters(): void {
+    this.setResultEmitter(this.resultEmitter);
+    this.setNewRequestEmitter(this.newRequestEmitter);
   }
 
-  private onSuccess(result: ClassifierDataResponse | number): void {
-    this.resultEmitter.emit([result, ClassifierEmittedType.RESULT]);
-    this.isWaitingForResult = false;
-  }
-
-  private onError(errorMessage: Error): void {
-    this.errorMessage = errorMessage.message;
-    this.isWaitingForResult = false;
-  }
-
-  private buildFormGroup(): { [key: string]: [string, ValidationErrors[]] } {
+  override buildFormGroup(): { [key: string]: [string, ValidationErrors[]] } {
     return {
       [ Constants.PREDICTION_COLUMN_NAME_FORM ]: [ '', [ Validators.required ] ],
       [ Constants.ACTION_COLUMN_NAMES_FORM ]: [ '', [ Validators.required ] ],

@@ -6,6 +6,7 @@ import { Observable, of } from 'rxjs';
 import { MatIconModule } from '@angular/material/icon';
 
 import { CsvReaderService } from 'src/app/shared/csv/csv-reader.service';
+import { InputEmitType } from 'src/app/shared/model/input-emit-type';
 import { TimeSeriesAnalysisInputComponent } from './time-series-analysis-input.component';
 import { TimeSeriesAnalysisService } from '../service/time-series-analysis.service';
 import { TimeSeriesRequestBuilderService } from '../request-builder/time-series-request-builder.service';
@@ -13,7 +14,6 @@ import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
 import { Constants } from '../utils/constants';
-import { TimeSeriesEmittedType } from '../model/time-series-emitted-type';
 
 describe('TimeSeriesAnalysisInputComponent', () => {
 
@@ -186,7 +186,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.forecast();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -229,7 +229,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.forecast();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from service');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -246,7 +246,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.forecast();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
@@ -266,7 +266,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -309,7 +309,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from service');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -326,7 +326,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
@@ -346,7 +346,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.forecastVsActual();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -389,7 +389,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.forecastVsActual();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from service');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -406,7 +406,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.forecastVsActual();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildTimeSeriesResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
@@ -426,7 +426,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.computeForecastAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildAccuracyResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildAccuracyResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -469,7 +469,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.computeForecastAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('error from service');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalled();
@@ -486,7 +486,7 @@ describe('TimeSeriesAnalysisInputComponent', () => {
       component.computeForecastAccuracy();
 
       AssertionHelper.expectValidForm(fixture);
-      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), TimeSeriesEmittedType.REQUEST ], [ FactoryHelper.buildAccuracyResult(), TimeSeriesEmittedType.RESULT ] ]);
+      AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildTimeSeriesRequest(), InputEmitType.REQUEST ], [ FactoryHelper.buildAccuracyResult(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
@@ -528,7 +528,7 @@ class TestHelper {
 
 class FormHelper {
 
-  static ACTUAL_EMITTED_ITEMS: [TimeSeries | number, TimeSeriesEmittedType][] = [];
+  static ACTUAL_EMITTED_ITEMS: [TimeSeries | number, InputEmitType][] = [];
   static IS_NEW_REQUEST_EMITTED = false;
 
   private constructor() { }
@@ -616,7 +616,7 @@ class AssertionHelper {
     expect(button.properties[AssertionHelper.TITLE]).toEqual('Disabled until the form data is valid');
   }
 
-  static assertOnEmittedItems(expectedEmittedItems: [TimeSeries | number, TimeSeriesEmittedType][]): void {
+  static assertOnEmittedItems(expectedEmittedItems: [TimeSeries | number, InputEmitType][]): void {
     expect(FormHelper.ACTUAL_EMITTED_ITEMS).toEqual(expectedEmittedItems);
   }
 
