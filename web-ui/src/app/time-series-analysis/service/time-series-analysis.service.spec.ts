@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
+import { ObservableAssertionHelper } from 'src/app/shared/test-helper/observable-assertion-helper';
 import { TimeSeriesAnalysisService } from './time-series-analysis.service';
 import { TimeSeries } from '../model/time-series';
 import { TimeSeriesRow } from '../model/time-series-row';
@@ -21,10 +22,13 @@ describe('TimeSeriesAnalysisService', () => {
     service = TestBed.inject(TimeSeriesAnalysisService);
   });
 
+  afterEach(() => {
+    httpMock.verify();
+  });
 
   describe('Forecast', () => {
 
-    it('should handle error of type error event from http post forecast', () => {
+    it('should handle error of type error event from http post forecast', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -33,10 +37,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.forecast(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -49,11 +50,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.forecast(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: (actualValue: TimeSeries) => expect(actualValue).toEqual(Helper.buildTimeSeriesResult()),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ Helper.buildTimeSeriesResult() ], done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast');
       req.flush(timeSeriesResult);
       expect(req.request.method).toBe('POST');
@@ -65,7 +62,7 @@ describe('TimeSeriesAnalysisService', () => {
 
   describe('Predict', () => {
 
-    it('should handle error of type error event from http post predict', () => {
+    it('should handle error of type error event from http post predict', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -74,10 +71,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.predict(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/predict');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -90,11 +84,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.predict(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: (actualValue: TimeSeries) => expect(actualValue).toEqual(Helper.buildTimeSeriesResult()),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ Helper.buildTimeSeriesResult() ], done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/predict');
       req.flush(timeSeriesResult);
       expect(req.request.method).toBe('POST');
@@ -106,7 +96,7 @@ describe('TimeSeriesAnalysisService', () => {
 
   describe('Forecast vs Actual', () => {
 
-    it('should handle error of type error event from http post forecast vs actual', () => {
+    it('should handle error of type error event from http post forecast vs actual', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -115,10 +105,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.forecastVsActual(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-vs-actual');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -131,11 +118,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.forecastVsActual(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: (actualValue: TimeSeries) => expect(actualValue).toEqual(Helper.buildTimeSeriesResult()),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ Helper.buildTimeSeriesResult() ], done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-vs-actual');
       req.flush(timeSeriesResult);
       expect(req.request.method).toBe('POST');
@@ -147,7 +130,7 @@ describe('TimeSeriesAnalysisService', () => {
 
   describe('Compute Forecat Accuracy', () => {
 
-    it('should handle error of type error event from http post compute forecast accuracy', () => {
+    it('should handle error of type error event from http post compute forecast accuracy', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -156,10 +139,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.computeForecastAccuracy(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-accuracy');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -171,11 +151,7 @@ describe('TimeSeriesAnalysisService', () => {
 
       const actualResult$ = service.computeForecastAccuracy(timeSeriesAnalysisRequest);
 
-      actualResult$.subscribe({
-        next: (actualValue: number) => expect(actualValue).toEqual(98.55),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ 98.55 ], done);
       const req = httpMock.expectOne('http://localhost:8080/time-series-analysis/forecast-accuracy');
       req.flush(98.55);
       expect(req.request.method).toBe('POST');

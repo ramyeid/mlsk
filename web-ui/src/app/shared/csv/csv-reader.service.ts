@@ -11,7 +11,7 @@ export class CsvReaderService {
   private static readonly SEPERATOR: string = ',';
   private static readonly END_LINE: string = '\n';
 
-  public throwExceptionIfInvalidCsv(file: File, columns: string[]): Observable<undefined> {
+  public throwExceptionIfInvalidCsv(file: File, columns: string[]): Observable<never> {
     return new Observable(subscriber => {
       const fileReader = new FileReader();
 

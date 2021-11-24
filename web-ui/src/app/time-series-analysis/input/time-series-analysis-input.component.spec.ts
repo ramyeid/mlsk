@@ -634,12 +634,12 @@ class FactoryHelper {
     return new TimeSeries(rows, 'Date', 'Value', 'yyyyMM');
   }
 
-  static buildThrowExceptionIfInvalidCsvObservable(): Observable<undefined> {
+  static buildThrowExceptionIfInvalidCsvObservable(): Observable<never> {
     return of();
   }
 
-  static buildThrowExceptionIfInvalidCsvErrorObservable(): Observable<undefined> {
-    return new Observable<undefined>(subscriber => {
+  static buildThrowExceptionIfInvalidCsvErrorObservable(): Observable<never> {
+    return new Observable<never>(subscriber => {
       subscriber.error(new Error('error from csv validation'));
     });
   }
