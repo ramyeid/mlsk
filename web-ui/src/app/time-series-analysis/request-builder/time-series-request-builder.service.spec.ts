@@ -1,5 +1,6 @@
 import { Observable, of } from 'rxjs';
 
+import { ObservableAssertionHelper } from 'src/app/shared/test-helper/observable-assertion-helper';
 import { TimeSeriesRequestBuilderService } from './time-series-request-builder.service';
 import { CsvReaderService, ValuesPerColumn } from 'src/app/shared/csv/csv-reader.service';
 import { TimeSeriesAnalysisRequest } from '../model/time-series-analysis-request';
@@ -25,13 +26,7 @@ describe('TimeSeriesRequestBuilderService', () => {
 
     const actualResult$ = service.buildTimeSeriesAnalysisRequest(file, 'Date', 'Passengers', 'yyyMM', 5);
 
-    actualResult$.subscribe({
-      next: () => expect(true).toBeFalse(),
-      error: (error) => {
-        expect(error).toBe('Error from ReadCsvService');
-        done();
-      }
-    });
+    ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error from ReadCsvService', done);
   });
 
   it('should map result from csv reader service to time series analysis request', (done: DoneFn) => {
@@ -49,11 +44,7 @@ describe('TimeSeriesRequestBuilderService', () => {
     const expectedRows = [ expectedTimeSeriesRow1, expectedTimeSeriesRow2, expectedTimeSeriesRow3 ];
     const expectedTimeSeries = new TimeSeries(expectedRows, 'Date', 'Passengers', 'yyyMM');
     const expectedValue = new TimeSeriesAnalysisRequest(3, expectedTimeSeries);
-    actualResult$.subscribe({
-      next: (actualValue) => expect(actualValue).toEqual(expectedValue),
-      error: () => expect(true).toBeFalse(),
-      complete: () => done()
-    });
+    ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue ], done);
   });
 
 });

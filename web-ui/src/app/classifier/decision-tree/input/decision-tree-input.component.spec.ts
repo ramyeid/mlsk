@@ -680,7 +680,7 @@ class FactoryHelper {
 
   private constructor() { }
 
-  static buildThrowExceptionIfInvalidCsvObservable(): Observable<undefined> {
+  static buildThrowExceptionIfInvalidCsvObservable(): Observable<never> {
     return of();
   }
 
@@ -696,8 +696,8 @@ class FactoryHelper {
     return new ClassifierDataResponse('prediction', [ 1, 1, 1 ]);
   }
 
-  static buildThrowExceptionIfInvalidCsvErrorObservable(): Observable<undefined> {
-    return new Observable<undefined>(subscriber => {
+  static buildThrowExceptionIfInvalidCsvErrorObservable(): Observable<never> {
+    return new Observable<never>(subscriber => {
       subscriber.error(new Error('error from csv validation'));
     });
   }

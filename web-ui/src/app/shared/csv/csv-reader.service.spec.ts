@@ -1,4 +1,5 @@
-import { CsvReaderService, ValuesPerColumn } from './csv-reader.service';
+import { ObservableAssertionHelper } from '../test-helper/observable-assertion-helper';
+import { CsvReaderService } from './csv-reader.service';
 
 describe('CsvReaderService', () => {
 
@@ -10,14 +11,7 @@ describe('CsvReaderService', () => {
 
       const actualResult$ = service.throwExceptionIfInvalidCsv(file, ['Date', 'Passengers']);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: () => expect(true).toBeFalse(),
-        complete: () => {
-          expect(true).toBeTrue();
-          done();
-        }
-      });
+      ObservableAssertionHelper.assertOnNoEmittedItems(actualResult$, done);
     });
 
     it('should raise error if invalid csv and input', (done: DoneFn) => {
@@ -26,14 +20,9 @@ describe('CsvReaderService', () => {
 
       const actualResult$ = service.throwExceptionIfInvalidCsv(file, ['Dates', 'Passenger']);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (error) => {
-          expect(error.message).toBe(`Column with title 'Dates' is not available in the csv file`);
-          done();
-        }
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, `Column with title 'Dates' is not available in the csv file`, done);
     });
+
   });
 
 
@@ -45,13 +34,7 @@ describe('CsvReaderService', () => {
 
       const actualResult$ = service.readCsv(file, ['a', 'b']);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (error) => {
-          expect(error.message).toBe(`Column with title 'a' is not available in the csv file`);
-          done();
-        }
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, `Column with title 'a' is not available in the csv file`, done);
     });
 
     it('should throw exception if column two does not match the file', (done: DoneFn) => {
@@ -60,13 +43,7 @@ describe('CsvReaderService', () => {
 
       const actualResult$ = service.readCsv(file, ['Date', 'b']);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (error) => {
-          expect(error.message).toBe(`Column with title 'b' is not available in the csv file`);
-          done();
-        }
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, `Column with title 'b' is not available in the csv file`, done);
     });
 
     it('should throw exception if invalid content', (done: DoneFn) => {
@@ -75,13 +52,7 @@ describe('CsvReaderService', () => {
 
       const actualResult$ = service.readCsv(file, ['Date', 'Passengers']);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (error) => {
-          expect(error.message).toBe(`Column with title 'Date' is not available in the csv file`);
-          done();
-        }
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, `Column with title 'Date' is not available in the csv file`, done);
     });
 
     it('should throw exception if invalid value lines', (done: DoneFn) => {
@@ -90,13 +61,7 @@ describe('CsvReaderService', () => {
 
       const actualResult$ = service.readCsv(file, ['Date', 'Passengers']);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (error) => {
-          expect(error.message).toBe(`Unable to parse line: '14 15'`);
-          done();
-        }
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, `Unable to parse line: '14 15'`, done);
     });
 
     it('should correctly parse file', (done: DoneFn) => {
@@ -109,11 +74,7 @@ describe('CsvReaderService', () => {
         Date: [ '12', '14' ],
         Passengers: [ '13', '15' ]
       };
-      actualResult$.subscribe({
-        next: (actualValue: ValuesPerColumn) => expect(actualValue).toEqual(expectedValue),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue ], done);
     });
 
     it('should correctly parse file with multiple columns', (done: DoneFn) => {
@@ -127,11 +88,7 @@ describe('CsvReaderService', () => {
         col2: [ '3', '8', '13' ],
         col4: [ '5', '10', '15' ]
       };
-      actualResult$.subscribe({
-        next: (actualValue: ValuesPerColumn) => expect(actualValue).toEqual(expectedValue),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue ], done);
     });
 
     it('should correctly parse file with empty values', (done: DoneFn) => {
@@ -145,11 +102,7 @@ describe('CsvReaderService', () => {
         col2: [ '3', ],
         col4: [ '5', ]
       };
-      actualResult$.subscribe({
-        next: (actualValue: ValuesPerColumn) => expect(actualValue).toEqual(expectedValue),
-        error:() => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue ], done);
     });
 
   });

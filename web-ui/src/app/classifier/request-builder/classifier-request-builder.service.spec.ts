@@ -1,5 +1,6 @@
 import { Observable, of } from 'rxjs';
 
+import { ObservableAssertionHelper } from 'src/app/shared/test-helper/observable-assertion-helper';
 import { ClassifierRequestBuilderService } from './classifier-request-builder.service';
 import { CsvReaderService, ValuesPerColumn } from 'src/app/shared/csv/csv-reader.service';
 import { ClassifierStartRequest } from '../model/classifier-start-request';
@@ -26,12 +27,8 @@ describe('ClassifierRequestBuilderService', () => {
 
       const actualResult$ = service.buildClassifierStartRequest(predictionColumnName, actionColumnNames, numberOfValues);
 
-      const expectedValue = new ClassifierStartRequest(predictionColumnName, actionColumnNames, numberOfValues);
-      actualResult$.subscribe({
-        next: (actualValue) => expect(actualValue).toEqual(expectedValue),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      const expectedValue: ClassifierStartRequest = new ClassifierStartRequest(predictionColumnName, actionColumnNames, numberOfValues);
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue ], done);
     });
 
   });
@@ -51,13 +48,7 @@ describe('ClassifierRequestBuilderService', () => {
 
       const actualResult$ = service.buildClassifierDataRequests(file, predictionColumnName, actionColumnNames, requestId);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (error) => {
-          expect(error).toBe('Error from ReadCsvService');
-          done();
-        }
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error from ReadCsvService', done);
     });
 
     it('should map result from csv reader service to classifier data requests', (done: DoneFn) => {
@@ -76,13 +67,7 @@ describe('ClassifierRequestBuilderService', () => {
       const expectedValue1 = new ClassifierDataRequest('predictionColumn', [ 1, 2, 3 ], requestId);
       const expectedValue2 = new ClassifierDataRequest('col0', [ 4, 5, 6 ], requestId);
       const expectedValue3 = new ClassifierDataRequest('col1', [ 7, 8, 9 ], requestId);
-      const expectedValues = [ expectedValue1, expectedValue2, expectedValue3 ];
-      let index = 0;
-      actualResult$.subscribe({
-        next: (actualValue) => expect(actualValue).toEqual(expectedValues[index++]),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue1, expectedValue2, expectedValue3 ], done);
     });
 
   });
@@ -96,11 +81,7 @@ describe('ClassifierRequestBuilderService', () => {
       const actualResult$ = service.buildClassifierRequest(requestId);
 
       const expectedValue = new ClassifierRequest(requestId);
-      actualResult$.subscribe({
-        next: (actualValue) => expect(actualValue).toEqual(expectedValue),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue ], done);
     });
 
   });

@@ -1,6 +1,7 @@
 import { TestBed } from '@angular/core/testing';
 import { HttpClientTestingModule, HttpTestingController } from '@angular/common/http/testing';
 
+import { ObservableAssertionHelper } from 'src/app/shared/test-helper/observable-assertion-helper';
 import { DecisionTreeService } from './decision-tree.service';
 import { ClassifierStartRequest } from '../../model/classifier-start-request';
 import { ClassifierStartResponse } from '../../model/classifier-start-response';
@@ -23,10 +24,13 @@ describe('DecisionTreeService', () => {
     service = TestBed.inject(DecisionTreeService);
   });
 
+  afterEach(() => {
+    httpMock.verify();
+  });
 
   describe('Start', () => {
 
-    it('should handle error of type error event from http post start', () => {
+    it('should handle error of type error event from http post start', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -35,10 +39,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.start(classifierStartRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/start');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -50,11 +51,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.start(classifierStartRequest);
 
-      actualResult$.subscribe({
-        next: (actualValue: ClassifierStartResponse) => expect(actualValue).toEqual(Helper.buildClassifierStartResponse()),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ Helper.buildClassifierStartResponse() ], done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/start');
       req.flush(Helper.buildClassifierStartResponse());
       expect(req.request.method).toBe('POST');
@@ -66,7 +63,7 @@ describe('DecisionTreeService', () => {
 
   describe('Data', () => {
 
-    it('should handle error of type error event from http post data', () => {
+    it('should handle error of type error event from http post data', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -75,10 +72,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.data(classifierDataRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/data');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -90,11 +84,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.data(classifierDataRequest);
 
-      actualResult$.subscribe({
-        next: (value) => expect(value).toBeNull(),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ null ], done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/data');
       req.flush(null);
       expect(req.request.method).toBe('POST');
@@ -106,7 +96,7 @@ describe('DecisionTreeService', () => {
 
   describe('Predict', () => {
 
-    it('should handle error of type error event from http post predict', () => {
+    it('should handle error of type error event from http post predict', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -115,10 +105,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.predict(classifieRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/predict');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -130,11 +117,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.predict(ClassifierRequest);
 
-      actualResult$.subscribe({
-        next: (actualValue: ClassifierDataResponse) => expect(actualValue).toEqual(Helper.buildClassifierDataResponse()),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ Helper.buildClassifierDataResponse() ], done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/predict');
       req.flush(Helper.buildClassifierDataResponse());
       expect(req.request.method).toBe('POST');
@@ -145,7 +128,7 @@ describe('DecisionTreeService', () => {
 
   describe('Compute Predict Accuracy', () => {
 
-    it('should handle error of type error event from http post compute predict accuracy', () => {
+    it('should handle error of type error event from http post compute predict accuracy', (done: DoneFn) => {
       const errorEvent = new ErrorEvent('Type', {
         error : new ErrorEvent('Error Event type'),
         message : 'Error Event type Message'
@@ -154,10 +137,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.computePredictAccuracy(classifierRequest);
 
-      actualResult$.subscribe({
-        next: () => expect(true).toBeFalse(),
-        error: (err) => expect(err.message).toBe('Error while calling Service; code 0: Error Event type Message')
-      });
+      ObservableAssertionHelper.assertOnEmittedError(actualResult$, 'Error while calling Service; code 0: Error Event type Message', done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/predict-accuracy');
       req.error(errorEvent);
       expect(req.request.method).toBe('POST');
@@ -169,11 +149,7 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.computePredictAccuracy(classifierRequest);
 
-      actualResult$.subscribe({
-        next: (actualValue: number) => expect(actualValue).toEqual(123.1),
-        error: () => expect(true).toBeFalse(),
-        complete: () => done()
-      });
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ 123.1 ], done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/predict-accuracy');
       req.flush(123.1);
       expect(req.request.method).toBe('POST');
