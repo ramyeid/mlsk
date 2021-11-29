@@ -23,7 +23,7 @@ The packaging will create a build directory containing the launcher scripts for 
 ```bash
 source .venv/bin/activate
 cd devops/scripts
-python packaging.py [--skipTests]
+python3 packaging.py [--skipTests]
 ```
 
 ## Configuration file
@@ -50,7 +50,7 @@ The launch_service dumped under build/ will read from the configuration file; an
 ```bash
 source .venv/bin/activate
 cd build
-python launch_service.py
+python3 launch_service.py
 ```
 
 ## Launch Desktop UI
@@ -60,7 +60,7 @@ The launch_ui dumped under build/ will read from the configuration file; and run
 ```bash
 source .venv/bin/activate
 cd build
-python launch_ui.py
+python3 launch_ui.py
 ```
 
 ## Launch Web UI
@@ -70,7 +70,7 @@ The launch_web_ui dumped under build/ will read from the configuration file; and
 ```bash
 source .venv/bin/activate
 cd build
-python launch_web_ui.py
+python3 launch_web_ui.py
 ```
 
 ## Logs

@@ -31,19 +31,19 @@ code .
 ### Compile all files
 
 ```bash
-python -m compileall -f .
+python3 -m compileall -f .
 ```
 
 ### Run all tests
 
 ```bash
-python -m pytest -s
+python3 -m pytest -s
 ```
 
 ### Run single test
 
 ```bash
-python -m pytest -s test/services/test_time_series_analysis_service.py::TestTimeSeriesAnalysisService::test_forecast_service
+python3 -m pytest -s test/services/test_time_series_analysis_service.py::TestTimeSeriesAnalysisService::test_forecast_service
 ```
 
 ### Run all tests with coverage and junit report
@@ -61,11 +61,11 @@ pylint *
 ### Get Python documentation
 
 ```bash
-python -m pydoc {file}
+python3 -m pydoc {file}
 ```
 
 ### Launch an engine
 
 ```bash
-python engine.py --port 6767 --logs-path /Users/ramyeid/Documents/FYP/V1/mlsk/build/logs/
+python3 engine.py --port 6767 --logs-path /Users/ramyeid/Documents/FYP/V1/mlsk/build/logs/
 ```
