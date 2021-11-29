@@ -29,7 +29,7 @@ Given a csv input this service will compute the last x values and compare them t
 ## Python Documentation
 
 ```bash
-python -m pydoc time_series_analysis_service
+python3 -m pydoc time_series_analysis_service
 ```
 
 ## Debug Service
@@ -41,17 +41,17 @@ The three methods are also offered in this small python script:
 * Predict
 
     ```bash
-    python engine_debug.py --service TSA --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action PREDICT [--output //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers_predict_output.csv]
+    python3 engine_debug.py --service TSA --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action PREDICT [--output //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers_predict_output.csv]
     ```
 
 * Forecast
 
     ```bash
-    python engine_debug.py --service TSA --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST [--output //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers_forecast_output.csv]
+    python3 engine_debug.py --service TSA --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST [--output //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers_forecast_output.csv]
     ```
 
 * Accuracy for Forecast
 
     ```bash
-    python engine_debug.py --service TSA --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST_ACCURACY
+    python3 engine_debug.py --service TSA --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//AirPassengers.csv --dateColumnName Date --valueColumnName Passengers --dateFormat '%Y-%m' --numberOfValues 3 --action FORECAST_ACCURACY
     ```

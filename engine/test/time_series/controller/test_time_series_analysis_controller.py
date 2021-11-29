@@ -36,7 +36,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     time_series_row = TimeSeriesRow(datetime(1952, 1, 1), 185.0)
     time_series_row1 = TimeSeriesRow(datetime(1952, 2, 1), 199.0)
     expected_time_series = TimeSeries([time_series_row, time_series_row1], 'Date', 'Passengers', 'yyyy-MM')
-    assert_on_time_series_with_diff(expected_time_series, actual_time_series, 2)
+    assert_on_time_series_with_diff(expected_time_series, actual_time_series, 3)
 
 
   def test_forecast_exception(self) -> None:

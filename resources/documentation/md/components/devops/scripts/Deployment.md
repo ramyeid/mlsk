@@ -23,7 +23,7 @@ The deployment will create a docker_deploy directory containing the dockerfiles 
 ```bash
 source .venv/bin/activate
 cd devops/scripts
-python deployment.py [--push]
+python3 deployment.py [--push]
 ```
 
 ## Launch Service

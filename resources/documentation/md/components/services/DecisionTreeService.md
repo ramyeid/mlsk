@@ -25,7 +25,7 @@ Given a csv input this service will compute the last x values and compare them t
 ## Python Documentation
 
 ```bash
-python -m pydoc decision_tree_service
+python3 -m pydoc decision_tree_service
 ```
 
 ## Debug Service
@@ -37,11 +37,11 @@ The three methods are also offered in this small python script:
 * Predict
 
     ```bash
-    python engine_debug.py --service DT --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//classifier_data.csv --actionColumnNames "Length,Diameter,Height,Whole weight,Shucked weight,Viscera weight,Shell weight,Rings" --predictionColumnName Sex --numberOfValues 3 --action PREDICT [--output //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//classifier_data_predict_output.csv]
+    python3 engine_debug.py --service DT --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//classifier_data.csv --actionColumnNames "Length,Diameter,Height,Whole weight,Shucked weight,Viscera weight,Shell weight,Rings" --predictionColumnName Sex --numberOfValues 3 --action PREDICT [--output //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//classifier_data_predict_output.csv]
     ```
 
 * Accuracy for Predict
 
     ```bash
-    python engine_debug.py --service DT --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//classifier_data.csv --actionColumnNames "Length,Diameter,Height,Whole weight,Shucked weight,Viscera weight,Shell weight,Rings" --predictionColumnName Sex --numberOfValues 3 --action PREDICT_ACCURACY
+    python3 engine_debug.py --service DT --csv //Users//ramyeid//Documents//FYP//V1//mlsk//resources//data_example//classifier_data.csv --actionColumnNames "Length,Diameter,Height,Whole weight,Shucked weight,Viscera weight,Shell weight,Rings" --predictionColumnName Sex --numberOfValues 3 --action PREDICT_ACCURACY
     ```
