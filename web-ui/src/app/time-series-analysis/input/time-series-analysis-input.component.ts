@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, Validators, ValidationErrors } from '@angular/forms';
+import { UntypedFormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { last, switchMap } from 'rxjs/operators';
 
@@ -26,7 +26,7 @@ export class TimeSeriesAnalysisInputComponent extends AbstractInputComponent<Tim
   private readonly requestBuilder: TimeSeriesRequestBuilderService;
   private readonly service: TimeSeriesAnalysisService;
 
-  constructor(formBuilder: FormBuilder,
+  constructor(formBuilder: UntypedFormBuilder,
               requestBuilder: TimeSeriesRequestBuilderService,
               service: TimeSeriesAnalysisService,
               csvReaderService: CsvReaderService) {

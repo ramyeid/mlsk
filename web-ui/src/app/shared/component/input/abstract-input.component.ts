@@ -1,5 +1,5 @@
 import { AfterViewInit, EventEmitter, Injectable } from '@angular/core';
-import { FormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
+import { UntypedFormBuilder, FormGroup, ValidationErrors } from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { CsvReaderService } from '../../csv/csv-reader.service';
 
@@ -20,7 +20,7 @@ export abstract class AbstractInputComponent<Request, Result> implements AfterVi
   protected csvFile: File;
   isWaitingForResult: boolean;
 
-  constructor(formBuilder: FormBuilder,
+  constructor(formBuilder: UntypedFormBuilder,
               csvReaderService: CsvReaderService,
               validationMessages: ValidationMessages) {
     this.csvReaderService = csvReaderService;

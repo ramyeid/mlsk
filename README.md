@@ -80,5 +80,4 @@ We worked hard to make maching learning easy and accessible for everyone. Alread
 
 ## Contributors
 
-- Joe ABDELNOUR
 - Ramy EID
