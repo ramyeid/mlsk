@@ -1,5 +1,5 @@
 import { Component, Output, EventEmitter } from '@angular/core';
-import { FormBuilder, Validators, ValidationErrors } from '@angular/forms';
+import { UntypedFormBuilder, Validators, ValidationErrors } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { last, tap, switchMap } from 'rxjs/operators';
 
@@ -27,7 +27,7 @@ export class DecisionTreeInputComponent extends AbstractInputComponent<Classifie
   private readonly requestBuilder: ClassifierRequestBuilderService;
   private readonly service: DecisionTreeService;
 
-  constructor(formBuilder: FormBuilder,
+  constructor(formBuilder: UntypedFormBuilder,
               requestBuilder: ClassifierRequestBuilderService,
               service: DecisionTreeService,
               csvReaderService: CsvReaderService) {

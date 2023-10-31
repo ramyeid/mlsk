@@ -1,5 +1,5 @@
 import { Component, AfterViewInit } from '@angular/core';
-import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { FormGroup, UntypedFormBuilder, Validators } from '@angular/forms';
 import { debounceTime } from 'rxjs/operators';
 
 import { ValidationMessageGenerator } from 'src/app/shared/validator/message-generator/validation-message-generator';
@@ -14,13 +14,13 @@ import { ConfigurationService } from '../service/configuration.service';
 })
 export class ConfigurationComponent implements AfterViewInit {
 
-  private readonly formBuilder: FormBuilder;
+  private readonly formBuilder: UntypedFormBuilder;
   private readonly service: ConfigurationService;
   private readonly validationMessageGenrator: ValidationMessageGenerator;
   configurationForm: FormGroup;
   errorMessagePerInput: { [key: string]: string } = {};
 
-  constructor(formBuilder: FormBuilder, service: ConfigurationService) {
+  constructor(formBuilder: UntypedFormBuilder, service: ConfigurationService) {
     this.formBuilder = formBuilder;
     this.service = service;
     const validationMessages = ConfigurationValidationMessages.buildConfigurationValidationMessages();
