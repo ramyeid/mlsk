@@ -1,7 +1,7 @@
 package org.mlsk.lib.engine.launcher;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 
 import java.io.File;
 import java.io.IOException;
@@ -21,9 +21,9 @@ public class EngineLauncher {
     this.processBuilder = processBuilder;
   }
 
-    public Process launchEngine(ServiceInformation serviceInformation, String logsPath, String enginePath) throws IOException {
+    public Process launchEngine(Endpoint endpoint, String logsPath, String enginePath) throws IOException {
     return processBuilder
-        .command("python3", "engine.py", "--port", valueOf(serviceInformation.getPort()), "--logs-path", logsPath)
+        .command("python3", "engine.py", "--port", valueOf(endpoint.getPort()), "--logs-path", logsPath)
         .directory(new File(enginePath))
         .start();
   }

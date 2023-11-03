@@ -3,7 +3,7 @@ package org.mlsk.service.impl.orchestrator.impl;
 import com.google.common.annotations.VisibleForTesting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException;
@@ -57,11 +57,11 @@ public class OrchestratorImpl implements Orchestrator {
   public String bookEngine(String actionName) {
     LOGGER.info("Searching for engine to book for {}", actionName);
     Engine availableEngine = retrieveAvailableEngineAndBook(actionName);
-    ServiceInformation serviceInformation = availableEngine.getServiceInformation();
-    LOGGER.info("Engine {} will treat action {}", serviceInformation, actionName);
+    Endpoint endpoint = availableEngine.getEndpoint();
+    LOGGER.info("Engine {} will treat action {}", endpoint, actionName);
 
-    String requestId = requestHandler.registerNewRequest(actionName, serviceInformation);
-    LOGGER.info("Request Id {} is assigned to engine {} with action {}", requestId, serviceInformation, actionName);
+    String requestId = requestHandler.registerNewRequest(actionName, endpoint);
+    LOGGER.info("Request Id {} is assigned to engine {} with action {}", requestId, endpoint, actionName);
 
     return requestId;
   }
@@ -105,30 +105,30 @@ public class OrchestratorImpl implements Orchestrator {
     Optional<Request> requestOptional = requestHandler.getRequest(requestId);
     Request request = requestOptional.orElseThrow(buildNoAvailableBlockedEngineExceptionSupplier(requestId, actionName));
 
-    Predicate<Engine> engineWithInformation = engine -> engine.getServiceInformation().equals(request.getServiceInformation());
-    return getEngine(engineWithInformation, buildNoEngineWithInformationExceptionSupplier(request.getServiceInformation(), actionName));
+    Predicate<Engine> engineWithInformation = engine -> engine.getEndpoint().equals(request.getEndpoint());
+    return getEngine(engineWithInformation, buildNoEngineWithInformationExceptionSupplier(request.getEndpoint(), actionName));
   }
 
   private void removeRequestAndMarkAsWaiting(String requestId, String actionName, Request requestToRemove) {
-    synchronized (requestToRemove.getServiceInformation()) {
-      LOGGER.info("[{}] Engine {} in waiting mode after computing action: {}", requestId, requestToRemove.getServiceInformation(), actionName);
+    synchronized (requestToRemove.getEndpoint()) {
+      LOGGER.info("[{}] Engine {} in waiting mode after computing action: {}", requestId, requestToRemove.getEndpoint(), actionName);
       retrieveEngine(requestId, actionName).markAsWaitingForRequest();
-      LOGGER.info("[{}] Releasing engine {} with action {}", requestId, requestToRemove.getServiceInformation(), actionName);
+      LOGGER.info("[{}] Releasing engine {} with action {}", requestId, requestToRemove.getEndpoint(), actionName);
       requestHandler.removeRequest(requestId);
     }
   }
 
   private <Result> Result callOnEngine(Engine engine, String requestId, Function<Engine, Result> action, String actionName) {
-    synchronized (engine.getServiceInformation()) {
+    synchronized (engine.getEndpoint()) {
       try {
-        LOGGER.info("[{}] Engine {} computing action: {}", requestId, engine.getServiceInformation(), actionName);
+        LOGGER.info("[{}] Engine {} computing action: {}", requestId, engine.getEndpoint(), actionName);
         engine.markAsComputing();
         return action.apply(engine);
       } catch (Exception exception) {
-        LOGGER.error("[{}] Error while launching: {} on engine {}: {}", requestId, actionName, engine.getServiceInformation(), exception.getMessage());
+        LOGGER.error("[{}] Error while launching: {} on engine {}: {}", requestId, actionName, engine.getEndpoint(), exception.getMessage());
         throw exception;
       } finally {
-        LOGGER.info("[{}] Engine {} reset to booked mode after computing action: {}", requestId, engine.getServiceInformation(), actionName);
+        LOGGER.info("[{}] Engine {} reset to booked mode after computing action: {}", requestId, engine.getEndpoint(), actionName);
         engine.bookEngine();
       }
     }
@@ -152,10 +152,10 @@ public class OrchestratorImpl implements Orchestrator {
     };
   }
 
-  private static Supplier<NoEngineWithInformationException> buildNoEngineWithInformationExceptionSupplier(ServiceInformation serviceInformation, String actionName) {
+  private static Supplier<NoEngineWithInformationException> buildNoEngineWithInformationExceptionSupplier(Endpoint endpoint, String actionName) {
     return () -> {
-      LOGGER.error("No engine found with Service Information {}, not expected - please check the logs!", serviceInformation);
-      return buildNoEngineWithInformationException(serviceInformation, actionName);
+      LOGGER.error("No engine found with Endpoint {}, not expected - please check the logs!", endpoint);
+      return buildNoEngineWithInformationException(endpoint, actionName);
     };
   }
 }

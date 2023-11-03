@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.classifier.engine;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.classifier.ClassifierEngine;
 import org.mlsk.service.classifier.ClassifierType;
@@ -17,8 +17,8 @@ public class ClassifierEngineClient implements ClassifierEngine {
 
   private final RestClient restClient;
 
-  public ClassifierEngineClient(ServiceInformation serviceInformation) {
-    this(new RestClient(serviceInformation));
+  public ClassifierEngineClient(Endpoint endpoint) {
+    this(new RestClient(endpoint));
   }
 
   @VisibleForTesting

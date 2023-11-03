@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.inttest;
 
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 
 import java.util.List;
 import java.util.Optional;
@@ -109,18 +109,18 @@ public class MockEngine {
       countDownLatch.countDown();
     }
 
-    public static MockedRequest buildHangingMockRequest(ServiceInformation serviceInformation, String endPoint, Object request, Object result) {
-      String resource = serviceInformation.getUrl() + endPoint;
+    public static MockedRequest buildHangingMockRequest(Endpoint endpoint, String endPoint, Object request, Object result) {
+      String resource = endpoint.getUrl() + endPoint;
       return new MockedRequest(resource, request, result, null, true);
     }
 
-    public static MockedRequest buildMockRequest(ServiceInformation serviceInformation, String endPoint, Object request, Object result) {
-      String resource = serviceInformation.getUrl() + endPoint;
+    public static MockedRequest buildMockRequest(Endpoint endpoint, String endPoint, Object request, Object result) {
+      String resource = endpoint.getUrl() + endPoint;
       return new MockedRequest(resource, request, result, null, false);
     }
 
-    public static MockedRequest buildFailingMockRequest(ServiceInformation serviceInformation, String endPoint, Object request, Exception exception) {
-      String resource = serviceInformation.getUrl() + endPoint;
+    public static MockedRequest buildFailingMockRequest(Endpoint endpoint, String endPoint, Object request, Exception exception) {
+      String resource = endpoint.getUrl() + endPoint;
       return new MockedRequest(resource, request, null, exception, false);
 
     }

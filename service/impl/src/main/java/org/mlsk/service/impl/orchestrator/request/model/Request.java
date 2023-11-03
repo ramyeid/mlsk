@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.orchestrator.request.model;
 
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 
 import java.util.Objects;
 
@@ -9,11 +9,11 @@ import static java.lang.String.valueOf;
 public class Request {
 
   private final String action;
-  private final ServiceInformation serviceInformation;
+  private final Endpoint endpoint;
 
-  public Request(String action, ServiceInformation serviceInformation) {
+  public Request(String action, Endpoint endpoint) {
     this.action = action;
-    this.serviceInformation = serviceInformation;
+    this.endpoint = endpoint;
   }
 
   public String getAction() {
@@ -21,11 +21,11 @@ public class Request {
   }
 
   public String getId() {
-    return valueOf(serviceInformation.hashCode());
+    return valueOf(endpoint.hashCode());
   }
 
-  public ServiceInformation getServiceInformation() {
-    return serviceInformation;
+  public Endpoint getEndpoint() {
+    return endpoint;
   }
 
   @Override
@@ -33,19 +33,19 @@ public class Request {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     Request request = (Request) o;
-    return Objects.equals(action, request.action) && Objects.equals(serviceInformation, request.serviceInformation);
+    return Objects.equals(action, request.action) && Objects.equals(endpoint, request.endpoint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(action, serviceInformation);
+    return Objects.hash(action, endpoint);
   }
 
   @Override
   public String toString() {
     return "Request{" +
         "action='" + action + '\'' +
-        ", serviceInformation=" + serviceInformation +
+        ", endpoint=" + endpoint +
         '}';
   }
 }

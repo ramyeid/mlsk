@@ -3,7 +3,7 @@ package org.mlsk.lib.rest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.exception.RestClientException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class RestClientTest {
 
-  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("hp123", 6767L);
+  private static final Endpoint ENDPOINT = new Endpoint("hp123", 6767L);
 
   @Mock
   private RestTemplate restTemplate;
@@ -32,7 +32,7 @@ public class RestClientTest {
 
   @BeforeEach
   void setUp() {
-    restClient = new RestClient(SERVICE_INFORMATION, restTemplate);
+    restClient = new RestClient(ENDPOINT, restTemplate);
     reset(restTemplate);
   }
 

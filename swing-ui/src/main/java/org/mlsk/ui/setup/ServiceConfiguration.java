@@ -1,7 +1,7 @@
 package org.mlsk.ui.setup;
 
 import org.apache.commons.cli.*;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 
 import static java.util.Optional.ofNullable;
 
@@ -9,18 +9,18 @@ public class ServiceConfiguration {
 
   private static ServiceConfiguration instance = null;
 
-  private ServiceInformation serviceInformation;
+  private Endpoint endpoint;
 
-  private ServiceConfiguration(ServiceInformation serviceInformation) {
-    this.serviceInformation = serviceInformation;
+  private ServiceConfiguration(Endpoint endpoint) {
+    this.endpoint = endpoint;
   }
 
-  public static synchronized ServiceInformation getServiceInformation() {
-    return instance.serviceInformation;
+  public static synchronized Endpoint getEndpoint() {
+    return instance.endpoint;
   }
 
-  public static synchronized void setServiceInformation(String host, Long port) {
-    instance.serviceInformation = new ServiceInformation(host, port);
+  public static synchronized void setEndpoint(String host, Long port) {
+    instance.endpoint = new Endpoint(host, port);
   }
 
   public static void buildServiceConfiguration(String... args) throws ParseException {
@@ -40,6 +40,6 @@ public class ServiceConfiguration {
     Long port = Long.valueOf(cmd.getOptionValue("port"));
     String host = ofNullable(cmd.getOptionValue("host")).orElse("localhost");
 
-    instance = new ServiceConfiguration(new ServiceInformation(host, port));
+    instance = new ServiceConfiguration(new Endpoint(host, port));
   }
 }

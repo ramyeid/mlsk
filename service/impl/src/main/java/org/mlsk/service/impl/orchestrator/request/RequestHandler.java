@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.orchestrator.request;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
 import org.mlsk.service.impl.orchestrator.request.registry.RequestRegistry;
 
@@ -20,8 +20,8 @@ public class RequestHandler {
     this.requestRegistry = requestRegistry;
   }
 
-  public synchronized String registerNewRequest(String actionName, ServiceInformation serviceInformation) {
-    Request request = new Request(actionName, serviceInformation);
+  public synchronized String registerNewRequest(String actionName, Endpoint endpoint) {
+    Request request = new Request(actionName, endpoint);
     String requestId = request.getId();
     requestRegistry.addRequest(requestId, request);
 

@@ -4,7 +4,7 @@ import com.google.common.annotations.VisibleForTesting;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.engine.launcher.EngineLauncher;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 
 import java.util.concurrent.TimeUnit;
 
@@ -13,18 +13,18 @@ public class ResilientEngineProcess {
   private static final Logger LOGGER = LogManager.getLogger(ResilientEngineProcess.class);
 
   private Process process;
-  private final ServiceInformation serviceInformation;
+  private final Endpoint endpoint;
   private final EngineLauncher engineLauncher;
   private final String enginePath;
   private final String logsPath;
 
-  public ResilientEngineProcess(ServiceInformation serviceInformation, String logsPath, String enginePath) {
-    this(serviceInformation, new EngineLauncher(), logsPath, enginePath);
+  public ResilientEngineProcess(Endpoint endpoint, String logsPath, String enginePath) {
+    this(endpoint, new EngineLauncher(), logsPath, enginePath);
   }
 
   @VisibleForTesting
-  public ResilientEngineProcess(ServiceInformation serviceInformation, EngineLauncher engineLauncher, String logsPath, String enginePath) {
-    this.serviceInformation = serviceInformation;
+  public ResilientEngineProcess(Endpoint endpoint, EngineLauncher engineLauncher, String logsPath, String enginePath) {
+    this.endpoint = endpoint;
     this.engineLauncher = engineLauncher;
     this.enginePath = enginePath;
     this.logsPath = logsPath;
@@ -32,9 +32,9 @@ public class ResilientEngineProcess {
 
   public void launchEngine(Runnable onProcessKilled) throws Exception {
     try {
-      LOGGER.info("[Start] Launching engine with information: {}", serviceInformation);
+      LOGGER.info("[Start] Launching engine with endpoint: {}", endpoint);
 
-      process = engineLauncher.launchEngine(serviceInformation, logsPath, enginePath);
+      process = engineLauncher.launchEngine(endpoint, logsPath, enginePath);
 
       process.waitFor(3, TimeUnit.SECONDS);
 
@@ -46,7 +46,7 @@ public class ResilientEngineProcess {
 
       LOGGER.info("Engine launched with pid: {}", process.pid());
     } finally {
-      LOGGER.info("[End] Launching engine with information: {}", serviceInformation);
+      LOGGER.info("[End] Launching engine with endpoint: {}", endpoint);
     }
   }
 

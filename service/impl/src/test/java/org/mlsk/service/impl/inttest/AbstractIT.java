@@ -2,7 +2,7 @@ package org.mlsk.service.impl.inttest;
 
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.engine.launcher.EngineLauncher;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
@@ -43,8 +43,8 @@ import static org.mockito.Mockito.*;
 @MockitoSettings(strictness = Strictness.LENIENT)
 public abstract class AbstractIT {
 
-  protected static final ServiceInformation SERVICE_INFO1 = new ServiceInformation("localhost", 6768L);
-  protected static final ServiceInformation SERVICE_INFO2 = new ServiceInformation("localhost", 6767L);
+  protected static final Endpoint ENDPOINT1 = new Endpoint("localhost", 6768L);
+  protected static final Endpoint ENDPOINT2 = new Endpoint("localhost", 6767L);
   protected static final String LOGS_PATH = "logsPath";
   protected static final String ENGINE_PATH = "enginePath";
 
@@ -65,15 +65,15 @@ public abstract class AbstractIT {
     processes = newArrayList();
   }
 
-  protected void setup(List<ServiceInformation> serviceInformationList) throws Exception {
-    String ports = serviceInformationList.stream().map(ServiceInformation::getPort).map(Object::toString).collect(joining(","));
+  protected void setup(List<Endpoint> endpoints) throws Exception {
+    String ports = endpoints.stream().map(Endpoint::getPort).map(Object::toString).collect(joining(","));
     buildServiceConfiguration("", "--engine-ports", ports, "--logs-path", LOGS_PATH, "-engine-path", ENGINE_PATH);
 
     onRestTemplatePostForObjectCallMockEngine();
     setUpEngineFactory();
-    setUpEngineLauncher(serviceInformationList);
+    setUpEngineLauncher(endpoints);
 
-    executor = Executors.newFixedThreadPool(serviceInformationList.size());
+    executor = Executors.newFixedThreadPool(endpoints.size());
     mockEngine.reset();
     orchestrator = new OrchestratorFactory(engineFactory).buildAndLaunchOrchestrator();
   }
@@ -94,9 +94,9 @@ public abstract class AbstractIT {
     return inOrder(restTemplate, engineLauncher, engineFactory);
   }
 
-  protected void verifyServiceSetup(List<ServiceInformation> serviceInformationList, InOrder inOrder) throws IOException {
-    for (ServiceInformation serviceInformation : serviceInformationList) {
-      inOrder.verify(engineLauncher).launchEngine(serviceInformation, LOGS_PATH, ENGINE_PATH);
+  protected void verifyServiceSetup(List<Endpoint> endpoints, InOrder inOrder) throws IOException {
+    for (Endpoint endpoint : endpoints) {
+      inOrder.verify(engineLauncher).launchEngine(endpoint, LOGS_PATH, ENGINE_PATH);
     }
   }
 
@@ -112,15 +112,15 @@ public abstract class AbstractIT {
 
   private void setUpEngineFactory() {
     when(engineFactory.buildEngine(any())).thenAnswer(invocationOnMock -> {
-      ServiceInformation serviceInformation = invocationOnMock.getArgument(0, ServiceInformation.class);
-      return buildEngine(serviceInformation);
+      Endpoint endpoint = invocationOnMock.getArgument(0, Endpoint.class);
+      return buildEngine(endpoint);
     });
   }
 
-  private void setUpEngineLauncher(List<ServiceInformation> serviceInformationList) throws IOException {
-    for (ServiceInformation serviceInformation : serviceInformationList) {
+  private void setUpEngineLauncher(List<Endpoint> endpoints) throws IOException {
+    for (Endpoint endpoint : endpoints) {
       MockProcess mockProcess = new MockProcess();
-      when(engineLauncher.launchEngine(serviceInformation, LOGS_PATH, ENGINE_PATH)).thenReturn(mockProcess.getProcess());
+      when(engineLauncher.launchEngine(endpoint, LOGS_PATH, ENGINE_PATH)).thenReturn(mockProcess.getProcess());
       processes.add(mockProcess);
     }
   }
@@ -137,21 +137,21 @@ public abstract class AbstractIT {
     return new HttpServerErrorException(status, "statusText", body.getBytes(), Charset.defaultCharset());
   }
 
-  private Engine buildEngine(ServiceInformation serviceInformation) {
-    EngineClientFactory engineClientFactory = buildEngineClientFactory(serviceInformation);
-    ResilientEngineProcess resilientEngineProcess = new ResilientEngineProcess(serviceInformation, engineLauncher, LOGS_PATH, ENGINE_PATH);
-    return new EngineImpl(engineClientFactory, serviceInformation, resilientEngineProcess, new AtomicReference<>(OFF));
+  private Engine buildEngine(Endpoint endpoint) {
+    EngineClientFactory engineClientFactory = buildEngineClientFactory(endpoint);
+    ResilientEngineProcess resilientEngineProcess = new ResilientEngineProcess(endpoint, engineLauncher, LOGS_PATH, ENGINE_PATH);
+    return new EngineImpl(engineClientFactory, endpoint, resilientEngineProcess, new AtomicReference<>(OFF));
   }
 
-  private EngineClientFactory buildEngineClientFactory(ServiceInformation serviceInformation) {
-    RestClient restClient = new RestClient(serviceInformation, restTemplate);
+  private EngineClientFactory buildEngineClientFactory(Endpoint endpoint) {
+    RestClient restClient = new RestClient(endpoint, restTemplate);
 
     TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(restClient);
     ClassifierEngineClient classifierEngineClient = new ClassifierEngineClient(restClient);
 
     EngineClientFactory engineClientFactory = mock(EngineClientFactory.class);
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation)).thenReturn(timeSeriesAnalysisEngineClient);
-    when(engineClientFactory.buildClassifierEngineClient(serviceInformation)).thenReturn(classifierEngineClient);
+    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(endpoint)).thenReturn(timeSeriesAnalysisEngineClient);
+    when(engineClientFactory.buildClassifierEngineClient(endpoint)).thenReturn(classifierEngineClient);
     return engineClientFactory;
   }
 }

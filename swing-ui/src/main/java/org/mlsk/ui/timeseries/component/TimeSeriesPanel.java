@@ -10,7 +10,7 @@ import java.awt.*;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
-import static org.mlsk.ui.setup.ServiceConfiguration.getServiceInformation;
+import static org.mlsk.ui.setup.ServiceConfiguration.getEndpoint;
 
 public class TimeSeriesPanel extends JPanel {
 
@@ -18,7 +18,7 @@ public class TimeSeriesPanel extends JPanel {
   private final TimeSeriesOutputPanel outputPanel;
 
   public TimeSeriesPanel() {
-    this(new TimeSeriesAnalysisServiceClient(getServiceInformation()));
+    this(new TimeSeriesAnalysisServiceClient(getEndpoint()));
   }
 
   @VisibleForTesting

@@ -1,7 +1,7 @@
 package org.mlsk.lib.rest;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.exception.RestClientException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,16 +16,16 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class RestClient {
 
-  private final ServiceInformation serviceInformation;
+  private final Endpoint endpoint;
   private final RestTemplate restTemplate;
 
-  public RestClient(ServiceInformation serviceInformation) {
-    this(serviceInformation, new RestTemplate());
+  public RestClient(Endpoint endpoint) {
+    this(endpoint, new RestTemplate());
   }
 
   @VisibleForTesting
-  public RestClient(ServiceInformation serviceInformation, RestTemplate restTemplate) {
-    this.serviceInformation = serviceInformation;
+  public RestClient(Endpoint endpoint, RestTemplate restTemplate) {
+    this.endpoint = endpoint;
     this.restTemplate = restTemplate;
     MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
     messageConverter.setSupportedMediaTypes(newArrayList(MediaType.ALL));
@@ -37,7 +37,7 @@ public class RestClient {
     headers.setContentType(MediaType.APPLICATION_JSON);
 
     HttpEntity<Body> entity = new HttpEntity<>(body, headers);
-    return restTemplate.postForObject(serviceInformation.getUrl() + endPoint, entity, responseType);
+    return restTemplate.postForObject(endpoint.getUrl() + endPoint, entity, responseType);
   }
 
   public <Response> Response post(String endPoint, Class<Response> responseType) {
