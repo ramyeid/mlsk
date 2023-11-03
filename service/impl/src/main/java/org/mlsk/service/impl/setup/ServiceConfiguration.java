@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.setup;
 
 import org.apache.commons.cli.*;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,10 +30,10 @@ public class ServiceConfiguration {
     return instance.enginePath;
   }
 
-  public static List<ServiceInformation> getEnginesServiceInformation() {
+  public static List<Endpoint> getEngineEndpoints() {
     return instance.enginePorts.stream()
         .map(Long::parseLong)
-        .map(ServiceConfiguration::buildServiceInformation)
+        .map(ServiceConfiguration::buildEndpoint)
         .collect(toList());
   }
 
@@ -64,7 +64,7 @@ public class ServiceConfiguration {
     instance = new ServiceConfiguration(logsPath, enginePath, enginePorts);
   }
 
-  private static ServiceInformation buildServiceInformation(Long port) {
-    return new ServiceInformation("localhost", port);
+  private static Endpoint buildEndpoint(Long port) {
+    return new Endpoint("localhost", port);
   }
 }

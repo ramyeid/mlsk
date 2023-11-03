@@ -2,7 +2,7 @@ package org.mlsk.service.impl.orchestrator.request.registry;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
 
 import java.util.Optional;
@@ -30,7 +30,7 @@ public class RequestRegistryTest {
   @Test
   public void should_return_request_if_request_booked() {
     String requestId = "requestId";
-    Request request = new Request("action", new ServiceInformation("host", 123L));
+    Request request = new Request("action", new Endpoint("host", 123L));
     requestRegistry.addRequest(requestId, request);
 
     Optional<Request> actualRequest = requestRegistry.getRequest(requestId);
@@ -42,7 +42,7 @@ public class RequestRegistryTest {
   @Test
   public void should_return_empty_optional_if_request_booked_has_been_removed() {
     String requestId = "requestId";
-    Request request = new Request("action", new ServiceInformation("host", 123L));
+    Request request = new Request("action", new Endpoint("host", 123L));
     requestRegistry.addRequest(requestId, request);
     requestRegistry.removeRequest(requestId);
 

@@ -1,6 +1,6 @@
 package org.mlsk.ui.configuration.service;
 
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.ui.configuration.component.ServiceConfigurationPanel;
 import org.mlsk.ui.setup.ServiceConfiguration;
 
@@ -29,14 +29,14 @@ public class ConfigurationService {
     throwExceptionIfNullOrEmpty(servicePort, "servicePort");
     throwExceptionIfNullOrEmpty(serviceHost, "serviceHost");
 
-    ServiceConfiguration.setServiceInformation(serviceHost, Long.parseLong(servicePort));
+    ServiceConfiguration.setEndpoint(serviceHost, Long.parseLong(servicePort));
   }
 
   private static void restoreServiceConfiguration(ServiceConfigurationPanel serviceConfigurationPanel) {
-    ServiceInformation serviceInformation = ServiceConfiguration.getServiceInformation();
+    Endpoint endpoint = ServiceConfiguration.getEndpoint();
 
-    serviceConfigurationPanel.setServiceHost(serviceInformation.getHost());
-    serviceConfigurationPanel.setServicePort(String.valueOf(serviceInformation.getPort()));
+    serviceConfigurationPanel.setServiceHost(endpoint.getHost());
+    serviceConfigurationPanel.setServicePort(String.valueOf(endpoint.getPort()));
   }
 
   private static void throwExceptionIfNullOrEmpty(String value, String valueDescription) throws InvalidObjectException {

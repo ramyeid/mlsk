@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
-import static org.mlsk.service.impl.setup.ServiceConfiguration.getEnginesServiceInformation;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.getEngineEndpoints;
 
 @Service
 public class OrchestratorFactory {
@@ -29,7 +29,7 @@ public class OrchestratorFactory {
   }
 
   public Orchestrator buildAndLaunchOrchestrator() {
-    List<Engine> engines = getEnginesServiceInformation()
+    List<Engine> engines = getEngineEndpoints()
         .stream()
         .map(engineFactory::buildEngine)
         .collect(toList());

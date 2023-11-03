@@ -4,7 +4,7 @@ import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.ui.configuration.component.ServiceConfigurationPanel;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -14,7 +14,7 @@ import java.io.InvalidObjectException;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.ui.setup.ServiceConfiguration.buildServiceConfiguration;
-import static org.mlsk.ui.setup.ServiceConfiguration.getServiceInformation;
+import static org.mlsk.ui.setup.ServiceConfiguration.getEndpoint;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
@@ -51,7 +51,7 @@ public class ConfigurationServiceTest {
 
     configurationService.save(serviceConfigurationPanel);
 
-    assertEquals(new ServiceInformation("newHost", 983612L), getServiceInformation());
+    assertEquals(new Endpoint("newHost", 983612L), getEndpoint());
   }
 
   @Test

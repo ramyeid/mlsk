@@ -37,7 +37,7 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @BeforeEach
   public void setUp() throws Exception {
-    super.setup(newArrayList(SERVICE_INFO1, SERVICE_INFO2));
+    super.setup(newArrayList(ENDPOINT1, ENDPOINT2));
     ClassifierService service = new ClassifierServiceImpl(orchestrator);
     decisionTreeApi = new DecisionTreeApiImpl(service);
   }
@@ -48,9 +48,9 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @Test
   public void should_return_request_id_on_start() {
-    String requestId = valueOf(SERVICE_INFO1.hashCode());
+    String requestId = valueOf(ENDPOINT1.hashCode());
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    MockEngine.MockedRequest startRequest = buildMockRequest(SERVICE_INFO1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     mockEngine.registerRequests(startRequest);
 
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse = decisionTreeApi.start(startRequestModel);
@@ -63,8 +63,8 @@ public class DecisionTreeStartIT extends AbstractIT {
   public void should_throw_exception_if_engine_returns_an_exception_on_start() {
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while starting: NullPointer");
-    MockEngine.MockedRequest startRequest = buildFailingMockRequest(SERVICE_INFO1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
-    MockEngine.MockedRequest cancelRequest = buildMockRequest(SERVICE_INFO1, CANCEL_URL, null, buildDefaultResponse());
+    MockEngine.MockedRequest startRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
+    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
     mockEngine.registerRequests(startRequest, cancelRequest);
 
     try {
@@ -79,14 +79,14 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @Test
   public void should_release_engine_on_exception_on_start() {
-    String requestId1 = valueOf(SERVICE_INFO1.hashCode());
-    String requestId2 = valueOf(SERVICE_INFO2.hashCode());
+    String requestId1 = valueOf(ENDPOINT1.hashCode());
+    String requestId2 = valueOf(ENDPOINT2.hashCode());
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while starting: NullPointer");
-    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(SERVICE_INFO1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(SERVICE_INFO1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(SERVICE_INFO2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest cancelRequest = buildMockRequest(SERVICE_INFO1, CANCEL_URL, null, buildDefaultResponse());
+    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
     mockEngine.registerRequests(failingStartRequest, cancelRequest);
 
     ignoreException(() -> decisionTreeApi.start(startRequestModel));
@@ -103,16 +103,16 @@ public class DecisionTreeStartIT extends AbstractIT {
   public void should_call_cancel_on_exception_on_start() throws Exception {
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while starting: NullPointer");
-    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(SERVICE_INFO1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
-    MockEngine.MockedRequest cancelRequest = buildMockRequest(SERVICE_INFO1, CANCEL_URL, null, buildDefaultResponse());
+    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
+    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
     mockEngine.registerRequests(failingStartRequest, cancelRequest);
 
     ignoreException(() -> decisionTreeApi.start(startRequestModel));
 
     InOrder inOrder = buildInOrder();
-    verifyServiceSetup(newArrayList(SERVICE_INFO1, SERVICE_INFO2), inOrder);
-    verifyRestTemplateCalledOn(SERVICE_INFO1.getUrl() + START_URL, inOrder);
-    verifyRestTemplateCalledOn(SERVICE_INFO1.getUrl() + CANCEL_URL, inOrder);
+    verifyServiceSetup(newArrayList(ENDPOINT1, ENDPOINT2), inOrder);
+    verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + START_URL, inOrder);
+    verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + CANCEL_URL, inOrder);
     inOrder.verifyNoMoreInteractions();
     assertOnEngineState(WAITING, WAITING);
   }
@@ -120,8 +120,8 @@ public class DecisionTreeStartIT extends AbstractIT {
   @Test
   public void should_book_all_engines_on_start() {
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(SERVICE_INFO1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(SERVICE_INFO2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     mockEngine.registerRequests(startRequest1, startRequest2);
 
     try {

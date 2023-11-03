@@ -33,7 +33,7 @@ public class DecisionTreeIT extends AbstractIT {
 
   @BeforeEach
   public void setUp() throws Exception {
-    super.setup(newArrayList(SERVICE_INFO1, SERVICE_INFO2));
+    super.setup(newArrayList(ENDPOINT1, ENDPOINT2));
     ClassifierService service = new ClassifierServiceImpl(orchestrator);
     decisionTreeApi = new DecisionTreeApiImpl(service);
   }
@@ -44,20 +44,20 @@ public class DecisionTreeIT extends AbstractIT {
 
   @Test
   public void should_handle_multiple_requests() throws Exception {
-    String requestId1 = valueOf(SERVICE_INFO1.hashCode());
-    String requestId2 = valueOf(SERVICE_INFO2.hashCode());
+    String requestId1 = valueOf(ENDPOINT1.hashCode());
+    String requestId2 = valueOf(ENDPOINT2.hashCode());
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
     ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId2);
     ClassifierRequestModel request1Model = buildClassifierRequestModel(requestId1);
     ClassifierRequestModel request2Model = buildClassifierRequestModel(requestId2);
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(SERVICE_INFO1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(SERVICE_INFO2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest1 = buildMockRequest(SERVICE_INFO1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest2 = buildMockRequest(SERVICE_INFO2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
-    MockEngine.MockedRequest predictRequest1 = buildMockRequest(SERVICE_INFO1, PREDICT_URL, null, buildClassifierDataResponse());
-    MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(SERVICE_INFO1, PREDICT_ACCURACY_URL, null, 94.123);
-    MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(SERVICE_INFO2, PREDICT_ACCURACY_URL, null, 123.1);
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest predictRequest1 = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierDataResponse());
+    MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, null, 94.123);
+    MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(ENDPOINT2, PREDICT_ACCURACY_URL, null, 123.1);
     mockEngine.registerRequests(startRequest1, dataRequest1, predictRequest1, predictAccuracyRequest1, startRequest2, dataRequest2, predictAccuracyRequest2);
 
     decisionTreeApi.start(startRequestModel);

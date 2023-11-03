@@ -4,12 +4,12 @@ import java.util.Objects;
 
 import static java.lang.String.format;
 
-public class ServiceInformation {
+public class Endpoint {
 
   private final String host;
   private final Long port;
 
-  public ServiceInformation(String host, Long port) {
+  public Endpoint(String host, Long port) {
     this.host = host;
     this.port = port;
   }
@@ -30,7 +30,7 @@ public class ServiceInformation {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    ServiceInformation that = (ServiceInformation) o;
+    Endpoint that = (Endpoint) o;
     return Objects.equals(host, that.host) &&
         Objects.equals(port, that.port);
   }
@@ -42,7 +42,7 @@ public class ServiceInformation {
 
   @Override
   public String toString() {
-    return "ServiceInformation{" +
+    return "Endpoint{" +
         "host='" + host + '\'' +
         ", port='" + port + '\'' +
         '}';

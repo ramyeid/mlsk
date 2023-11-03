@@ -3,7 +3,7 @@ package org.mlsk.service.impl.orchestrator.request;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
 import org.mlsk.service.impl.orchestrator.request.registry.RequestRegistry;
 import org.mockito.InOrder;
@@ -23,7 +23,7 @@ import static org.mockito.Mockito.when;
 public class RequestHandlerTest {
 
   private static final String ACTION = "Action";
-  private static final ServiceInformation SERVICE_INFO = new ServiceInformation("host", 123L);
+  private static final Endpoint ENDPOINT = new Endpoint("host", 123L);
 
   @Mock
   private RequestRegistry requestRegistry;
@@ -38,19 +38,19 @@ public class RequestHandlerTest {
   @Test
   void should_add_new_request_to_registry_on_register() {
 
-    requestHandler.registerNewRequest(ACTION, SERVICE_INFO);
+    requestHandler.registerNewRequest(ACTION, ENDPOINT);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(requestRegistry).addRequest(valueOf(SERVICE_INFO.hashCode()), buildRequest());
+    inOrder.verify(requestRegistry).addRequest(valueOf(ENDPOINT.hashCode()), buildRequest());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_request_id_on_register() {
 
-    String actualId = requestHandler.registerNewRequest(ACTION, SERVICE_INFO);
+    String actualId = requestHandler.registerNewRequest(ACTION, ENDPOINT);
 
-    assertEquals(valueOf(SERVICE_INFO.hashCode()), actualId);
+    assertEquals(valueOf(ENDPOINT.hashCode()), actualId);
   }
 
   @Test
@@ -96,6 +96,6 @@ public class RequestHandlerTest {
   }
 
   private static Request buildRequest() {
-    return new Request(ACTION, SERVICE_INFO);
+    return new Request(ACTION, ENDPOINT);
   }
 }

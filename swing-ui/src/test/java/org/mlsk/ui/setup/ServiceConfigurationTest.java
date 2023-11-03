@@ -2,7 +2,7 @@ package org.mlsk.ui.setup;
 
 import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.Test;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -14,8 +14,8 @@ public class ServiceConfigurationTest {
 
     ServiceConfiguration.buildServiceConfiguration("", "--service-port", enginePorts);
 
-    ServiceInformation expectedServiceInformation = new ServiceInformation("localhost", 6766L);
-    assertEquals(expectedServiceInformation, ServiceConfiguration.getServiceInformation());
+    Endpoint expectedEndpoint = new Endpoint("localhost", 6766L);
+    assertEquals(expectedEndpoint, ServiceConfiguration.getEndpoint());
   }
 
   @Test
@@ -24,7 +24,7 @@ public class ServiceConfigurationTest {
 
     ServiceConfiguration.buildServiceConfiguration("", "--service-port", enginePorts, "--service-host", "myHost");
 
-    ServiceInformation expectedServiceInformation = new ServiceInformation("myHost", 6766L);
-    assertEquals(expectedServiceInformation, ServiceConfiguration.getServiceInformation());
+    Endpoint expectedEndpoint = new Endpoint("myHost", 6766L);
+    assertEquals(expectedEndpoint, ServiceConfiguration.getEndpoint());
   }
 }

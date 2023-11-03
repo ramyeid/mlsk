@@ -1,7 +1,7 @@
 package org.mlsk.ui.timeseries.service.client;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -16,8 +16,8 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisServic
 
   private final RestClient restClient;
 
-  public TimeSeriesAnalysisServiceClient(ServiceInformation serviceInformation) {
-    this(new RestClient(serviceInformation));
+  public TimeSeriesAnalysisServiceClient(Endpoint endpoint) {
+    this(new RestClient(endpoint));
   }
 
   @VisibleForTesting

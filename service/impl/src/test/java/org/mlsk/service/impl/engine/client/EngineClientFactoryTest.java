@@ -2,7 +2,7 @@ package org.mlsk.service.impl.engine.client;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 
@@ -20,9 +20,9 @@ public class EngineClientFactoryTest {
 
   @Test
   public void should_build_time_series_analysis_engine_client() {
-    ServiceInformation serviceInformation = buildServiceInformation();
+    Endpoint endpoint = buildEndpoint();
 
-    TimeSeriesAnalysisEngineClient actualClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(serviceInformation);
+    TimeSeriesAnalysisEngineClient actualClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(endpoint);
 
     assertNotNull(actualClient);
     assertInstanceOf(TimeSeriesAnalysisEngineClient.class, actualClient);
@@ -30,16 +30,16 @@ public class EngineClientFactoryTest {
 
   @Test
   public void should_build_classifier_engine_client() {
-    ServiceInformation serviceInformation = buildServiceInformation();
+    Endpoint endpoint = buildEndpoint();
 
-    ClassifierEngineClient actualClient = engineClientFactory.buildClassifierEngineClient(serviceInformation);
+    ClassifierEngineClient actualClient = engineClientFactory.buildClassifierEngineClient(endpoint);
 
     assertNotNull(actualClient);
     assertInstanceOf(ClassifierEngineClient.class, actualClient);
   }
 
-  private static ServiceInformation buildServiceInformation() {
-    return new ServiceInformation("host", 495L);
+  private static Endpoint buildEndpoint() {
+    return new Endpoint("host", 495L);
   }
 
 }

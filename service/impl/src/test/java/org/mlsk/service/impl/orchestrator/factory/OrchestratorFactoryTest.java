@@ -4,7 +4,7 @@ import org.apache.commons.cli.ParseException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.EngineFactory;
 import org.mockito.InOrder;
@@ -30,27 +30,27 @@ public class OrchestratorFactoryTest {
 
   @Test
   public void should_build_and_launch_engines() throws ParseException {
-    ServiceInformation engineInfo1 = new ServiceInformation("localhost", 6768L);
-    ServiceInformation engineInfo2 = new ServiceInformation("localhost", 6769L);
-    String ports = format("%s,%s", engineInfo1.getPort(), engineInfo2.getPort());
+    Endpoint engineEndpoint1 = new Endpoint("localhost", 6768L);
+    Endpoint engineEndpoint2 = new Endpoint("localhost", 6769L);
+    String ports = format("%s,%s", engineEndpoint1.getPort(), engineEndpoint2.getPort());
     Engine engine1 = mock(Engine.class);
     Engine engine2 = mock(Engine.class);
-    onBuildEngineFactoryReturn(engineInfo1, engine1);
-    onBuildEngineFactoryReturn(engineInfo2, engine2);
+    onBuildEngineFactoryReturn(engineEndpoint1, engine1);
+    onBuildEngineFactoryReturn(engineEndpoint2, engine2);
     buildServiceConfigurationWithEnginePorts(ports);
 
     orchestratorFactory.buildAndLaunchOrchestrator();
 
     InOrder inOrder = inOrder(engine1, engine2, engineFactory);
-    inOrder.verify(engineFactory).buildEngine(engineInfo1);
-    inOrder.verify(engineFactory).buildEngine(engineInfo2);
+    inOrder.verify(engineFactory).buildEngine(engineEndpoint1);
+    inOrder.verify(engineFactory).buildEngine(engineEndpoint2);
     inOrder.verify(engine1).launchEngine();
     inOrder.verify(engine2).launchEngine();
     inOrder.verifyNoMoreInteractions();
   }
 
-  private void onBuildEngineFactoryReturn(ServiceInformation serviceInformation, Engine engine) {
-    when(engineFactory.buildEngine(serviceInformation)).thenReturn(engine);
+  private void onBuildEngineFactoryReturn(Endpoint endpoint, Engine engine) {
+    when(engineFactory.buildEngine(endpoint)).thenReturn(engine);
   }
 
   private static void buildServiceConfigurationWithEnginePorts(String ports) throws ParseException {

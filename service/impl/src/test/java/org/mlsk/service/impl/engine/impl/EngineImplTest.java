@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.lib.engine.ResilientEngineProcess;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
@@ -33,7 +33,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 public class EngineImplTest {
 
-  private static final ServiceInformation SERVICE_INFORMATION = new ServiceInformation("host", 1231L);
+  private static final Endpoint ENDPOINT = new Endpoint("host", 1231L);
 
   @Mock
   private ResilientEngineProcess resilientEngineProcess;
@@ -50,15 +50,15 @@ public class EngineImplTest {
   @BeforeEach
   public void setUp() {
     engineStateSpy = spy(new AtomicReference<>(OFF));
-    engineImpl = new EngineImpl(engineClientFactory, SERVICE_INFORMATION, resilientEngineProcess, engineStateSpy);
+    engineImpl = new EngineImpl(engineClientFactory, ENDPOINT, resilientEngineProcess, engineStateSpy);
   }
 
   @Test
-  public void should_return_service_information() {
+  public void should_return_endpoint() {
 
-    ServiceInformation actualInfo = engineImpl.getServiceInformation();
+    Endpoint actualInfo = engineImpl.getEndpoint();
 
-    assertEquals(SERVICE_INFORMATION, actualInfo);
+    assertEquals(ENDPOINT, actualInfo);
   }
 
   @Test
@@ -145,7 +145,7 @@ public class EngineImplTest {
 
     } catch (Exception exception) {
       assertInstanceOf(UnableToLaunchEngineException.class, exception);
-      assertEquals("Unable to launch engine ServiceInformation{host='host', port='1231'}", exception.getMessage());
+      assertEquals("Unable to launch engine Endpoint{host='host', port='1231'}", exception.getMessage());
       assertEquals(OFF, engineStateSpy.get());
     }
   }
@@ -187,7 +187,7 @@ public class EngineImplTest {
     engineImpl.forecast(buildTimeSeriesAnalysisRequest());
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(ENDPOINT);
     inOrder.verify(tsaEngineClient).forecast(buildTimeSeriesAnalysisRequest());
     inOrder.verifyNoMoreInteractions();
   }
@@ -210,7 +210,7 @@ public class EngineImplTest {
     engineImpl.computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(ENDPOINT);
     inOrder.verify(tsaEngineClient).computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
     inOrder.verifyNoMoreInteractions();
   }
@@ -233,7 +233,7 @@ public class EngineImplTest {
     engineImpl.predict(buildTimeSeriesAnalysisRequest());
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(ENDPOINT);
     inOrder.verify(tsaEngineClient).predict(buildTimeSeriesAnalysisRequest());
     inOrder.verifyNoMoreInteractions();
   }
@@ -256,7 +256,7 @@ public class EngineImplTest {
     engineImpl.start(buildClassifierStartRequest(), classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
     inOrder.verify(classifierEngineClient).start(buildClassifierStartRequest(), classifierType);
     inOrder.verifyNoMoreInteractions();
   }
@@ -269,7 +269,7 @@ public class EngineImplTest {
     engineImpl.data(buildClassifierDataRequest(), classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
     inOrder.verify(classifierEngineClient).data(buildClassifierDataRequest(), classifierType);
     inOrder.verifyNoMoreInteractions();
   }
@@ -282,7 +282,7 @@ public class EngineImplTest {
     engineImpl.predict(classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
     inOrder.verify(classifierEngineClient).predict(classifierType);
     inOrder.verifyNoMoreInteractions();
   }
@@ -306,7 +306,7 @@ public class EngineImplTest {
     engineImpl.computePredictAccuracy(classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
     inOrder.verify(classifierEngineClient).computePredictAccuracy(classifierType);
     inOrder.verifyNoMoreInteractions();
   }
@@ -330,7 +330,7 @@ public class EngineImplTest {
     engineImpl.cancel(classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(SERVICE_INFORMATION);
+    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
     inOrder.verify(classifierEngineClient).cancel(classifierType);
     inOrder.verifyNoMoreInteractions();
   }

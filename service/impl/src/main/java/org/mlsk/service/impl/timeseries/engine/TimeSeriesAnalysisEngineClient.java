@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.timeseries.engine;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.lib.model.ServiceInformation;
+import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.impl.timeseries.engine.exception.TimeSeriesAnalysisEngineRequestException;
 import org.mlsk.service.model.timeseries.TimeSeries;
@@ -12,12 +12,13 @@ import org.springframework.web.client.HttpServerErrorException;
 import static java.lang.String.format;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
+// TODO Use OpenAPI models and Generate Python API from OpenAPI
 public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine {
 
   private final RestClient restClient;
 
-  public TimeSeriesAnalysisEngineClient(ServiceInformation serviceInformation) {
-    this(new RestClient(serviceInformation));
+  public TimeSeriesAnalysisEngineClient(Endpoint endpoint) {
+    this(new RestClient(endpoint));
   }
 
   @VisibleForTesting
