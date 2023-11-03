@@ -1,0 +1,13 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierDropRequest
+  description: This is the yaml detailing the ClassifierDropRequest
+paths: {}
+definitions:
+  ClassifierDropRequestModel:
+    type: object
+    properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request

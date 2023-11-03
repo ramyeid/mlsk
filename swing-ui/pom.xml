@@ -18,15 +18,15 @@
         </dependency>
         <dependency>
             <groupId>machine-learning-swissknife</groupId>
-            <artifactId>mlsk-service-model</artifactId>
+            <artifactId>mlsk-lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>machine-learning-swissknife</groupId>
+            <artifactId>mlsk-api</artifactId>
         </dependency>
         <dependency>
             <groupId>machine-learning-swissknife</groupId>
             <artifactId>mlsk-service-public</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>machine-learning-swissknife</groupId>
-            <artifactId>mlsk-lib</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

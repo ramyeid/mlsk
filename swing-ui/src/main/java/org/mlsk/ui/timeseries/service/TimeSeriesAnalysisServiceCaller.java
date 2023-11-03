@@ -1,7 +1,7 @@
 package org.mlsk.ui.timeseries.service;
 
-import org.mlsk.service.model.timeseries.TimeSeries;
-import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
+import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
 import org.mlsk.ui.timeseries.service.client.TimeSeriesAnalysisServiceClient;
 import org.mlsk.ui.utils.TriFunction;
 
@@ -13,15 +13,15 @@ import static org.mlsk.ui.timeseries.service.TimeSeriesAnalysisCommand.FORECAST;
 public class TimeSeriesAnalysisServiceCaller {
 
   private final TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient;
-  private final TriFunction<TimeSeries, Object, String> onResults;
+  private final TriFunction<TimeSeriesModel, Object, String> onResults;
 
   public TimeSeriesAnalysisServiceCaller(TimeSeriesAnalysisServiceClient timeSeriesAnalysisServiceClient,
-                                         TriFunction<TimeSeries, Object, String> onResults) {
+                                         TriFunction<TimeSeriesModel, Object, String> onResults) {
     this.timeSeriesAnalysisServiceClient = timeSeriesAnalysisServiceClient;
     this.onResults = onResults;
   }
 
-  public void callService(TimeSeriesAnalysisCommand command, TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public void callService(TimeSeriesAnalysisCommand command, TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest) {
     try {
       Object result = retrieveMethod(command, timeSeriesAnalysisRequest).call();
 
@@ -44,7 +44,7 @@ public class TimeSeriesAnalysisServiceCaller {
     }
   }
 
-  private Callable<Object> retrieveMethod(TimeSeriesAnalysisCommand command, TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  private Callable<Object> retrieveMethod(TimeSeriesAnalysisCommand command, TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest) {
     switch (command) {
       case PREDICT:
         return () -> timeSeriesAnalysisServiceClient.predict(timeSeriesAnalysisRequest);

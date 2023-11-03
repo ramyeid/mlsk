@@ -3,9 +3,9 @@ package org.mlsk.ui.timeseries.component;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.service.model.timeseries.TimeSeries;
-import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
-import org.mlsk.service.model.timeseries.TimeSeriesRow;
+import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.timeseries.request.TimeSeriesAnalysisRequestBuilder;
 import org.mlsk.ui.timeseries.request.TimeSeriesAnalysisRequestBuilderException;
 import org.mlsk.ui.timeseries.service.TimeSeriesAnalysisCommand;
@@ -19,6 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -127,7 +128,7 @@ public class TimeSeriesInputPanelTest {
     }
   }
 
-  private void onBuildRequestReturn(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  private void onBuildRequestReturn(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest) {
     when(requestBuilder.buildRequest(anyString(), anyString(), anyString(), anyString(), anyString())).thenReturn(timeSeriesAnalysisRequest);
   }
 
@@ -149,12 +150,16 @@ public class TimeSeriesInputPanelTest {
     return actionEvent;
   }
 
-  private static TimeSeriesAnalysisRequest buildTimeSeriesRequest() {
-    TimeSeriesRow row = new TimeSeriesRow("1990", 1.);
-    List<TimeSeriesRow> rows = newArrayList(row);
+  private static TimeSeriesAnalysisRequestModel buildTimeSeriesRequest() {
+    TimeSeriesRowModel row = new TimeSeriesRowModel().date("1990").value(BigDecimal.valueOf(1.));
+    List<TimeSeriesRowModel> rows = newArrayList(row);
 
-    TimeSeries timeSeries = new TimeSeries(rows, "date", "values", "yyyy");
+    TimeSeriesModel timeSeries = new TimeSeriesModel()
+        .rows(rows)
+        .dateColumnName("date")
+        .valueColumnName("values")
+        .dateFormat("yyyy");
 
-    return new TimeSeriesAnalysisRequest(timeSeries, 2);
+    return new TimeSeriesAnalysisRequestModel().timeSeries(timeSeries).numberOfValues(2);
   }
 }

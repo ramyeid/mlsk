@@ -1,18 +1,19 @@
 package org.mlsk.ui.timeseries.service.client;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.RestClient;
-import org.mlsk.service.model.timeseries.TimeSeries;
-import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
-import org.mlsk.service.timeseries.TimeSeriesAnalysisService;
 import org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException;
 import org.springframework.web.client.HttpServerErrorException;
+
+import java.math.BigDecimal;
 
 import static java.lang.String.format;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
-public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisService {
+public class TimeSeriesAnalysisServiceClient {
 
   private final RestClient restClient;
 
@@ -25,10 +26,9 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisServic
     this.restClient = restClient;
   }
 
-  @Override
-  public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public TimeSeriesModel forecast(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+      return restClient.post(FORECAST_URL, timeSeriesAnalysisRequest, TimeSeriesModel.class);
     } catch (HttpServerErrorException exception) {
       String serviceException = format("Failed on post forecast to service:%n%s", exception.getResponseBodyAsString());
       throw new TimeSeriesAnalysisServiceRequestException(serviceException, exception);
@@ -37,10 +37,9 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisServic
     }
   }
 
-  @Override
-  public TimeSeries forecastVsActual(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public TimeSeriesModel forecastVsActual(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(FORECAST_VS_ACTUAL_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+      return restClient.post(FORECAST_VS_ACTUAL_URL, timeSeriesAnalysisRequest, TimeSeriesModel.class);
     } catch (HttpServerErrorException exception) {
       String serviceException = format("Failed on post forecast vs actual to service:%n%s", exception.getResponseBodyAsString());
       throw new TimeSeriesAnalysisServiceRequestException(serviceException, exception);
@@ -49,10 +48,9 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisServic
     }
   }
 
-  @Override
-  public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public BigDecimal computeForecastAccuracy(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
+      return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, BigDecimal.class);
     } catch (HttpServerErrorException exception) {
       String serviceException = format("Failed on post compute forecast accuracy to service:%n%s", exception.getResponseBodyAsString());
       throw new TimeSeriesAnalysisServiceRequestException(serviceException, exception);
@@ -61,10 +59,9 @@ public class TimeSeriesAnalysisServiceClient implements TimeSeriesAnalysisServic
     }
   }
 
-  @Override
-  public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public TimeSeriesModel predict(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+      return restClient.post(PREDICT_URL, timeSeriesAnalysisRequest, TimeSeriesModel.class);
     } catch (HttpServerErrorException exception) {
       String serviceException = format("Failed on post predict to service:%n%s", exception.getResponseBodyAsString());
       throw new TimeSeriesAnalysisServiceRequestException(serviceException, exception);
