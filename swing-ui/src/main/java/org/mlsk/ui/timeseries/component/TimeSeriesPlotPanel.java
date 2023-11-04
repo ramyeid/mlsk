@@ -5,6 +5,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
 
 import javax.swing.*;
 
@@ -15,8 +16,8 @@ import static org.mlsk.ui.timeseries.mapper.TimeSeriesMapper.toTimeSeries;
 
 public class TimeSeriesPlotPanel extends JPanel {
 
-  public TimeSeriesPlotPanel(org.mlsk.service.model.timeseries.TimeSeries initialTimeSeries,
-                             org.mlsk.service.model.timeseries.TimeSeries computedTimeSeries,
+  public TimeSeriesPlotPanel(TimeSeriesModel initialTimeSeries,
+                             TimeSeriesModel computedTimeSeries,
                              String computedTitle) {
     TimeSeries initialValues = tryPopup(() -> toTimeSeries(initialTimeSeries, "initial"), "Mapping Initial Time Series");
     TimeSeries computedValues = tryPopup(() -> toTimeSeries(computedTimeSeries, computedTitle), "Mapping Computed Time Series");
