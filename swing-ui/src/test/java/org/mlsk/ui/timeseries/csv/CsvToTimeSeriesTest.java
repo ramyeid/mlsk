@@ -1,10 +1,11 @@
 package org.mlsk.ui.timeseries.csv;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.service.model.timeseries.TimeSeries;
-import org.mlsk.service.model.timeseries.TimeSeriesRow;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.exception.CsvParsingException;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,9 +20,9 @@ public class CsvToTimeSeriesTest {
     ClassLoader classLoader = getClass().getClassLoader();
     String csvLocation = Objects.requireNonNull(classLoader.getResource("time_series_passengers.csv")).getFile();
 
-    TimeSeries actualTimeSeries = toTimeSeries(csvLocation, "Date", "Passengers", "%Y-%m");
+    TimeSeriesModel actualTimeSeries = toTimeSeries(csvLocation, "Date", "Passengers", "%Y-%m");
 
-    TimeSeries expectedTimeSeries = buildTimeSeriesPassengers();
+    TimeSeriesModel expectedTimeSeries = buildTimeSeriesPassengers();
     assertEquals(expectedTimeSeries, actualTimeSeries);
   }
 
@@ -53,18 +54,22 @@ public class CsvToTimeSeriesTest {
     }
   }
 
-  private static TimeSeries buildTimeSeriesPassengers() {
-    TimeSeriesRow timeSeriesRow = buildTimeSeriesRow("1960-01", 1.0);
-    TimeSeriesRow timeSeriesRow1 = buildTimeSeriesRow("1960-02", 2.0);
-    TimeSeriesRow timeSeriesRow2 = buildTimeSeriesRow("1960-03", 3.0);
-    TimeSeriesRow timeSeriesRow3 = buildTimeSeriesRow("1960-04", 4.0);
-    TimeSeriesRow timeSeriesRow4 = buildTimeSeriesRow("1960-05", 5.0);
-    List<TimeSeriesRow> timeSeriesRows = newArrayList(timeSeriesRow, timeSeriesRow1, timeSeriesRow2, timeSeriesRow3, timeSeriesRow4);
-    return new TimeSeries(timeSeriesRows, "Date", "Passengers", "%Y-%m");
+  private static TimeSeriesModel buildTimeSeriesPassengers() {
+    TimeSeriesRowModel timeSeriesRow = buildTimeSeriesRow("1960-01", 1.0);
+    TimeSeriesRowModel timeSeriesRow1 = buildTimeSeriesRow("1960-02", 2.0);
+    TimeSeriesRowModel timeSeriesRow2 = buildTimeSeriesRow("1960-03", 3.0);
+    TimeSeriesRowModel timeSeriesRow3 = buildTimeSeriesRow("1960-04", 4.0);
+    TimeSeriesRowModel timeSeriesRow4 = buildTimeSeriesRow("1960-05", 5.0);
+    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(timeSeriesRow, timeSeriesRow1, timeSeriesRow2, timeSeriesRow3, timeSeriesRow4);
+    return new TimeSeriesModel()
+        .rows(timeSeriesRows)
+        .dateColumnName("Date")
+        .valueColumnName("Passengers")
+        .dateFormat("%Y-%m");
   }
 
-  private static TimeSeriesRow buildTimeSeriesRow(String date, Double value) {
-    return new TimeSeriesRow(date, value);
+  private static TimeSeriesRowModel buildTimeSeriesRow(String date, Double value) {
+    return new TimeSeriesRowModel().date(date).value(BigDecimal.valueOf(value));
   }
 
   private static void assertOnCsvParsingException(Exception exception, String exceptionMessage) {

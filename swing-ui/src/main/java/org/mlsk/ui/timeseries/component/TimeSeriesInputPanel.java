@@ -1,7 +1,7 @@
 package org.mlsk.ui.timeseries.component;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
+import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.ui.timeseries.request.TimeSeriesAnalysisRequestBuilder;
 import org.mlsk.ui.timeseries.service.TimeSeriesAnalysisCommand;
 import org.mlsk.ui.timeseries.service.TimeSeriesAnalysisServiceCaller;
@@ -69,7 +69,7 @@ public class TimeSeriesInputPanel extends JPanel implements ActionListener {
     String csvLocation = csvAbsolutePathValue.getText();
     String numberOfValues = numberOfValuesValue.getText();
 
-    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = tryPopup(() ->
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = tryPopup(() ->
             requestBuilder.buildRequest(dateColumnName, valueColumnName, dateFormat, csvLocation, numberOfValues),
         "Building Request");
 

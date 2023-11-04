@@ -1,12 +1,13 @@
 package org.mlsk.ui.timeseries.component;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.service.model.timeseries.TimeSeries;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
 import org.mlsk.ui.timeseries.service.TimeSeriesAnalysisServiceCaller;
 import org.mlsk.ui.timeseries.service.client.TimeSeriesAnalysisServiceClient;
 
 import javax.swing.*;
 import java.awt.*;
+import java.math.BigDecimal;
 
 import static java.awt.BorderLayout.CENTER;
 import static java.awt.BorderLayout.NORTH;
@@ -39,13 +40,13 @@ public class TimeSeriesPanel extends JPanel {
   }
 
   @VisibleForTesting
-  void onResult(TimeSeries initial, Object result, String title) {
+  void onResult(TimeSeriesModel initial, Object result, String title) {
     this.outputPanel.removeAll();
 
-    if (result instanceof TimeSeries) {
-      this.outputPanel.onTimeSeriesResult(initial, (TimeSeries) result, title);
-    } else if (result instanceof Double) {
-      this.outputPanel.onForecastAccuracyResult((Double) result);
+    if (result instanceof TimeSeriesModel) {
+      this.outputPanel.onTimeSeriesResult(initial, (TimeSeriesModel) result, title);
+    } else if (result instanceof BigDecimal) {
+      this.outputPanel.onForecastAccuracyResult(((BigDecimal) result).doubleValue());
     }
 
     SwingUtilities.updateComponentTreeUI(this);

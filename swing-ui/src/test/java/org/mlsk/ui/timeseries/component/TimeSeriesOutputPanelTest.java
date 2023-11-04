@@ -2,11 +2,12 @@ package org.mlsk.ui.timeseries.component;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mlsk.service.model.timeseries.TimeSeries;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
 import org.mockito.ArgumentMatcher;
 
 import javax.swing.*;
 
+import static java.util.Collections.emptyList;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.Mockito.spy;
@@ -24,7 +25,7 @@ public class TimeSeriesOutputPanelTest {
   @Test
   public void should_add_time_series_plot_panel_on_time_series_result() {
 
-    outputPanel.onTimeSeriesResult(new TimeSeries(), new TimeSeries(), "myTitle");
+    outputPanel.onTimeSeriesResult(emptyTimeSeriesModel(), emptyTimeSeriesModel(), "myTitle");
 
     verify(outputPanel).add(any(TimeSeriesPlotPanel.class));
   }
@@ -35,6 +36,14 @@ public class TimeSeriesOutputPanelTest {
     outputPanel.onForecastAccuracyResult(13.412);
 
     verify(outputPanel).add(argThat(labelMatcher("Forecast Accuracy: 13.412%")));
+  }
+
+  private static TimeSeriesModel emptyTimeSeriesModel() {
+    return new TimeSeriesModel()
+        .rows(emptyList())
+        .dateColumnName("date")
+        .dateFormat("yyyy-MM")
+        .valueColumnName("value");
   }
 
   private static ArgumentMatcher<JLabel> labelMatcher(String expectedMessage) {

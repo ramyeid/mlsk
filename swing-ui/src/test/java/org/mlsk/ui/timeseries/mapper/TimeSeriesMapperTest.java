@@ -2,25 +2,27 @@ package org.mlsk.ui.timeseries.mapper;
 
 import org.jfree.data.time.Millisecond;
 import org.junit.jupiter.api.Test;
-import org.mlsk.service.model.timeseries.TimeSeries;
-import org.mlsk.service.model.timeseries.TimeSeriesRow;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.math.BigDecimal.valueOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.ui.timeseries.mapper.TimeSeriesMapper.toTimeSeries;
 
 public class TimeSeriesMapperTest {
 
   private static final String TITLE = "title";
-  public static final String DATE_FORMAT = "yyyy-MM";
+  private static final String DATE_FORMAT = "yyyy-MM";
 
   @Test
   public void should_map_time_series() throws ParseException {
-    TimeSeries timeSeries = buildTimeSeries(DATE_FORMAT);
+    TimeSeriesModel timeSeries = buildTimeSeries(DATE_FORMAT);
 
     org.jfree.data.time.TimeSeries actual = toTimeSeries(timeSeries, TITLE);
 
@@ -29,7 +31,7 @@ public class TimeSeriesMapperTest {
 
   @Test
   public void should_throw_exception_on_error() {
-    TimeSeries timeSeries = buildTimeSeries("yyyy-MM-dd");
+    TimeSeriesModel timeSeries = buildTimeSeries("yyyy-MM-dd");
 
     try {
       toTimeSeries(timeSeries, TITLE);
@@ -42,13 +44,17 @@ public class TimeSeriesMapperTest {
     }
   }
 
-  private static TimeSeries buildTimeSeries(String dateFormat) {
-    TimeSeriesRow row1 = new TimeSeriesRow("1990-01", 1.);
-    TimeSeriesRow row2 = new TimeSeriesRow("1990-02", 2.);
-    TimeSeriesRow row3 = new TimeSeriesRow("1990-03", 3.);
-    List<TimeSeriesRow> rows = newArrayList(row1, row2, row3);
+  private static TimeSeriesModel buildTimeSeries(String dateFormat) {
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel().date("1990-01").value(valueOf(1.d));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel().date("1990-02").value(valueOf(2.d));
+    TimeSeriesRowModel row3 = new TimeSeriesRowModel().date("1990-03").value(valueOf(3.d));
+    List<TimeSeriesRowModel> rows = newArrayList(row1, row2, row3);
 
-    return new TimeSeries(rows, "date", "value", dateFormat);
+    return new TimeSeriesModel()
+        .rows(rows)
+        .dateColumnName("date")
+        .valueColumnName("value")
+        .dateFormat(dateFormat);
   }
 
   private static org.jfree.data.time.TimeSeries buildExpectedTimeSeries() throws ParseException {
@@ -56,9 +62,9 @@ public class TimeSeriesMapperTest {
 
     SimpleDateFormat dateFormatter = new SimpleDateFormat(DATE_FORMAT);
 
-    timeSeries.add(new Millisecond(dateFormatter.parse("1990-01")), 1.);
-    timeSeries.add(new Millisecond(dateFormatter.parse("1990-02")), 2.);
-    timeSeries.add(new Millisecond(dateFormatter.parse("1990-03")), 3.);
+    timeSeries.add(new Millisecond(dateFormatter.parse("1990-01")), valueOf(1.d));
+    timeSeries.add(new Millisecond(dateFormatter.parse("1990-02")), valueOf(2.d));
+    timeSeries.add(new Millisecond(dateFormatter.parse("1990-03")), valueOf(3.d));
 
     return timeSeries;
   }

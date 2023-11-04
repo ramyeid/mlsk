@@ -2,14 +2,15 @@ package org.mlsk.ui.timeseries.request;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mlsk.service.model.timeseries.TimeSeries;
-import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
-import org.mlsk.service.model.timeseries.TimeSeriesRow;
+import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.exception.CsvParsingException;
 import org.mlsk.ui.timeseries.csv.CsvToTimeSeries;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -34,9 +35,9 @@ public class TimeSeriesAnalysisRequestBuilderTest {
       String csvLocation = "csvLocation";
       onParseCsvReturn(mockedStatic, buildTimeSeries());
 
-      TimeSeriesAnalysisRequest actual = requestBuilder.buildRequest(dateColumnValue, valueColumnName, dateFormat, csvLocation, "4");
+      TimeSeriesAnalysisRequestModel actual = requestBuilder.buildRequest(dateColumnValue, valueColumnName, dateFormat, csvLocation, "4");
 
-      TimeSeriesAnalysisRequest expected = new TimeSeriesAnalysisRequest(buildTimeSeries(), 4);
+      TimeSeriesAnalysisRequestModel expected = new TimeSeriesAnalysisRequestModel().timeSeries(buildTimeSeries()).numberOfValues(4);
       assertEquals(expected, actual);
     }
   }
@@ -80,7 +81,7 @@ public class TimeSeriesAnalysisRequestBuilderTest {
     }
   }
 
-  private static void onParseCsvReturn(MockedStatic<CsvToTimeSeries> mockedStatic, TimeSeries timeSeries) {
+  private static void onParseCsvReturn(MockedStatic<CsvToTimeSeries> mockedStatic, TimeSeriesModel timeSeries) {
     mockedStatic.when(() -> CsvToTimeSeries.toTimeSeries(anyString(), anyString(), anyString(), anyString())).thenReturn(timeSeries);
   }
 
@@ -88,10 +89,14 @@ public class TimeSeriesAnalysisRequestBuilderTest {
     mockedStatic.when(() -> CsvToTimeSeries.toTimeSeries(anyString(), anyString(), anyString(), anyString())).thenThrow(exception);
   }
 
-  private static TimeSeries buildTimeSeries() {
-    TimeSeriesRow row = new TimeSeriesRow("1990", 1.);
-    List<TimeSeriesRow> rows = newArrayList(row);
+  private static TimeSeriesModel buildTimeSeries() {
+    TimeSeriesRowModel row = new TimeSeriesRowModel().date("1990").value(BigDecimal.valueOf(1.));
+    List<TimeSeriesRowModel> rows = newArrayList(row);
 
-    return new TimeSeries(rows, "Date", "Value", "Yyyy");
+    return new TimeSeriesModel()
+        .rows(rows)
+        .dateColumnName("Date")
+        .valueColumnName("Value")
+        .dateFormat("Yyyy");
   }
 }
