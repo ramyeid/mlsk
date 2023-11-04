@@ -11,6 +11,7 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
+import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -31,33 +32,33 @@ public final class DecisionTreeHelper {
     return new ClassifierStartRequest("predictionColumnName", newArrayList("col0", "col1"), 2);
   }
 
-  public static ClassifierDataRequestModel buildClassifierData1RequestModel(String requestId) {
+  public static ClassifierDataRequestModel buildClassifierData1RequestModel(long requestId) {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(requestId);
+    classifierDataRequestModel.setRequestId(valueOf(requestId));
     classifierDataRequestModel.setColumnName("col0");
     classifierDataRequestModel.setValues(newArrayList(1, 0, 1, 0));
     return classifierDataRequestModel;
   }
 
-  public static ClassifierDataRequest buildClassifierData1Request(String requestId) {
-    return new ClassifierDataRequest(requestId, "col0", newArrayList(1, 0, 1, 0));
+  public static ClassifierDataRequest buildClassifierData1Request(long requestId) {
+    return new ClassifierDataRequest(valueOf(requestId), "col0", newArrayList(1, 0, 1, 0));
   }
 
-  public static ClassifierDataRequestModel buildClassifierData2RequestModel(String requestId) {
+  public static ClassifierDataRequestModel buildClassifierData2RequestModel(long requestId) {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(requestId);
+    classifierDataRequestModel.setRequestId(valueOf(requestId));
     classifierDataRequestModel.setColumnName("col1");
     classifierDataRequestModel.setValues(newArrayList(0, 0, 0, 0));
     return classifierDataRequestModel;
   }
 
-  public static ClassifierDataRequest buildClassifierData2Request(String requestId) {
-    return new ClassifierDataRequest(requestId, "col1", newArrayList(0, 0, 0, 0));
+  public static ClassifierDataRequest buildClassifierData2Request(long requestId) {
+    return new ClassifierDataRequest(valueOf(requestId), "col1", newArrayList(0, 0, 0, 0));
   }
 
-  public static ClassifierRequestModel buildClassifierRequestModel(String requestId) {
+  public static ClassifierRequestModel buildClassifierRequestModel(long requestId) {
     ClassifierRequestModel classifierRequestModel = new ClassifierRequestModel();
-    classifierRequestModel.setRequestId(requestId);
+    classifierRequestModel.setRequestId(valueOf(requestId));
     return classifierRequestModel;
   }
 
@@ -65,9 +66,9 @@ public final class DecisionTreeHelper {
     return new ClassifierDataResponse("predictionColumnName", newArrayList(1, 1));
   }
 
-  public static ClassifierStartResponseModel buildClassifierStartResponseModel(String requestId) {
+  public static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(requestId);
+    classifierStartResponseModel.setRequestId(valueOf(requestId));
     return classifierStartResponseModel;
   }
 

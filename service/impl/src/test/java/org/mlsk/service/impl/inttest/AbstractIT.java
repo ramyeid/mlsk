@@ -11,6 +11,7 @@ import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.EngineImpl;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mlsk.service.impl.orchestrator.factory.OrchestratorFactory;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 import org.mlsk.service.model.engine.EngineState;
 import org.mockito.InOrder;
@@ -72,6 +73,7 @@ public abstract class AbstractIT {
     onRestTemplatePostForObjectCallMockEngine();
     setUpEngineFactory();
     setUpEngineLauncher(endpoints);
+    RequestIdGenerator.reset(1L);
 
     executor = Executors.newFixedThreadPool(endpoints.size());
     mockEngine.reset();

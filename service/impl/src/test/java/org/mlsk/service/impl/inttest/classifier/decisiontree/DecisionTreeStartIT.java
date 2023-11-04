@@ -18,7 +18,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.CANCEL_URL;
 import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.START_URL;
@@ -48,7 +47,7 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @Test
   public void should_return_request_id_on_start() {
-    String requestId = valueOf(ENDPOINT1.hashCode());
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     mockEngine.registerRequests(startRequest);
@@ -79,8 +78,8 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @Test
   public void should_release_engine_on_exception_on_start() {
-    String requestId1 = valueOf(ENDPOINT1.hashCode());
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId1 = 2L;
+    long requestId2 = 3L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while starting: NullPointer");
     MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), exceptionToThrow);

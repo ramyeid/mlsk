@@ -19,7 +19,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildFailingMockRequest;
@@ -47,8 +46,8 @@ public class DecisionTreeDataIT extends AbstractIT {
 
   @Test
   public void should_delegate_data_call_to_engine_with_request_id() throws Exception {
-    String requestId1 = valueOf(ENDPOINT1.hashCode());
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId1 = 1L;
+    long requestId2 = 2L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
@@ -73,7 +72,7 @@ public class DecisionTreeDataIT extends AbstractIT {
 
   @Test
   public void should_throw_exception_if_request_id_not_available_on_data() {
-    String unavailableRequestId = "unavailableRequestId";
+    long unavailableRequestId = -1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
@@ -86,14 +85,14 @@ public class DecisionTreeDataIT extends AbstractIT {
       fail("should fail since requestId is not available");
 
     } catch (Exception exception) {
-      assertOnClassifierServiceException(exception, "No available engine with unavailableRequestId to run decision-tree-data");
+      assertOnClassifierServiceException(exception, "No available engine with -1 to run decision-tree-data");
       assertOnEngineState(BOOKED, BOOKED);
     }
   }
 
   @Test
   public void should_throw_exception_if_engine_not_booked_on_data() {
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId2 = 2L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     mockEngine.registerRequests(startRequest1);
@@ -104,14 +103,14 @@ public class DecisionTreeDataIT extends AbstractIT {
       fail("should fail since engine2 is not booked");
 
     } catch (Exception exception) {
-      assertOnClassifierServiceException(exception, "No available engine with 1311893757 to run decision-tree-data");
+      assertOnClassifierServiceException(exception, "No available engine with 2 to run decision-tree-data");
       assertOnEngineState(BOOKED, WAITING);
     }
   }
 
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_data() {
-    String requestId = valueOf(ENDPOINT1.hashCode());
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId);
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while pushing data: NullPointer");
@@ -133,17 +132,19 @@ public class DecisionTreeDataIT extends AbstractIT {
 
   @Test
   public void should_release_engine_on_exception_on_data() {
-    String requestId1 = valueOf(ENDPOINT1.hashCode());
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId1 = 1L;
+    long requestId2 = 2L;
+    long requestId3 = 3L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
-    ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId2);
+    ClassifierDataRequestModel data2RequestModel = buildClassifierData1RequestModel(requestId2);
+    ClassifierDataRequestModel data3RequestModel = buildClassifierData2RequestModel(requestId3);
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while pushing data: NullPointer");
     MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest failingDataRequest = buildFailingMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), exceptionToThrow);
-    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId3), buildDefaultResponse());
     MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
     mockEngine.registerRequests(startRequest1, failingDataRequest, cancelRequest);
 
@@ -152,17 +153,17 @@ public class DecisionTreeDataIT extends AbstractIT {
     mockEngine.overrideRequests(startRequest1, startRequest2, dataRequest1, dataRequest2);
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse1 = decisionTreeApi.start(startRequestModel);
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse2 = decisionTreeApi.start(startRequestModel);
-    decisionTreeApi.data(data1RequestModel);
     decisionTreeApi.data(data2RequestModel);
+    decisionTreeApi.data(data3RequestModel);
 
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId1), actualStartResponse1);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse2);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse1);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId3), actualStartResponse2);
     assertOnEngineState(BOOKED, BOOKED);
   }
 
   @Test
   public void should_call_cancel_on_exception_on_data() throws Exception {
-    String requestId = valueOf(ENDPOINT1.hashCode());
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel dataRequestModel = buildClassifierData1RequestModel(requestId);
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while pushing data: NullPointer");

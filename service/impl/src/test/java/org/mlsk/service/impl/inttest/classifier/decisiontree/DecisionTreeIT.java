@@ -20,7 +20,6 @@ import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.valueOf;
 import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRequest;
 import static org.mlsk.service.impl.inttest.classifier.decisiontree.helper.DecisionTreeHelper.*;
@@ -44,21 +43,25 @@ public class DecisionTreeIT extends AbstractIT {
 
   @Test
   public void should_handle_multiple_requests() throws Exception {
-    String requestId1 = valueOf(ENDPOINT1.hashCode());
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId1 = 1L;
+    long requestId2 = 2L;
+    long requestId3 = 3L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
     ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId2);
+    ClassifierDataRequestModel data3RequestModel = buildClassifierData1RequestModel(requestId3);
     ClassifierRequestModel request1Model = buildClassifierRequestModel(requestId1);
     ClassifierRequestModel request2Model = buildClassifierRequestModel(requestId2);
+    ClassifierRequestModel request3Model = buildClassifierRequestModel(requestId3);
     MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest3 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId3), buildDefaultResponse());
     MockEngine.MockedRequest predictRequest1 = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierDataResponse());
     MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, null, 94.123);
     MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(ENDPOINT2, PREDICT_ACCURACY_URL, null, 123.1);
-    mockEngine.registerRequests(startRequest1, dataRequest1, predictRequest1, predictAccuracyRequest1, startRequest2, dataRequest2, predictAccuracyRequest2);
+    mockEngine.registerRequests(startRequest1, dataRequest1, predictRequest1, predictAccuracyRequest1, startRequest2, dataRequest2, predictAccuracyRequest2, dataRequest3);
 
     decisionTreeApi.start(startRequestModel);
     decisionTreeApi.start(startRequestModel);
@@ -74,8 +77,8 @@ public class DecisionTreeIT extends AbstractIT {
     actualPredictAccuracy2Future.join();
     CompletableFuture<ResponseEntity<BigDecimal>> actualPredictAccuracy1Future = async(() -> {
       decisionTreeApi.start(startRequestModel);
-      decisionTreeApi.data(data1RequestModel);
-      return decisionTreeApi.computePredictAccuracy(request1Model);
+      decisionTreeApi.data(data3RequestModel);
+      return decisionTreeApi.computePredictAccuracy(request3Model);
     });
     actualPredictAccuracy1Future.join();
 

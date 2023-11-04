@@ -4,24 +4,18 @@ import org.mlsk.lib.model.Endpoint;
 
 import java.util.Objects;
 
-import static java.lang.String.valueOf;
-
 public class Request {
 
-  private final String action;
+  private final long requestId;
   private final Endpoint endpoint;
 
-  public Request(String action, Endpoint endpoint) {
-    this.action = action;
+  public Request(long requestId, Endpoint endpoint) {
+    this.requestId = requestId;
     this.endpoint = endpoint;
   }
 
-  public String getAction() {
-    return action;
-  }
-
-  public String getId() {
-    return valueOf(endpoint.hashCode());
+  public long getRequestId() {
+    return requestId;
   }
 
   public Endpoint getEndpoint() {
@@ -32,19 +26,19 @@ public class Request {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Request request = (Request) o;
-    return Objects.equals(action, request.action) && Objects.equals(endpoint, request.endpoint);
+    Request that = (Request) o;
+    return requestId == that.requestId && Objects.equals(endpoint, that.endpoint);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(action, endpoint);
+    return Objects.hash(requestId, endpoint);
   }
 
   @Override
   public String toString() {
     return "Request{" +
-        "action='" + action + '\'' +
+        "requestId=" + requestId +
         ", endpoint=" + endpoint +
         '}';
   }
