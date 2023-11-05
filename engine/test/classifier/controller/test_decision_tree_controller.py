@@ -143,7 +143,7 @@ class TestDecisionTreeController(unittest.TestCase):
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'{"columnName": "Sex", "values": [0]}', response.data)
+    self.assertEqual(b'{"requestId": 0, "columnName": "Sex", "values": [0]}', response.data)
 
 
   def test_throw_exception_if_start_not_called_on_predict(self) -> None:
