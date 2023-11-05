@@ -1,12 +1,12 @@
 export class ClassifierDataRequest {
 
+  readonly requestId: number;
   readonly columnName: string;
   readonly values: number[];
-  readonly requestId: string;
 
-  constructor(columnName: string, values: number[], requestId: string) {
+  constructor(requestId: number, columnName: string, values: number[]) {
+    this.requestId = requestId;
     this.columnName = columnName;
     this.values = values;
-    this.requestId = requestId;
   }
 }

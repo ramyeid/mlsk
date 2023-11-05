@@ -685,11 +685,11 @@ class FactoryHelper {
   }
 
   static buildClassifierDataRequest1(): ClassifierDataRequest {
-    return new ClassifierDataRequest('col0', [ 0, 0, 1 ], 'requestId');
+    return new ClassifierDataRequest(1, 'col0', [ 0, 0, 1 ]);
   }
 
   static buildClassifierDataRequest2(): ClassifierDataRequest {
-    return new ClassifierDataRequest('col1', [ 1, 1, 0 ], 'requestId');
+    return new ClassifierDataRequest(1, 'col1', [ 1, 1, 0 ]);
   }
 
   static buildClassifierDataResponse(): ClassifierDataResponse {
@@ -713,7 +713,7 @@ class FactoryHelper {
   }
 
   static buildClassifierStartResponseObservable(): Observable<ClassifierStartResponse> {
-    return of(new ClassifierStartResponse('requestId'));
+    return of(new ClassifierStartResponse(1));
   }
 
   static buildClassifierStartResponseErrorObservable(): Observable<ClassifierStartResponse> {
@@ -743,7 +743,7 @@ class FactoryHelper {
   }
 
   static buildClassifierRequestObservable(): Observable<ClassifierRequest> {
-    return of(new ClassifierRequest('requestId'));
+    return of(new ClassifierRequest(1));
   }
 
   static buildClassifierRequestErrorObservable(): Observable<ClassifierRequest> {

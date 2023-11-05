@@ -48,7 +48,7 @@ export class DecisionTreeInputComponent extends AbstractInputComponent<Classifie
     const predictionColumnName: string = this.settingsForm.get(Constants.PREDICTION_COLUMN_NAME_FORM)?.value;
     const actionColumnNames: string[] = this.settingsForm.get(Constants.ACTION_COLUMN_NAMES_FORM)?.value;
     const numberOfValues: number = this.settingsForm.get(Constants.NUMBER_OF_VALUES_FORM)?.value;
-    let requestId = '';
+    let requestId = -1;
 
     this.onNewRequest();
 
