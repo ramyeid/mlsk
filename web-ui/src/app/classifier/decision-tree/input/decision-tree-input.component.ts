@@ -11,7 +11,7 @@ import { ClassifierRequestBuilderService } from '../../request-builder/classifie
 import { DecisionTreeValidationMessages } from '../utils/decision-tree-validation-messages';
 import { Constants } from '../utils/constants';
 import { ClassifierRequest } from '../../model/classifier-request';
-import { ClassifierDataResponse } from '../../model/classifier-data-response';
+import { ClassifierResponse } from '../../model/classifier-response';
 import { ClassifierStartResponse } from '../../model/classifier-start-response';
 import { ClassifierDataRequest } from '../../model/classifier-data-request';
 
@@ -20,9 +20,9 @@ import { ClassifierDataRequest } from '../../model/classifier-data-request';
   templateUrl: './decision-tree-input.component.html',
   styleUrls: ['./decision-tree-input.component.css']
 })
-export class DecisionTreeInputComponent extends AbstractInputComponent<ClassifierDataRequest, ClassifierDataResponse | number> {
+export class DecisionTreeInputComponent extends AbstractInputComponent<ClassifierDataRequest, ClassifierResponse | number> {
 
-  @Output() resultEmitter = new EventEmitter<[ClassifierDataRequest | ClassifierDataResponse | number,  InputEmitType]>();
+  @Output() resultEmitter = new EventEmitter<[ClassifierDataRequest | ClassifierResponse | number,  InputEmitType]>();
   @Output() newRequestEmitter = new EventEmitter<undefined>();
   private readonly requestBuilder: ClassifierRequestBuilderService;
   private readonly service: DecisionTreeService;
@@ -44,7 +44,7 @@ export class DecisionTreeInputComponent extends AbstractInputComponent<Classifie
     this.postNewRequest(request => this.service.computePredictAccuracy(request));
   }
 
-  private postNewRequest(serviceCall: (request: ClassifierRequest) => Observable<ClassifierDataResponse | number>): void {
+  private postNewRequest(serviceCall: (request: ClassifierRequest) => Observable<ClassifierResponse | number>): void {
     const predictionColumnName: string = this.settingsForm.get(Constants.PREDICTION_COLUMN_NAME_FORM)?.value;
     const actionColumnNames: string[] = this.settingsForm.get(Constants.ACTION_COLUMN_NAMES_FORM)?.value;
     const numberOfValues: number = this.settingsForm.get(Constants.NUMBER_OF_VALUES_FORM)?.value;
@@ -67,7 +67,7 @@ export class DecisionTreeInputComponent extends AbstractInputComponent<Classifie
         switchMap(() => this.requestBuilder.buildClassifierRequest(requestId)),
         switchMap(request => serviceCall(request))
       ).subscribe({
-        next: (result: ClassifierDataResponse | number) => this.onSuccess(result),
+        next: (result: ClassifierResponse | number) => this.onSuccess(result),
         error: err => this.onError(err)
       });
   }

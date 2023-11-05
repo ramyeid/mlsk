@@ -7,7 +7,7 @@ import { ClassifierStartRequest } from '../../model/classifier-start-request';
 import { ClassifierStartResponse } from '../../model/classifier-start-response';
 import { ClassifierDataRequest } from '../../model/classifier-data-request';
 import { ClassifierRequest } from '../../model/classifier-request';
-import { ClassifierDataResponse } from '../../model/classifier-data-response';
+import { ClassifierResponse } from '../../model/classifier-response';
 
 describe('DecisionTreeService', () => {
 
@@ -117,9 +117,9 @@ describe('DecisionTreeService', () => {
 
       const actualResult$ = service.predict(ClassifierRequest);
 
-      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ Helper.buildClassifierDataResponse() ], done);
+      ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ Helper.buildClassifierResponse() ], done);
       const req = httpMock.expectOne('http://localhost:8080/decision-tree/predict');
-      req.flush(Helper.buildClassifierDataResponse());
+      req.flush(Helper.buildClassifierResponse());
       expect(req.request.method).toBe('POST');
       httpMock.verify();
     });
@@ -181,7 +181,7 @@ class Helper {
     return new ClassifierRequest(1);
   }
 
-  static buildClassifierDataResponse(): ClassifierDataResponse {
-    return new ClassifierDataResponse('col', [ 0, 1, 1 ]);
+  static buildClassifierResponse(): ClassifierResponse {
+    return new ClassifierResponse(1, 'col', [ 0, 1, 1 ]);
   }
 }

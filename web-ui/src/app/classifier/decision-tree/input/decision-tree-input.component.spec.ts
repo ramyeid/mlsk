@@ -14,7 +14,7 @@ import { DecisionTreeService } from '../service/decision-tree.service';
 import { ClassifierRequestBuilderService } from '../../request-builder/classifier-request-builder.service';
 import { ClassifierStartRequest } from '../../model/classifier-start-request';
 import { ClassifierDataRequest } from '../../model/classifier-data-request';
-import { ClassifierDataResponse } from '../../model/classifier-data-response';
+import { ClassifierResponse } from '../../model/classifier-response';
 import { ClassifierStartResponse } from '../../model/classifier-start-response';
 import { ClassifierRequest } from '../../model/classifier-request';
 
@@ -149,14 +149,14 @@ describe('DecisionTreeInputComponent', () => {
 
     it('should call service and output result on predict success', fakeAsync(() => {
       TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
-      mockService.predict.and.returnValue(FactoryHelper.buildClassifierDataResponseObservable());
+      mockService.predict.and.returnValue(FactoryHelper.buildClassifierResponseObservable());
 
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
       AssertionHelper.assertOnEmittedItems([[ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
         [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataResponse(), InputEmitType.RESULT ] ]);
+        [ FactoryHelper.buildClassifierResponse(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(1);
@@ -279,7 +279,7 @@ describe('DecisionTreeInputComponent', () => {
 
     it('should set error message on predict failure', fakeAsync(() => {
       TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
-      mockService.predict.and.returnValue(FactoryHelper.buildClassifierDataResponseErrorObservable());
+      mockService.predict.and.returnValue(FactoryHelper.buildClassifierResponseErrorObservable());
 
       component.predict();
 
@@ -301,14 +301,14 @@ describe('DecisionTreeInputComponent', () => {
       TestHelper.setupValidFormAndFailingStartRequestBuilderService(fixture, mockCsvReaderService, mockRequestBuilderService);
       component.predict();
       TestHelper.setupValidFormAndSuccessServiceCalls(fixture, mockCsvReaderService, mockRequestBuilderService, mockService);
-      mockService.predict.and.returnValue(FactoryHelper.buildClassifierDataResponseObservable());
+      mockService.predict.and.returnValue(FactoryHelper.buildClassifierResponseObservable());
 
       component.predict();
 
       AssertionHelper.expectValidForm(fixture);
       AssertionHelper.assertOnEmittedItems([ [ FactoryHelper.buildClassifierDataRequest1(), InputEmitType.REQUEST ],
         [ FactoryHelper.buildClassifierDataRequest2(), InputEmitType.REQUEST ],
-        [ FactoryHelper.buildClassifierDataResponse(), InputEmitType.RESULT ] ]);
+        [ FactoryHelper.buildClassifierResponse(), InputEmitType.RESULT ] ]);
       expect(FormHelper.IS_NEW_REQUEST_EMITTED).toBeTrue();
       expect(component.errorMessage).toEqual('');
       expect(mockCsvReaderService.throwExceptionIfInvalidCsv).toHaveBeenCalledTimes(2);
@@ -587,7 +587,7 @@ class TestHelper {
 
 class FormHelper {
 
-  static ACTUAL_EMITTED_ITEMS: [ ClassifierDataRequest | ClassifierDataResponse | number, InputEmitType][] = [];
+  static ACTUAL_EMITTED_ITEMS: [ ClassifierDataRequest | ClassifierResponse | number, InputEmitType][] = [];
   static IS_NEW_REQUEST_EMITTED = false;
 
   private constructor() { }
@@ -670,7 +670,7 @@ class AssertionHelper {
     expect(button.properties[AssertionHelper.TITLE]).toEqual('Disabled until the form data is valid');
   }
 
-  static assertOnEmittedItems(expectedEmittedItems: [ClassifierDataRequest | ClassifierDataResponse | number, InputEmitType][]): void {
+  static assertOnEmittedItems(expectedEmittedItems: [ClassifierDataRequest | ClassifierResponse | number, InputEmitType][]): void {
     expect(FormHelper.ACTUAL_EMITTED_ITEMS).toEqual(expectedEmittedItems);
   }
 
@@ -692,8 +692,8 @@ class FactoryHelper {
     return new ClassifierDataRequest(1, 'col1', [ 1, 1, 0 ]);
   }
 
-  static buildClassifierDataResponse(): ClassifierDataResponse {
-    return new ClassifierDataResponse('prediction', [ 1, 1, 1 ]);
+  static buildClassifierResponse(): ClassifierResponse {
+    return new ClassifierResponse(1, 'prediction', [ 1, 1, 1 ]);
   }
 
   static buildThrowExceptionIfInvalidCsvErrorObservable(): Observable<never> {
@@ -752,12 +752,12 @@ class FactoryHelper {
     });
   }
 
-  static buildClassifierDataResponseObservable(): Observable<ClassifierDataResponse> {
-    return of(this.buildClassifierDataResponse());
+  static buildClassifierResponseObservable(): Observable<ClassifierResponse> {
+    return of(this.buildClassifierResponse());
   }
 
-  static buildClassifierDataResponseErrorObservable(): Observable<ClassifierDataResponse> {
-    return new Observable<ClassifierDataResponse>(subscriber => {
+  static buildClassifierResponseErrorObservable(): Observable<ClassifierResponse> {
+    return new Observable<ClassifierResponse>(subscriber => {
       subscriber.error(new Error('error from predict'));
     });
   }
