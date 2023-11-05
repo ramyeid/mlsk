@@ -8,6 +8,9 @@ definitions:
   ClassifierStartRequestModel:
     type: object
     properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request
       predictionColumnName:
         type: string
         description: Name of the column to use for prediction

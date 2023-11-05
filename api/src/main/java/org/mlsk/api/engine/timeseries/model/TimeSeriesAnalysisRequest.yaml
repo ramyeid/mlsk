@@ -8,6 +8,9 @@ definitions:
   TimeSeriesAnalysisRequestModel:
     type: object
     properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request
       timeSeries:
         $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'
       numberOfValues:
