@@ -11,7 +11,7 @@ import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierResponse;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
@@ -289,14 +289,14 @@ public class EngineImplTest {
   }
 
   @Test
-  public void should_return_classifier_data_response_on_classifier_predict() {
+  public void should_return_classifier_response_on_classifier_predict() {
     ClassifierType classifierType = mock(ClassifierType.class);
     onBuildClassifierEngineClient();
-    onClassifierPredictReturn(buildClassifierDataResponse());
+    onClassifierPredictReturn(buildClassifierResponse());
 
-    ClassifierDataResponse actualDataResponse = engineImpl.predict(classifierType);
+    ClassifierResponse actualResponse = engineImpl.predict(classifierType);
 
-    assertEquals(buildClassifierDataResponse(), actualDataResponse);
+    assertEquals(buildClassifierResponse(), actualResponse);
   }
 
   @Test
@@ -313,7 +313,7 @@ public class EngineImplTest {
   }
 
   @Test
-  public void should_return_classifier_data_response_on_classifier_predict_accuracy() {
+  public void should_return_classifier_response_on_classifier_predict_accuracy() {
     ClassifierType classifierType = mock(ClassifierType.class);
     onBuildClassifierEngineClient();
     onClassifierPredictAccuracyReturn(123.123);
@@ -364,8 +364,8 @@ public class EngineImplTest {
     when(tsaEngineClient.predict(request)).thenReturn(timeSeries);
   }
 
-  private void onClassifierPredictReturn(ClassifierDataResponse classifierDataResponse) {
-    when(classifierEngineClient.predict(any())).thenReturn(classifierDataResponse);
+  private void onClassifierPredictReturn(ClassifierResponse classifierResponse) {
+    when(classifierEngineClient.predict(any())).thenReturn(classifierResponse);
   }
 
   private void onClassifierPredictAccuracyReturn(double accuracy) {
@@ -398,7 +398,7 @@ public class EngineImplTest {
     return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(0, 1, 0));
   }
 
-  private static ClassifierDataResponse buildClassifierDataResponse() {
-    return new ClassifierDataResponse("columnName", newArrayList(0, 1, 0));
+  private static ClassifierResponse buildClassifierResponse() {
+    return new ClassifierResponse(REQUEST_ID, "columnName", newArrayList(0, 1, 0));
   }
 }

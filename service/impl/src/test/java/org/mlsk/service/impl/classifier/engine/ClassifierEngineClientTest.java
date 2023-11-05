@@ -7,7 +7,7 @@ import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierResponse;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -127,19 +127,19 @@ public class ClassifierEngineClientTest {
   public void should_delegate_predict_call_to_engine() {
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    onPostWithoutBodyWithResponseReturn(restClient, "predictUrl", ClassifierDataResponse.class, buildClassifierDataResponse());
+    onPostWithoutBodyWithResponseReturn(restClient, "predictUrl", ClassifierResponse.class, buildClassifierResponse());
 
-    ClassifierDataResponse actualResponse = client.predict(classifierType);
+    ClassifierResponse actualResponse = client.predict(classifierType);
 
-    verifyPostWithoutBodyWithResponseCalled(restClient, "predictUrl", ClassifierDataResponse.class);
-    assertEquals(buildClassifierDataResponse(), actualResponse);
+    verifyPostWithoutBodyWithResponseCalled(restClient, "predictUrl", ClassifierResponse.class);
+    assertEquals(buildClassifierResponse(), actualResponse);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_predict_failure() {
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictUrl", ClassifierDataResponse.class, new InvalidParameterException());
+    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictUrl", ClassifierResponse.class, new InvalidParameterException());
 
     try {
       client.predict(classifierType);
@@ -154,7 +154,7 @@ public class ClassifierEngineClientTest {
   public void should_throw_exception_with_body_on_predict_failure_with_http_server_error_exception() {
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictUrl", ClassifierDataResponse.class, buildHttpServerErrorException("Original Predict Exception Message"));
+    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictUrl", ClassifierResponse.class, buildHttpServerErrorException("Original Predict Exception Message"));
 
     try {
       client.predict(classifierType);
@@ -255,8 +255,8 @@ public class ClassifierEngineClientTest {
     return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(1, 0, 1));
   }
 
-  private static ClassifierDataResponse buildClassifierDataResponse() {
-    return new ClassifierDataResponse("columnName", newArrayList(0, 1));
+  private static ClassifierResponse buildClassifierResponse() {
+    return new ClassifierResponse(REQUEST_ID, "columnName", newArrayList(0, 1));
   }
 
   private static HttpServerErrorException buildHttpServerErrorException(String exceptionMessage) {

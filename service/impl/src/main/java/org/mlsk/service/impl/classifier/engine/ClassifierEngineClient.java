@@ -7,7 +7,7 @@ import org.mlsk.service.classifier.ClassifierEngine;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierResponse;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
 import org.springframework.web.client.HttpServerErrorException;
 
@@ -49,9 +49,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   @Override
-  public ClassifierDataResponse predict(ClassifierType classifierType) {
+  public ClassifierResponse predict(ClassifierType classifierType) {
     try {
-      return restClient.post(classifierType.getPredictUrl(), ClassifierDataResponse.class);
+      return restClient.post(classifierType.getPredictUrl(), ClassifierResponse.class);
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "predict");
     } catch (Exception exception) {

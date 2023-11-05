@@ -220,12 +220,12 @@ public class ClassifierServiceImplTest {
   public void should_return_correct_result_on_predict() {
     ClassifierRequest request = buildClassifierRequest();
     onRunOnEngineCallMethod(orchestrator, engine, REQUEST_ID);
-    onEnginePredictReturn(buildClassifierDataResponse());
+    onEnginePredictReturn(buildClassifierResponse());
     when(classifierType.getPredictAction()).thenReturn("predictAction");
 
-    ClassifierDataResponse actualResponse = service.predict(request, classifierType);
+    ClassifierResponse actualResponse = service.predict(request, classifierType);
 
-    assertEquals(buildClassifierDataResponse(), actualResponse);
+    assertEquals(buildClassifierResponse(), actualResponse);
   }
 
   @Test
@@ -372,8 +372,8 @@ public class ClassifierServiceImplTest {
     return inOrder(orchestrator, engine, classifierType);
   }
 
-  private void onEnginePredictReturn(ClassifierDataResponse classifierDataResponse) {
-    when(engine.predict(classifierType)).thenReturn(classifierDataResponse);
+  private void onEnginePredictReturn(ClassifierResponse classifierResponse) {
+    when(engine.predict(classifierType)).thenReturn(classifierResponse);
   }
 
   private void onEngineComputePredictAccuracyReturn(Double accuracy) {
@@ -396,8 +396,8 @@ public class ClassifierServiceImplTest {
     return new ClassifierRequest(REQUEST_ID);
   }
 
-  private static ClassifierDataResponse buildClassifierDataResponse() {
-    return new ClassifierDataResponse("columnName", newArrayList(0, 1));
+  private static ClassifierResponse buildClassifierResponse() {
+    return new ClassifierResponse(REQUEST_ID, "columnName", newArrayList(0, 1));
   }
 
   private static void assertOnClassifierServiceException(Exception exception, String exceptionMessage) {

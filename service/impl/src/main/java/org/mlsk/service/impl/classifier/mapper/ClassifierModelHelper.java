@@ -16,8 +16,9 @@ public final class ClassifierModelHelper {
     return classifierStartResponseModel;
   }
 
-  public static ClassifierResponseModel buildClassifierResponseModel(String columnName, List<Integer> values) {
+  public static ClassifierResponseModel buildClassifierResponseModel(long requestId, String columnName, List<Integer> values) {
     ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
+    classifierResponseModel.setRequestId(requestId);
     classifierResponseModel.setColumnName(columnName);
     classifierResponseModel.setValues(values);
     return classifierResponseModel;

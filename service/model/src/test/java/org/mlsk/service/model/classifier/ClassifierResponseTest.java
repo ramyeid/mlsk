@@ -7,16 +7,16 @@ import org.junit.jupiter.api.Test;
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ClassifierDataResponseTest {
+public class ClassifierResponseTest {
 
   @Test
   public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
-    ClassifierDataResponse classifierDataResponse = new ClassifierDataResponse("columnName", newArrayList(1, 2, 3));
+    ClassifierResponse classifierResponse = new ClassifierResponse(1L, "columnName", newArrayList(1, 2, 3));
     ObjectMapper objectMapper = new ObjectMapper();
 
-    String serializedDataResponse = objectMapper.writeValueAsString(classifierDataResponse);
-    ClassifierDataResponse deserializedClassifierDataResponse = objectMapper.readValue(serializedDataResponse, ClassifierDataResponse.class);
+    String serializedResponse = objectMapper.writeValueAsString(classifierResponse);
+    ClassifierResponse deserializedClassifierResponse = objectMapper.readValue(serializedResponse, ClassifierResponse.class);
 
-    assertEquals(deserializedClassifierDataResponse, classifierDataResponse);
+    assertEquals(deserializedClassifierResponse, classifierResponse);
   }
 }

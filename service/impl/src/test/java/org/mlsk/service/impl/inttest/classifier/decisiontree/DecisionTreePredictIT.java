@@ -52,7 +52,7 @@ public class DecisionTreePredictIT extends AbstractIT {
     MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId), buildDefaultResponse());
     MockEngine.MockedRequest data1Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId), buildDefaultResponse());
     MockEngine.MockedRequest data2Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData2Request(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierDataResponse());
+    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierResponse(requestId));
     mockEngine.registerRequests(startRequest, data1Request, data2Request, predictRequest);
 
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse = decisionTreeApi.start(startRequestModel);
@@ -61,7 +61,7 @@ public class DecisionTreePredictIT extends AbstractIT {
     ResponseEntity<ClassifierResponseModel> actualPredictResponse = decisionTreeApi.predict(requestModel);
 
     assertOnResponseEntity(buildClassifierStartResponseModel(requestId), actualStartResponse);
-    assertOnResponseEntity(buildClassifierResponseModel(), actualPredictResponse);
+    assertOnResponseEntity(buildClassifierResponseModel(requestId), actualPredictResponse);
     assertOnEngineState(WAITING, WAITING);
   }
 
@@ -79,7 +79,7 @@ public class DecisionTreePredictIT extends AbstractIT {
     MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId3), buildDefaultResponse());
     MockEngine.MockedRequest data1Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
     MockEngine.MockedRequest data2Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData2Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierDataResponse());
+    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierResponse(requestId1));
     mockEngine.registerRequests(startRequest1, data1Request, data2Request, predictRequest, startRequest2, startRequest3);
 
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse1 = decisionTreeApi.start(startRequestModel);

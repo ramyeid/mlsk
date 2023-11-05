@@ -24,13 +24,13 @@ public class ClassifierModelHelperTest {
   }
 
   @Test
-  public void should_correctly_build_classifier_data_response_model() {
+  public void should_correctly_build_classifier_response_model() {
     String columnName = "columnName";
     List<Integer> values = newArrayList(1, 2, 3);
 
-    ClassifierResponseModel actualResponseModel = buildClassifierResponseModel(columnName, values);
+    ClassifierResponseModel actualResponseModel = buildClassifierResponseModel(1L, columnName, values);
 
-    ClassifierResponseModel expectedResponseModel = new ClassifierResponseModel().columnName(columnName).values(values);
+    ClassifierResponseModel expectedResponseModel = new ClassifierResponseModel().requestId(1L).columnName(columnName).values(values);
     assertEquals(expectedResponseModel, actualResponseModel);
   }
 }

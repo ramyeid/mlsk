@@ -1,7 +1,7 @@
 package org.mlsk.service.classifier;
 
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierResponse;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
 
 public interface ClassifierEngine {
@@ -10,7 +10,7 @@ public interface ClassifierEngine {
 
   Void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType);
 
-  ClassifierDataResponse predict(ClassifierType classifierType);
+  ClassifierResponse predict(ClassifierType classifierType);
 
   Double computePredictAccuracy(ClassifierType classifierType);
 

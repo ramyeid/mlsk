@@ -87,7 +87,7 @@ public class DecisionTreeApiImplTest {
   public void should_delegate_call_to_service_on_predict() {
     long requestId = 1L;
     ClassifierRequestModel model = buildClassifierRequestModel(requestId);
-    onServicePredictReturn(buildClassifierDataResponse());
+    onServicePredictReturn(buildClassifierResponse(requestId));
 
     decisionTreeApi.predict(model);
 
@@ -100,11 +100,11 @@ public class DecisionTreeApiImplTest {
   public void should_return_correct_response_on_predict() {
     long requestId = 1L;
     ClassifierRequestModel model = buildClassifierRequestModel(requestId);
-    onServicePredictReturn(buildClassifierDataResponse());
+    onServicePredictReturn(buildClassifierResponse(requestId));
 
     ResponseEntity<ClassifierResponseModel> actualResponse = decisionTreeApi.predict(model);
 
-    assertOnResponseEntity(buildClassifierResponseModel(), actualResponse);
+    assertOnResponseEntity(buildClassifierResponseModel(requestId), actualResponse);
   }
 
   @Test
@@ -134,8 +134,8 @@ public class DecisionTreeApiImplTest {
     when(service.start(any(), eq(DECISION_TREE))).thenReturn(startResponse);
   }
 
-  private void onServicePredictReturn(ClassifierDataResponse classifierDataResponse) {
-    when(service.predict(any(), eq(DECISION_TREE))).thenReturn(classifierDataResponse);
+  private void onServicePredictReturn(ClassifierResponse classifierResponse) {
+    when(service.predict(any(), eq(DECISION_TREE))).thenReturn(classifierResponse);
   }
 
   private void onServiceComputePredictAccuracyReturn(double accuracy) {
@@ -188,15 +188,16 @@ public class DecisionTreeApiImplTest {
     return new ClassifierRequest(requestId);
   }
 
-  private static ClassifierResponseModel buildClassifierResponseModel() {
+  private static ClassifierResponseModel buildClassifierResponseModel(long requestId) {
     ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
     classifierResponseModel.setColumnName("columnName");
     classifierResponseModel.setValues(newArrayList(0, 1));
+    classifierResponseModel.setRequestId(requestId);
     return classifierResponseModel;
   }
 
-  private static ClassifierDataResponse buildClassifierDataResponse() {
-    return new ClassifierDataResponse("columnName", newArrayList(0, 1));
+  private static ClassifierResponse buildClassifierResponse(long requestId) {
+    return new ClassifierResponse(requestId, "columnName", newArrayList(0, 1));
   }
 
 }
