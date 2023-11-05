@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ClassifierDataResponse } from '../../model/classifier-data-response';
+import { ClassifierResponse } from '../../model/classifier-response';
 import { InputEmitType } from 'src/app/shared/model/input-emit-type';
 
 @Component({
@@ -14,7 +14,7 @@ export class DecisionTreeOutputComponent {
     this.temporaryResultUntilCorrectOutputIsImplemented = 'onNewRequest called';
   }
 
-  onResult(resultAndType: [ClassifierDataResponse | number, InputEmitType]): void {
+  onResult(resultAndType: [ClassifierResponse | number, InputEmitType]): void {
     console.log(resultAndType[0]);
     this.temporaryResultUntilCorrectOutputIsImplemented = 'onResult called ' + resultAndType[0];
   }

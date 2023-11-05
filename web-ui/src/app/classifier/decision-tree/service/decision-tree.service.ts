@@ -7,7 +7,7 @@ import { ClassifierStartRequest } from '../../model/classifier-start-request';
 import { ClassifierStartResponse } from '../../model/classifier-start-response';
 import { ClassifierDataRequest } from '../../model/classifier-data-request';
 import { ClassifierRequest } from '../../model/classifier-request';
-import { ClassifierDataResponse } from '../../model/classifier-data-response';
+import { ClassifierResponse } from '../../model/classifier-response';
 
 @Injectable({
   providedIn: 'root'
@@ -26,7 +26,7 @@ export class DecisionTreeService extends ServerCaller {
     return this.postAndCatchError('data', body);
   }
 
-  predict(body: ClassifierRequest): Observable<ClassifierDataResponse> {
+  predict(body: ClassifierRequest): Observable<ClassifierResponse> {
     return this.postAndCatchError('predict', body);
   }
 
