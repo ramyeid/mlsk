@@ -5,8 +5,6 @@ import org.mlsk.api.classifier.model.ClassifierStartResponseModel;
 
 import java.util.List;
 
-import static java.lang.String.valueOf;
-
 public final class ClassifierModelHelper {
 
   private ClassifierModelHelper() {
@@ -14,7 +12,7 @@ public final class ClassifierModelHelper {
 
   public static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(valueOf(requestId));
+    classifierStartResponseModel.setRequestId(requestId);
     return classifierStartResponseModel;
   }
 

@@ -11,7 +11,6 @@ import java.util.Map;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 
@@ -34,7 +33,7 @@ public final class DecisionTreeHelper {
 
   public static ClassifierDataRequestModel buildClassifierData1RequestModel(long requestId) {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(valueOf(requestId));
+    classifierDataRequestModel.setRequestId(requestId);
     classifierDataRequestModel.setColumnName("col0");
     classifierDataRequestModel.setValues(newArrayList(1, 0, 1, 0));
     return classifierDataRequestModel;
@@ -46,7 +45,7 @@ public final class DecisionTreeHelper {
 
   public static ClassifierDataRequestModel buildClassifierData2RequestModel(long requestId) {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(valueOf(requestId));
+    classifierDataRequestModel.setRequestId(requestId);
     classifierDataRequestModel.setColumnName("col1");
     classifierDataRequestModel.setValues(newArrayList(0, 0, 0, 0));
     return classifierDataRequestModel;
@@ -58,7 +57,7 @@ public final class DecisionTreeHelper {
 
   public static ClassifierRequestModel buildClassifierRequestModel(long requestId) {
     ClassifierRequestModel classifierRequestModel = new ClassifierRequestModel();
-    classifierRequestModel.setRequestId(valueOf(requestId));
+    classifierRequestModel.setRequestId(requestId);
     return classifierRequestModel;
   }
 
@@ -68,7 +67,7 @@ public final class DecisionTreeHelper {
 
   public static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(valueOf(requestId));
+    classifierStartResponseModel.setRequestId(requestId);
     return classifierStartResponseModel;
   }
 

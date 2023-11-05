@@ -24,7 +24,7 @@ public class ClassifierStartResponseMapperTest {
 
   private static ClassifierStartResponseModel buildExpectedStartResponseModel() {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId("10");
+    classifierStartResponseModel.setRequestId(10L);
     return classifierStartResponseModel;
   }
 }

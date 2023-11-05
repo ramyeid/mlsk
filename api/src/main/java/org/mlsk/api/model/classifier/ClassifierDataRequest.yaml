@@ -8,6 +8,9 @@ definitions:
   ClassifierDataRequestModel:
     type: object
     properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request
       values:
         type: array
         description: values of current column name
@@ -16,6 +19,3 @@ definitions:
       columnName:
         type: string
         description: name of the current data column
-      requestId:
-        type: string
-        description: Request Id to specify which engine to direct the call to

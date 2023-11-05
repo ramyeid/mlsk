@@ -5,8 +5,6 @@ import org.mlsk.service.model.classifier.ClassifierDataRequest;
 
 import java.util.List;
 
-import static java.lang.Long.parseLong;
-
 public final class ClassifierDataRequestMapper {
 
   private ClassifierDataRequestMapper() {
@@ -15,7 +13,7 @@ public final class ClassifierDataRequestMapper {
   public static ClassifierDataRequest toClassifierDataRequest(ClassifierDataRequestModel classifierDataRequestModel) {
     String columnName = classifierDataRequestModel.getColumnName();
     List<Integer> values = classifierDataRequestModel.getValues();
-    long requestId = parseLong(classifierDataRequestModel.getRequestId());
+    long requestId = classifierDataRequestModel.getRequestId();
 
     return new ClassifierDataRequest(requestId, columnName, values);
   }
