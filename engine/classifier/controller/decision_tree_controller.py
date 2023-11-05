@@ -9,7 +9,7 @@ from exception.engine_computation_exception import EngineComputationException
 from classifier.service.decision_tree_service import DecisionTreeService
 from classifier.model.classifier_start_request import ClassifierStartRequest
 from classifier.model.classifier_data_request import ClassifierDataRequest
-from classifier.model.classifier_data_response import ClassifierDataResponse
+from classifier.model.classifier_response import ClassifierResponse
 from classifier.model.classifier_data import ClassifierDataBuilder
 
 
@@ -108,7 +108,8 @@ def predict() -> str:
     decision_tree_service = DecisionTreeService(data, action_column_names, prediction_column_name, number_of_values)
     predicted_data_frame = decision_tree_service.predict()
 
-    predicted_classifier_data = ClassifierDataResponse.from_data_frame(predicted_data_frame, prediction_column_name)
+    # TODO pass requestId here!
+    predicted_classifier_data = ClassifierResponse.from_data_frame(predicted_data_frame, 0, prediction_column_name)
 
     return json.dumps(predicted_classifier_data, cls=JsonComplexEncoder)
 
