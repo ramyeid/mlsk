@@ -17,26 +17,30 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
-    time_series_analysis_request = TimeSeriesAnalysisRequest(time_series, 5)
+    time_series_analysis_request = TimeSeriesAnalysisRequest(123, time_series, 5)
 
     # When
+    actual_request_id = time_series_analysis_request.get_request_id()
     actual_time_series = time_series_analysis_request.get_time_series()
     actual_number_of_values = time_series_analysis_request.get_number_of_values()
 
     # Then
+    expected_request_id = 123
     expected_time_series_row1 = TimeSeriesRow(datetime(1949, 1, 1), 112.0)
     expected_time_series_row2 = TimeSeriesRow(datetime(1949, 2, 1), 118.0)
     expected_time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     expected_time_series = TimeSeries([expected_time_series_row1, expected_time_series_row2, expected_time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
     expected_number_of_values = 5
+    self.assertEqual(expected_request_id, actual_request_id)
     self.assertEqual(expected_time_series, actual_time_series)
     self.assertEqual(expected_number_of_values, actual_number_of_values)
 
 
   def test_from_json(self) -> None:
     # Given
-    json = dict(timeSeries=dict(dateColumnName='Date',
+    json = dict(requestId=123,
+                timeSeries=dict(dateColumnName='Date',
                                 valueColumnName='Passengers',
                                 dateFormat='yyyy-MM',
                                 rows=[dict(date='1949-01', value=112.0),
@@ -53,7 +57,7 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
-    expected_time_series_analysis_request = TimeSeriesAnalysisRequest(time_series, 5)
+    expected_time_series_analysis_request = TimeSeriesAnalysisRequest(123, time_series, 5)
     self.assertEqual(expected_time_series_analysis_request, actual_time_series_analysis_request)
 
 
@@ -64,16 +68,17 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
-    time_series_analysis_request = TimeSeriesAnalysisRequest(time_series, 5)
+    time_series_analysis_request = TimeSeriesAnalysisRequest(123, time_series, 5)
 
     # When
     actual_json = time_series_analysis_request.to_json()
 
     # Then
-    expected_json = dict(timeSeries=dict(dateColumnName='Date',
-                         valueColumnName='Passengers',
-                         dateFormat='yyyy-MM',
-                         rows=[dict(date='1949-01', value=112.0),
+    expected_json = dict(requestId=123,
+                         timeSeries=dict(dateColumnName='Date',
+                          valueColumnName='Passengers',
+                          dateFormat='yyyy-MM',
+                          rows=[dict(date='1949-01', value=112.0),
                                dict(date='1949-02', value=118.0),
                                dict(date='1949-03', value=132.0)]),
                          numberOfValues=5)
@@ -87,13 +92,13 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
-    time_series_analysis_request = TimeSeriesAnalysisRequest(time_series, 5)
+    time_series_analysis_request = TimeSeriesAnalysisRequest(123, time_series, 5)
 
     # When
     actual_str = time_series_analysis_request.__str__()
 
     # Then
-    expected_str = "{'timeSeries': {'dateColumnName': 'Date', 'valueColumnName': 'Passengers', 'dateFormat': 'yyyy-MM', 'rows': [{'date': '1949-01', 'value': 112.0}, {'date': '1949-02', 'value': 118.0}, {'date': '1949-03', 'value': 132.0}]}, 'numberOfValues': 5}"
+    expected_str = "{'requestId': 123, 'timeSeries': {'dateColumnName': 'Date', 'valueColumnName': 'Passengers', 'dateFormat': 'yyyy-MM', 'rows': [{'date': '1949-01', 'value': 112.0}, {'date': '1949-02', 'value': 118.0}, {'date': '1949-03', 'value': 132.0}]}, 'numberOfValues': 5}"
     self.assertEqual(expected_str, actual_str)
 
 
@@ -104,13 +109,13 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
-    time_series_analysis_request = TimeSeriesAnalysisRequest(time_series, 5)
+    time_series_analysis_request = TimeSeriesAnalysisRequest(123, time_series, 5)
 
     # When
     actual_str = time_series_analysis_request.__repr__()
 
     # Then
-    expected_str = "{'timeSeries': {'dateColumnName': 'Date', 'valueColumnName': 'Passengers', 'dateFormat': 'yyyy-MM', 'rows': [{'date': '1949-01', 'value': 112.0}, {'date': '1949-02', 'value': 118.0}, {'date': '1949-03', 'value': 132.0}]}, 'numberOfValues': 5}"
+    expected_str = "{'requestId': 123, 'timeSeries': {'dateColumnName': 'Date', 'valueColumnName': 'Passengers', 'dateFormat': 'yyyy-MM', 'rows': [{'date': '1949-01', 'value': 112.0}, {'date': '1949-02', 'value': 118.0}, {'date': '1949-03', 'value': 132.0}]}, 'numberOfValues': 5}"
     self.assertEqual(expected_str, actual_str)
 
 
@@ -121,14 +126,22 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
-    time_series_analysis_request1 = TimeSeriesAnalysisRequest(time_series, 5)
-    time_series_analysis_request2 = TimeSeriesAnalysisRequest(time_series, 10)
+    time_series_diff = TimeSeries([time_series_row1],
+                              'Date', 'Passengers', 'yyyy-MM')
+    time_series_analysis_request = TimeSeriesAnalysisRequest(123, time_series, 5)
+    time_series_analysis_request_id_diff = TimeSeriesAnalysisRequest(1234, time_series, 5)
+    time_series_analysis_request_series_diff = TimeSeriesAnalysisRequest(123, time_series_diff, 10)
+    time_series_analysis_request_values_diff = TimeSeriesAnalysisRequest(123, time_series, 10)
 
     # When
-    are_equal = time_series_analysis_request1.__eq__(time_series_analysis_request2)
+    are_equal1 = time_series_analysis_request.__eq__(time_series_analysis_request_id_diff)
+    are_equal2 = time_series_analysis_request.__eq__(time_series_analysis_request_series_diff)
+    are_equal3 = time_series_analysis_request.__eq__(time_series_analysis_request_values_diff)
 
     # Then
-    self.assertFalse(are_equal)
+    self.assertFalse(are_equal1)
+    self.assertFalse(are_equal2)
+    self.assertFalse(are_equal3)
 
 
   def test_equal_true(self) -> None:
@@ -138,8 +151,8 @@ class TestTimeSeriesAnalysisRequest(unittest.TestCase):
     time_series_row3 = TimeSeriesRow(datetime(1949, 3, 1), 132.0)
     time_series = TimeSeries([time_series_row1, time_series_row2, time_series_row3],
                               'Date', 'Passengers', 'yyyy-MM')
-    time_series_analysis_request1 = TimeSeriesAnalysisRequest(time_series, 5)
-    time_series_analysis_request2 = TimeSeriesAnalysisRequest(time_series, 5)
+    time_series_analysis_request1 = TimeSeriesAnalysisRequest(123, time_series, 5)
+    time_series_analysis_request2 = TimeSeriesAnalysisRequest(123, time_series, 5)
 
     # When
     are_equal = time_series_analysis_request1.__eq__(time_series_analysis_request2)

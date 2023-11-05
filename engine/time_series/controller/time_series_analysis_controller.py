@@ -22,9 +22,12 @@ def forecast() -> str:
     time_series -> time_series corresponding to the forecasted values and dates.
   '''
 
+  request_id = None
   try:
-    get_logger().info('[Start] forecast request')
     time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
+    request_id = time_series_analysis_request.get_request_id()
+
+    get_logger().info('[Start][%d] forecast request', request_id)
 
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
@@ -43,13 +46,13 @@ def forecast() -> str:
     return json.dumps(forecasted_time_series, cls=JsonComplexEncoder)
 
   except Exception as exception:
-    error_message = 'Exception %s raised while forecasting: %s' % (type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while forecasting: %s' % (request_id, type(exception).__name__, exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info('[End] forecast request')
+    get_logger().info('[End][%d] forecast request', request_id)
 
 
 def compute_accuracy_of_forecast() -> str:
@@ -66,9 +69,12 @@ def compute_accuracy_of_forecast() -> str:
     float -> accuracy of the forecast algorithm percentage
   '''
 
+  request_id = None
   try:
-    get_logger().info('[Start] compute forecast accuracy request')
     time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
+    request_id = time_series_analysis_request.get_request_id()
+
+    get_logger().info('[Start][%d] compute forecast accuracy request', request_id)
 
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
@@ -81,13 +87,13 @@ def compute_accuracy_of_forecast() -> str:
     return str(time_series_analysis_service.compute_forecast_accuracy())
 
   except Exception as exception:
-    error_message = 'Exception %s raised while computing forecast accuracy: %s' % (type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while computing forecast accuracy: %s' % (request_id, type(exception).__name__, exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info('[End] compute forecast accuracy request')
+    get_logger().info('[End][%d] compute forecast accuracy request', request_id)
 
 
 def predict() -> str:
@@ -102,9 +108,12 @@ def predict() -> str:
     time_series -> time_series corresponding to the predicted values and dates.
   '''
 
+  request_id = None
   try:
-    get_logger().info('[Start] predict request')
     time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
+    request_id = time_series_analysis_request.get_request_id()
+
+    get_logger().info('[Start][%d] predict request', request_id)
 
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
@@ -123,10 +132,10 @@ def predict() -> str:
     return json.dumps(predicted_time_series, cls=JsonComplexEncoder)
 
   except Exception as exception:
-    error_message = 'Exception %s raised while predicting: %s' % (type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while predicting: %s' % (request_id, type(exception).__name__, exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info('[End] predict request')
+    get_logger().info('[End][%d] predict request', request_id)

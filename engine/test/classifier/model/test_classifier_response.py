@@ -44,11 +44,11 @@ class TestClassifierResponse(unittest.TestCase):
     data_frame = pd.DataFrame.from_dict({'col2': [0.0, 1.0, 0.0, 0.0]})
 
     # When
-    actual_classifier_data_request = ClassifierResponse.from_data_frame(data_frame, 1, 'col2')
+    actual_classifier_response = ClassifierResponse.from_data_frame(data_frame, 1, 'col2')
 
     # Then
-    expected_classifier_data_request = ClassifierResponse(1, 'col2', [0, 1, 0, 0])
-    self.assertEqual(expected_classifier_data_request, actual_classifier_data_request)
+    expected_classifier_response = ClassifierResponse(1, 'col2', [0, 1, 0, 0])
+    self.assertEqual(expected_classifier_response, actual_classifier_response)
 
 
   def test_to_string(self) -> None:
@@ -78,13 +78,19 @@ class TestClassifierResponse(unittest.TestCase):
   def test_equal_false(self) -> None:
     # Given
     request1 = ClassifierResponse(1, 'Sex1', [0, 1, 1, 1])
-    request2 = ClassifierResponse(1, 'Sex2', [0, 1, 1, 1])
+    request_id_diff = ClassifierResponse(2, 'Sex1', [0, 1, 1, 1])
+    request_column_diff = ClassifierResponse(1, 'Sex2', [0, 1, 1, 1])
+    request_values_diff = ClassifierResponse(1, 'Sex1', [0])
 
     # When
-    are_equal = request1.__eq__(request2)
+    are_equal1 = request1.__eq__(request_id_diff)
+    are_equal2 = request1.__eq__(request_column_diff)
+    are_equal3 = request1.__eq__(request_values_diff)
 
     # Then
-    self.assertFalse(are_equal)
+    self.assertFalse(are_equal1)
+    self.assertFalse(are_equal2)
+    self.assertFalse(are_equal3)
 
 
   def test_equal_true(self) -> None:
