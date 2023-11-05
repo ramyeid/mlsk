@@ -10,9 +10,7 @@ import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
-import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierResponse;
-import org.mlsk.service.model.classifier.ClassifierStartRequest;
+import org.mlsk.service.model.classifier.*;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -277,62 +275,67 @@ public class EngineImplTest {
 
   @Test
   public void should_delegate_classifier_predict_call_to_engine() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     onBuildClassifierEngineClient();
 
-    engineImpl.predict(classifierType);
+    engineImpl.predict(classifierRequest, classifierType);
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).predict(classifierType);
+    inOrder.verify(classifierEngineClient).predict(classifierRequest, classifierType);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_classifier_response_on_classifier_predict() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     onBuildClassifierEngineClient();
     onClassifierPredictReturn(buildClassifierResponse());
 
-    ClassifierResponse actualResponse = engineImpl.predict(classifierType);
+    ClassifierResponse actualResponse = engineImpl.predict(classifierRequest, classifierType);
 
     assertEquals(buildClassifierResponse(), actualResponse);
   }
 
   @Test
   public void should_delegate_classifier_predict_accuracy_call_to_engine() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     onBuildClassifierEngineClient();
 
-    engineImpl.computePredictAccuracy(classifierType);
+    engineImpl.computePredictAccuracy(classifierRequest, classifierType);
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).computePredictAccuracy(classifierType);
+    inOrder.verify(classifierEngineClient).computePredictAccuracy(classifierRequest, classifierType);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_classifier_response_on_classifier_predict_accuracy() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     onBuildClassifierEngineClient();
     onClassifierPredictAccuracyReturn(123.123);
 
-    Double actualAccuracy = engineImpl.computePredictAccuracy(classifierType);
+    Double actualAccuracy = engineImpl.computePredictAccuracy(classifierRequest, classifierType);
 
     assertEquals(123.123, actualAccuracy);
   }
 
   @Test
   public void should_delegate_classifier_cancel_call_to_engine() {
+    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     onBuildClassifierEngineClient();
 
-    engineImpl.cancel(classifierType);
+    engineImpl.cancel(classifierCancelRequest, classifierType);
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).cancel(classifierType);
+    inOrder.verify(classifierEngineClient).cancel(classifierCancelRequest, classifierType);
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -365,11 +368,11 @@ public class EngineImplTest {
   }
 
   private void onClassifierPredictReturn(ClassifierResponse classifierResponse) {
-    when(classifierEngineClient.predict(any())).thenReturn(classifierResponse);
+    when(classifierEngineClient.predict(any(), any())).thenReturn(classifierResponse);
   }
 
   private void onClassifierPredictAccuracyReturn(double accuracy) {
-    when(classifierEngineClient.computePredictAccuracy(any())).thenReturn(accuracy);
+    when(classifierEngineClient.computePredictAccuracy(any(), any())).thenReturn(accuracy);
   }
 
   private static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest() {

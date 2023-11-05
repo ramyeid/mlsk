@@ -6,13 +6,12 @@ import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.classifier.ClassifierEngine;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
-import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierResponse;
-import org.mlsk.service.model.classifier.ClassifierStartRequest;
+import org.mlsk.service.model.classifier.*;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static java.lang.String.format;
 
+// TODO Use OpenAPI models and Generate Python API from OpenAPI
 public class ClassifierEngineClient implements ClassifierEngine {
 
   private final RestClient restClient;
@@ -49,9 +48,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   @Override
-  public ClassifierResponse predict(ClassifierType classifierType) {
+  public ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     try {
-      return restClient.post(classifierType.getPredictUrl(), ClassifierResponse.class);
+      return restClient.post(classifierType.getPredictUrl(), classifierRequest, ClassifierResponse.class);
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "predict");
     } catch (Exception exception) {
@@ -60,9 +59,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   @Override
-  public Double computePredictAccuracy(ClassifierType classifierType) {
+  public Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     try {
-      return restClient.post(classifierType.getPredictAccuracyUrl(), Double.class);
+      return restClient.post(classifierType.getPredictAccuracyUrl(), classifierRequest, Double.class);
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "predict accuracy");
     } catch (Exception exception) {
@@ -70,11 +69,11 @@ public class ClassifierEngineClient implements ClassifierEngine {
     }
   }
 
-
+  // TODO Make this method generic for all requests not classifiers only
   @Override
-  public Void cancel(ClassifierType classifierType) {
+  public Void cancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
     try {
-      return restClient.post(classifierType.getCancelUrl());
+      return restClient.post(classifierType.getCancelUrl(), classifierCancelRequest);
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "cancel");
     } catch (Exception exception) {

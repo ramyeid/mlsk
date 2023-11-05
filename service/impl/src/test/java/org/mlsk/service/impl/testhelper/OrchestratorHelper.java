@@ -30,7 +30,7 @@ public final class OrchestratorHelper {
         .thenAnswer(invocation -> buildAnswer(engine, invocation));
   }
 
-  public static void doThrowExceptionOnReleaseEngine(Orchestrator orchestrator, long requestId, String actionName, RuntimeException exception) {
+  public static void doThrowExceptionOnCompleteRequest(Orchestrator orchestrator, long requestId, String actionName, RuntimeException exception) {
     doThrow(exception).when(orchestrator).completeRequest(requestId, actionName);
   }
 
