@@ -6,16 +6,14 @@ import org.mlsk.service.classifier.ClassifierService;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.service.exception.ClassifierServiceException;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
-import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.model.classifier.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
+import static java.lang.Long.parseLong;
 import static java.lang.String.format;
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
+import static java.lang.String.valueOf;
 
 @Service
 public class ClassifierServiceImpl implements ClassifierService {
@@ -31,91 +29,91 @@ public class ClassifierServiceImpl implements ClassifierService {
 
   @Override
   public ClassifierStartResponse start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
-    Optional<String> requestIdOptional = empty();
+    long requestId = RequestIdGenerator.nextId();
     try {
-      LOGGER.info("[Start] Start Request - Book Engine");
-      requestIdOptional = of(orchestrator.bookEngine(classifierType.getStartAction()));
-      orchestrator.runOnEngine(requestIdOptional.get(), engine -> engine.start(classifierStartRequest, classifierType), classifierType.getStartAction());
-      return new ClassifierStartResponse(requestIdOptional.get());
+      LOGGER.info("[Start][{}] Start Request - Book Engine", requestId);
+      orchestrator.bookEngine(requestId, classifierType.getStartAction());
+      orchestrator.runOnEngine(requestId, classifierType.getStartAction(), engine -> engine.start(classifierStartRequest, classifierType));
+      return new ClassifierStartResponse(valueOf(requestId));
     } catch (Exception exception) {
-      requestIdOptional.ifPresent(requestId -> cancelRequestAndReleaseEngine(requestId, classifierType.getStartAction(), classifierType));
-      throw logAndBuildException(exception, "starting request");
+      cancelRequestAndReleaseEngine(requestId, classifierType.getStartAction(), classifierType);
+      throw logAndBuildException(exception, requestId, "starting request");
     } finally {
-      LOGGER.info("[End] Start Request - Book Engine");
+      LOGGER.info("[End][{}] Start Request - Book Engine", requestId);
     }
   }
 
   @Override
   public void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
     try {
-      LOGGER.info("[Start] Data Request - Sending data to Engine");
-      orchestrator.runOnEngine(classifierDataRequest.getRequestId(), engine -> engine.data(classifierDataRequest, classifierType), classifierType.getDataAction());
+      LOGGER.info("[Start][{}] Data Request - Sending data to Engine", classifierDataRequest.getRequestId());
+      orchestrator.runOnEngine(parseLong(classifierDataRequest.getRequestId()), classifierType.getDataAction(), engine -> engine.data(classifierDataRequest, classifierType));
     } catch (Exception exception) {
-      cancelRequestAndReleaseEngine(classifierDataRequest.getRequestId(), classifierType.getDataAction(), classifierType);
-      throw logAndBuildException(exception, "sending data to engine");
+      cancelRequestAndReleaseEngine(parseLong(classifierDataRequest.getRequestId()), classifierType.getDataAction(), classifierType);
+      throw logAndBuildException(exception, parseLong(classifierDataRequest.getRequestId()), "sending data to engine");
     } finally {
-      LOGGER.info("[End] Data Request - Sending data to Engine");
+      LOGGER.info("[End][{}] Data Request - Sending data to Engine", classifierDataRequest.getRequestId());
     }
   }
 
   @Override
   public ClassifierDataResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     try {
-      LOGGER.info("[Start] Predict Request");
-      return orchestrator.runOnEngine(classifierRequest.getRequestId(), engine -> engine.predict(classifierType), classifierType.getPredictAction());
+      LOGGER.info("[Start][{}] Predict Request", classifierRequest.getRequestId());
+      return orchestrator.runOnEngine(parseLong(classifierRequest.getRequestId()), classifierType.getPredictAction(), engine -> engine.predict(classifierType));
     } catch (Exception exception) {
-      cancelRequest(classifierRequest.getRequestId(), classifierType.getPredictAction(), classifierType);
-      throw logAndBuildException(exception, "predicting on engine");
+      cancelRequest(parseLong(classifierRequest.getRequestId()), classifierType.getPredictAction(), classifierType);
+      throw logAndBuildException(exception, parseLong(classifierRequest.getRequestId()), "predicting on engine");
     } finally {
-      releaseEngine(classifierRequest.getRequestId(), classifierType.getPredictAction());
-      LOGGER.info("[End] Predict Request");
+      releaseEngine(parseLong(classifierRequest.getRequestId()), classifierType.getPredictAction());
+      LOGGER.info("[End][{}] Predict Request", classifierRequest.getRequestId());
     }
   }
 
   @Override
   public Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     try {
-      LOGGER.info("[Start] Compute Predict Accuracy Request");
-      return orchestrator.runOnEngine(classifierRequest.getRequestId(), engine -> engine.computePredictAccuracy(classifierType), classifierType.getPredictAccuracyAction());
+      LOGGER.info("[Start][{}] Compute Predict Accuracy Request", classifierRequest.getRequestId());
+      return orchestrator.runOnEngine(parseLong(classifierRequest.getRequestId()), classifierType.getPredictAccuracyAction(), engine -> engine.computePredictAccuracy(classifierType));
     } catch (Exception exception) {
-      cancelRequest(classifierRequest.getRequestId(), classifierType.getPredictAccuracyAction(), classifierType);
-      throw logAndBuildException(exception, "compute predict accuracy on engine");
+      cancelRequest(parseLong(classifierRequest.getRequestId()), classifierType.getPredictAccuracyAction(), classifierType);
+      throw logAndBuildException(exception, parseLong(classifierRequest.getRequestId()), "compute predict accuracy on engine");
     } finally {
-      releaseEngine(classifierRequest.getRequestId(), classifierType.getPredictAccuracyAction());
-      LOGGER.info("[End] Compute Predict Accuracy Request");
+      releaseEngine(parseLong(classifierRequest.getRequestId()), classifierType.getPredictAccuracyAction());
+      LOGGER.info("[End][{}] Compute Predict Accuracy Request", classifierRequest.getRequestId());
     }
   }
 
-  private void cancelRequestAndReleaseEngine(String requestId, String actionName, ClassifierType classifierType) {
+  private void cancelRequestAndReleaseEngine(long requestId, String actionName, ClassifierType classifierType) {
     cancelRequest(requestId, actionName, classifierType);
 
     releaseEngine(requestId, actionName);
   }
 
-  private void cancelRequest(String requestId, String actionName, ClassifierType classifierType) {
-    catchNoBlockedEngineException(() -> {
-      LOGGER.info("Cancelling request on engine with id {} and action {}", requestId, actionName);
-      orchestrator.runOnEngine(requestId, engine -> engine.cancel(classifierType), classifierType.getCancelAction());
+  private void cancelRequest(long requestId, String actionName, ClassifierType classifierType) {
+    catchExceptionAndLog(() -> {
+      LOGGER.info("[{}] Cancelling request on engine with action {}", requestId, actionName);
+      orchestrator.runOnEngine(requestId, classifierType.getCancelAction(), engine -> engine.cancel(classifierType));
     }, requestId);
   }
 
-  private void releaseEngine(String requestId, String actionName) {
-    catchNoBlockedEngineException(() -> {
-      LOGGER.info("Releasing engine with request {} and action {}", requestId, actionName);
-      orchestrator.releaseEngine(requestId, actionName);
+  private void releaseEngine(long requestId, String actionName) {
+    catchExceptionAndLog(() -> {
+      LOGGER.info("[{}] Releasing engine from action {}", requestId, actionName);
+      orchestrator.completeRequest(requestId, actionName);
     }, requestId);
   }
 
-  private static void catchNoBlockedEngineException(Runnable runnable, String requestId) {
+  private static void catchExceptionAndLog(Runnable runnable, long requestId) {
     try {
       runnable.run();
-    } catch (NoBlockedEngineException exception) {
-      LOGGER.info("[{}] No blocked engine exception caught for request, {}", requestId, exception.getMessage());
+    } catch (Exception exception) {
+      LOGGER.info("[{}] Exception caught for request, {}", requestId, exception.getMessage());
     }
   }
 
-  private static ClassifierServiceException logAndBuildException(Exception exception, String action) {
-    LOGGER.error(format("Exception while %s: %s", action, exception.getMessage()), exception);
+  private static ClassifierServiceException logAndBuildException(Exception exception, Long requestId, String action) {
+    LOGGER.error(format("[%d] Exception while %s: %s", requestId, action, exception.getMessage()), exception);
     return new ClassifierServiceException(exception.getMessage());
   }
 }

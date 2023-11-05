@@ -3,6 +3,7 @@ package org.mlsk.service.impl.timeseries.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.impl.timeseries.service.exception.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -30,50 +31,54 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
 
   @Override
   public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    long requestId = RequestIdGenerator.nextId();
     try {
-      LOGGER.info("[Start] forecast request");
-      return orchestrator.runOnEngine(engine -> engine.forecast(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST);
+      LOGGER.info("[Start][{}] forecast request", requestId);
+      return orchestrator.bookEngineRunAndComplete(requestId, TIME_SERIES_FORECAST, engine -> engine.forecast(timeSeriesAnalysisRequest));
     } catch (Exception exception) {
-      throw logAndBuildException(exception, "forecasting");
+      throw logAndBuildException(exception, requestId, "forecasting");
     } finally {
-      LOGGER.info("[End] forecast request");
+      LOGGER.info("[End][{}] forecast request", requestId);
     }
   }
 
   @Override
   public TimeSeries forecastVsActual(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    long requestId = RequestIdGenerator.nextId();
     try {
-      LOGGER.info("[Start] forecast vs actual request");
+      LOGGER.info("[Start][{}] forecast vs actual request", requestId);
       TimeSeriesAnalysisRequest newRequest = removeLastRows(timeSeriesAnalysisRequest);
-      return orchestrator.runOnEngine(engine -> engine.forecast(newRequest), TIME_SERIES_FORECAST_VS_ACTUAL);
+      return orchestrator.bookEngineRunAndComplete(requestId, TIME_SERIES_FORECAST_VS_ACTUAL, engine -> engine.forecast(newRequest));
     } catch (Exception exception) {
-      throw logAndBuildException(exception, "forecasting");
+      throw logAndBuildException(exception, requestId, "forecasting");
     } finally {
-      LOGGER.info("[End] forecast vs actual request");
+      LOGGER.info("[End][{}] forecast vs actual request", requestId);
     }
   }
 
   @Override
   public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    long requestId = RequestIdGenerator.nextId();
     try {
-      LOGGER.info("[Start] compute forecast accuracy request");
-      return orchestrator.runOnEngine(engine -> engine.computeForecastAccuracy(timeSeriesAnalysisRequest), TIME_SERIES_FORECAST_ACCURACY);
+      LOGGER.info("[Start][{}] compute forecast accuracy request", requestId);
+      return orchestrator.bookEngineRunAndComplete(requestId, TIME_SERIES_FORECAST_ACCURACY, engine -> engine.computeForecastAccuracy(timeSeriesAnalysisRequest));
     } catch (Exception exception) {
-      throw logAndBuildException(exception, "computing forecast accuracy");
+      throw logAndBuildException(exception, requestId, "computing forecast accuracy");
     } finally {
-      LOGGER.info("[End] compute forecast accuracy request");
+      LOGGER.info("[End][{}] compute forecast accuracy request", requestId);
     }
   }
 
   @Override
   public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    long requestId = RequestIdGenerator.nextId();
     try {
-      LOGGER.info("[Start] predict request");
-      return orchestrator.runOnEngine(engine -> engine.predict(timeSeriesAnalysisRequest), TIME_SERIES_PREDICT);
+      LOGGER.info("[Start][{}] predict request", requestId);
+      return orchestrator.bookEngineRunAndComplete(requestId, TIME_SERIES_PREDICT, engine -> engine.predict(timeSeriesAnalysisRequest));
     } catch (Exception exception) {
-      throw logAndBuildException(exception, "predicting");
+      throw logAndBuildException(exception, requestId, "predicting");
     } finally {
-      LOGGER.info("[End] predict request");
+      LOGGER.info("[End][{}] predict request", requestId);
     }
   }
 
@@ -87,8 +92,8 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
     return new TimeSeriesAnalysisRequest(newTimeSeries, numberOfValues);
   }
 
-  private static TimeSeriesAnalysisServiceException logAndBuildException(Exception exception, String action) {
-    LOGGER.error(format("Exception while %s: %s", action, exception.getMessage()), exception);
+  private static TimeSeriesAnalysisServiceException logAndBuildException(Exception exception, long requestId, String action) {
+    LOGGER.error(format("[%d] Exception while %s: %s", requestId, action, exception.getMessage()), exception);
     return new TimeSeriesAnalysisServiceException(exception.getMessage());
   }
 }

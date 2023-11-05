@@ -7,8 +7,7 @@ import org.mockito.invocation.InvocationOnMock;
 import java.util.Arrays;
 import java.util.function.Function;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -17,37 +16,37 @@ public final class OrchestratorHelper {
   private OrchestratorHelper() {
   }
 
-  public static void onBookEngineReturn(Orchestrator orchestrator, String requestId) {
-    when(orchestrator.bookEngine(any())).thenReturn(requestId);
+  public static void onBookEngineReturn(Orchestrator orchestrator, Engine engine, long requestId) {
+    when(orchestrator.bookEngine(eq(requestId), anyString())).thenReturn(engine);
   }
 
-  public static void onRunOnEngineCallMethod(Orchestrator orchestrator, Engine engine) {
-    when(orchestrator.runOnEngine(any(), any()))
+  public static void onBookEngineRunAndComplete(Orchestrator orchestrator, Engine engine, long requestId) {
+    when(orchestrator.bookEngineRunAndComplete(eq(requestId), anyString(), any()))
         .thenAnswer(invocation -> buildAnswer(engine, invocation));
   }
 
-  public static void onRunOnEngineCallMethod(Orchestrator orchestrator, Engine engine, String requestId) {
-    when(orchestrator.runOnEngine(eq(requestId), any(), any()))
+  public static void onRunOnEngineCallMethod(Orchestrator orchestrator, Engine engine, long requestId) {
+    when(orchestrator.runOnEngine(eq(requestId), anyString(), any()))
         .thenAnswer(invocation -> buildAnswer(engine, invocation));
   }
 
-  public static void doThrowExceptionOnReleaseEngine(Orchestrator orchestrator, String requestId, String actionName, RuntimeException exception) {
-    doThrow(exception).when(orchestrator).releaseEngine(requestId, actionName);
+  public static void doThrowExceptionOnReleaseEngine(Orchestrator orchestrator, long requestId, String actionName, RuntimeException exception) {
+    doThrow(exception).when(orchestrator).completeRequest(requestId, actionName);
   }
 
-  public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, Engine engine, String actionName, String exceptionMessage) {
-    when(orchestrator.runOnEngine(any(), any()))
+  public static void doThrowExceptionOnBookEngineRunAndComplete(Orchestrator orchestrator, Engine engine, String actionName, String exceptionMessage) {
+    when(orchestrator.bookEngineRunAndComplete(anyLong(), anyString(), any()))
         .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, new RuntimeException(exceptionMessage), invocation));
   }
 
-  public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, Engine engine, String requestId, String actionName, String exceptionMessage) {
+  public static void doThrowExceptionOnRunOnEngine(Orchestrator orchestrator, Engine engine, long requestId, String actionName, String exceptionMessage) {
     when(orchestrator.runOnEngine(eq(requestId), any(), any()))
         .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, new RuntimeException(exceptionMessage), invocation));
   }
 
   private static Object buildAnswerWithException(Engine engine, String actionName, RuntimeException exception, InvocationOnMock invocation) {
     Object result = buildAnswer(engine, invocation);
-    if (invocation.getArgument(invocation.getArguments().length - 1).equals(actionName)) {
+    if (invocation.getArgument(1, String.class).equals(actionName)) {
       throw exception;
     }
     return result;

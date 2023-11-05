@@ -22,7 +22,6 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.math.BigDecimal;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildFailingMockRequest;
@@ -49,7 +48,7 @@ public class DecisionTreePredictAccuracyIT extends AbstractIT {
 
   @Test
   public void should_return_classifier_result_from_engine_on_predict_accuracy() {
-    String requestId = valueOf(ENDPOINT1.hashCode());
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId);
     ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId);
@@ -72,8 +71,9 @@ public class DecisionTreePredictAccuracyIT extends AbstractIT {
 
   @Test
   public void should_release_engine_on_predict_accuracy() {
-    String requestId1 = valueOf(ENDPOINT1.hashCode());
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId1 = 1L;
+    long requestId2 = 2L;
+    long requestId3 = 3L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
     ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId1);
@@ -93,14 +93,14 @@ public class DecisionTreePredictAccuracyIT extends AbstractIT {
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse2 = decisionTreeApi.start(startRequestModel);
 
     assertOnResponseEntity(buildClassifierStartResponseModel(requestId1), actualStartResponse1);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId1), actualStartResponse1_);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse2);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse1_);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId3), actualStartResponse2);
     assertOnEngineState(BOOKED, BOOKED);
   }
 
   @Test
   public void should_throw_exception_if_request_id_not_available_on_predict_accuracy() {
-    String unavailableRequestId = "unavailableRequestId";
+    long unavailableRequestId = -1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierRequestModel requestModel = buildClassifierRequestModel(unavailableRequestId);
     MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
@@ -114,14 +114,14 @@ public class DecisionTreePredictAccuracyIT extends AbstractIT {
       fail("should fail since requestId is not available");
 
     } catch (Exception exception) {
-      assertOnClassifierServiceException(exception, "No available engine with unavailableRequestId to run decision-tree-compute-predict-accuracy");
+      assertOnClassifierServiceException(exception, "No available engine with -1 to run decision-tree-compute-predict-accuracy");
       assertOnEngineState(BOOKED, BOOKED);
     }
   }
 
   @Test
   public void should_throw_exception_if_engine_not_booked_on_predict_accuracy() {
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId2 = 2L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId2);
     MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
@@ -133,14 +133,14 @@ public class DecisionTreePredictAccuracyIT extends AbstractIT {
       fail("should fail since engine2 is not booked");
 
     } catch (Exception exception) {
-      assertOnClassifierServiceException(exception, "No available engine with 1311893757 to run decision-tree-compute-predict-accuracy");
+      assertOnClassifierServiceException(exception, "No available engine with 2 to run decision-tree-compute-predict-accuracy");
       assertOnEngineState(BOOKED, WAITING);
     }
   }
 
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_predict_accuracy() {
-    String requestId = valueOf(ENDPOINT1.hashCode());
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId);
     ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId);
@@ -165,8 +165,9 @@ public class DecisionTreePredictAccuracyIT extends AbstractIT {
 
   @Test
   public void should_release_engine_on_exception_on_predict_accuracy() {
-    String requestId1 = valueOf(ENDPOINT1.hashCode());
-    String requestId2 = valueOf(ENDPOINT2.hashCode());
+    long requestId1 = 1L;
+    long requestId2 = 2L;
+    long requestId3 = 3L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
     ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId1);
@@ -174,26 +175,25 @@ public class DecisionTreePredictAccuracyIT extends AbstractIT {
     MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
     MockEngine.MockedRequest failingPredictAccuracyRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, null, exceptionToThrow);
     MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
-    mockEngine.registerRequests(startRequest1, startRequest2, dataRequest1, dataRequest2, failingPredictAccuracyRequest, cancelRequest);
+    mockEngine.registerRequests(startRequest1, startRequest2, dataRequest1, failingPredictAccuracyRequest, cancelRequest);
 
     decisionTreeApi.start(startRequestModel);
     decisionTreeApi.data(data1RequestModel);
     ignoreException(() -> decisionTreeApi.computePredictAccuracy(requestModel));
-    mockEngine.overrideRequests(startRequest1, startRequest2, dataRequest1, dataRequest2);
+    mockEngine.overrideRequests(startRequest1, startRequest2, dataRequest1);
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse1 = decisionTreeApi.start(startRequestModel);
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse2 = decisionTreeApi.start(startRequestModel);
 
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId1), actualStartResponse1);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse2);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse1);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId3), actualStartResponse2);
     assertOnEngineState(BOOKED, BOOKED);
   }
 
   @Test
   public void should_call_cancel_on_exception_on_predict_accuracy() throws Exception {
-    String requestId = valueOf(ENDPOINT1.hashCode());
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     ClassifierDataRequestModel dataRequestModel = buildClassifierData1RequestModel(requestId);
     ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId);

@@ -8,7 +8,7 @@ public class NoBlockedEngineException extends RuntimeException {
     super(message);
   }
 
-  public static NoBlockedEngineException buildNoAvailableBlockedEngineException(String requestId, String actionName) {
-    return new NoBlockedEngineException(format("No available engine with %s to run %s", requestId, actionName));
+  public static NoBlockedEngineException buildNoAvailableBlockedEngineException(long requestId, String actionName) {
+    return new NoBlockedEngineException(format("No available engine with %d to run %s", requestId, actionName));
   }
 }

@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
+import org.mlsk.service.impl.testhelper.OrchestratorHelper;
 import org.mlsk.service.impl.timeseries.service.exception.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -17,8 +19,6 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mlsk.service.impl.testhelper.OrchestratorHelper.doThrowExceptionOnRunOnEngine;
-import static org.mlsk.service.impl.testhelper.OrchestratorHelper.onRunOnEngineCallMethod;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -27,6 +27,8 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisServiceImplTest {
+
+  private static final Long REQUEST_ID = 1L;
 
   @Mock
   private Orchestrator orchestrator;
@@ -38,18 +40,19 @@ public class TimeSeriesAnalysisServiceImplTest {
   @BeforeEach
   public void setUp() {
     this.service = new TimeSeriesAnalysisServiceImpl(orchestrator);
+    RequestIdGenerator.reset(1L);
   }
 
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_forecast() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     service.forecast(request);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_FORECAST));
+    inOrder.verify(orchestrator).bookEngineRunAndComplete(eq(REQUEST_ID), eq(TIME_SERIES_FORECAST), any());
     inOrder.verify(engine).forecast(buildTimeSeriesAnalysisRequest());
     inOrder.verifyNoMoreInteractions();
   }
@@ -57,7 +60,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_forecast() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     TimeSeries actualForecast = service.forecast(request);
@@ -68,7 +71,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_forecast_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-forecast", "exception message");
+    OrchestratorHelper.doThrowExceptionOnBookEngineRunAndComplete(orchestrator, engine, "time-series-forecast", "exception message");
 
     try {
       service.forecast(request);
@@ -82,13 +85,13 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_forecast_vs_actual() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     service.forecastVsActual(request);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_FORECAST_VS_ACTUAL));
+    inOrder.verify(orchestrator).bookEngineRunAndComplete(eq(REQUEST_ID), eq(TIME_SERIES_FORECAST_VS_ACTUAL), any());
     inOrder.verify(engine).forecast(buildExpectedRequestForForecastVsActual());
     inOrder.verifyNoMoreInteractions();
   }
@@ -96,7 +99,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_forecast_vs_actual() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEngineForecastReturn(buildTimeSeriesResult());
 
     TimeSeries actualForecast = service.forecastVsActual(request);
@@ -107,7 +110,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_forecast_vs_actual_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-forecast-vs-actual", "exception message for forecast vs actual");
+    OrchestratorHelper.doThrowExceptionOnBookEngineRunAndComplete(orchestrator, engine, "time-series-forecast-vs-actual", "exception message for forecast vs actual");
 
     try {
       service.forecastVsActual(request);
@@ -121,13 +124,13 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_compute_forecast_accuracy() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEngineComputeForecastAccuracyReturn(58.123);
 
     service.computeForecastAccuracy(request);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_FORECAST_ACCURACY));
+    inOrder.verify(orchestrator).bookEngineRunAndComplete(eq(REQUEST_ID), eq(TIME_SERIES_FORECAST_ACCURACY), any());
     inOrder.verify(engine).computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
     inOrder.verifyNoMoreInteractions();
   }
@@ -135,7 +138,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_compute_forecast_accuracy() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEngineComputeForecastAccuracyReturn(1239.124);
 
     Double actualAccuracy = service.computeForecastAccuracy(request);
@@ -146,7 +149,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_compute_forecast_accuracy_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-compute-accuracy", "exception message for compute forecast accuracy");
+    OrchestratorHelper.doThrowExceptionOnBookEngineRunAndComplete(orchestrator, engine, "time-series-compute-accuracy", "exception message for compute forecast accuracy");
 
     try {
       service.computeForecastAccuracy(request);
@@ -160,13 +163,13 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_delegate_call_to_orchestrator_and_engine_on_predict() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEnginePredictReturn(buildTimeSeriesResult());
 
     service.predict(request);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(orchestrator).runOnEngine(any(), eq(TIME_SERIES_PREDICT));
+    inOrder.verify(orchestrator).bookEngineRunAndComplete(eq(REQUEST_ID), eq(TIME_SERIES_PREDICT), any());
     inOrder.verify(engine).predict(buildTimeSeriesAnalysisRequest());
     inOrder.verifyNoMoreInteractions();
   }
@@ -174,7 +177,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_return_correct_result_on_predict() {
     TimeSeriesAnalysisRequest model = buildTimeSeriesAnalysisRequest();
-    onRunOnEngineCallMethod(orchestrator, engine);
+    OrchestratorHelper.onBookEngineRunAndComplete(orchestrator, engine, REQUEST_ID);
     onEnginePredictReturn(buildTimeSeriesResult());
 
     TimeSeries actualPredict = service.predict(model);
@@ -185,7 +188,7 @@ public class TimeSeriesAnalysisServiceImplTest {
   @Test
   public void should_throw_time_series_analysis_service_exception_on_predict_failure() {
     TimeSeriesAnalysisRequest request = buildTimeSeriesAnalysisRequest();
-    doThrowExceptionOnRunOnEngine(orchestrator, engine, "time-series-predict", "exception message for predict");
+    OrchestratorHelper.doThrowExceptionOnBookEngineRunAndComplete(orchestrator, engine, "time-series-predict", "exception message for predict");
 
     try {
       service.predict(request);

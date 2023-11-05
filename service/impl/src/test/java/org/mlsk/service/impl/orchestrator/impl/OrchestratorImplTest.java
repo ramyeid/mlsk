@@ -8,8 +8,8 @@ import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException;
 import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
 import org.mlsk.service.impl.orchestrator.exception.NoEngineWithInformationException;
-import org.mlsk.service.impl.orchestrator.request.RequestHandler;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
+import org.mlsk.service.impl.orchestrator.request.registry.RequestRegistry;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -43,13 +43,13 @@ public class OrchestratorImplTest {
   @Mock
   private Engine engine2;
   @Mock
-  private RequestHandler requestHandler;
+  private RequestRegistry requestRegistry;
 
   private OrchestratorImpl orchestrator;
 
   @BeforeEach
   public void setUp() {
-    this.orchestrator = new OrchestratorImpl(newArrayList(engine1, engine2), requestHandler);
+    this.orchestrator = new OrchestratorImpl(newArrayList(engine1, engine2), requestRegistry);
   }
 
   @Test
@@ -64,12 +64,12 @@ public class OrchestratorImplTest {
   }
 
   @Test
-  public void should_throw_exception_if_no_engine_is_available_for_action_on_run_on_engine() {
+  public void should_throw_exception_if_no_engine_is_available_for_action_on_book_engine_run_and_complete() {
     onGetStateReturn(engine1, COMPUTING);
     onGetStateReturn(engine2, COMPUTING);
 
     try {
-      orchestrator.runOnEngine(buildFunction(), ACTION);
+      orchestrator.bookEngineRunAndComplete(1L, ACTION, buildFunction());
       fail("should fail because no engine is available");
 
     } catch (Exception exception) {
@@ -78,9 +78,8 @@ public class OrchestratorImplTest {
   }
 
   @Test
-  public void should_rethrow_exception_if_action_fails_on_run_on_engine() {
-    String requestId = "requestId";
-    onRegisterNewRequestReturn(ENDPOINT2, requestId);
+  public void should_rethrow_exception_if_action_fails_on_book_engine_run_and_complete() {
+    long requestId = 1L;
     onGetRequest(requestId, ENDPOINT2);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
@@ -89,7 +88,7 @@ public class OrchestratorImplTest {
     throwExceptionOnAction(engine2, new IllegalArgumentException("runtime exception"));
 
     try {
-      orchestrator.runOnEngine(buildFunction(), ACTION);
+      orchestrator.bookEngineRunAndComplete(requestId, ACTION, buildFunction());
       fail("should fail since engine threw an exception");
 
     } catch (Exception exception) {
@@ -99,9 +98,8 @@ public class OrchestratorImplTest {
   }
 
   @Test
-  public void should_release_engine__if_action_fails_on_run_on_engine() {
-    String requestId = "requestId";
-    onRegisterNewRequestReturn(ENDPOINT2, requestId);
+  public void should_release_engine_if_action_fails_on_book_engine_run_and_complete() {
+    long requestId = 2L;
     onGetRequest(requestId, ENDPOINT2);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
@@ -110,49 +108,47 @@ public class OrchestratorImplTest {
     throwExceptionOnAction(engine2, new IllegalArgumentException("runtime exception"));
 
     try {
-      orchestrator.runOnEngine(buildFunction(), ACTION);
+      orchestrator.bookEngineRunAndComplete(requestId, ACTION, buildFunction());
       fail("should fail since engine threw an exception");
 
     } catch (Exception ignored) {
     }
     InOrder inOrder = buildInOrder();
     inOrder.verify(engine2).bookEngine();
-    inOrder.verify(requestHandler).registerNewRequest(ACTION, ENDPOINT2);
+    inOrder.verify(requestRegistry).register(requestId, ENDPOINT2);
     inOrder.verify(engine2).markAsComputing();
     inOrder.verify(engine2).predict(any(TimeSeriesAnalysisRequest.class));
-    inOrder.verify(requestHandler, times(2)).getRequest(requestId);
+    inOrder.verify(requestRegistry).get(requestId);
     inOrder.verify(engine2).markAsWaitingForRequest();
-    inOrder.verify(requestHandler).removeRequest(requestId);
+    inOrder.verify(requestRegistry).remove(requestId);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_push_action_on_available_engine_on_run_on_engine() {
-    String requestId = "requestId";
-    onRegisterNewRequestReturn(ENDPOINT2, requestId);
+  public void should_push_action_on_available_engine_on_book_engine_run_and_complete() {
+    long requestId = 3L;
     onGetRequest(requestId, ENDPOINT2);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
     onGetStateReturn(engine1, COMPUTING);
     onGetStateReturn(engine2, WAITING);
 
-    orchestrator.runOnEngine(buildFunction(), ACTION);
+    orchestrator.bookEngineRunAndComplete(requestId, ACTION, buildFunction());
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engine2).bookEngine();
-    inOrder.verify(requestHandler).registerNewRequest(ACTION, ENDPOINT2);
+    inOrder.verify(requestRegistry).register(requestId, ENDPOINT2);
     inOrder.verify(engine2).markAsComputing();
     inOrder.verify(engine2).predict(any(TimeSeriesAnalysisRequest.class));
-    inOrder.verify(requestHandler, times(2)).getRequest(requestId);
+    inOrder.verify(requestRegistry).get(requestId);
     inOrder.verify(engine2).markAsWaitingForRequest();
-    inOrder.verify(requestHandler).removeRequest(requestId);
+    inOrder.verify(requestRegistry).remove(requestId);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_return_result_on_run_on_engine() {
-    String requestId = "requestId";
-    onRegisterNewRequestReturn(ENDPOINT2, requestId);
+  public void should_return_result_on_book_engine_run_and_complete() {
+    long requestId = 4L;
     onGetRequest(requestId, ENDPOINT2);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
@@ -160,18 +156,19 @@ public class OrchestratorImplTest {
     onGetStateReturn(engine2, WAITING);
     doReturnOnAction(engine2, buildTimeSeries());
 
-    TimeSeries result = orchestrator.runOnEngine(buildFunction(), ACTION);
+    TimeSeries result = orchestrator.bookEngineRunAndComplete(requestId, ACTION, buildFunction());
 
     assertEquals(buildTimeSeries(), result);
   }
 
   @Test
   public void should_throw_exception_if_no_available_engine_when_booking_engine() {
+    long requestId = 4L;
     onGetStateReturn(engine1, COMPUTING);
     onGetStateReturn(engine2, COMPUTING);
 
     try {
-      orchestrator.bookEngine(ACTION);
+      orchestrator.bookEngine(requestId, ACTION);
       fail("should fail because no engine is available");
 
     } catch (Exception exception) {
@@ -181,40 +178,38 @@ public class OrchestratorImplTest {
 
   @Test
   public void should_book_engine_and_register_new_request() {
-    String requestId = "requestId";
-    onRegisterNewRequestReturn(ENDPOINT1, requestId);
+    long requestId = 5L;
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetStateReturn(engine1, WAITING);
 
-    orchestrator.bookEngine(ACTION);
+    orchestrator.bookEngine(requestId, ACTION);
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engine1).getState();
     inOrder.verify(engine1).bookEngine();
     inOrder.verify(engine1).getEndpoint();
-    inOrder.verify(requestHandler).registerNewRequest(ACTION, ENDPOINT1);
+    inOrder.verify(requestRegistry).register(requestId, ENDPOINT1);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_return_newly_register_request_on_book_engine() {
-    String requestId = "requestId";
-    onRegisterNewRequestReturn(ENDPOINT1, requestId);
+  public void should_return_newly_booked_engine_on_book_engine() {
+    long requestId = 6L;
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetStateReturn(engine1, WAITING);
 
-    String actualRequest = orchestrator.bookEngine(ACTION);
+    Engine bookedEngine = orchestrator.bookEngine(requestId, ACTION);
 
-    assertEquals(requestId, actualRequest);
+    assertEquals(ENDPOINT1, bookedEngine.getEndpoint());
   }
 
   @Test
   public void should_throw_exception_if_request_not_found_when_running_on_engine() {
-    String requestId = "requestId";
+    long requestId = 7L;
     onGetRequest(requestId, null);
 
     try {
-      orchestrator.runOnEngine(requestId, buildFunction(), ACTION);
+      orchestrator.runOnEngine(requestId, ACTION, buildFunction());
       fail("should fail since no booked engine");
 
     } catch (Exception exception) {
@@ -224,14 +219,14 @@ public class OrchestratorImplTest {
 
   @Test
   public void should_rethrow_exception_if_action_fails_on_run_on_engine_with_request_id() {
-    String requestId = "requestId";
+    long requestId = 7L;
     onGetRequest(requestId, ENDPOINT2);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
     throwExceptionOnAction(engine2, new IllegalArgumentException("runtime exception"));
 
     try {
-      orchestrator.runOnEngine(requestId, buildFunction(), ACTION);
+      orchestrator.runOnEngine(requestId, ACTION, buildFunction());
       fail("should fail since engine threw an exception");
 
     } catch (Exception exception) {
@@ -242,13 +237,13 @@ public class OrchestratorImplTest {
 
   @Test
   public void should_throw_exception_if_request_found_but_no_engine_with_info_when_running_on_engine() {
-    String requestId = "requestId";
+    long requestId = 7L;
     onGetRequest(requestId, UNAVAILABLE_ENDPOINT);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
 
     try {
-      orchestrator.runOnEngine(requestId, buildFunction(), ACTION);
+      orchestrator.runOnEngine(requestId, ACTION, buildFunction());
       fail("should fail since no engine with service info found");
 
     } catch (Exception exception) {
@@ -258,15 +253,15 @@ public class OrchestratorImplTest {
 
   @Test
   public void should_retrieve_request_and_run_on_engine_with_request_id() {
-    String requestId = "requestId";
+    long requestId = 8L;
     onGetRequest(requestId, ENDPOINT2);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
 
-    orchestrator.runOnEngine(requestId, buildFunction(), ACTION);
+    orchestrator.runOnEngine(requestId, ACTION, buildFunction());
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(requestHandler).getRequest(requestId);
+    inOrder.verify(requestRegistry).get(requestId);
     inOrder.verify(engine2).markAsComputing();
     inOrder.verify(engine2).predict(any(TimeSeriesAnalysisRequest.class));
     inOrder.verify(engine2).bookEngine();
@@ -275,61 +270,66 @@ public class OrchestratorImplTest {
 
   @Test
   public void should_return_result_on_run_on_engine_with_request_id() {
-    String requestId = "requestId";
+    long requestId = 10L;
     onGetRequest(requestId, ENDPOINT2);
     onGetEndpointReturn(engine1, ENDPOINT1);
     onGetEndpointReturn(engine2, ENDPOINT2);
     doReturnOnAction(engine2, buildTimeSeries());
 
-    TimeSeries result = orchestrator.runOnEngine(requestId, buildFunction(), ACTION);
+    TimeSeries result = orchestrator.runOnEngine(requestId, ACTION, buildFunction());
 
     assertEquals(buildTimeSeries(), result);
   }
 
   @Test
-  public void should_throw_exception_if_no_request_on_release() {
-    String requestId = "requestId";
-    onGetRequest(requestId, null);
-
-    try {
-      orchestrator.releaseEngine(requestId, ACTION);
-      fail("should fail since no request found");
-
-    } catch (Exception exception) {
-      assertOnNoAvailableBlockedEngineException(exception, requestId);
-    }
-  }
-
-  @Test
-  public void should_remove_request_and_mark_as_waiting_on_release() {
-    String requestId = "requestId";
+  public void should_return_completed_request() {
+    long requestId = 11L;
     onGetRequest(requestId, ENDPOINT1);
     onGetEndpointReturn(engine1, ENDPOINT1);
 
-    orchestrator.releaseEngine(requestId, ACTION);
+    Optional<Request> actualCompletedRequest = orchestrator.completeRequest(requestId, ACTION);
+
+    Request expectedRequest = new Request(requestId, ENDPOINT1);
+    assertTrue(actualCompletedRequest.isPresent());
+    assertEquals(expectedRequest, actualCompletedRequest.get());
+  }
+
+  @Test
+  public void should_return_empty_optional_if_no_request_to_complete() {
+    long requestId = 11L;
+    onGetRequest(requestId, null);
+
+    Optional<Request> actualCompletedRequest = orchestrator.completeRequest(requestId, ACTION);
+
+    assertTrue(actualCompletedRequest.isEmpty());
+  }
+
+  @Test
+  public void should_remove_request_and_mark_as_waiting_on_complete_request() {
+    long requestId = 11L;
+    onGetRequest(requestId, ENDPOINT1);
+    onGetEndpointReturn(engine1, ENDPOINT1);
+
+    orchestrator.completeRequest(requestId, ACTION);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(requestHandler, times(2)).getRequest(requestId);
+    inOrder.verify(requestRegistry).get(requestId);
     inOrder.verify(engine1).markAsWaitingForRequest();
-    inOrder.verify(requestHandler).removeRequest(requestId);
+    inOrder.verify(requestRegistry).remove(requestId);
     inOrder.verifyNoMoreInteractions();
   }
 
   private InOrder buildInOrder() {
-    return inOrder(engine1, engine2, requestHandler);
+    return inOrder(engine1, engine2, requestRegistry);
   }
 
   private static void onGetEndpointReturn(Engine engine, Endpoint endpoint) {
     when(engine.getEndpoint()).thenReturn(endpoint);
   }
 
-  private void onRegisterNewRequestReturn(Endpoint endpoint, String requestId) {
-    when(requestHandler.registerNewRequest(ACTION, endpoint)).thenReturn(requestId);
-  }
-
-  private void onGetRequest(String requestId, Endpoint endpoint) {
-    Optional<Request> request = ofNullable(endpoint).map(info -> new Request(ACTION, info));
-    when(requestHandler.getRequest(requestId)).thenReturn(request);
+  private void onGetRequest(long requestId, Endpoint endpoint) {
+    Optional<Request> request = ofNullable(endpoint).map(info -> new Request(requestId, info));
+    when(requestRegistry.get(requestId)).thenReturn(request);
   }
 
   private void onGetStateReturn(Engine engine, EngineState computing) {
@@ -349,7 +349,7 @@ public class OrchestratorImplTest {
     assertEquals(format("No available engine to run %s, please try again later", ACTION), exception.getMessage());
   }
 
-  private static void assertOnNoAvailableBlockedEngineException(Exception exception, String requestId) {
+  private static void assertOnNoAvailableBlockedEngineException(Exception exception, long requestId) {
     assertInstanceOf(NoBlockedEngineException.class, exception);
     assertEquals(format("No available engine with %s to run %s", requestId, ACTION), exception.getMessage());
   }
