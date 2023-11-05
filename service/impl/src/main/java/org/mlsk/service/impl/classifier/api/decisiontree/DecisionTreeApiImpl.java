@@ -6,6 +6,7 @@ import org.mlsk.api.classifier.model.*;
 import org.mlsk.api.decisiontree.api.DecisionTreeApi;
 import org.mlsk.service.classifier.ClassifierService;
 import org.mlsk.service.classifier.ClassifierType;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.model.classifier.ClassifierDataResponse;
 import org.mlsk.service.model.classifier.ClassifierStartResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,28 +39,29 @@ public class DecisionTreeApiImpl implements DecisionTreeApi {
 
   @Override
   public ResponseEntity<ClassifierStartResponseModel> start(ClassifierStartRequestModel classifierStartRequestModel) {
-    LOGGER.info("Start request received");
-    ClassifierStartResponse startResponse = service.start(toClassifierStartRequest(classifierStartRequestModel), classifierType);
+    long requestId = RequestIdGenerator.nextId();
+    LOGGER.info("[{}] Start request received", requestId);
+    ClassifierStartResponse startResponse = service.start(toClassifierStartRequest(requestId, classifierStartRequestModel), classifierType);
     return ResponseEntity.ok(toClassifierStartResponseModel(startResponse));
   }
 
   @Override
   public ResponseEntity<Void> data(ClassifierDataRequestModel classifierDataRequestModel) {
-    LOGGER.info("Data request received with request id {}", classifierDataRequestModel.getRequestId());
+    LOGGER.info("[{}] Data request received", classifierDataRequestModel.getRequestId());
     service.data(toClassifierDataRequest(classifierDataRequestModel), classifierType);
     return ResponseEntity.ok().build();
   }
 
   @Override
   public ResponseEntity<ClassifierDataResponseModel> predict(ClassifierRequestModel classifierRequestModel) {
-    LOGGER.info("Predict request received");
+    LOGGER.info("[{}] Predict request received", classifierRequestModel.getRequestId());
     ClassifierDataResponse dataResponse = service.predict(toClassifierRequest(classifierRequestModel), classifierType);
     return ResponseEntity.ok(toClassifierDataResponseModel(dataResponse));
   }
 
   @Override
   public ResponseEntity<BigDecimal> computePredictAccuracy(ClassifierRequestModel classifierRequestModel) {
-    LOGGER.info("Compute predict Accuracy request received");
+    LOGGER.info("[{}] Compute predict Accuracy request received", classifierRequestModel.getRequestId());
     Double accuracy = service.computePredictAccuracy(toClassifierRequest(classifierRequestModel), classifierType);
     return ResponseEntity.ok(valueOf(accuracy));
   }

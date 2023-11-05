@@ -8,14 +8,12 @@ import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.classifier.service.exception.ClassifierServiceException;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
-import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.model.classifier.*;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.service.impl.testhelper.OrchestratorHelper.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,7 +38,6 @@ public class ClassifierServiceImplTest {
   @BeforeEach
   public void setUp() {
     this.service = new ClassifierServiceImpl(orchestrator);
-    RequestIdGenerator.reset(1L);
   }
 
   @Test
@@ -384,19 +381,19 @@ public class ClassifierServiceImplTest {
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest() {
-    return new ClassifierStartRequest("predictionColumnName", newArrayList("col1"), 3);
+    return new ClassifierStartRequest(REQUEST_ID, "predictionColumnName", newArrayList("col1"), 3);
   }
 
   private static ClassifierStartResponse buildExpectedClassifierStartResponse() {
-    return new ClassifierStartResponse(valueOf(REQUEST_ID));
+    return new ClassifierStartResponse(REQUEST_ID);
   }
 
   private static ClassifierDataRequest buildClassifierDataRequest() {
-    return new ClassifierDataRequest(valueOf(REQUEST_ID), "columnName", newArrayList(0, 1));
+    return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(0, 1));
   }
 
   private static ClassifierRequest buildClassifierRequest() {
-    return new ClassifierRequest(valueOf(REQUEST_ID));
+    return new ClassifierRequest(REQUEST_ID);
   }
 
   private static ClassifierDataResponse buildClassifierDataResponse() {

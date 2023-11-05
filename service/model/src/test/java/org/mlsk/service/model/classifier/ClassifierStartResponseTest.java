@@ -10,7 +10,7 @@ public class ClassifierStartResponseTest {
 
   @Test
   public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
-    ClassifierStartResponse classifierStartResponse = new ClassifierStartResponse("requestId");
+    ClassifierStartResponse classifierStartResponse = new ClassifierStartResponse(999);
     ObjectMapper objectMapper = new ObjectMapper();
 
     String serializedStartResponse = objectMapper.writeValueAsString(classifierStartResponse);

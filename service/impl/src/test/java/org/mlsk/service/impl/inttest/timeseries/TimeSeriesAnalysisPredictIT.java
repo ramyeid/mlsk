@@ -43,8 +43,9 @@ public class TimeSeriesAnalysisPredictIT extends AbstractIT {
 
   @Test
   public void should_return_time_series_result_from_engine_on_predict() {
+    long requestId = 1L;
     TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
-    MockEngine.MockedRequest predictMockedRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, buildTimeSeriesAnalysisRequest(), buildTimeSeriesResult2());
+    MockEngine.MockedRequest predictMockedRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, buildTimeSeriesAnalysisRequest(requestId), buildTimeSeriesResult2());
     mockEngine.registerRequests(predictMockedRequest);
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.predict(requestModel);
@@ -55,9 +56,10 @@ public class TimeSeriesAnalysisPredictIT extends AbstractIT {
 
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_predict() {
+    long requestId = 1L;
     TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while predicting: NullPointer");
-    MockEngine.MockedRequest predictMockedRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, buildTimeSeriesAnalysisRequest(), exceptionToThrow);
+    MockEngine.MockedRequest predictMockedRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, buildTimeSeriesAnalysisRequest(requestId), exceptionToThrow);
     mockEngine.registerRequests(predictMockedRequest);
 
     try {

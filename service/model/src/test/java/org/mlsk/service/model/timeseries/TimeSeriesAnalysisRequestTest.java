@@ -11,7 +11,7 @@ public class TimeSeriesAnalysisRequestTest {
 
   @Test
   public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
-    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(buildTimeSeriesPassengers(), 19);
+    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(909, buildTimeSeriesPassengers(), 19);
     ObjectMapper objectMapper = new ObjectMapper();
 
     String serializedTimeSeries = objectMapper.writeValueAsString(timeSeriesAnalysisRequest);

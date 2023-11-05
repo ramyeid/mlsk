@@ -10,11 +10,11 @@ public final class ClassifierStartRequestMapper {
   private ClassifierStartRequestMapper() {
   }
 
-  public static ClassifierStartRequest toClassifierStartRequest(ClassifierStartRequestModel classifierStartRequestModel) {
+  public static ClassifierStartRequest toClassifierStartRequest(long requestId, ClassifierStartRequestModel classifierStartRequestModel) {
     String predictionColumnName = classifierStartRequestModel.getPredictionColumnName();
     List<String> actionColumnNames = classifierStartRequestModel.getActionColumnNames();
     Integer numberOfValues = classifierStartRequestModel.getNumberOfValues();
 
-    return new ClassifierStartRequest(predictionColumnName, actionColumnNames, numberOfValues);
+    return new ClassifierStartRequest(requestId, predictionColumnName, actionColumnNames, numberOfValues);
   }
 }

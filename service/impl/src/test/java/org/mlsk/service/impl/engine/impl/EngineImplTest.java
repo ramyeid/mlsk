@@ -34,6 +34,7 @@ import static org.mockito.Mockito.*;
 public class EngineImplTest {
 
   private static final Endpoint ENDPOINT = new Endpoint("host", 1231L);
+  private static final long REQUEST_ID = 1L;
 
   @Mock
   private ResilientEngineProcess resilientEngineProcess;
@@ -379,7 +380,7 @@ public class EngineImplTest {
     List<TimeSeriesRow> rows = newArrayList(row1, row2, row3);
     TimeSeries timeSeries = new TimeSeries(rows, "Date", "Value", "%Y");
 
-    return new TimeSeriesAnalysisRequest(timeSeries, 1);
+    return new TimeSeriesAnalysisRequest(REQUEST_ID, timeSeries, 1);
   }
 
   private static TimeSeries buildTimeSeries() {
@@ -390,11 +391,11 @@ public class EngineImplTest {
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest() {
-    return new ClassifierStartRequest("predictionColumnName", newArrayList("col0", "col1"), 2);
+    return new ClassifierStartRequest(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 2);
   }
 
   private static ClassifierDataRequest buildClassifierDataRequest() {
-    return new ClassifierDataRequest("requestId", "columnName", newArrayList(0, 1, 0));
+    return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(0, 1, 0));
   }
 
   private static ClassifierDataResponse buildClassifierDataResponse() {

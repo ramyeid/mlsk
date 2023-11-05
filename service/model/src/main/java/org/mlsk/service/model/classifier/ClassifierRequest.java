@@ -4,17 +4,18 @@ import java.util.Objects;
 
 public class ClassifierRequest {
 
-  private final String requestId;
+  private final long requestId;
 
-  public ClassifierRequest(String requestId) {
+  public ClassifierRequest(long requestId) {
     this.requestId = requestId;
   }
 
+  // Needed for deserialization from json
   public ClassifierRequest() {
-    this("");
+    this(0L);
   }
 
-  public String getRequestId() {
+  public long getRequestId() {
     return requestId;
   }
 

@@ -11,9 +11,9 @@ public final class TimeSeriesAnalysisRequestMapper {
   private TimeSeriesAnalysisRequestMapper() {
   }
 
-  public static TimeSeriesAnalysisRequest toTimeSeriesAnalysisRequest(TimeSeriesAnalysisRequestModel requestModel) {
+  public static TimeSeriesAnalysisRequest toTimeSeriesAnalysisRequest(long requestId, TimeSeriesAnalysisRequestModel requestModel) {
     TimeSeries timeSeries = toTimeSeries(requestModel.getTimeSeries());
-    return new TimeSeriesAnalysisRequest(timeSeries, requestModel.getNumberOfValues());
+    return new TimeSeriesAnalysisRequest(requestId, timeSeries, requestModel.getNumberOfValues());
   }
 
 }

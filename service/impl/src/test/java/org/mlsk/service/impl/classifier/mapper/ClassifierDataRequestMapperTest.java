@@ -21,13 +21,13 @@ public class ClassifierDataRequestMapperTest {
 
   private static ClassifierDataRequestModel buildClassifierDataRequestModel() {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId("requestId");
+    classifierDataRequestModel.setRequestId("10");
     classifierDataRequestModel.setColumnName("columnName");
     classifierDataRequestModel.setValues(newArrayList(1, 81, 123));
     return classifierDataRequestModel;
   }
 
   private static ClassifierDataRequest buildExpectedDataRequest() {
-    return new ClassifierDataRequest("requestId", "columnName", newArrayList(1, 81, 123));
+    return new ClassifierDataRequest(10L, "columnName", newArrayList(1, 81, 123));
   }
 }

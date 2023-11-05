@@ -3,7 +3,6 @@ package org.mlsk.service.impl.timeseries.service;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
-import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.impl.timeseries.service.exception.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -31,7 +30,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
 
   @Override
   public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    long requestId = RequestIdGenerator.nextId();
+    long requestId = timeSeriesAnalysisRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] forecast request", requestId);
       return orchestrator.bookEngineRunAndComplete(requestId, TIME_SERIES_FORECAST, engine -> engine.forecast(timeSeriesAnalysisRequest));
@@ -44,7 +43,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
 
   @Override
   public TimeSeries forecastVsActual(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    long requestId = RequestIdGenerator.nextId();
+    long requestId = timeSeriesAnalysisRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] forecast vs actual request", requestId);
       TimeSeriesAnalysisRequest newRequest = removeLastRows(timeSeriesAnalysisRequest);
@@ -58,7 +57,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
 
   @Override
   public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    long requestId = RequestIdGenerator.nextId();
+    long requestId = timeSeriesAnalysisRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] compute forecast accuracy request", requestId);
       return orchestrator.bookEngineRunAndComplete(requestId, TIME_SERIES_FORECAST_ACCURACY, engine -> engine.computeForecastAccuracy(timeSeriesAnalysisRequest));
@@ -71,7 +70,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
 
   @Override
   public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    long requestId = RequestIdGenerator.nextId();
+    long requestId = timeSeriesAnalysisRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] predict request", requestId);
       return orchestrator.bookEngineRunAndComplete(requestId, TIME_SERIES_PREDICT, engine -> engine.predict(timeSeriesAnalysisRequest));
@@ -89,7 +88,7 @@ public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService 
 
     List<TimeSeriesRow> newRows = rows.subList(0, rows.size() - numberOfValues);
     TimeSeries newTimeSeries = new TimeSeries(newRows, timeSeries.getDateColumnName(), timeSeries.getValueColumnName(), timeSeries.getDateFormat());
-    return new TimeSeriesAnalysisRequest(newTimeSeries, numberOfValues);
+    return new TimeSeriesAnalysisRequest(request.getRequestId(), newTimeSeries, numberOfValues);
   }
 
   private static TimeSeriesAnalysisServiceException logAndBuildException(Exception exception, long requestId, String action) {

@@ -19,11 +19,12 @@ public class TimeSeriesAnalysisRequestMapperTest {
 
   @Test
   public void should_correctly_map_to_time_series_analysis_request() {
+    long requestId = 1L;
     TimeSeriesAnalysisRequestModel requestModel = buildRequestModel();
 
-    TimeSeriesAnalysisRequest actualRequest = toTimeSeriesAnalysisRequest(requestModel);
+    TimeSeriesAnalysisRequest actualRequest = toTimeSeriesAnalysisRequest(requestId, requestModel);
 
-    assertEquals(buildExpectedRequest(), actualRequest);
+    assertEquals(buildExpectedRequest(requestId), actualRequest);
   }
 
   private static TimeSeriesAnalysisRequestModel buildRequestModel() {
@@ -41,7 +42,7 @@ public class TimeSeriesAnalysisRequestMapperTest {
     return new TimeSeriesAnalysisRequestModel().timeSeries(timeSeriesModel).numberOfValues(numberOfValues);
   }
 
-  private static TimeSeriesAnalysisRequest buildExpectedRequest() {
+  private static TimeSeriesAnalysisRequest buildExpectedRequest(long requestId) {
     TimeSeriesRow row1 = new TimeSeriesRow("date1", 123.1);
     TimeSeriesRow row2 = new TimeSeriesRow("date2", 124.1);
     TimeSeriesRow row3 = new TimeSeriesRow("date3", 125.1);
@@ -53,7 +54,7 @@ public class TimeSeriesAnalysisRequestMapperTest {
     TimeSeries timeSeries = new TimeSeries(rows, dateColumnName, valueColumnName, dateFormat);
 
     int numberOfValues = 123;
-    return new TimeSeriesAnalysisRequest(timeSeries, numberOfValues);
+    return new TimeSeriesAnalysisRequest(requestId, timeSeries, numberOfValues);
   }
 
 }

@@ -14,7 +14,7 @@ public class ClassifierStartRequestMapperTest {
   public void should_correctly_map_to_classifier_start_request() {
     ClassifierStartRequestModel classifierStartRequestModel = buildClassifierStartRequestModel();
 
-    ClassifierStartRequest actualStartRequest = toClassifierStartRequest(classifierStartRequestModel);
+    ClassifierStartRequest actualStartRequest = toClassifierStartRequest(1L, classifierStartRequestModel);
 
     assertEquals(buildExpectedStartRequest(), actualStartRequest);
   }
@@ -28,6 +28,6 @@ public class ClassifierStartRequestMapperTest {
   }
 
   private static ClassifierStartRequest buildExpectedStartRequest() {
-    return new ClassifierStartRequest("predictionColumnName", newArrayList("col0", "col1"), 10);
+    return new ClassifierStartRequest(1L, "predictionColumnName", newArrayList("col0", "col1"), 10);
   }
 }

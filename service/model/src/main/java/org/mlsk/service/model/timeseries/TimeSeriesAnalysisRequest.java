@@ -4,16 +4,23 @@ import java.util.Objects;
 
 public class TimeSeriesAnalysisRequest {
 
+  private final long requestId;
   private final TimeSeries timeSeries;
   private final int numberOfValues;
 
-  public TimeSeriesAnalysisRequest(TimeSeries timeSeries, int numberOfValues) {
+  public TimeSeriesAnalysisRequest(long requestId, TimeSeries timeSeries, int numberOfValues) {
+    this.requestId = requestId;
     this.timeSeries = timeSeries;
     this.numberOfValues = numberOfValues;
   }
 
+  // Needed for deserialization from json
   public TimeSeriesAnalysisRequest() {
-    this(null, 0);
+    this(0L, null, 0);
+  }
+
+  public long getRequestId() {
+    return requestId;
   }
 
   public TimeSeries getTimeSeries() {
@@ -29,19 +36,21 @@ public class TimeSeriesAnalysisRequest {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     TimeSeriesAnalysisRequest that = (TimeSeriesAnalysisRequest) o;
-    return numberOfValues == that.numberOfValues &&
+    return requestId == that.requestId &&
+        numberOfValues == that.numberOfValues &&
         Objects.equals(timeSeries, that.timeSeries);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(timeSeries, numberOfValues);
+    return Objects.hash(requestId, timeSeries, numberOfValues);
   }
 
   @Override
   public String toString() {
     return "TimeSeriesAnalysisRequest{" +
-        "timeSeries=" + timeSeries +
+        "requestId=" + requestId +
+        ", timeSeries=" + timeSeries +
         ", numberOfValues=" + numberOfValues +
         '}';
   }

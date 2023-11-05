@@ -19,12 +19,12 @@ public class ClassifierStartResponseMapperTest {
   }
 
   private static ClassifierStartResponse buildClassifierStartResponse() {
-    return new ClassifierStartResponse("requestId");
+    return new ClassifierStartResponse(10L);
   }
 
   private static ClassifierStartResponseModel buildExpectedStartResponseModel() {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId("requestId");
+    classifierStartResponseModel.setRequestId("10");
     return classifierStartResponseModel;
   }
 }

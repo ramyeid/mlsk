@@ -39,7 +39,7 @@ public class TimeSeriesAnalysisEngineClientTest {
   public void should_delegate_forecast_call_to_engine() {
     List<TimeSeriesRow> timeSeriesRows = newArrayList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
+    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(1L, timeSeries, 1);
     TimeSeries responseTimeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
     onPostWithBodyWithResponseReturn(restClient, FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class, responseTimeSeries);
 
@@ -81,7 +81,7 @@ public class TimeSeriesAnalysisEngineClientTest {
   public void should_delegate_compute_forecast_accuracy_call_to_engine() {
     List<TimeSeriesRow> timeSeriesRows = newArrayList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
+    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(1L, timeSeries, 1);
     onPostWithBodyWithResponseReturn(restClient, FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class, 2.);
 
     Double actualAccuracy = client.computeForecastAccuracy(timeSeriesAnalysisRequest);
@@ -122,7 +122,7 @@ public class TimeSeriesAnalysisEngineClientTest {
   public void should_delegate_predict_call_to_engine() {
     List<TimeSeriesRow> timeSeriesRows = newArrayList(new TimeSeriesRow("1960", 1.), new TimeSeriesRow("1961", 2.));
     TimeSeries timeSeries = new TimeSeries(timeSeriesRows, "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(timeSeries, 1);
+    TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequest(1L, timeSeries, 1);
     TimeSeries responseTimeSeries = new TimeSeries(newArrayList(new TimeSeriesRow("1962", 3.)), "Date", "Value", "%Y");
     onPostWithBodyWithResponseReturn(restClient, PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class, responseTimeSeries);
 

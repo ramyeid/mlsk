@@ -19,10 +19,10 @@ public class ClassifierRequestMapperTest {
   }
 
   private static ClassifierRequestModel buildClassifierRequestModel() {
-    return new ClassifierRequestModel().requestId("requestId");
+    return new ClassifierRequestModel().requestId("11");
   }
 
   private static ClassifierRequest buildExpectedRequest() {
-    return new ClassifierRequest("requestId");
+    return new ClassifierRequest(11L);
   }
 }
