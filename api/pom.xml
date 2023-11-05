@@ -69,7 +69,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${basedir}/src/main/java/org/mlsk/api/timeseries/service/TimeSeriesAnalysisServiceApi.yaml
+                                ${basedir}/src/main/java/org/mlsk/api/service/timeseries/TimeSeriesAnalysisServiceApi.yaml
                             </inputSpec>
                             <apiPackage>org.mlsk.api.timeseries.api</apiPackage>
                             <modelPackage>org.mlsk.api.timeseries.model</modelPackage>
@@ -83,7 +83,7 @@
                         </goals>
                         <configuration>
                             <inputSpec>
-                                ${basedir}/src/main/java/org/mlsk/api/classifier/decisiontree/service/DecisionTreeServiceApi.yaml
+                                ${basedir}/src/main/java/org/mlsk/api/service/classifier/decisiontree/DecisionTreeServiceApi.yaml
                             </inputSpec>
                             <apiPackage>org.mlsk.api.decisiontree.api</apiPackage>
                             <modelPackage>org.mlsk.api.classifier.model</modelPackage>

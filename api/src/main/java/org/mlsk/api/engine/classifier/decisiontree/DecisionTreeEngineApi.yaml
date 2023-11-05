@@ -1,10 +1,10 @@
 openapi: "3.0.0"
 info:
   version: "1.0"
-  title: MLSK - DecisionTree - Service
+  title: MLSK - DecisionTree - Engine
   description: This is the API detailing all endpoints
-    of the Machine Learning Swiss Knife, Decision Tree, Service side.
-    The Service is written in JAVA
+    of the Machine Learning Swiss Knife, Decision Tree, Engine side.
+    The Service is written in PYTHON
 tags:
   - name: DecisionTree
 paths:
@@ -14,23 +14,18 @@ paths:
         - DecisionTree
       summary: Decision Tree Start Request
       operationId: start
-      description: Notify Service that a decision tree algorithm will be launched
+      description: Notify Engine that a decision tree algorithm will be launched
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '../../model/ClassifierStartRequest.yaml#/definitions/ClassifierStartRequestModel'
+              $ref: '../model/ClassifierStartRequest.yaml#/definitions/ClassifierStartRequestModel'
       responses:
         '200':
-          description: |
-            Returns request id; to be used in the next calls to specify the engine to direct the calls to.
-          content:
-            application/json:
-              schema:
-                $ref: '../../model/service/ClassifierStartResponse.yaml#/definitions/ClassifierStartResponseModel'
+          description: Returns OK, data has been set.
         '500':
-          description: Decision Tree Service Exception with detailed exception message.
+          description: Engine Computation Exception with detailed exception message.
   '/decision-tree/data':
     post:
       tags:
@@ -43,12 +38,12 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../../model/service/ClassifierDataRequest.yaml#/definitions/ClassifierDataRequestModel'
+              $ref: '../../../model/classifier/ClassifierDataRequest.yaml#/definitions/ClassifierDataRequestModel'
       responses:
         '200':
           description: Returns Ok, data has been set.
         '500':
-          description: Decision Tree Service Exception with detailed exception message.
+          description: Engine Computation Exception with detailed exception message.
   '/decision-tree/predict':
     post:
       tags:
@@ -56,21 +51,15 @@ paths:
       summary: Decision Tree Predict
       operationId: predict
       description: Predict the values with Decision Tree algorithm.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '../../model/service/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
       responses:
         '200':
           description: Returns the predicted values.
           content:
             application/json:
               schema:
-                $ref: '../../model/ClassifierDataResponse.yaml#/definitions/ClassifierDataResponseModel'
+                $ref: '../../../model/classifier/ClassifierDataResponse.yaml#/definitions/ClassifierDataResponseModel'
         '500':
-          description: Decision Tree Service Exception with detailed exception message.
+          description: Engine Computation Exception with detailed exception message.
   '/decision-tree/predict-accuracy':
     post:
       tags:
@@ -80,12 +69,6 @@ paths:
       description: |
         Compute Predict Accuracy with Decision Tree Algorithm using the last {numberOfValues}.
         Predict the last {numberOfValues} and compare to actual data.
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '../../model/service/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
       responses:
         '200':
           description: Returns the accuracy of the predict algorithm.
@@ -94,4 +77,17 @@ paths:
               schema:
                 type: number
         '500':
-          description: Decision Tree Service Exception with detailed exception message.
+          description: Engine Computation Exception with detailed exception message.
+  '/decision-tree/cancel':
+    post:
+      tags:
+        - DecisionTree
+      summary: Decision Tree Cancel Request
+      operationId: cancel
+      description: |
+        Cancel any request data currently on the engine - Clears state.
+      responses:
+        '200':
+          description: Returns Ok, data has been cleared.
+        '500':
+          description: Engine Computation Exception with detailed exception message.

@@ -30,7 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../model/TimeSeries.yaml#/definitions/TimeSeriesModel'
+                $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'
         '500':
           description: Time Series Analysis Service Exception with detailed exception message.
   '/time-series-analysis/forecast-vs-actual':
@@ -55,7 +55,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../model/TimeSeries.yaml#/definitions/TimeSeriesModel'
+                $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'
         '500':
           description: Time Series Analysis Service Exception with detailed exception message.
   '/time-series-analysis/forecast-accuracy':
@@ -105,6 +105,6 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../model/TimeSeries.yaml#/definitions/TimeSeriesModel'
+                $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'
         '500':
           description: Time Series Analysis Service Exception with detailed exception message.

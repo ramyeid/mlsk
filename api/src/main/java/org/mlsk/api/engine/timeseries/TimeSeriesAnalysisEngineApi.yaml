@@ -30,7 +30,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../model/TimeSeries.yaml#/definitions/TimeSeriesModel'
+                $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'
         '500':
           description: Engine Computation Exception with detailed exception message.
   '/time-series-analysis/forecast-accuracy':
@@ -70,7 +70,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../model/TimeSeriesAnalysisRequest.yaml#/definitions/TimeSeriesAnalysisRequestModel'
+              $ref: '../../model/timeseries/TimeSeriesAnalysisRequest.yaml#/definitions/TimeSeriesAnalysisRequestModel'
       responses:
         '200':
           description: |
@@ -80,6 +80,6 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../model/TimeSeries.yaml#/definitions/TimeSeriesModel'
+                $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'
         '500':
           description: Engine Computation Exception with detailed exception message.

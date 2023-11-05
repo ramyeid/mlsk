@@ -9,7 +9,7 @@ definitions:
     type: object
     properties:
       timeSeries:
-        $ref: './TimeSeries.yaml#/definitions/TimeSeriesModel'
+        $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'
       numberOfValues:
         type: integer
         description: Number Of values to predict/forecast/etc. using the algorithm
