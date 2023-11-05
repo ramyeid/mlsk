@@ -3,10 +3,100 @@
 import unittest
 import pandas as pd
 from pandas.testing import assert_frame_equal
-from classifier.model.classifier_data import ClassifierDataBuilder, ClassifierData
+from classifier.registry.classifier_data_registry import ClassifierDataBuilderRegistry, ClassifierDataBuilder, ClassifierData
+from classifier.registry.classifier_data_registry_exception import ClassifierDataRegistryException
 
 
-class TestClassifierDataRequest(unittest.TestCase):
+class TestClassifierDataBuilderRegistry(unittest.TestCase):
+
+
+  def test_new_builder_and_get_builder(self) -> None:
+    # Given
+    data_builder_registry = ClassifierDataBuilderRegistry()
+    data_builder_registry.new_builder(123)
+
+    # When
+    data_builder = data_builder_registry.get_builder(123)
+    contains_start_data = data_builder.contains_start_data()
+    data_builder_count = data_builder_registry.len()
+    contains_123 = data_builder_registry.contains_builder(123)
+
+    # Then
+    self.assertFalse(contains_start_data)
+    self.assertEqual(1, data_builder_count)
+    self.assertTrue(contains_123)
+
+
+  def test_new_builder_throws_if_request_id_exists(self) -> None:
+    # Given
+    data_builder_registry = ClassifierDataBuilderRegistry()
+    data_builder_registry.new_builder(123)
+
+    # When
+    with self.assertRaises(ClassifierDataRegistryException) as context:
+      data_builder_registry.new_builder(123)
+
+    # Then
+    self.assertEqual('RequestId (123) already inflight!', str(context.exception))
+
+
+  def test_get_builder_throws_if_request_id_does_not_exist(self) -> None:
+    # Given
+    data_builder_registry = ClassifierDataBuilderRegistry()
+
+    # When
+    with self.assertRaises(ClassifierDataRegistryException) as context:
+      data_builder_registry.get_builder(123)
+
+    # Then
+    self.assertEqual('RequestId (123) not inflight!', str(context.exception))
+
+
+  def test_cancel_request_removes_builder(self) -> None:
+    # Given
+    data_builder_registry = ClassifierDataBuilderRegistry()
+    data_builder_registry.new_builder(123)
+    count_pre_cancel = data_builder_registry.len()
+    contains_123_pre_cancel = data_builder_registry.contains_builder(123)
+
+    # When
+    contains_data = data_builder_registry.cancel_request(123)
+
+    # Then
+    count_post_cancel = data_builder_registry.len()
+    contains_123_post_cancel = data_builder_registry.contains_builder(123)
+    self.assertEqual(1, count_pre_cancel)
+    self.assertTrue(contains_123_pre_cancel)
+    self.assertEqual(0, count_post_cancel)
+    self.assertFalse(contains_123_post_cancel)
+
+
+  def test_reset_removes_all_content(self) -> None:
+    # Given
+    data_builder_registry = ClassifierDataBuilderRegistry()
+    data_builder_registry.new_builder(123)
+    data_builder_registry.new_builder(124)
+    contains_123_pre_reset = data_builder_registry.contains_builder(123)
+    contains_124_pre_reset = data_builder_registry.contains_builder(124)
+    count_pre_reset = data_builder_registry.len()
+
+    # When
+    data_builder_registry.reset()
+
+    # Then
+    count_post_reset = data_builder_registry.len()
+    contains_123_post_reset = data_builder_registry.contains_builder(123)
+    contains_124_post_reset = data_builder_registry.contains_builder(124)
+    self.assertEqual(2, count_pre_reset)
+    self.assertTrue(contains_123_pre_reset)
+    self.assertTrue(contains_124_pre_reset)
+    self.assertEqual(0, count_post_reset)
+    self.assertFalse(contains_123_post_reset)
+    self.assertFalse(contains_124_post_reset)
+
+
+
+class TestClassifierDataBuilder(unittest.TestCase):
 
 
   def test_set_start_data(self) -> None:
