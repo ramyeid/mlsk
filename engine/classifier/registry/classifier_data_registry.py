@@ -2,6 +2,49 @@
 
 from __future__ import annotations
 import pandas as pd
+from classifier.registry.classifier_data_registry_exception import ClassifierDataRegistryException
+
+
+class ClassifierDataBuilderRegistry:
+  '''
+  Represents the registry of all inflight builders (and hence requests) currently being used in the controller start, on_data and computation
+
+  Attributes
+    classifier_data_builders ({requestId (int) -> ClassifierDataBuilder]) - map requestId to a ClassifierDataBuilder
+  '''
+
+  def __init__(self):
+    self.classifier_data_builders = {}
+
+
+  def new_builder(self, request_id: int) -> ClassifierDataBuilder:
+    if request_id in self.classifier_data_builders:
+      raise ClassifierDataRegistryException('RequestId ({}) already inflight!'.format(request_id))
+    self.classifier_data_builders[request_id] = ClassifierDataBuilder()
+    return self.get_builder(request_id)
+
+
+  def get_builder(self, request_id: int) -> ClassifierDataBuilder:
+    if request_id not in self.classifier_data_builders:
+      raise ClassifierDataRegistryException('RequestId ({}) not inflight!'.format(request_id))
+    return self.classifier_data_builders[request_id]
+
+
+  def contains_builder(self, request_id: int) -> bool:
+    return request_id in self.classifier_data_builders
+
+
+  def cancel_request(self, request_id: int) -> None:
+    if request_id in self.classifier_data_builders:
+      self.classifier_data_builders.pop(request_id)
+
+
+  def reset(self) -> None:
+    self.classifier_data_builders = {}
+
+
+  def len(self) -> None:
+    return len(self.classifier_data_builders)
 
 
 class ClassifierDataBuilder:
