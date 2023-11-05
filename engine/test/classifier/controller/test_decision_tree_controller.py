@@ -62,8 +62,8 @@ class TestDecisionTreeController(unittest.TestCase):
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception EngineComputationException raised while starting decision tree: ' \
-            b'Error, Launching start with existing State, Resetting State."\n', response.data)
+    self.assertEqual(b'"[1] Exception EngineComputationException raised while starting decision tree: ' \
+                     b'Error, Launching start with existing State, Resetting State."\n', response.data)
 
 
   def test_exception_thrown_if_data_exists_on_start(self) -> None:
@@ -76,8 +76,8 @@ class TestDecisionTreeController(unittest.TestCase):
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception EngineComputationException raised while starting decision tree: ' \
-            b'Error, Launching start with existing State, Resetting State."\n', response.data)
+    self.assertEqual(b'"[1] Exception EngineComputationException raised while starting decision tree: ' \
+                     b'Error, Launching start with existing State, Resetting State."\n', response.data)
 
 
   def test_state_set_on_data(self) -> None:
@@ -103,15 +103,15 @@ class TestDecisionTreeController(unittest.TestCase):
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception EngineComputationException raised while receiving decision tree data: ' \
-            b'Error, Receiving Data without Start, Resetting State."\n', response.data)
+    self.assertEqual(b'"[1] Exception EngineComputationException raised while receiving decision tree data: ' \
+                     b'Error, Receiving Data without Start, Resetting State."\n', response.data)
 
 
   def test_state_is_reset_and_exception_thrown_on_data(self) -> None:
     # Given
     start_body_as_string = build_start_body_as_string()
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    failing_data_body = dict(column_name='Sex', values=[1, 0, 1, 0, 0])
+    failing_data_body = dict(requestId=1, column_name='Sex', values=[1, 0, 1, 0, 0])
     failing_data_body_as_string = json.dumps(failing_data_body)
 
     # When
@@ -119,144 +119,158 @@ class TestDecisionTreeController(unittest.TestCase):
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception KeyError raised while receiving decision tree data: ' \
-            b'\'columnName\'"\n', response.data)
+    self.assertEqual(b'"[None] Exception KeyError raised while receiving decision tree data: ' \
+                     b'\'columnName\'"\n', response.data)
 
 
   def test_predict_and_reset_state(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
-    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body = dict(requestId=1, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
     width_data_body_as_string = json.dumps(width_data_body)
     test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE)
+    response = test_app.post(self.PREDICT_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'{"requestId": 0, "columnName": "Sex", "values": [0]}', response.data)
+    self.assertEqual(b'{"requestId": 1, "columnName": "Sex", "values": [0]}', response.data)
 
 
   def test_throw_exception_if_start_not_called_on_predict(self) -> None:
     # Given
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE)
+    response = test_app.post(self.PREDICT_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assertEqual(b'"Exception EngineComputationException raised while predicting: ' \
-            b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
+    self.assertEqual(b'"[1] Exception EngineComputationException raised while predicting: ' \
+                     b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
 
 
   def test_throw_exception_if_data_not_called_on_predict(self) -> None:
     # Given
     start_body_as_string = build_start_body_as_string()
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE)
+    response = test_app.post(self.PREDICT_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception EngineComputationException raised while predicting: ' \
-            b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
+    self.assertEqual(b'"[1] Exception EngineComputationException raised while predicting: ' \
+                     b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
 
 
   def test_throw_exception_if_not_all_columns_received_on_predict(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body = dict(requestId=1, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
     width_data_body_as_string = json.dumps(width_data_body)
     test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE)
+    response = test_app.post(self.PREDICT_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    expected_exception = b'"Exception ClassifierException raised while predicting: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Width\', \'Height\'])"\n'
+    expected_exception = b'"[1] Exception ClassifierException raised while predicting: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Width\', \'Height\'])"\n'
     self.assertEqual(expected_exception, response.data)
 
 
   def test_throw_exception_if_action_columns_do_not_have_same_size_on_predict(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
-    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body = dict(requestId=1, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
     width_data_body_as_string = json.dumps(width_data_body)
     test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 1, 1])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE)
+    response = test_app.post(self.PREDICT_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception ClassifierException raised while predicting: '\
-            b'Error: Action column sizes are not equal; sizes found: [9, 10]"\n', response.data)
+    self.assertEqual(b'"[1] Exception ClassifierException raised while predicting: ' \
+                     b'Error: Action column sizes are not equal; sizes found: [9, 10]"\n', response.data)
 
 
   def test_throw_exception_if_actual_values_missing_greater_than_number_of_values_on_predict(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
-    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body = dict(requestId=1, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
     width_data_body_as_string = json.dumps(width_data_body)
     test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE)
+    response = test_app.post(self.PREDICT_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception ClassifierException raised while predicting: '\
-            b'Error: Invalid prediction column size. Prediction: 7, Action: 9, Values to predict: 1"\n', response.data)
+    self.assertEqual(b'"[1] Exception ClassifierException raised while predicting: ' \
+                     b'Error: Invalid prediction column size. Prediction: 7, Action: 9, Values to predict: 1"\n', response.data)
 
 
   def test_predict_accuracy_and_reset_state(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
-    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body = dict(requestId=1, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
     width_data_body_as_string = json.dumps(width_data_body)
     test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
@@ -265,109 +279,121 @@ class TestDecisionTreeController(unittest.TestCase):
 
   def test_throw_exception_if_start_not_called_on_predict_accuracy(self) -> None:
     # Given
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assertEqual(b'"Exception EngineComputationException raised while computing predict accuracy: ' \
-            b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
+    self.assertEqual(b'"[1] Exception EngineComputationException raised while computing predict accuracy: ' \
+                     b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
 
 
   def test_throw_exception_if_data_not_called_on_predict_accuracy(self) -> None:
     # Given
     start_body_as_string = build_start_body_as_string()
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception EngineComputationException raised while computing predict accuracy: ' \
-            b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
+    self.assertEqual(b'"[1] Exception EngineComputationException raised while computing predict accuracy: ' \
+                     b'Error, No Data was set to launch Decision Tree computation."\n', response.data)
 
 
   def test_throw_exception_if_not_all_columns_received_on_predict_accuracy(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    expected_exception = b'"Exception ClassifierException raised while computing predict accuracy: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Sex\', \'Height\'])"\n'
+    expected_exception = b'"[1] Exception ClassifierException raised while computing predict accuracy: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Sex\', \'Height\'])"\n'
     self.assertEqual(expected_exception, response.data)
 
 
   def test_throw_exception_if_action_columns_do_not_have_same_size_on_predict_accuracy(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
-    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body = dict(requestId=1, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
     width_data_body_as_string = json.dumps(width_data_body)
     test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception ClassifierException raised while computing predict accuracy: '\
-            b'Error: Action column sizes are not equal; sizes found: [9, 5]"\n', response.data)
+    self.assertEqual(b'"[1] Exception ClassifierException raised while computing predict accuracy: ' \
+                     b'Error: Action column sizes are not equal; sizes found: [9, 5]"\n', response.data)
 
 
   def test_throw_exception_if_actual_values_missing_on_predict_accuracy(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
-    width_data_body = dict(columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
+    width_data_body = dict(requestId=1, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0])
     width_data_body_as_string = json.dumps(width_data_body)
     test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
-    height_data_body = dict(columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
+    height_data_body = dict(requestId=1, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0])
     height_data_body_as_string = json.dumps(height_data_body)
     test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    request_body = dict(requestId=1)
+    request_body_as_string = json.dumps(request_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE)
+    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=request_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
-    self.assertEqual(b'"Exception ClassifierException raised while computing predict accuracy: '\
-            b'Error: Invalid prediction column size. Prediction: 8, Action: 9, Values to predict: 1"\n', response.data)
+    self.assertEqual(b'"[1] Exception ClassifierException raised while computing predict accuracy: ' \
+                     b'Error: Invalid prediction column size. Prediction: 8, Action: 9, Values to predict: 1"\n', response.data)
 
 
   def test_reset_state_on_cancel(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    cancel_body = dict(requestId=1)
+    cancel_body_as_string = json.dumps(cancel_body)
 
     # When
-    response = test_app.post(self.CANCEL_RESOURCE)
+    response = test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_empty_state()
@@ -376,16 +402,18 @@ class TestDecisionTreeController(unittest.TestCase):
 
   def test_reset_state_on_cancel_and_start_new_request(self) -> None:
     # Given
-    start_body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
+    start_body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1)
     start_body_as_string = json.dumps(start_body)
     test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    sex_data_body = dict(columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
+    sex_data_body = dict(requestId=1, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0])
     sex_data_body_as_string = json.dumps(sex_data_body)
     test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    cancel_body = dict(requestId=1)
+    cancel_body_as_string = json.dumps(cancel_body)
 
     # When
-    test_app.post(self.CANCEL_RESOURCE)
-    start_body_2 = dict(predictionColumnName='Width', actionColumnNames=['Sex', 'Height'], numberOfValues=1)
+    test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
+    start_body_2 = dict(requestId=1, predictionColumnName='Width', actionColumnNames=['Sex', 'Height'], numberOfValues=1)
     start_body_2_as_string = json.dumps(start_body_2)
     test_app.post(self.START_RESOURCE, data=start_body_2_as_string, content_type=self.CONTENT_TYPE)
 
@@ -396,9 +424,11 @@ class TestDecisionTreeController(unittest.TestCase):
   def test_throw_exception_on_cancel(self) -> None:
     # Given
     decision_tree_controller.classifier_data_builder = None # Will never be the case but for testing purposes
+    cancel_body = dict(requestId=1)
+    cancel_body_as_string = json.dumps(cancel_body)
 
     # When
-    response = test_app.post(self.CANCEL_RESOURCE)
+    response = test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     expected = b'<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">\n<title>500 Internal Server Error</title>\n<h1>Internal Server Error</h1>\n<p>The server encountered an internal error and was unable to complete your request. Either the server is overloaded or there is an error in the application.</p>\n'
@@ -414,10 +444,10 @@ def add_data(column: str, values: [int]) -> None:
 
 
 def build_start_body_as_string() -> str:
-  body = dict(predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=5)
+  body = dict(requestId=1, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=5)
   return json.dumps(body)
 
 
 def build_data_body_as_string() -> str:
-  data_body = dict(columnName='Sex', values=[1, 0, 1, 0, 0])
+  data_body = dict(requestId=1, columnName='Sex', values=[1, 0, 1, 0, 0])
   return json.dumps(data_body)

@@ -20,7 +20,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
   def test_forecast(self) -> None:
     # Given
-    body = dict(timeSeries=dict(rows=build_rows(),
+    body = dict(requestId=123,
+                timeSeries=dict(rows=build_rows(),
                                 dateColumnName='Date',
                                 valueColumnName='Passengers',
                                 dateFormat='yyyy-MM'),
@@ -41,7 +42,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
   def test_forecast_exception(self) -> None:
     # Given
-    body = dict(timeSeries=dict(rows=[dict(date='1949-01', value=112.0), dict(date='1949-02', value=118.0)],
+    body = dict(requestId=123,
+                timeSeries=dict(rows=[dict(date='1949-01', value=112.0), dict(date='1949-02', value=118.0)],
                                 dateColumnName='Date',
                                 valueColumnName='Passengers',
                                 dateFormat='yyyy-MM-dd'),
@@ -53,13 +55,14 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
                               content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assertEqual(b'"Exception ValueError raised while forecasting: ' \
+    self.assertEqual(b'"[None] Exception ValueError raised while forecasting: ' \
             b'time data \'1949-01\' does not match format \'%Y-%m-%d\'"\n', response.data)
 
 
   def test_compute_forecast_accuracy(self) -> None:
     # Given
-    body = dict(timeSeries=dict(rows=build_rows(),
+    body = dict(requestId=123,
+                timeSeries=dict(rows=build_rows(),
                                 dateColumnName='Date',
                                 valueColumnName='Passengers',
                                 dateFormat='yyyy-MM'),
@@ -77,7 +80,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
   def test_compute_forecast_accuracy_exception(self) -> None:
     # Given
-    body = dict(timeSeries=dict(rows=[dict(date='1949-01', value=112.0), dict(date='1949-02', value=118.0)],
+    body = dict(requestId=123,
+                timeSeries=dict(rows=[dict(date='1949-01', value=112.0), dict(date='1949-02', value=118.0)],
                                 dateColumnName='Date',
                                 valueColumnName='Passengers',
                                 dateFormat='yyyy-MM-hh'),
@@ -88,13 +92,14 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     response = test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
     # Then
-    self.assertEqual(b'"Exception ValueError raised while computing forecast accuracy: ' \
+    self.assertEqual(b'"[None] Exception ValueError raised while computing forecast accuracy: ' \
             b'time data \'1949-01\' does not match format \'%Y-%m-%H\'"\n', response.data)
 
 
   def test_predict(self) -> None:
     # Given
-    body = dict(timeSeries=dict(rows=build_rows(),
+    body = dict(requestId=123,
+                timeSeries=dict(rows=build_rows(),
                                 dateColumnName='Date',
                                 valueColumnName='Passengers',
                                 dateFormat='yyyy-MM'),
@@ -115,7 +120,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
   def test_predict_exception(self) -> None:
     # Given
-    body = dict(timeSeries=dict(rows=[dict(date='1949-01', value=112.0), dict(date='1949-02', value=118.0)],
+    body = dict(requestId=123,
+                timeSeries=dict(rows=[dict(date='1949-01', value=112.0), dict(date='1949-02', value=118.0)],
                                 dateColumnName='Date',
                                 valueColumnName='Passengers',
                                 dateFormat='yyyy-MM-SS'),
@@ -127,7 +133,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
                               content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assertEqual(b'"Exception ValueError raised while predicting: ' \
+    self.assertEqual(b'"[None] Exception ValueError raised while predicting: ' \
             b'time data \'1949-01\' does not match format \'%Y-%m-SS\'"\n', response.data)
 
 
