@@ -5,14 +5,16 @@ import org.mlsk.api.classifier.model.ClassifierStartResponseModel;
 
 import java.util.List;
 
+import static java.lang.String.valueOf;
+
 public final class ClassifierModelHelper {
 
   private ClassifierModelHelper() {
   }
 
-  public static ClassifierStartResponseModel buildClassifierStartResponseModel(String requestId) {
+  public static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(requestId);
+    classifierStartResponseModel.setRequestId(valueOf(requestId));
     return classifierStartResponseModel;
   }
 

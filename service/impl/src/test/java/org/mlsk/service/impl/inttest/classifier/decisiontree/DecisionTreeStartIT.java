@@ -49,7 +49,7 @@ public class DecisionTreeStartIT extends AbstractIT {
   public void should_return_request_id_on_start() {
     long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId), buildDefaultResponse());
     mockEngine.registerRequests(startRequest);
 
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse = decisionTreeApi.start(startRequestModel);
@@ -60,9 +60,10 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_start() {
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while starting: NullPointer");
-    MockEngine.MockedRequest startRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
+    MockEngine.MockedRequest startRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId), exceptionToThrow);
     MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
     mockEngine.registerRequests(startRequest, cancelRequest);
 
@@ -78,13 +79,14 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @Test
   public void should_release_engine_on_exception_on_start() {
-    long requestId1 = 2L;
-    long requestId2 = 3L;
+    long requestId1 = 1L;
+    long requestId2 = 2L;
+    long requestId3 = 3L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while starting: NullPointer");
-    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), exceptionToThrow);
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId3), buildDefaultResponse());
     MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
     mockEngine.registerRequests(failingStartRequest, cancelRequest);
 
@@ -93,16 +95,17 @@ public class DecisionTreeStartIT extends AbstractIT {
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse1 = decisionTreeApi.start(startRequestModel);
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse2 = decisionTreeApi.start(startRequestModel);
 
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId1), actualStartResponse1);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse2);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse1);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId3), actualStartResponse2);
     assertOnEngineState(BOOKED, BOOKED);
   }
 
   @Test
   public void should_call_cancel_on_exception_on_start() throws Exception {
+    long requestId = 1L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while starting: NullPointer");
-    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), exceptionToThrow);
+    MockEngine.MockedRequest failingStartRequest = buildFailingMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId), exceptionToThrow);
     MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
     mockEngine.registerRequests(failingStartRequest, cancelRequest);
 
@@ -118,9 +121,11 @@ public class DecisionTreeStartIT extends AbstractIT {
 
   @Test
   public void should_book_all_engines_on_start() {
+    long requestId1 = 1L;
+    long requestId2 = 2L;
     ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId2), buildDefaultResponse());
     mockEngine.registerRequests(startRequest1, startRequest2);
 
     try {

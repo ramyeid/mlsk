@@ -4,17 +4,18 @@ import java.util.Objects;
 
 public class ClassifierStartResponse {
 
-  private final String requestId;
+  private final long requestId;
 
-  public ClassifierStartResponse(String requestId) {
+  public ClassifierStartResponse(long requestId) {
     this.requestId = requestId;
   }
 
+  // Needed for deserialization from json
   public ClassifierStartResponse() {
-    this("");
+    this(0L);
   }
 
-  public String getRequestId() {
+  public long getRequestId() {
     return requestId;
   }
 

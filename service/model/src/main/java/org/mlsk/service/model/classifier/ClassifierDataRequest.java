@@ -7,21 +7,22 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class ClassifierDataRequest {
 
-  private final String requestId;
+  private final long requestId;
   private final String columnName;
   private final List<Integer> values;
 
-  public ClassifierDataRequest(String requestId, String columnName, List<Integer> values) {
+  public ClassifierDataRequest(long requestId, String columnName, List<Integer> values) {
     this.requestId = requestId;
     this.columnName = columnName;
     this.values = values;
   }
 
+  // Needed for deserialization from json
   public ClassifierDataRequest() {
-    this("", "", newArrayList());
+    this(0L, "", newArrayList());
   }
 
-  public String getRequestId() {
+  public long getRequestId() {
     return requestId;
   }
 

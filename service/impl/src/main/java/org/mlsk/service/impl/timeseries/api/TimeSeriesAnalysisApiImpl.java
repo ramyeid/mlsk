@@ -5,6 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.mlsk.api.timeseries.api.TimeSeriesAnalysisApi;
 import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.timeseries.TimeSeriesAnalysisService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,29 +32,33 @@ public class TimeSeriesAnalysisApiImpl implements TimeSeriesAnalysisApi {
 
   @Override
   public ResponseEntity<TimeSeriesModel> forecast(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
-    LOGGER.info("Forecast request received");
-    TimeSeries result = service.forecast(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
+    long requestId = RequestIdGenerator.nextId();
+    LOGGER.info("[{}] Forecast request received", requestId);
+    TimeSeries result = service.forecast(toTimeSeriesAnalysisRequest(requestId, timeSeriesAnalysisRequestModel));
     return ResponseEntity.ok(toTimeSeriesModel(result));
   }
 
   @Override
   public ResponseEntity<TimeSeriesModel> forecastVsActual(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
-    LOGGER.info("Forecast vs Actual request received");
-    TimeSeries result = service.forecastVsActual(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
+    long requestId = RequestIdGenerator.nextId();
+    LOGGER.info("[{}] Forecast vs Actual request received", requestId);
+    TimeSeries result = service.forecastVsActual(toTimeSeriesAnalysisRequest(requestId, timeSeriesAnalysisRequestModel));
     return ResponseEntity.ok(toTimeSeriesModel(result));
   }
 
   @Override
   public ResponseEntity<BigDecimal> computeForecastAccuracy(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
-    LOGGER.info("Compute Forecast Accuracy request received");
-    Double result = service.computeForecastAccuracy(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
+    long requestId = RequestIdGenerator.nextId();
+    LOGGER.info("[{}] Compute Forecast Accuracy request received", requestId);
+    Double result = service.computeForecastAccuracy(toTimeSeriesAnalysisRequest(requestId, timeSeriesAnalysisRequestModel));
     return ResponseEntity.ok(valueOf(result));
   }
 
   @Override
   public ResponseEntity<TimeSeriesModel> predict(TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel) {
-    LOGGER.info("Predict request received");
-    TimeSeries result = service.predict(toTimeSeriesAnalysisRequest(timeSeriesAnalysisRequestModel));
+    long requestId = RequestIdGenerator.nextId();
+    LOGGER.info("[{}] Predict request received", requestId);
+    TimeSeries result = service.predict(toTimeSeriesAnalysisRequest(requestId, timeSeriesAnalysisRequestModel));
     return ResponseEntity.ok(toTimeSeriesModel(result));
   }
 }

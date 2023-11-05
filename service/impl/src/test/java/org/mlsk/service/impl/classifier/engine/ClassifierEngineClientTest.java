@@ -25,6 +25,8 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class ClassifierEngineClientTest {
 
+  private static final long REQUEST_ID = 10L;
+
   @Mock
   private RestClient restClient;
 
@@ -246,11 +248,11 @@ public class ClassifierEngineClientTest {
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest() {
-    return new ClassifierStartRequest("predictionColumnName", newArrayList("col0", "col1"), 1);
+    return new ClassifierStartRequest(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 1);
   }
 
   private static ClassifierDataRequest buildClassifierDataRequest() {
-    return new ClassifierDataRequest("requestId", "columnName", newArrayList(1, 0, 1));
+    return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(1, 0, 1));
   }
 
   private static ClassifierDataResponse buildClassifierDataResponse() {

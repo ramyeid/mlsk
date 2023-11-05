@@ -11,7 +11,7 @@ public class ClassifierDataRequestTest {
 
   @Test
   public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
-    ClassifierDataRequest classifierDataRequest = new ClassifierDataRequest("requestId", "columnName", newArrayList(1, 2, 3));
+    ClassifierDataRequest classifierDataRequest = new ClassifierDataRequest(123, "columnName", newArrayList(1, 2, 3));
     ObjectMapper objectMapper = new ObjectMapper();
 
     String serializedDataRequest = objectMapper.writeValueAsString(classifierDataRequest);

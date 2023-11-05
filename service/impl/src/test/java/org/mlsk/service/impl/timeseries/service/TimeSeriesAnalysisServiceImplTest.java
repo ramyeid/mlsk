@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
-import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.impl.testhelper.OrchestratorHelper;
 import org.mlsk.service.impl.timeseries.service.exception.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.model.timeseries.TimeSeries;
@@ -40,7 +39,6 @@ public class TimeSeriesAnalysisServiceImplTest {
   @BeforeEach
   public void setUp() {
     this.service = new TimeSeriesAnalysisServiceImpl(orchestrator);
-    RequestIdGenerator.reset(1L);
   }
 
   @Test
@@ -224,7 +222,7 @@ public class TimeSeriesAnalysisServiceImplTest {
 
     TimeSeries timeSeries = new TimeSeries(rows, "dateColumnName", "valueColumnName", "yyyy");
 
-    return new TimeSeriesAnalysisRequest(timeSeries, 2);
+    return new TimeSeriesAnalysisRequest(REQUEST_ID, timeSeries, 2);
   }
 
   private static TimeSeries buildTimeSeriesResult() {
@@ -241,7 +239,7 @@ public class TimeSeriesAnalysisServiceImplTest {
 
     TimeSeries timeSeries = new TimeSeries(rows, "dateColumnName", "valueColumnName", "yyyy");
 
-    return new TimeSeriesAnalysisRequest(timeSeries, 2);
+    return new TimeSeriesAnalysisRequest(REQUEST_ID, timeSeries, 2);
   }
 
   private static void assertOnTimeSeriesAnalysisServiceException(Exception exception, String exceptionMessage) {

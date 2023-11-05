@@ -7,18 +7,25 @@ import static com.google.common.collect.Lists.newArrayList;
 
 public class ClassifierStartRequest {
 
+  private final long requestId;
   private final String predictionColumnName;
   private final List<String> actionColumnNames;
   private final int numberOfValues;
 
-  public ClassifierStartRequest(String predictionColumnName, List<String> actionColumnNames, int numberOfValues) {
+  public ClassifierStartRequest(long requestId, String predictionColumnName, List<String> actionColumnNames, int numberOfValues) {
+    this.requestId = requestId;
     this.predictionColumnName = predictionColumnName;
     this.actionColumnNames = actionColumnNames;
     this.numberOfValues = numberOfValues;
   }
 
+  // Needed for deserialization from json
   public ClassifierStartRequest() {
-    this("", newArrayList(), 0);
+    this(0L, "", newArrayList(), 0);
+  }
+
+  public long getRequestId() {
+    return requestId;
   }
 
   public String getPredictionColumnName() {
@@ -38,18 +45,20 @@ public class ClassifierStartRequest {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ClassifierStartRequest that = (ClassifierStartRequest) o;
-    return numberOfValues == that.numberOfValues && Objects.equals(predictionColumnName, that.predictionColumnName) && Objects.equals(actionColumnNames, that.actionColumnNames);
+    return requestId == that.requestId && numberOfValues == that.numberOfValues &&
+        Objects.equals(predictionColumnName, that.predictionColumnName) && Objects.equals(actionColumnNames, that.actionColumnNames);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(predictionColumnName, actionColumnNames, numberOfValues);
+    return Objects.hash(requestId, predictionColumnName, actionColumnNames, numberOfValues);
   }
 
   @Override
   public String toString() {
     return "ClassifierStartRequest{" +
-        "predictionColumnName='" + predictionColumnName + '\'' +
+        "requestId=" + requestId +
+        ", predictionColumnName='" + predictionColumnName + '\'' +
         ", actionColumnNames=" + actionColumnNames +
         ", numberOfValues=" + numberOfValues +
         '}';

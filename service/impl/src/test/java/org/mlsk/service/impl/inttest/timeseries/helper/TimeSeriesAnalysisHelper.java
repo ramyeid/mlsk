@@ -55,7 +55,7 @@ public final class TimeSeriesAnalysisHelper {
     return buildTimeSeriesModel(rows, "date", "value", "yyyy");
   }
 
-  public static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest() {
+  public static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest(long requestId) {
     TimeSeriesRow row1 = new TimeSeriesRow("date-1", 11.);
     TimeSeriesRow row2 = new TimeSeriesRow("date0", 22.);
     TimeSeriesRow row3 = new TimeSeriesRow("date1", 33.);
@@ -64,7 +64,7 @@ public final class TimeSeriesAnalysisHelper {
     List<TimeSeriesRow> rows = newArrayList(row1, row2, row3, row4);
     TimeSeries timeSeries = new TimeSeries(rows, "dateColumnName", "valueColumnName", "yyyy-MM");
 
-    return new TimeSeriesAnalysisRequest(timeSeries, 2);
+    return new TimeSeriesAnalysisRequest(requestId, timeSeries, 2);
   }
 
   public static TimeSeriesAnalysisRequestModel buildTimeSeriesAnalysisRequestModel() {
@@ -79,14 +79,14 @@ public final class TimeSeriesAnalysisHelper {
     return TimeSeriesModelHelper.buildTimeSeriesAnalysisRequestModel(timeSeries, 2);
   }
 
-  public static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisExpectedRequestForecastVsActual() {
+  public static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisExpectedRequestForecastVsActual(long requestId) {
     TimeSeriesRow row1 = new TimeSeriesRow("date-1", 11.);
     TimeSeriesRow row2 = new TimeSeriesRow("date0", 22.);
 
     List<TimeSeriesRow> rows = newArrayList(row1, row2);
     TimeSeries timeSeries = new TimeSeries(rows, "dateColumnName", "valueColumnName", "yyyy-MM");
 
-    return new TimeSeriesAnalysisRequest(timeSeries, 2);
+    return new TimeSeriesAnalysisRequest(requestId, timeSeries, 2);
   }
 
   public static void assertOnTimeSeriesAnalysisServiceException(Exception exception, String exceptionMessage) {

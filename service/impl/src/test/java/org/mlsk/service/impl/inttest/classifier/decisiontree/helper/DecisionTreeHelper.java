@@ -28,8 +28,8 @@ public final class DecisionTreeHelper {
     return classifierStartRequestModel;
   }
 
-  public static ClassifierStartRequest buildClassifierStartRequest() {
-    return new ClassifierStartRequest("predictionColumnName", newArrayList("col0", "col1"), 2);
+  public static ClassifierStartRequest buildClassifierStartRequest(long requestId) {
+    return new ClassifierStartRequest(requestId, "predictionColumnName", newArrayList("col0", "col1"), 2);
   }
 
   public static ClassifierDataRequestModel buildClassifierData1RequestModel(long requestId) {
@@ -41,7 +41,7 @@ public final class DecisionTreeHelper {
   }
 
   public static ClassifierDataRequest buildClassifierData1Request(long requestId) {
-    return new ClassifierDataRequest(valueOf(requestId), "col0", newArrayList(1, 0, 1, 0));
+    return new ClassifierDataRequest(requestId, "col0", newArrayList(1, 0, 1, 0));
   }
 
   public static ClassifierDataRequestModel buildClassifierData2RequestModel(long requestId) {
@@ -53,7 +53,7 @@ public final class DecisionTreeHelper {
   }
 
   public static ClassifierDataRequest buildClassifierData2Request(long requestId) {
-    return new ClassifierDataRequest(valueOf(requestId), "col1", newArrayList(0, 0, 0, 0));
+    return new ClassifierDataRequest(requestId, "col1", newArrayList(0, 0, 0, 0));
   }
 
   public static ClassifierRequestModel buildClassifierRequestModel(long requestId) {

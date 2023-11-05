@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.api.classifier.model.*;
 import org.mlsk.service.classifier.ClassifierService;
 import org.mlsk.service.impl.classifier.api.decisiontree.DecisionTreeApiImpl;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.model.classifier.*;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -34,44 +35,48 @@ public class DecisionTreeApiImplTest {
   @BeforeEach
   public void setUp() {
     this.decisionTreeApi = new DecisionTreeApiImpl(service);
+    RequestIdGenerator.reset(1L);
   }
 
   @Test
   public void should_delegate_call_to_service_on_start() {
+    long requestId = 1L;
     ClassifierStartRequestModel model = buildClassifierStartRequestModel();
-    onServiceStartReturn(buildClassifierStartResponse());
+    onServiceStartReturn(buildClassifierStartResponse(requestId));
 
     decisionTreeApi.start(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).start(buildClassifierStartRequest(), DECISION_TREE);
+    inOrder.verify(service).start(buildClassifierStartRequest(requestId), DECISION_TREE);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_correct_response_on_start() {
+    long requestId = 1L;
     ClassifierStartRequestModel model = buildClassifierStartRequestModel();
-    onServiceStartReturn(buildClassifierStartResponse());
+    onServiceStartReturn(buildClassifierStartResponse(requestId));
 
     ResponseEntity<ClassifierStartResponseModel> actualResponse = decisionTreeApi.start(model);
 
-    assertOnResponseEntity(buildClassifierStartResponseModel(), actualResponse);
+    assertOnResponseEntity(buildClassifierStartResponseModel(requestId), actualResponse);
   }
 
   @Test
   public void should_delegate_call_to_service_on_data() {
-    ClassifierDataRequestModel model = buildClassifierDataRequestModel();
+    long requestId = 1L;
+    ClassifierDataRequestModel model = buildClassifierDataRequestModel(requestId);
 
     decisionTreeApi.data(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).data(buildClassifierDataRequest(), DECISION_TREE);
+    inOrder.verify(service).data(buildClassifierDataRequest(requestId), DECISION_TREE);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_correct_response_on_data() {
-    ClassifierDataRequestModel model = buildClassifierDataRequestModel();
+    ClassifierDataRequestModel model = buildClassifierDataRequestModel(1L);
 
     ResponseEntity<Void> actualResponse = decisionTreeApi.data(model);
 
@@ -80,19 +85,21 @@ public class DecisionTreeApiImplTest {
 
   @Test
   public void should_delegate_call_to_service_on_predict() {
-    ClassifierRequestModel model = buildClassifierRequestModel();
+    long requestId = 1L;
+    ClassifierRequestModel model = buildClassifierRequestModel(requestId);
     onServicePredictReturn(buildClassifierDataResponse());
 
     decisionTreeApi.predict(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).predict(buildClassifierRequest(), DECISION_TREE);
+    inOrder.verify(service).predict(buildClassifierRequest(requestId), DECISION_TREE);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_correct_response_on_predict() {
-    ClassifierRequestModel model = buildClassifierRequestModel();
+    long requestId = 1L;
+    ClassifierRequestModel model = buildClassifierRequestModel(requestId);
     onServicePredictReturn(buildClassifierDataResponse());
 
     ResponseEntity<ClassifierDataResponseModel> actualResponse = decisionTreeApi.predict(model);
@@ -102,18 +109,20 @@ public class DecisionTreeApiImplTest {
 
   @Test
   public void should_delegate_call_to_service_on_compute_predict_accuracy() {
-    ClassifierRequestModel model = buildClassifierRequestModel();
+    long requestId = 1L;
+    ClassifierRequestModel model = buildClassifierRequestModel(requestId);
 
     decisionTreeApi.computePredictAccuracy(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).computePredictAccuracy(buildClassifierRequest(), DECISION_TREE);
+    inOrder.verify(service).computePredictAccuracy(buildClassifierRequest(requestId), DECISION_TREE);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_correct_response_on_compute_predict_accuracy() {
-    ClassifierRequestModel model = buildClassifierRequestModel();
+    long requestId = 1L;
+    ClassifierRequestModel model = buildClassifierRequestModel(requestId);
     onServiceComputePredictAccuracyReturn(98.432);
 
     ResponseEntity<BigDecimal> actualResponse = decisionTreeApi.computePredictAccuracy(model);
@@ -145,38 +154,38 @@ public class DecisionTreeApiImplTest {
     return classifierStartRequestModel;
   }
 
-  private static ClassifierStartRequest buildClassifierStartRequest() {
-    return new ClassifierStartRequest("predictionColumn", newArrayList("col1", "col2"), 12);
+  private static ClassifierStartRequest buildClassifierStartRequest(long requestId) {
+    return new ClassifierStartRequest(requestId, "predictionColumn", newArrayList("col1", "col2"), 12);
   }
 
-  private static ClassifierStartResponse buildClassifierStartResponse() {
-    return new ClassifierStartResponse("requestId");
+  private static ClassifierStartResponse buildClassifierStartResponse(long requestId) {
+    return new ClassifierStartResponse(requestId);
   }
 
-  private static ClassifierStartResponseModel buildClassifierStartResponseModel() {
+  private static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId("requestId");
+    classifierStartResponseModel.setRequestId(String.valueOf(requestId));
     return classifierStartResponseModel;
   }
 
-  private static ClassifierDataRequestModel buildClassifierDataRequestModel() {
+  private static ClassifierDataRequestModel buildClassifierDataRequestModel(long requestId) {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId("requestId");
+    classifierDataRequestModel.setRequestId(String.valueOf(requestId));
     classifierDataRequestModel.setColumnName("columnName");
     classifierDataRequestModel.setValues(newArrayList(0, 1, 2));
     return classifierDataRequestModel;
   }
 
-  private static ClassifierDataRequest buildClassifierDataRequest() {
-    return new ClassifierDataRequest("requestId", "columnName", newArrayList(0, 1, 2));
+  private static ClassifierDataRequest buildClassifierDataRequest(long requestId) {
+    return new ClassifierDataRequest(requestId, "columnName", newArrayList(0, 1, 2));
   }
 
-  private static ClassifierRequestModel buildClassifierRequestModel() {
-    return new ClassifierRequestModel().requestId("requestId");
+  private static ClassifierRequestModel buildClassifierRequestModel(long requestId) {
+    return new ClassifierRequestModel().requestId(String.valueOf(requestId));
   }
 
-  private static ClassifierRequest buildClassifierRequest() {
-    return new ClassifierRequest("requestId");
+  private static ClassifierRequest buildClassifierRequest(long requestId) {
+    return new ClassifierRequest(requestId);
   }
 
   private static ClassifierDataResponseModel buildClassifierDataResponseModel() {

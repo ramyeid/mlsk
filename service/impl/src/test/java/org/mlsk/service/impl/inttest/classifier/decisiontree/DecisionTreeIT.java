@@ -53,15 +53,16 @@ public class DecisionTreeIT extends AbstractIT {
     ClassifierRequestModel request1Model = buildClassifierRequestModel(requestId1);
     ClassifierRequestModel request2Model = buildClassifierRequestModel(requestId2);
     ClassifierRequestModel request3Model = buildClassifierRequestModel(requestId3);
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId3), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest3 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId3), buildDefaultResponse());
     MockEngine.MockedRequest predictRequest1 = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierDataResponse());
     MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, null, 94.123);
     MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(ENDPOINT2, PREDICT_ACCURACY_URL, null, 123.1);
-    mockEngine.registerRequests(startRequest1, dataRequest1, predictRequest1, predictAccuracyRequest1, startRequest2, dataRequest2, predictAccuracyRequest2, dataRequest3);
+    mockEngine.registerRequests(startRequest1, startRequest2, dataRequest1, predictRequest1, dataRequest2, predictAccuracyRequest1, startRequest3, dataRequest3, predictAccuracyRequest2);
 
     decisionTreeApi.start(startRequestModel);
     decisionTreeApi.start(startRequestModel);

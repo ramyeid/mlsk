@@ -6,6 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.api.timeseries.model.TimeSeriesModel;
 import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -37,17 +38,19 @@ public class TimeSeriesAnalysisApiImplTest {
   @BeforeEach
   public void setUp() {
     this.timeSeriesAnalysisApi = new TimeSeriesAnalysisApiImpl(service);
+    RequestIdGenerator.reset(1L);
   }
 
   @Test
   public void should_delegate_call_to_service_on_forecast() {
+    long requestId = 1L;
     TimeSeriesAnalysisRequestModel model = buildTimeSeriesAnalysisRequestModel();
     onServiceForecastReturn(buildTimeSeriesResult());
 
     timeSeriesAnalysisApi.forecast(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).forecast(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(service).forecast(buildTimeSeriesAnalysisRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -63,13 +66,14 @@ public class TimeSeriesAnalysisApiImplTest {
 
   @Test
   public void should_delegate_call_to_service_on_forecast_vs_actual() {
+    long requestId = 1L;
     TimeSeriesAnalysisRequestModel model = buildTimeSeriesAnalysisRequestModel();
     onServiceForecastVsActualReturn(buildTimeSeriesResult());
 
     timeSeriesAnalysisApi.forecastVsActual(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).forecastVsActual(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(service).forecastVsActual(buildTimeSeriesAnalysisRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -85,13 +89,14 @@ public class TimeSeriesAnalysisApiImplTest {
 
   @Test
   public void should_delegate_call_to_service_on_compute_forecast_accuracy() {
+    long requestId = 1L;
     TimeSeriesAnalysisRequestModel model = buildTimeSeriesAnalysisRequestModel();
     onServiceComputeForecastAccuracyReturn(58.123);
 
     timeSeriesAnalysisApi.computeForecastAccuracy(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(service).computeForecastAccuracy(buildTimeSeriesAnalysisRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -107,13 +112,14 @@ public class TimeSeriesAnalysisApiImplTest {
 
   @Test
   public void should_delegate_call_to_service_on_predict() {
+    long requestId = 1L;
     TimeSeriesAnalysisRequestModel model = buildTimeSeriesAnalysisRequestModel();
     onServicePredictReturn(buildTimeSeriesResult());
 
     timeSeriesAnalysisApi.predict(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).predict(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(service).predict(buildTimeSeriesAnalysisRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -157,14 +163,14 @@ public class TimeSeriesAnalysisApiImplTest {
     return TimeSeriesModelHelper.buildTimeSeriesAnalysisRequestModel(timeSeries, 2);
   }
 
-  private static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest() {
+  private static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest(long requestId) {
     TimeSeriesRow row1 = new TimeSeriesRow("date1", 123.123123132);
     TimeSeriesRow row2 = new TimeSeriesRow("date2", 45454.31231);
     List<TimeSeriesRow> rows = newArrayList(row1, row2);
 
     TimeSeries timeSeries = new TimeSeries(rows, "dateColumnName", "valueColumnName", "yyyy");
 
-    return new TimeSeriesAnalysisRequest(timeSeries, 2);
+    return new TimeSeriesAnalysisRequest(requestId, timeSeries, 2);
   }
 
   private static TimeSeries buildTimeSeriesResult() {

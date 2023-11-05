@@ -13,7 +13,6 @@ public interface Orchestrator {
 
   void launchEngines();
 
-
   /**
    * Acquire engine, run action and release lock on engine
    * Note: this is equivalent of {@link this#bookEngine}, {@link this#runOnEngine} and then {@link this#completeRequest}
