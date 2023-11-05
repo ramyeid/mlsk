@@ -1,0 +1,13 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierCancelRequest
+  description: This is the yaml detailing the ClassifierCancelRequest
+paths: {}
+definitions:
+  ClassifierCancelRequestModel:
+    type: object
+    properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request

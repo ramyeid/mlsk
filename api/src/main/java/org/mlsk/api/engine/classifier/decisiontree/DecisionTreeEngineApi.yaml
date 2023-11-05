@@ -51,6 +51,12 @@ paths:
       summary: Decision Tree Predict
       operationId: predict
       description: Predict the values with Decision Tree algorithm.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../../../model/classifier/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
       responses:
         '200':
           description: Returns the predicted values.
@@ -69,6 +75,12 @@ paths:
       description: |
         Compute Predict Accuracy with Decision Tree Algorithm using the last {numberOfValues}.
         Predict the last {numberOfValues} and compare to actual data.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../../../model/classifier/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
       responses:
         '200':
           description: Returns the accuracy of the predict algorithm.
@@ -86,6 +98,12 @@ paths:
       operationId: cancel
       description: |
         Cancel any request data currently on the engine - Clears state.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '../model/classifier/ClassifierCancelRequest.yaml#/definitions/ClassifierCancelRequestModel'
       responses:
         '200':
           description: Returns Ok, data has been cleared.
