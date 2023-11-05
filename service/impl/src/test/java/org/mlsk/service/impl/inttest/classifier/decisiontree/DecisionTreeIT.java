@@ -59,9 +59,9 @@ public class DecisionTreeIT extends AbstractIT {
     MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
     MockEngine.MockedRequest dataRequest3 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId3), buildDefaultResponse());
-    MockEngine.MockedRequest predictRequest1 = buildMockRequest(ENDPOINT1, PREDICT_URL, null, buildClassifierResponse(requestId1));
-    MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, null, 94.123);
-    MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(ENDPOINT2, PREDICT_ACCURACY_URL, null, 123.1);
+    MockEngine.MockedRequest predictRequest1 = buildMockRequest(ENDPOINT1, PREDICT_URL, buildClassifierRequest(requestId1), buildClassifierResponse(requestId1));
+    MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, buildClassifierRequest(requestId3), 94.123);
+    MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(ENDPOINT2, PREDICT_ACCURACY_URL, buildClassifierRequest(requestId2), 123.1);
     mockEngine.registerRequests(startRequest1, startRequest2, dataRequest1, predictRequest1, dataRequest2, predictAccuracyRequest1, startRequest3, dataRequest3, predictAccuracyRequest2);
 
     decisionTreeApi.start(startRequestModel);

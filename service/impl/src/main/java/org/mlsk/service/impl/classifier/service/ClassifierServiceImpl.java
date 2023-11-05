@@ -61,7 +61,7 @@ public class ClassifierServiceImpl implements ClassifierService {
     long requestId = classifierRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] Predict Request", requestId);
-      return orchestrator.runOnEngine(requestId, classifierType.getPredictAction(), engine -> engine.predict(classifierType));
+      return orchestrator.runOnEngine(requestId, classifierType.getPredictAction(), engine -> engine.predict(classifierRequest, classifierType));
     } catch (Exception exception) {
       cancelRequest(requestId, classifierType.getPredictAction(), classifierType);
       throw logAndBuildException(exception, requestId, "predicting on engine");
@@ -76,7 +76,7 @@ public class ClassifierServiceImpl implements ClassifierService {
     long requestId = classifierRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] Compute Predict Accuracy Request", requestId);
-      return orchestrator.runOnEngine(requestId, classifierType.getPredictAccuracyAction(), engine -> engine.computePredictAccuracy(classifierType));
+      return orchestrator.runOnEngine(requestId, classifierType.getPredictAccuracyAction(), engine -> engine.computePredictAccuracy(classifierRequest, classifierType));
     } catch (Exception exception) {
       cancelRequest(requestId, classifierType.getPredictAccuracyAction(), classifierType);
       throw logAndBuildException(exception, requestId, "compute predict accuracy on engine");
@@ -89,7 +89,8 @@ public class ClassifierServiceImpl implements ClassifierService {
   private void cancelRequest(long requestId, String actionName, ClassifierType classifierType) {
     catchExceptionAndLog(() -> {
       LOGGER.info("[{}] Cancelling request on engine with action {}", requestId, actionName);
-      orchestrator.runOnEngine(requestId, classifierType.getCancelAction(), engine -> engine.cancel(classifierType));
+      ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(requestId);
+      orchestrator.runOnEngine(requestId, classifierType.getCancelAction(), engine -> engine.cancel(classifierCancelRequest, classifierType));
     }, requestId);
   }
 

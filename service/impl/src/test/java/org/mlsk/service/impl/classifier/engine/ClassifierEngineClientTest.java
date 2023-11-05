@@ -6,9 +6,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
-import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierResponse;
-import org.mlsk.service.model.classifier.ClassifierStartRequest;
+import org.mlsk.service.model.classifier.*;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatus;
@@ -125,24 +123,26 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_delegate_predict_call_to_engine() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    onPostWithoutBodyWithResponseReturn(restClient, "predictUrl", ClassifierResponse.class, buildClassifierResponse());
+    onPostWithBodyWithResponseReturn(restClient, "predictUrl", classifierRequest, ClassifierResponse.class, buildClassifierResponse());
 
-    ClassifierResponse actualResponse = client.predict(classifierType);
+    ClassifierResponse actualResponse = client.predict(classifierRequest, classifierType);
 
-    verifyPostWithoutBodyWithResponseCalled(restClient, "predictUrl", ClassifierResponse.class);
+    verifyPostWithBodyWithResponseCalled(restClient, "predictUrl", classifierRequest, ClassifierResponse.class);
     assertEquals(buildClassifierResponse(), actualResponse);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_predict_failure() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictUrl", ClassifierResponse.class, new InvalidParameterException());
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictUrl", classifierRequest, ClassifierResponse.class, new InvalidParameterException());
 
     try {
-      client.predict(classifierType);
+      client.predict(classifierRequest, classifierType);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -152,12 +152,13 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_predict_failure_with_http_server_error_exception() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictUrl", ClassifierResponse.class, buildHttpServerErrorException("Original Predict Exception Message"));
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictUrl", classifierRequest, ClassifierResponse.class, buildHttpServerErrorException("Original Predict Exception Message"));
 
     try {
-      client.predict(classifierType);
+      client.predict(classifierRequest, classifierType);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -167,24 +168,26 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_delegate_predict_accuracy_call_to_engine() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictAccuracyUrl()).thenReturn("predictAccuracyUrl");
-    onPostWithoutBodyWithResponseReturn(restClient, "predictAccuracyUrl", Double.class, 123.2);
+    onPostWithBodyWithResponseReturn(restClient, "predictAccuracyUrl", classifierRequest, Double.class, 123.2);
 
-    Double actualAccuracy = client.computePredictAccuracy(classifierType);
+    Double actualAccuracy = client.computePredictAccuracy(classifierRequest, classifierType);
 
-    verifyPostWithoutBodyWithResponseCalled(restClient, "predictAccuracyUrl", Double.class);
+    verifyPostWithBodyWithResponseCalled(restClient, "predictAccuracyUrl", classifierRequest, Double.class);
     assertEquals(123.2, actualAccuracy);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_predict_accuracy_failure() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictAccuracyUrl()).thenReturn("predictAccuracyUrl");
-    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictAccuracyUrl", Double.class, new InvalidParameterException());
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictAccuracyUrl", classifierRequest, Double.class, new InvalidParameterException());
 
     try {
-      client.computePredictAccuracy(classifierType);
+      client.computePredictAccuracy(classifierRequest, classifierType);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -194,12 +197,13 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_predict_accuracy_failure_with_http_server_error_exception() {
+    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getPredictAccuracyUrl()).thenReturn("predictAccuracyUrl");
-    doThrowExceptionOnPostWithoutBodyWithResponse(restClient, "predictAccuracyUrl", Double.class, buildHttpServerErrorException("Original Predict Accuracy Exception Message"));
+    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictAccuracyUrl", classifierRequest, Double.class, buildHttpServerErrorException("Original Predict Accuracy Exception Message"));
 
     try {
-      client.computePredictAccuracy(classifierType);
+      client.computePredictAccuracy(classifierRequest, classifierType);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -209,22 +213,24 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_delegate_cancel_call_to_engine() {
+    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getCancelUrl()).thenReturn("cancelUrl");
 
-    client.cancel(classifierType);
+    client.cancel(classifierCancelRequest, classifierType);
 
-    verifyPostWithoutBodyWithoutResponseCalled(restClient, "cancelUrl");
+    verifyPostWithBodyWithoutResponseCalled(restClient, "cancelUrl", classifierCancelRequest);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_cancel_failure() {
+    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getCancelUrl()).thenReturn("cancelUrl");
-    doThrowExceptionOnPostWithoutBodyWithoutResponse(restClient, "cancelUrl", new InvalidParameterException());
+    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "cancelUrl", classifierCancelRequest, new InvalidParameterException());
 
     try {
-      client.cancel(classifierType);
+      client.cancel(classifierCancelRequest, classifierType);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -234,12 +240,13 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_cancel_failure_with_http_server_error_exception() {
+    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
     ClassifierType classifierType = mock(ClassifierType.class);
     when(classifierType.getCancelUrl()).thenReturn("cancelUrl");
-    doThrowExceptionOnPostWithoutBodyWithoutResponse(restClient, "cancelUrl", buildHttpServerErrorException("Original Cancel Exception Message"));
+    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "cancelUrl", classifierCancelRequest, buildHttpServerErrorException("Original Cancel Exception Message"));
 
     try {
-      client.cancel(classifierType);
+      client.cancel(classifierCancelRequest, classifierType);
       fail("should fail");
 
     } catch (Exception exception) {

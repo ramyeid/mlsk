@@ -8,7 +8,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.util.Optional.ofNullable;
 
 public class MockEngine {
 

@@ -11,9 +11,7 @@ import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
-import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierResponse;
-import org.mlsk.service.model.classifier.ClassifierStartRequest;
+import org.mlsk.service.model.classifier.*;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -132,20 +130,20 @@ public class EngineImpl implements Engine {
   }
 
   @Override
-  public synchronized ClassifierResponse predict(ClassifierType classifierType) {
+  public synchronized ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.predict(classifierType);
+    return classifierEngineClient.predict(classifierRequest, classifierType);
   }
 
   @Override
-  public synchronized Double computePredictAccuracy(ClassifierType classifierType) {
+  public synchronized Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.computePredictAccuracy(classifierType);
+    return classifierEngineClient.computePredictAccuracy(classifierRequest, classifierType);
   }
 
   @Override
-  public synchronized Void cancel(ClassifierType classifierType) {
+  public synchronized Void cancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
     ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.cancel(classifierType);
+    return classifierEngineClient.cancel(classifierCancelRequest, classifierType);
   }
 }

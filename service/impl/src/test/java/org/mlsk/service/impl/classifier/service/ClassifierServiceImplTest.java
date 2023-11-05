@@ -89,7 +89,7 @@ public class ClassifierServiceImplTest {
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("startAction"), any());
     inOrder.verify(engine).start(buildClassifierStartRequest(), classifierType);
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("cancelAction"), any());
-    inOrder.verify(engine).cancel(classifierType);
+    inOrder.verify(engine).cancel(new ClassifierCancelRequest(REQUEST_ID), classifierType);
     inOrder.verify(orchestrator).completeRequest(REQUEST_ID, "startAction");
     inOrder.verifyNoMoreInteractions();
   }
@@ -116,7 +116,7 @@ public class ClassifierServiceImplTest {
     ClassifierStartRequest request = buildClassifierStartRequest();
     onBookEngineReturn(orchestrator, engine, REQUEST_ID);
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "startAction", "start exception message");
-    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "startAction", new NoBlockedEngineException("ignored exception"));
+    doThrowExceptionOnCompleteRequest(orchestrator, REQUEST_ID, "startAction", new NoBlockedEngineException("ignored exception"));
     when(classifierType.getStartAction()).thenReturn("startAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
 
@@ -162,7 +162,7 @@ public class ClassifierServiceImplTest {
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("dataAction"), any());
     inOrder.verify(engine).data(buildClassifierDataRequest(), classifierType);
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("cancelAction"), any());
-    inOrder.verify(engine).cancel(classifierType);
+    inOrder.verify(engine).cancel(new ClassifierCancelRequest(REQUEST_ID), classifierType);
     inOrder.verify(orchestrator).completeRequest(REQUEST_ID, "dataAction");
     inOrder.verifyNoMoreInteractions();
   }
@@ -187,7 +187,7 @@ public class ClassifierServiceImplTest {
   public void should_ignore_if_release_throws_no_booked_engine_exception_on_data_failure() {
     ClassifierDataRequest request = buildClassifierDataRequest();
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "dataAction", "data exception message");
-    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "dataAction", new NoBlockedEngineException("ignored exception"));
+    doThrowExceptionOnCompleteRequest(orchestrator, REQUEST_ID, "dataAction", new NoBlockedEngineException("ignored exception"));
     when(classifierType.getDataAction()).thenReturn("dataAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
 
@@ -211,7 +211,7 @@ public class ClassifierServiceImplTest {
     InOrder inOrder = buildInOrder();
     inOrder.verify(classifierType).getPredictAction();
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("predictAction"), any());
-    inOrder.verify(engine).predict(classifierType);
+    inOrder.verify(engine).predict(request, classifierType);
     inOrder.verify(orchestrator).completeRequest(REQUEST_ID, "predictAction");
     inOrder.verifyNoMoreInteractions();
   }
@@ -220,7 +220,7 @@ public class ClassifierServiceImplTest {
   public void should_return_correct_result_on_predict() {
     ClassifierRequest request = buildClassifierRequest();
     onRunOnEngineCallMethod(orchestrator, engine, REQUEST_ID);
-    onEnginePredictReturn(buildClassifierResponse());
+    onEnginePredictReturn(request, buildClassifierResponse());
     when(classifierType.getPredictAction()).thenReturn("predictAction");
 
     ClassifierResponse actualResponse = service.predict(request, classifierType);
@@ -231,6 +231,7 @@ public class ClassifierServiceImplTest {
   @Test
   public void should_release_and_cancel_request_on_predict_failure() {
     ClassifierRequest request = buildClassifierRequest();
+    ClassifierCancelRequest cancelRequest = new ClassifierCancelRequest(REQUEST_ID);
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "predictAction", "predict exception message");
     when(classifierType.getPredictAction()).thenReturn("predictAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
@@ -244,9 +245,9 @@ public class ClassifierServiceImplTest {
     InOrder inOrder = buildInOrder();
     inOrder.verify(classifierType).getPredictAction();
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("predictAction"), any());
-    inOrder.verify(engine).predict(classifierType);
+    inOrder.verify(engine).predict(request, classifierType);
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("cancelAction"), any());
-    inOrder.verify(engine).cancel(classifierType);
+    inOrder.verify(engine).cancel(cancelRequest, classifierType);
     inOrder.verify(orchestrator).completeRequest(REQUEST_ID, "predictAction");
     inOrder.verifyNoMoreInteractions();
   }
@@ -271,7 +272,7 @@ public class ClassifierServiceImplTest {
   public void should_ignore_if_release_throws_no_booked_engine_exception_on_predict_failure() {
     ClassifierRequest request = buildClassifierRequest();
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "predictAction", "predict exception message");
-    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "predictAction", new NoBlockedEngineException("ignored exception"));
+    doThrowExceptionOnCompleteRequest(orchestrator, REQUEST_ID, "predictAction", new NoBlockedEngineException("ignored exception"));
     when(classifierType.getPredictAction()).thenReturn("predictAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
 
@@ -295,7 +296,7 @@ public class ClassifierServiceImplTest {
     InOrder inOrder = buildInOrder();
     inOrder.verify(classifierType).getPredictAccuracyAction();
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("predictAccuracyAction"), any());
-    inOrder.verify(engine).computePredictAccuracy(classifierType);
+    inOrder.verify(engine).computePredictAccuracy(request, classifierType);
     inOrder.verify(orchestrator).completeRequest(REQUEST_ID, "predictAccuracyAction");
     inOrder.verifyNoMoreInteractions();
   }
@@ -304,7 +305,7 @@ public class ClassifierServiceImplTest {
   public void should_return_correct_result_on_predict_accuracy() {
     ClassifierRequest request = buildClassifierRequest();
     onRunOnEngineCallMethod(orchestrator, engine, REQUEST_ID);
-    onEngineComputePredictAccuracyReturn(45.1);
+    onEngineComputePredictAccuracyReturn(request, 45.1);
     when(classifierType.getPredictAccuracyAction()).thenReturn("predictAccuracyAction");
 
     Double actualAccuracy = service.computePredictAccuracy(request, classifierType);
@@ -315,6 +316,7 @@ public class ClassifierServiceImplTest {
   @Test
   public void should_release_and_cancel_request_on_predict_accuracy_failure() {
     ClassifierRequest request = buildClassifierRequest();
+    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "predictAccuracyAction", "predict accuracy exception message");
     when(classifierType.getPredictAccuracyAction()).thenReturn("predictAccuracyAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
@@ -328,9 +330,9 @@ public class ClassifierServiceImplTest {
     InOrder inOrder = buildInOrder();
     inOrder.verify(classifierType).getPredictAccuracyAction();
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("predictAccuracyAction"), any());
-    inOrder.verify(engine).computePredictAccuracy(classifierType);
+    inOrder.verify(engine).computePredictAccuracy(request, classifierType);
     inOrder.verify(orchestrator).runOnEngine(eq(REQUEST_ID), eq("cancelAction"), any());
-    inOrder.verify(engine).cancel(classifierType);
+    inOrder.verify(engine).cancel(classifierCancelRequest, classifierType);
     inOrder.verify(orchestrator).completeRequest(REQUEST_ID, "predictAccuracyAction");
     inOrder.verifyNoMoreInteractions();
   }
@@ -355,7 +357,7 @@ public class ClassifierServiceImplTest {
   public void should_ignore_if_release_throws_no_booked_engine_exception_on_predict_accuracy_failure() {
     ClassifierRequest request = buildClassifierRequest();
     doThrowExceptionOnRunOnEngine(orchestrator, engine, REQUEST_ID, "predictAccuracyAction", "predict accuracy exception message");
-    doThrowExceptionOnReleaseEngine(orchestrator, REQUEST_ID, "predictAccuracyAction", new NoBlockedEngineException("ignored exception"));
+    doThrowExceptionOnCompleteRequest(orchestrator, REQUEST_ID, "predictAccuracyAction", new NoBlockedEngineException("ignored exception"));
     when(classifierType.getPredictAccuracyAction()).thenReturn("predictAccuracyAction");
     when(classifierType.getCancelAction()).thenReturn("cancelAction");
 
@@ -372,12 +374,12 @@ public class ClassifierServiceImplTest {
     return inOrder(orchestrator, engine, classifierType);
   }
 
-  private void onEnginePredictReturn(ClassifierResponse classifierResponse) {
-    when(engine.predict(classifierType)).thenReturn(classifierResponse);
+  private void onEnginePredictReturn(ClassifierRequest classifierRequest, ClassifierResponse classifierResponse) {
+    when(engine.predict(classifierRequest, classifierType)).thenReturn(classifierResponse);
   }
 
-  private void onEngineComputePredictAccuracyReturn(Double accuracy) {
-    when(engine.computePredictAccuracy(classifierType)).thenReturn(accuracy);
+  private void onEngineComputePredictAccuracyReturn(ClassifierRequest classifierRequest, Double accuracy) {
+    when(engine.computePredictAccuracy(classifierRequest, classifierType)).thenReturn(accuracy);
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest() {
