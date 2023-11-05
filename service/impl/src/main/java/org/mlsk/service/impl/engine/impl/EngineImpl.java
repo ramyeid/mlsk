@@ -12,7 +12,7 @@ import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierResponse;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
@@ -132,7 +132,7 @@ public class EngineImpl implements Engine {
   }
 
   @Override
-  public synchronized ClassifierDataResponse predict(ClassifierType classifierType) {
+  public synchronized ClassifierResponse predict(ClassifierType classifierType) {
     ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
     return classifierEngineClient.predict(classifierType);
   }

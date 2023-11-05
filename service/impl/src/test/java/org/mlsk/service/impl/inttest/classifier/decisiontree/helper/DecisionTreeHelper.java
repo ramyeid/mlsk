@@ -3,7 +3,7 @@ package org.mlsk.service.impl.inttest.classifier.decisiontree.helper;
 import org.mlsk.api.classifier.model.*;
 import org.mlsk.service.impl.classifier.service.exception.ClassifierServiceException;
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
-import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierResponse;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
 
 import java.util.HashMap;
@@ -61,8 +61,8 @@ public final class DecisionTreeHelper {
     return classifierRequestModel;
   }
 
-  public static ClassifierDataResponse buildClassifierDataResponse() {
-    return new ClassifierDataResponse("predictionColumnName", newArrayList(1, 1));
+  public static ClassifierResponse buildClassifierResponse(long requestId) {
+    return new ClassifierResponse(requestId, "predictionColumnName", newArrayList(1, 1));
   }
 
   public static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
@@ -71,8 +71,9 @@ public final class DecisionTreeHelper {
     return classifierStartResponseModel;
   }
 
-  public static ClassifierResponseModel buildClassifierResponseModel() {
+  public static ClassifierResponseModel buildClassifierResponseModel(long requestId) {
     ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
+    classifierResponseModel.setRequestId(requestId);
     classifierResponseModel.setColumnName("predictionColumnName");
     classifierResponseModel.setValues(newArrayList(1, 1));
     return classifierResponseModel;

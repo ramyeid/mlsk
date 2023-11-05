@@ -7,7 +7,7 @@ import org.mlsk.api.decisiontree.api.DecisionTreeApi;
 import org.mlsk.service.classifier.ClassifierService;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
-import org.mlsk.service.model.classifier.ClassifierDataResponse;
+import org.mlsk.service.model.classifier.ClassifierResponse;
 import org.mlsk.service.model.classifier.ClassifierStartResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import static java.math.BigDecimal.valueOf;
 import static org.mlsk.service.classifier.ClassifierType.DECISION_TREE;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierDataRequestMapper.toClassifierDataRequest;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierDataResponseMapper.toClassifierResponseModel;
+import static org.mlsk.service.impl.classifier.mapper.ClassifierResponseMapper.toClassifierResponseModel;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierRequestMapper.toClassifierRequest;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierStartRequestMapper.toClassifierStartRequest;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierStartResponseMapper.toClassifierStartResponseModel;
@@ -55,8 +55,8 @@ public class DecisionTreeApiImpl implements DecisionTreeApi {
   @Override
   public ResponseEntity<ClassifierResponseModel> predict(ClassifierRequestModel classifierRequestModel) {
     LOGGER.info("[{}] Predict request received", classifierRequestModel.getRequestId());
-    ClassifierDataResponse dataResponse = service.predict(toClassifierRequest(classifierRequestModel), classifierType);
-    return ResponseEntity.ok(toClassifierResponseModel(dataResponse));
+    ClassifierResponse response = service.predict(toClassifierRequest(classifierRequestModel), classifierType);
+    return ResponseEntity.ok(toClassifierResponseModel(response));
   }
 
   @Override

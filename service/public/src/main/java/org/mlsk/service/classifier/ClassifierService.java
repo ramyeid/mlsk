@@ -8,7 +8,7 @@ public interface ClassifierService {
 
   void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType);
 
-  ClassifierDataResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType);
+  ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType);
 
   Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType);
 }

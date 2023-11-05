@@ -57,7 +57,7 @@ public class ClassifierServiceImpl implements ClassifierService {
   }
 
   @Override
-  public ClassifierDataResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
+  public ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
     long requestId = classifierRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] Predict Request", requestId);
