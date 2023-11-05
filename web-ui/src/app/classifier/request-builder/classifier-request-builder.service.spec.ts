@@ -39,7 +39,7 @@ describe('ClassifierRequestBuilderService', () => {
     it('should forward error from csv reader service', (done: DoneFn) => {
       const predictionColumnName = 'predictionColumn';
       const actionColumnNames = [ 'col0', 'col1' ];
-      const requestId = 'requestId';
+      const requestId = 1;
       const readCsvResult$ = new Observable<ValuesPerColumn>(subscriber => {
         subscriber.error('Error from ReadCsvService');
         subscriber.complete();
@@ -54,7 +54,7 @@ describe('ClassifierRequestBuilderService', () => {
     it('should map result from csv reader service to classifier data requests', (done: DoneFn) => {
       const predictionColumnName = 'predictionColumn';
       const actionColumnNames = [ 'col0', 'col1' ];
-      const requestId = 'requestId';
+      const requestId = 1;
       const readCsvResult$ = of({
         predictionColumn: [ '1', '2', '3' ],
         col0: [ '4', '5', '6' ],
@@ -64,9 +64,9 @@ describe('ClassifierRequestBuilderService', () => {
 
       const actualResult$ = service.buildClassifierDataRequests(file, predictionColumnName, actionColumnNames, requestId);
 
-      const expectedValue1 = new ClassifierDataRequest('predictionColumn', [ 1, 2, 3 ], requestId);
-      const expectedValue2 = new ClassifierDataRequest('col0', [ 4, 5, 6 ], requestId);
-      const expectedValue3 = new ClassifierDataRequest('col1', [ 7, 8, 9 ], requestId);
+      const expectedValue1 = new ClassifierDataRequest(requestId, 'predictionColumn', [ 1, 2, 3 ]);
+      const expectedValue2 = new ClassifierDataRequest(requestId, 'col0', [ 4, 5, 6 ]);
+      const expectedValue3 = new ClassifierDataRequest(requestId, 'col1', [ 7, 8, 9 ]);
       ObservableAssertionHelper.assertOnEmittedItems(actualResult$, [ expectedValue1, expectedValue2, expectedValue3 ], done);
     });
 
@@ -76,7 +76,7 @@ describe('ClassifierRequestBuilderService', () => {
   describe('ClassifierRequest', () => {
 
     it('should build observable with classifier request', (done: DoneFn) => {
-      const requestId = 'requestId';
+      const requestId = 1;
 
       const actualResult$ = service.buildClassifierRequest(requestId);
 

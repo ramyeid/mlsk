@@ -170,15 +170,15 @@ class Helper {
   }
 
   static buildClassifierStartResponse(): ClassifierStartResponse {
-    return new ClassifierStartResponse('requestId');
+    return new ClassifierStartResponse(1);
   }
 
   static buildClassifierDataRequest(): ClassifierDataRequest {
-    return new ClassifierDataRequest('col', [ 1, 0, 1 ], 'requestId');
+    return new ClassifierDataRequest(1, 'col', [ 1, 0, 1 ],);
   }
 
   static buildClassifierRequest(): ClassifierRequest {
-    return new ClassifierRequest('requestId');
+    return new ClassifierRequest(1);
   }
 
   static buildClassifierDataResponse(): ClassifierDataResponse {

@@ -21,7 +21,7 @@ export class ClassifierRequestBuilderService {
     return of(new ClassifierStartRequest(predictionColumnName, actionColumnNames, numberOfValues));
   }
 
-  public buildClassifierDataRequests(file: File, predictionColumnName: string, actionColumnNames: string[], requestId: string): Observable<ClassifierDataRequest> {
+  public buildClassifierDataRequests(file: File, predictionColumnName: string, actionColumnNames: string[], requestId: number): Observable<ClassifierDataRequest> {
     return this.csvReaderService.readCsv(file, [predictionColumnName, ...actionColumnNames])
       .pipe(
         switchMap((valuesPerColumn: ValuesPerColumn) => {
@@ -29,7 +29,7 @@ export class ClassifierRequestBuilderService {
             const allColumns: string[] = [ predictionColumnName, ...actionColumnNames ];
 
             allColumns.forEach(columnName => {
-              subscriber.next(this.toClassifierDataRequest(valuesPerColumn, columnName, requestId));
+              subscriber.next(this.toClassifierDataRequest(requestId, valuesPerColumn, columnName));
             });
 
             subscriber.complete();
@@ -38,13 +38,13 @@ export class ClassifierRequestBuilderService {
       );
   }
 
-  public buildClassifierRequest(requestId: string): Observable<ClassifierRequest> {
+  public buildClassifierRequest(requestId: number): Observable<ClassifierRequest> {
     return of(new ClassifierRequest(requestId));
   }
 
-  private toClassifierDataRequest(valuesPerColumn: ValuesPerColumn, columnName: string, requestId: string): ClassifierDataRequest {
+  private toClassifierDataRequest(requestId: number, valuesPerColumn: ValuesPerColumn, columnName: string): ClassifierDataRequest {
     const values: number[] = valuesPerColumn[columnName].map(value => +value);
 
-    return new ClassifierDataRequest(columnName, values, requestId);
+    return new ClassifierDataRequest(requestId, columnName, values);
   }
 }

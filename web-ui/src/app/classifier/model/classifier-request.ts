@@ -1,8 +1,8 @@
 export class ClassifierRequest {
 
-  readonly requestId: string;
+  readonly requestId: number;
 
-  constructor(requestId: string) {
+  constructor(requestId: number) {
     this.requestId = requestId;
   }
 }
