@@ -7,7 +7,6 @@ import org.mlsk.api.classifier.model.ClassifierStartResponseModel;
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static java.lang.String.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierModelHelper.buildClassifierDataResponseModel;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierModelHelper.buildClassifierStartResponseModel;
@@ -20,7 +19,7 @@ public class ClassifierModelHelperTest {
 
     ClassifierStartResponseModel actualStartResponseModel = buildClassifierStartResponseModel(requestId);
 
-    ClassifierStartResponseModel expectedStartResponseModel = new ClassifierStartResponseModel().requestId(valueOf(requestId));
+    ClassifierStartResponseModel expectedStartResponseModel = new ClassifierStartResponseModel().requestId(requestId);
     assertEquals(expectedStartResponseModel, actualStartResponseModel);
   }
 

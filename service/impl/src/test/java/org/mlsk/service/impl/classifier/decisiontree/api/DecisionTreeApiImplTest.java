@@ -164,13 +164,13 @@ public class DecisionTreeApiImplTest {
 
   private static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
     ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(String.valueOf(requestId));
+    classifierStartResponseModel.setRequestId(requestId);
     return classifierStartResponseModel;
   }
 
   private static ClassifierDataRequestModel buildClassifierDataRequestModel(long requestId) {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(String.valueOf(requestId));
+    classifierDataRequestModel.setRequestId(requestId);
     classifierDataRequestModel.setColumnName("columnName");
     classifierDataRequestModel.setValues(newArrayList(0, 1, 2));
     return classifierDataRequestModel;
@@ -181,7 +181,7 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierRequestModel buildClassifierRequestModel(long requestId) {
-    return new ClassifierRequestModel().requestId(String.valueOf(requestId));
+    return new ClassifierRequestModel().requestId(requestId);
   }
 
   private static ClassifierRequest buildClassifierRequest(long requestId) {

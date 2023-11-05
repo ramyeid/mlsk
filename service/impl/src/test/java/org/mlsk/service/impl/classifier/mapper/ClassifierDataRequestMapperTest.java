@@ -21,7 +21,7 @@ public class ClassifierDataRequestMapperTest {
 
   private static ClassifierDataRequestModel buildClassifierDataRequestModel() {
     ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId("10");
+    classifierDataRequestModel.setRequestId(10L);
     classifierDataRequestModel.setColumnName("columnName");
     classifierDataRequestModel.setValues(newArrayList(1, 81, 123));
     return classifierDataRequestModel;
