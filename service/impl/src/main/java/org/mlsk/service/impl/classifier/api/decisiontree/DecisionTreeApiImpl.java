@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 import static java.math.BigDecimal.valueOf;
 import static org.mlsk.service.classifier.ClassifierType.DECISION_TREE;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierDataRequestMapper.toClassifierDataRequest;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierDataResponseMapper.toClassifierDataResponseModel;
+import static org.mlsk.service.impl.classifier.mapper.ClassifierDataResponseMapper.toClassifierResponseModel;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierRequestMapper.toClassifierRequest;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierStartRequestMapper.toClassifierStartRequest;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierStartResponseMapper.toClassifierStartResponseModel;
@@ -53,10 +53,10 @@ public class DecisionTreeApiImpl implements DecisionTreeApi {
   }
 
   @Override
-  public ResponseEntity<ClassifierDataResponseModel> predict(ClassifierRequestModel classifierRequestModel) {
+  public ResponseEntity<ClassifierResponseModel> predict(ClassifierRequestModel classifierRequestModel) {
     LOGGER.info("[{}] Predict request received", classifierRequestModel.getRequestId());
     ClassifierDataResponse dataResponse = service.predict(toClassifierRequest(classifierRequestModel), classifierType);
-    return ResponseEntity.ok(toClassifierDataResponseModel(dataResponse));
+    return ResponseEntity.ok(toClassifierResponseModel(dataResponse));
   }
 
   @Override

@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.classifier.mapper;
 
-import org.mlsk.api.classifier.model.ClassifierDataResponseModel;
+import org.mlsk.api.classifier.model.ClassifierResponseModel;
 import org.mlsk.api.classifier.model.ClassifierStartResponseModel;
 
 import java.util.List;
@@ -16,10 +16,10 @@ public final class ClassifierModelHelper {
     return classifierStartResponseModel;
   }
 
-  public static ClassifierDataResponseModel buildClassifierDataResponseModel(String columnName, List<Integer> values) {
-    ClassifierDataResponseModel classifierDataResponseModel = new ClassifierDataResponseModel();
-    classifierDataResponseModel.setColumnName(columnName);
-    classifierDataResponseModel.setValues(values);
-    return classifierDataResponseModel;
+  public static ClassifierResponseModel buildClassifierResponseModel(String columnName, List<Integer> values) {
+    ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
+    classifierResponseModel.setColumnName(columnName);
+    classifierResponseModel.setValues(values);
+    return classifierResponseModel;
   }
 }

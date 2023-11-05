@@ -102,9 +102,9 @@ public class DecisionTreeApiImplTest {
     ClassifierRequestModel model = buildClassifierRequestModel(requestId);
     onServicePredictReturn(buildClassifierDataResponse());
 
-    ResponseEntity<ClassifierDataResponseModel> actualResponse = decisionTreeApi.predict(model);
+    ResponseEntity<ClassifierResponseModel> actualResponse = decisionTreeApi.predict(model);
 
-    assertOnResponseEntity(buildClassifierDataResponseModel(), actualResponse);
+    assertOnResponseEntity(buildClassifierResponseModel(), actualResponse);
   }
 
   @Test
@@ -188,11 +188,11 @@ public class DecisionTreeApiImplTest {
     return new ClassifierRequest(requestId);
   }
 
-  private static ClassifierDataResponseModel buildClassifierDataResponseModel() {
-    ClassifierDataResponseModel classifierDataResponseModel = new ClassifierDataResponseModel();
-    classifierDataResponseModel.setColumnName("columnName");
-    classifierDataResponseModel.setValues(newArrayList(0, 1));
-    return classifierDataResponseModel;
+  private static ClassifierResponseModel buildClassifierResponseModel() {
+    ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
+    classifierResponseModel.setColumnName("columnName");
+    classifierResponseModel.setValues(newArrayList(0, 1));
+    return classifierResponseModel;
   }
 
   private static ClassifierDataResponse buildClassifierDataResponse() {

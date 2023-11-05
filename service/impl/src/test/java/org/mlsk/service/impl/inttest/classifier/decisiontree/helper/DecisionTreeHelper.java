@@ -71,11 +71,11 @@ public final class DecisionTreeHelper {
     return classifierStartResponseModel;
   }
 
-  public static ClassifierDataResponseModel buildClassifierDataResponseModel() {
-    ClassifierDataResponseModel classifierDataResponseModel = new ClassifierDataResponseModel();
-    classifierDataResponseModel.setColumnName("predictionColumnName");
-    classifierDataResponseModel.setValues(newArrayList(1, 1));
-    return classifierDataResponseModel;
+  public static ClassifierResponseModel buildClassifierResponseModel() {
+    ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
+    classifierResponseModel.setColumnName("predictionColumnName");
+    classifierResponseModel.setValues(newArrayList(1, 1));
+    return classifierResponseModel;
   }
 
   public static Map<String, String> buildDefaultResponse() {

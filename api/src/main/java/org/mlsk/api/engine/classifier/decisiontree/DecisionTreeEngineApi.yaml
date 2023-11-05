@@ -57,7 +57,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '../../../model/classifier/ClassifierDataResponse.yaml#/definitions/ClassifierDataResponseModel'
+                $ref: '../../../model/classifier/ClassifierResponse.yaml#/definitions/ClassifierResponseModel'
         '500':
           description: Engine Computation Exception with detailed exception message.
   '/decision-tree/predict-accuracy':

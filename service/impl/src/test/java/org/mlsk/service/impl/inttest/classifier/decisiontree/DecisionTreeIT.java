@@ -4,7 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.api.classifier.model.ClassifierDataRequestModel;
-import org.mlsk.api.classifier.model.ClassifierDataResponseModel;
+import org.mlsk.api.classifier.model.ClassifierResponseModel;
 import org.mlsk.api.classifier.model.ClassifierRequestModel;
 import org.mlsk.api.classifier.model.ClassifierStartRequestModel;
 import org.mlsk.api.decisiontree.api.DecisionTreeApi;
@@ -66,7 +66,7 @@ public class DecisionTreeIT extends AbstractIT {
 
     decisionTreeApi.start(startRequestModel);
     decisionTreeApi.start(startRequestModel);
-    CompletableFuture<ResponseEntity<ClassifierDataResponseModel>> actualPredict1Future = async(() -> {
+    CompletableFuture<ResponseEntity<ClassifierResponseModel>> actualPredict1Future = async(() -> {
       decisionTreeApi.data(data1RequestModel);
       return decisionTreeApi.predict(request1Model);
     });
@@ -83,7 +83,7 @@ public class DecisionTreeIT extends AbstractIT {
     });
     actualPredictAccuracy1Future.join();
 
-    assertOnResponseEntity(buildClassifierDataResponseModel(), actualPredict1Future.get());
+    assertOnResponseEntity(buildClassifierResponseModel(), actualPredict1Future.get());
     assertOnResponseEntity(BigDecimal.valueOf(123.1), actualPredictAccuracy2Future.get());
     assertOnResponseEntity(BigDecimal.valueOf(94.123), actualPredictAccuracy1Future.get());
   }

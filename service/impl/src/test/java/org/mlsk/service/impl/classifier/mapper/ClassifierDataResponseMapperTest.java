@@ -1,12 +1,12 @@
 package org.mlsk.service.impl.classifier.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.classifier.model.ClassifierDataResponseModel;
+import org.mlsk.api.classifier.model.ClassifierResponseModel;
 import org.mlsk.service.model.classifier.ClassifierDataResponse;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierDataResponseMapper.toClassifierDataResponseModel;
+import static org.mlsk.service.impl.classifier.mapper.ClassifierDataResponseMapper.toClassifierResponseModel;
 
 public class ClassifierDataResponseMapperTest {
 
@@ -14,19 +14,19 @@ public class ClassifierDataResponseMapperTest {
   public void should_correctly_map_to_classifier_data_response_model() {
     ClassifierDataResponse classifierDataResponse = buildClassifierDataResponse();
 
-    ClassifierDataResponseModel actualDataResponseModel = toClassifierDataResponseModel(classifierDataResponse);
+    ClassifierResponseModel actualResponseModel = toClassifierResponseModel(classifierDataResponse);
 
-    assertEquals(buildExpectedDataResponseModel(), actualDataResponseModel);
+    assertEquals(buildExpectedResponseModel(), actualResponseModel);
   }
 
   private static ClassifierDataResponse buildClassifierDataResponse() {
     return new ClassifierDataResponse("columnName", newArrayList(1, 2, 3));
   }
 
-  private static ClassifierDataResponseModel buildExpectedDataResponseModel() {
-    ClassifierDataResponseModel classifierDataResponseModel = new ClassifierDataResponseModel();
-    classifierDataResponseModel.setColumnName("columnName");
-    classifierDataResponseModel.setValues(newArrayList(1, 2, 3));
-    return classifierDataResponseModel;
+  private static ClassifierResponseModel buildExpectedResponseModel() {
+    ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
+    classifierResponseModel.setColumnName("columnName");
+    classifierResponseModel.setValues(newArrayList(1, 2, 3));
+    return classifierResponseModel;
   }
 }

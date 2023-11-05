@@ -1,14 +1,14 @@
 package org.mlsk.service.impl.classifier.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.classifier.model.ClassifierDataResponseModel;
+import org.mlsk.api.classifier.model.ClassifierResponseModel;
 import org.mlsk.api.classifier.model.ClassifierStartResponseModel;
 
 import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierModelHelper.buildClassifierDataResponseModel;
+import static org.mlsk.service.impl.classifier.mapper.ClassifierModelHelper.buildClassifierResponseModel;
 import static org.mlsk.service.impl.classifier.mapper.ClassifierModelHelper.buildClassifierStartResponseModel;
 
 public class ClassifierModelHelperTest {
@@ -28,9 +28,9 @@ public class ClassifierModelHelperTest {
     String columnName = "columnName";
     List<Integer> values = newArrayList(1, 2, 3);
 
-    ClassifierDataResponseModel actualDataResponseModel = buildClassifierDataResponseModel(columnName, values);
+    ClassifierResponseModel actualResponseModel = buildClassifierResponseModel(columnName, values);
 
-    ClassifierDataResponseModel expectedDataResponseModel = new ClassifierDataResponseModel().columnName(columnName).values(values);
-    assertEquals(expectedDataResponseModel, actualDataResponseModel);
+    ClassifierResponseModel expectedResponseModel = new ClassifierResponseModel().columnName(columnName).values(values);
+    assertEquals(expectedResponseModel, actualResponseModel);
   }
 }

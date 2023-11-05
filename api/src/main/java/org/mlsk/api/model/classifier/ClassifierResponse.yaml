@@ -1,13 +1,16 @@
 openapi: "3.0.0"
 info:
   version: "1.0"
-  title: ClassifierDataResponseModel
-  description: This is the yaml detailing the ClassifierDataResponse
+  title: ClassifierResponseModel
+  description: This is the yaml detailing the ClassifierResponse
 paths: {}
 definitions:
-  ClassifierDataResponseModel:
+  ClassifierResponseModel:
     type: object
     properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request
       values:
         type: array
         description: computed values of current column name

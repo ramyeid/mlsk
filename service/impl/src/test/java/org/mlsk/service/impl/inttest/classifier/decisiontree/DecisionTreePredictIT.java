@@ -58,10 +58,10 @@ public class DecisionTreePredictIT extends AbstractIT {
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse = decisionTreeApi.start(startRequestModel);
     decisionTreeApi.data(data1RequestModel);
     decisionTreeApi.data(data2RequestModel);
-    ResponseEntity<ClassifierDataResponseModel> actualPredictResponse = decisionTreeApi.predict(requestModel);
+    ResponseEntity<ClassifierResponseModel> actualPredictResponse = decisionTreeApi.predict(requestModel);
 
     assertOnResponseEntity(buildClassifierStartResponseModel(requestId), actualStartResponse);
-    assertOnResponseEntity(buildClassifierDataResponseModel(), actualPredictResponse);
+    assertOnResponseEntity(buildClassifierResponseModel(), actualPredictResponse);
     assertOnEngineState(WAITING, WAITING);
   }
 
