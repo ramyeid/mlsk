@@ -6,14 +6,14 @@ import org.mlsk.api.engine.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.timeseries.engine.exception.TimeSeriesAnalysisEngineRequestException;
+import org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesAnalysisRequestMapper;
+import org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesMapper;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.timeseries.TimeSeriesAnalysisEngine;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static java.lang.String.format;
-import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesAnalysisRequestMapper.toTimeSeriesAnalysisRequestModel;
-import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesMapper.toTimeSeries;
 
 public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine {
 
@@ -31,8 +31,8 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
   @Override
   public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = toTimeSeriesAnalysisRequestModel(timeSeriesAnalysisRequest);
-      return toTimeSeries(timeSeriesAnalysisClient.forecast(timeSeriesAnalysisRequestModel));
+      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = TimeSeriesAnalysisRequestMapper.toEngineModel(timeSeriesAnalysisRequest);
+      return TimeSeriesMapper.fromEngineModel(timeSeriesAnalysisClient.forecast(timeSeriesAnalysisRequestModel));
     } catch (HttpServerErrorException exception) {
       throw buildTimeSeriesAnalysisEngineRequestException(exception, "forecast");
     } catch (Exception exception) {
@@ -43,7 +43,7 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
   @Override
   public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = toTimeSeriesAnalysisRequestModel(timeSeriesAnalysisRequest);
+      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = TimeSeriesAnalysisRequestMapper.toEngineModel(timeSeriesAnalysisRequest);
       return timeSeriesAnalysisClient.computeAccuracyOfForecast(timeSeriesAnalysisRequestModel).doubleValue();
     } catch (HttpServerErrorException exception) {
       throw buildTimeSeriesAnalysisEngineRequestException(exception, "computeForecastAccuracy");
@@ -55,8 +55,8 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
   @Override
   public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = toTimeSeriesAnalysisRequestModel(timeSeriesAnalysisRequest);
-      return toTimeSeries(timeSeriesAnalysisClient.predict(timeSeriesAnalysisRequestModel));
+      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = TimeSeriesAnalysisRequestMapper.toEngineModel(timeSeriesAnalysisRequest);
+      return TimeSeriesMapper.fromEngineModel(timeSeriesAnalysisClient.predict(timeSeriesAnalysisRequestModel));
     } catch (HttpServerErrorException exception) {
       throw buildTimeSeriesAnalysisEngineRequestException(exception, "predict");
     } catch (Exception exception) {

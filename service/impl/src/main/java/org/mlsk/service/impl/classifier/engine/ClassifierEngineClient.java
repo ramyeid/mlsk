@@ -10,16 +10,12 @@ import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.classifier.ClassifierEngine;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
+import org.mlsk.service.impl.classifier.engine.mapper.*;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.model.classifier.*;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static java.lang.String.format;
-import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierCancelRequestMapper.toClassifierCancelRequestModel;
-import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierDataRequestMapper.toClassifierDataRequestModel;
-import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierRequestMapper.toClassifierRequestModel;
-import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierResponseMapper.toClassifierResponse;
-import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierStartRequestMapper.toClassifierStartRequestModel;
 
 //TODO unify all classifier engine api
 // - Create one ClassifierEngineApi instead of one for each (example: DecisionTreeEngineApi)
@@ -95,7 +91,7 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   private void callClassifierStart(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
-    ClassifierStartRequestModel classifierStartRequestModel = toClassifierStartRequestModel(classifierStartRequest);
+    ClassifierStartRequestModel classifierStartRequestModel = ClassifierStartRequestMapper.toEngineModel(classifierStartRequest);
 
     switch (classifierType) {
       case DECISION_TREE:
@@ -107,7 +103,7 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   private void callClassifierData(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
-    ClassifierDataRequestModel classifierDataRequestModel = toClassifierDataRequestModel(classifierDataRequest);
+    ClassifierDataRequestModel classifierDataRequestModel = ClassifierDataRequestMapper.toEngineModel(classifierDataRequest);
 
     switch (classifierType) {
       case DECISION_TREE:
@@ -119,18 +115,18 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   private ClassifierResponse callClassifierPredict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    ClassifierRequestModel classifierRequestModel = toClassifierRequestModel(classifierRequest);
+    ClassifierRequestModel classifierRequestModel = ClassifierRequestMapper.toEngineModel(classifierRequest);
 
     switch (classifierType) {
       case DECISION_TREE:
-        return toClassifierResponse(this.decisionTreeEngineApi.predict(classifierRequestModel));
+        return ClassifierResponseMapper.fromEngineModel(this.decisionTreeEngineApi.predict(classifierRequestModel));
       default:
         throw new RuntimeException("Unknown Classifier Type");
     }
   }
 
   private Double callClassifierComputePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    ClassifierRequestModel classifierRequestModel = toClassifierRequestModel(classifierRequest);
+    ClassifierRequestModel classifierRequestModel = ClassifierRequestMapper.toEngineModel(classifierRequest);
 
     switch (classifierType) {
       case DECISION_TREE:
@@ -141,7 +137,7 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   private void callClassifierCancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
-    ClassifierCancelRequestModel classifierCancelRequestModel = toClassifierCancelRequestModel(classifierCancelRequest);
+    ClassifierCancelRequestModel classifierCancelRequestModel = ClassifierCancelRequestMapper.toEngineModel(classifierCancelRequest);
 
     switch (classifierType) {
       case DECISION_TREE:

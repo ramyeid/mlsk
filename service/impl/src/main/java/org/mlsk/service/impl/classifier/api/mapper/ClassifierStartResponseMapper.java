@@ -8,7 +8,7 @@ public final class ClassifierStartResponseMapper {
   private ClassifierStartResponseMapper() {
   }
 
-  public static ClassifierStartResponseModel toClassifierStartResponseModel(ClassifierStartResponse classifierStartResponse) {
+  public static ClassifierStartResponseModel toServiceModel(ClassifierStartResponse classifierStartResponse) {
     return new ClassifierStartResponseModel(classifierStartResponse.getRequestId());
   }
 }

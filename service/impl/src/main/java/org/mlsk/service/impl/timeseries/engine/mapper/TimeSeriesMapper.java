@@ -14,8 +14,8 @@ public final class TimeSeriesMapper {
   private TimeSeriesMapper() {
   }
 
-  public static TimeSeries toTimeSeries(TimeSeriesModel timeSeriesModel) {
-    List<TimeSeriesRow> rows = timeSeriesModel.getRows().stream().map(TimeSeriesRowMapper::toTimeSeriesRow).collect(toList());
+  public static TimeSeries fromEngineModel(TimeSeriesModel timeSeriesModel) {
+    List<TimeSeriesRow> rows = timeSeriesModel.getRows().stream().map(TimeSeriesRowMapper::fromEngineModel).collect(toList());
     String dateColumnName = timeSeriesModel.getDateColumnName();
     String valueColumnName = timeSeriesModel.getValueColumnName();
     String dateFormat = timeSeriesModel.getDateFormat();
@@ -23,8 +23,8 @@ public final class TimeSeriesMapper {
     return new TimeSeries(rows, dateColumnName, valueColumnName, dateFormat);
   }
 
-  public static TimeSeriesModel toTimeSeriesModel(TimeSeries timeSeries) {
-    List<TimeSeriesRowModel> rows = timeSeries.getRows().stream().map(TimeSeriesRowMapper::toTimeSeriesRowModel).collect(toList());
+  public static TimeSeriesModel toEngineModel(TimeSeries timeSeries) {
+    List<TimeSeriesRowModel> rows = timeSeries.getRows().stream().map(TimeSeriesRowMapper::toEngineModel).collect(toList());
     String dateColumnName = timeSeries.getDateColumnName();
     String valueColumnName = timeSeries.getValueColumnName();
     String dateFormat = timeSeries.getDateFormat();

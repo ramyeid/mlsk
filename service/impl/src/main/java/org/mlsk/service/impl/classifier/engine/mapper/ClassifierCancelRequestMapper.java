@@ -8,7 +8,7 @@ public class ClassifierCancelRequestMapper {
   private ClassifierCancelRequestMapper() {
   }
 
-  public static ClassifierCancelRequestModel toClassifierCancelRequestModel(ClassifierCancelRequest classifierCancelRequest) {
+  public static ClassifierCancelRequestModel toEngineModel(ClassifierCancelRequest classifierCancelRequest) {
     return new ClassifierCancelRequestModel(classifierCancelRequest.getRequestId());
   }
 }

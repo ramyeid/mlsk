@@ -10,11 +10,11 @@ public final class TimeSeriesRowMapper {
   private TimeSeriesRowMapper() {
   }
 
-  public static TimeSeriesRow toTimeSeriesRow(TimeSeriesRowModel timeSeriesRowModel) {
+  public static TimeSeriesRow fromEngineModel(TimeSeriesRowModel timeSeriesRowModel) {
     return new TimeSeriesRow(timeSeriesRowModel.getDate(), timeSeriesRowModel.getValue().doubleValue());
   }
 
-  public static TimeSeriesRowModel toTimeSeriesRowModel(TimeSeriesRow timeSeriesRow) {
+  public static TimeSeriesRowModel toEngineModel(TimeSeriesRow timeSeriesRow) {
     return new TimeSeriesRowModel(timeSeriesRow.getDate(), valueOf(timeSeriesRow.getValue()));
   }
 }

@@ -10,7 +10,7 @@ public final class ClassifierDataRequestMapper {
   private ClassifierDataRequestMapper() {
   }
 
-  public static ClassifierDataRequest toClassifierDataRequest(ClassifierDataRequestModel classifierDataRequestModel) {
+  public static ClassifierDataRequest fromServiceModel(ClassifierDataRequestModel classifierDataRequestModel) {
     String columnName = classifierDataRequestModel.getColumnName();
     List<Integer> values = classifierDataRequestModel.getValues();
     long requestId = classifierDataRequestModel.getRequestId();

@@ -5,7 +5,7 @@ import org.mlsk.api.service.classifier.model.ClassifierRequestModel;
 import org.mlsk.service.model.classifier.ClassifierRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.classifier.api.mapper.ClassifierRequestMapper.toClassifierRequest;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierRequestMapper.fromServiceModel;
 
 public class ClassifierRequestMapperTest {
 
@@ -13,7 +13,7 @@ public class ClassifierRequestMapperTest {
   public void should_correctly_map_to_classifier_request() {
     ClassifierRequestModel classifierRequestModel = buildClassifierRequestModel();
 
-    ClassifierRequest actualRequest = toClassifierRequest(classifierRequestModel);
+    ClassifierRequest actualRequest = fromServiceModel(classifierRequestModel);
 
     assertEquals(buildExpectedRequest(), actualRequest);
   }

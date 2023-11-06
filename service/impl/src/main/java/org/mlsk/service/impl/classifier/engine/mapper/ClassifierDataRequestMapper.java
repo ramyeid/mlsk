@@ -8,7 +8,7 @@ public final class ClassifierDataRequestMapper {
   private ClassifierDataRequestMapper() {
   }
 
-  public static ClassifierDataRequestModel toClassifierDataRequestModel(ClassifierDataRequest classifierDataRequest) {
+  public static ClassifierDataRequestModel toEngineModel(ClassifierDataRequest classifierDataRequest) {
     return new ClassifierDataRequestModel(classifierDataRequest.getRequestId(), classifierDataRequest.getColumnName(), classifierDataRequest.getValues());
   }
 }

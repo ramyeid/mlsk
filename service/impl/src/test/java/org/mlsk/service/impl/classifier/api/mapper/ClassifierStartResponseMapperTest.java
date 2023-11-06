@@ -5,7 +5,7 @@ import org.mlsk.api.service.classifier.model.ClassifierStartResponseModel;
 import org.mlsk.service.model.classifier.ClassifierStartResponse;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.classifier.api.mapper.ClassifierStartResponseMapper.toClassifierStartResponseModel;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierStartResponseMapper.toServiceModel;
 
 public class ClassifierStartResponseMapperTest {
 
@@ -13,7 +13,7 @@ public class ClassifierStartResponseMapperTest {
   public void should_correctly_map_to_classifier_start_response_model() {
     ClassifierStartResponse classifierStartResponse = buildClassifierStartResponse();
 
-    ClassifierStartResponseModel actualStartResponseModel = toClassifierStartResponseModel(classifierStartResponse);
+    ClassifierStartResponseModel actualStartResponseModel = toServiceModel(classifierStartResponse);
 
     assertEquals(buildExpectedStartResponseModel(), actualStartResponseModel);
   }

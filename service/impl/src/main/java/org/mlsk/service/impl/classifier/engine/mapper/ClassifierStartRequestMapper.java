@@ -8,7 +8,7 @@ public final class ClassifierStartRequestMapper {
   private ClassifierStartRequestMapper() {
   }
 
-  public static ClassifierStartRequestModel toClassifierStartRequestModel(ClassifierStartRequest classifierStartRequest) {
+  public static ClassifierStartRequestModel toEngineModel(ClassifierStartRequest classifierStartRequest) {
     return new ClassifierStartRequestModel(classifierStartRequest.getRequestId(), classifierStartRequest.getPredictionColumnName(), classifierStartRequest.getActionColumnNames(), classifierStartRequest.getNumberOfValues());
   }
 }
