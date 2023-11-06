@@ -1,6 +1,6 @@
 package org.mlsk.ui.timeseries;
 
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mlsk.ui.timeseries.component.TimeSeriesPanel;
 import org.mlsk.ui.timeseries.service.client.TimeSeriesAnalysisServiceClient;
 
@@ -13,11 +13,7 @@ import static org.mockito.Mockito.when;
 
 public class RealTimeSeries {
 
-  private static final TimeSeriesModel EMPTY_TIME_SERIES = new TimeSeriesModel()
-      .rows(emptyList())
-      .dateColumnName("")
-      .valueColumnName("")
-      .dateFormat("");
+  private static final TimeSeriesModel EMPTY_TIME_SERIES = new TimeSeriesModel(emptyList(), "", "", "");
 
   public static void main(String[] args) {
     JFrame mainFrame = new JFrame();

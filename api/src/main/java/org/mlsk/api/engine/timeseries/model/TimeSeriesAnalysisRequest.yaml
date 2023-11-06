@@ -7,6 +7,10 @@ paths: {}
 definitions:
   TimeSeriesAnalysisRequestModel:
     type: object
+    required:
+      - requestId
+      - timeSeries
+      - numberOfValues
     properties:
       requestId:
         type: long

@@ -2,10 +2,9 @@ package org.mlsk.ui.timeseries.mapper;
 
 import org.jfree.data.time.Millisecond;
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 
-import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.List;
@@ -45,16 +44,12 @@ public class TimeSeriesMapperTest {
   }
 
   private static TimeSeriesModel buildTimeSeries(String dateFormat) {
-    TimeSeriesRowModel row1 = new TimeSeriesRowModel().date("1990-01").value(valueOf(1.d));
-    TimeSeriesRowModel row2 = new TimeSeriesRowModel().date("1990-02").value(valueOf(2.d));
-    TimeSeriesRowModel row3 = new TimeSeriesRowModel().date("1990-03").value(valueOf(3.d));
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel("1990-01", valueOf(1.d));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel("1990-02", valueOf(2.d));
+    TimeSeriesRowModel row3 = new TimeSeriesRowModel("1990-03", valueOf(3.d));
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2, row3);
 
-    return new TimeSeriesModel()
-        .rows(rows)
-        .dateColumnName("date")
-        .valueColumnName("value")
-        .dateFormat(dateFormat);
+    return new TimeSeriesModel(rows, "date", "value", dateFormat);
   }
 
   private static org.jfree.data.time.TimeSeries buildExpectedTimeSeries() throws ParseException {

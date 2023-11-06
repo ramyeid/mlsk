@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.classifier.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.classifier.model.ClassifierDataRequestModel;
+import org.mlsk.api.service.classifier.model.ClassifierDataRequestModel;
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -20,11 +20,7 @@ public class ClassifierDataRequestMapperTest {
   }
 
   private static ClassifierDataRequestModel buildClassifierDataRequestModel() {
-    ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(10L);
-    classifierDataRequestModel.setColumnName("columnName");
-    classifierDataRequestModel.setValues(newArrayList(1, 81, 123));
-    return classifierDataRequestModel;
+    return new ClassifierDataRequestModel(10L, "columnName", newArrayList(1, 81, 123));
   }
 
   private static ClassifierDataRequest buildExpectedDataRequest() {

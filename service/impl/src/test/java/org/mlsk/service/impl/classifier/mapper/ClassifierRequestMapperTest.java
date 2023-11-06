@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.classifier.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.classifier.model.ClassifierRequestModel;
+import org.mlsk.api.service.classifier.model.ClassifierRequestModel;
 import org.mlsk.service.model.classifier.ClassifierRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,7 +19,7 @@ public class ClassifierRequestMapperTest {
   }
 
   private static ClassifierRequestModel buildClassifierRequestModel() {
-    return new ClassifierRequestModel().requestId(11L);
+    return new ClassifierRequestModel(11L);
   }
 
   private static ClassifierRequest buildExpectedRequest() {

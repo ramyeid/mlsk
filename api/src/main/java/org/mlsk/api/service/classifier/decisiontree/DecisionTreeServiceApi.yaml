@@ -6,12 +6,12 @@ info:
     of the Machine Learning Swiss Knife, Decision Tree, Service side.
     The Service is written in JAVA
 tags:
-  - name: DecisionTree
+  - name: DecisionTreeService
 paths:
   '/decision-tree/start':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeService
       summary: Decision Tree Start Request
       operationId: start
       description: Notify Service that a decision tree algorithm will be launched
@@ -34,7 +34,7 @@ paths:
   '/decision-tree/data':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeService
       summary: Decision Tree Data Request
       operationId: data
       description: Incrementally send the data of the current decision tree data
@@ -52,7 +52,7 @@ paths:
   '/decision-tree/predict':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeService
       summary: Decision Tree Predict
       operationId: predict
       description: Predict the values with Decision Tree algorithm.
@@ -74,7 +74,7 @@ paths:
   '/decision-tree/predict-accuracy':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeService
       summary: Decision Tree Predict Accuracy
       operationId: computePredictAccuracy
       description: |

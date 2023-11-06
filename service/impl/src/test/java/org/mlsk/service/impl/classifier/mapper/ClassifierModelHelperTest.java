@@ -1,8 +1,8 @@
 package org.mlsk.service.impl.classifier.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.classifier.model.ClassifierResponseModel;
-import org.mlsk.api.classifier.model.ClassifierStartResponseModel;
+import org.mlsk.api.service.classifier.model.ClassifierResponseModel;
+import org.mlsk.api.service.classifier.model.ClassifierStartResponseModel;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class ClassifierModelHelperTest {
 
     ClassifierStartResponseModel actualStartResponseModel = buildClassifierStartResponseModel(requestId);
 
-    ClassifierStartResponseModel expectedStartResponseModel = new ClassifierStartResponseModel().requestId(requestId);
+    ClassifierStartResponseModel expectedStartResponseModel = new ClassifierStartResponseModel(requestId);
     assertEquals(expectedStartResponseModel, actualStartResponseModel);
   }
 
@@ -30,7 +30,7 @@ public class ClassifierModelHelperTest {
 
     ClassifierResponseModel actualResponseModel = buildClassifierResponseModel(1L, columnName, values);
 
-    ClassifierResponseModel expectedResponseModel = new ClassifierResponseModel().requestId(1L).columnName(columnName).values(values);
+    ClassifierResponseModel expectedResponseModel = new ClassifierResponseModel(1L, columnName, values);
     assertEquals(expectedResponseModel, actualResponseModel);
   }
 }

@@ -1,8 +1,8 @@
 package org.mlsk.service.impl.inttest.timeseries.helper;
 
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper;
 import org.mlsk.service.impl.timeseries.service.exception.TimeSeriesAnalysisServiceException;
 import org.mlsk.service.model.timeseries.TimeSeries;

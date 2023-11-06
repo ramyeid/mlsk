@@ -6,12 +6,12 @@ info:
     of the Machine Learning Swiss Knife, Time Series Analysis, Service side.
     The Service is written in JAVA
 tags:
-  - name: TimeSeriesAnalysis
+  - name: TimeSeriesAnalysisService
 paths:
   '/time-series-analysis/forecast':
     post:
       tags:
-        - TimeSeriesAnalysis
+        - TimeSeriesAnalysisService
       summary: Time Series Analysis Forecast
       operationId: forecast
       description: Forecast with Time Series Analysis Algorithm
@@ -36,7 +36,7 @@ paths:
   '/time-series-analysis/forecast-vs-actual':
     post:
       tags:
-        - TimeSeriesAnalysis
+        - TimeSeriesAnalysisService
       summary: Time Series Analysis Forecast Vs Actual
       operationId: forecastVsActual
       description: Forecast with Time Series Analysis Algorithm the last {numberOfValues} in order to compare with actual
@@ -61,7 +61,7 @@ paths:
   '/time-series-analysis/forecast-accuracy':
     post:
       tags:
-        - TimeSeriesAnalysis
+        - TimeSeriesAnalysisService
       summary: Time Series Analysis Forecast Accuracy
       operationId: computeForecastAccuracy
       description: |
@@ -86,7 +86,7 @@ paths:
   '/time-series-analysis/predict':
     post:
       tags:
-        - TimeSeriesAnalysis
+        - TimeSeriesAnalysisService
       summary: Time Series Analysis Predict
       operationId: predict
       description: Predict with Time Series Analysis Algorithm.

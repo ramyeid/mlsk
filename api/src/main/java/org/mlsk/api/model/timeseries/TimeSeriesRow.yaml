@@ -7,6 +7,9 @@ paths: {}
 definitions:
   TimeSeriesRowModel:
     type: object
+    required:
+      - date
+      - value
     properties:
       date:
         type: string

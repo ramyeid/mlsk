@@ -3,9 +3,9 @@ package org.mlsk.ui.timeseries.service;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.timeseries.service.client.TimeSeriesAnalysisServiceClient;
 import org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException;
 import org.mlsk.ui.utils.TriFunction;
@@ -190,31 +190,23 @@ public class TimeSeriesAnalysisServiceCallerTest {
   }
 
   private static TimeSeriesModel buildTimeSeriesResult() {
-    TimeSeriesRowModel row = new TimeSeriesRowModel().date("1989").value(BigDecimal.valueOf(1.));
+    TimeSeriesRowModel row = new TimeSeriesRowModel("1989", BigDecimal.valueOf(1.));
     List<TimeSeriesRowModel> rows = newArrayList(row);
 
-    return new TimeSeriesModel()
-        .rows(rows)
-        .dateColumnName("date")
-        .valueColumnName("value")
-        .dateFormat("yyyy");
+    return new TimeSeriesModel(rows, "date", "value", "yyyy");
   }
 
   private static TimeSeriesModel buildTimeSeriesRequest() {
-    TimeSeriesRowModel row = new TimeSeriesRowModel().date("1990").value(BigDecimal.valueOf(5.));
+    TimeSeriesRowModel row = new TimeSeriesRowModel("1990", BigDecimal.valueOf(5.));
     List<TimeSeriesRowModel> rows = newArrayList(row);
 
-    return new TimeSeriesModel()
-        .rows(rows)
-        .dateColumnName("date")
-        .valueColumnName("value")
-        .dateFormat("yyyy");
+    return new TimeSeriesModel(rows, "date", "value", "yyyy");
   }
 
   private static TimeSeriesAnalysisRequestModel buildTimeSeriesAnalysisRequest() {
     TimeSeriesModel timeSeries = buildTimeSeriesRequest();
 
-    return new TimeSeriesAnalysisRequestModel().timeSeries(timeSeries).numberOfValues(1);
+    return new TimeSeriesAnalysisRequestModel(timeSeries, 1);
   }
 
 }

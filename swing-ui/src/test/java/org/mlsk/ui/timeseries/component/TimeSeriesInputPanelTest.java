@@ -3,9 +3,9 @@ package org.mlsk.ui.timeseries.component;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.timeseries.request.TimeSeriesAnalysisRequestBuilder;
 import org.mlsk.ui.timeseries.request.TimeSeriesAnalysisRequestBuilderException;
 import org.mlsk.ui.timeseries.service.TimeSeriesAnalysisCommand;
@@ -151,15 +151,11 @@ public class TimeSeriesInputPanelTest {
   }
 
   private static TimeSeriesAnalysisRequestModel buildTimeSeriesRequest() {
-    TimeSeriesRowModel row = new TimeSeriesRowModel().date("1990").value(BigDecimal.valueOf(1.));
+    TimeSeriesRowModel row = new TimeSeriesRowModel("1990", BigDecimal.valueOf(1.));
     List<TimeSeriesRowModel> rows = newArrayList(row);
 
-    TimeSeriesModel timeSeries = new TimeSeriesModel()
-        .rows(rows)
-        .dateColumnName("date")
-        .valueColumnName("values")
-        .dateFormat("yyyy");
+    TimeSeriesModel timeSeries = new TimeSeriesModel(rows, "date", "value", "yyyy");
 
-    return new TimeSeriesAnalysisRequestModel().timeSeries(timeSeries).numberOfValues(2);
+    return new TimeSeriesAnalysisRequestModel(timeSeries, 2);
   }
 }

@@ -3,9 +3,9 @@ package org.mlsk.ui.timeseries.service.client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException;
 import org.mockito.Mock;
@@ -37,10 +37,10 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_delegate_forecast_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel().date("1960").value(valueOf(1.)), new TimeSeriesRowModel().date("1961").value(valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel().rows(timeSeriesRows).dateColumnName("Date").valueColumnName("Value").dateFormat("%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel().timeSeries(timeSeries).numberOfValues(1);
-    TimeSeriesModel responseTimeSeries = new TimeSeriesModel().rows(newArrayList(new TimeSeriesRowModel().date("1962").value(valueOf(3.)))).dateColumnName("Date").valueColumnName("Value").dateFormat("%Y");
+    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
+    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
+    TimeSeriesModel responseTimeSeries = new TimeSeriesModel(newArrayList(new TimeSeriesRowModel("1962", valueOf(3.))), "Date", "Value", "%Y");
     onPostReturn(responseTimeSeries);
 
     TimeSeriesModel actual_forecasted = client.forecast(timeSeriesAnalysisRequest);
@@ -77,10 +77,10 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_delegate_forecast_vs_actual_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel().date("1960").value(valueOf(1.)), new TimeSeriesRowModel().date("1961").value(valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel().rows(timeSeriesRows).dateColumnName("Date").valueColumnName("Value").dateFormat("%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel().timeSeries(timeSeries).numberOfValues(1);
-    TimeSeriesModel responseTimeSeries = new TimeSeriesModel().rows(newArrayList(new TimeSeriesRowModel().date("1962").value(valueOf(3.)))).dateColumnName("Date").valueColumnName("Value").dateFormat("%Y");
+    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
+    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
+    TimeSeriesModel responseTimeSeries = new TimeSeriesModel(newArrayList(new TimeSeriesRowModel("1962", valueOf(3.))), "Date", "Value", "%Y");
     onPostReturn(responseTimeSeries);
 
     TimeSeriesModel actual_forecasted = client.forecastVsActual(timeSeriesAnalysisRequest);
@@ -117,9 +117,9 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_delegate_compute_forecast_accuracy_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel().date("1960").value(valueOf(1.)), new TimeSeriesRowModel().date("1961").value(valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel().rows(timeSeriesRows).dateColumnName("Date").valueColumnName("Value").dateFormat("%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel().timeSeries(timeSeries).numberOfValues(1);
+    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
+    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
     onPostReturn(BigDecimal.valueOf(2.));
 
     BigDecimal actualAccuracy = client.computeForecastAccuracy(timeSeriesAnalysisRequest);
@@ -156,10 +156,10 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_delegate_predict_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel().date("1960").value(valueOf(1.)), new TimeSeriesRowModel().date("1961").value(valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel().rows(timeSeriesRows).dateColumnName("Date").valueColumnName("Value").dateFormat("%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel().timeSeries(timeSeries).numberOfValues(1);
-    TimeSeriesModel responseTimeSeries = new TimeSeriesModel().rows(newArrayList(new TimeSeriesRowModel().date("1962").value(valueOf(3.)))).dateColumnName("Date").valueColumnName("Value").dateFormat("%Y");
+    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
+    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
+    TimeSeriesModel responseTimeSeries = new TimeSeriesModel(newArrayList(new TimeSeriesRowModel("1962", valueOf(3.))), "Date", "Value", "%Y");
     onPostReturn(responseTimeSeries);
 
     TimeSeriesModel actual_predicted = client.predict(timeSeriesAnalysisRequest);

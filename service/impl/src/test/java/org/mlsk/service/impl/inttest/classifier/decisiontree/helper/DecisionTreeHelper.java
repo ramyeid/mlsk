@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.inttest.classifier.decisiontree.helper;
 
-import org.mlsk.api.classifier.model.*;
+import org.mlsk.api.service.classifier.model.*;
 import org.mlsk.service.impl.classifier.service.exception.ClassifierServiceException;
 import org.mlsk.service.model.classifier.*;
 
@@ -18,11 +18,7 @@ public final class DecisionTreeHelper {
   }
 
   public static ClassifierStartRequestModel buildClassifierStartRequestModel() {
-    ClassifierStartRequestModel classifierStartRequestModel = new ClassifierStartRequestModel();
-    classifierStartRequestModel.setPredictionColumnName("predictionColumnName");
-    classifierStartRequestModel.setActionColumnNames(newArrayList("col0", "col1"));
-    classifierStartRequestModel.setNumberOfValues(2);
-    return classifierStartRequestModel;
+    return new ClassifierStartRequestModel("predictionColumnName", newArrayList("col0", "col1"), 2);
   }
 
   public static ClassifierStartRequest buildClassifierStartRequest(long requestId) {
@@ -30,11 +26,7 @@ public final class DecisionTreeHelper {
   }
 
   public static ClassifierDataRequestModel buildClassifierData1RequestModel(long requestId) {
-    ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(requestId);
-    classifierDataRequestModel.setColumnName("col0");
-    classifierDataRequestModel.setValues(newArrayList(1, 0, 1, 0));
-    return classifierDataRequestModel;
+    return new ClassifierDataRequestModel(requestId, "col0", newArrayList(1, 0, 1, 0));
   }
 
   public static ClassifierDataRequest buildClassifierData1Request(long requestId) {
@@ -54,9 +46,7 @@ public final class DecisionTreeHelper {
   }
 
   public static ClassifierRequestModel buildClassifierRequestModel(long requestId) {
-    ClassifierRequestModel classifierRequestModel = new ClassifierRequestModel();
-    classifierRequestModel.setRequestId(requestId);
-    return classifierRequestModel;
+    return new ClassifierRequestModel(requestId);
   }
 
   public static ClassifierRequest buildClassifierRequest(long requestId) {
@@ -68,17 +58,11 @@ public final class DecisionTreeHelper {
   }
 
   public static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
-    ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(requestId);
-    return classifierStartResponseModel;
+    return new ClassifierStartResponseModel(requestId);
   }
 
   public static ClassifierResponseModel buildClassifierResponseModel(long requestId) {
-    ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
-    classifierResponseModel.setRequestId(requestId);
-    classifierResponseModel.setColumnName("predictionColumnName");
-    classifierResponseModel.setValues(newArrayList(1, 1));
-    return classifierResponseModel;
+    return new ClassifierResponseModel(requestId, "predictionColumnName", newArrayList(1, 1));
   }
 
   public static ClassifierCancelRequest buildClassifierCancelRequest(long requestId) {

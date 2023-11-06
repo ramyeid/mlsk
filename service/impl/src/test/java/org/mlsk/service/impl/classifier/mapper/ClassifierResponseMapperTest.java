@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.classifier.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.classifier.model.ClassifierResponseModel;
+import org.mlsk.api.service.classifier.model.ClassifierResponseModel;
 import org.mlsk.service.model.classifier.ClassifierResponse;
 
 import static com.google.common.collect.Lists.newArrayList;
@@ -24,10 +24,6 @@ public class ClassifierResponseMapperTest {
   }
 
   private static ClassifierResponseModel buildExpectedResponseModel() {
-    ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
-    classifierResponseModel.setRequestId(1L);
-    classifierResponseModel.setColumnName("columnName");
-    classifierResponseModel.setValues(newArrayList(1, 2, 3));
-    return classifierResponseModel;
+    return new ClassifierResponseModel(1L, "columnName", newArrayList(1, 2, 3));
   }
 }

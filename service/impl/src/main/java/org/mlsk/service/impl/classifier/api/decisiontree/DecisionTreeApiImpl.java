@@ -2,8 +2,8 @@ package org.mlsk.service.impl.classifier.api.decisiontree;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mlsk.api.classifier.model.*;
-import org.mlsk.api.decisiontree.api.DecisionTreeApi;
+import org.mlsk.api.service.classifier.model.*;
+import org.mlsk.api.service.classifier.decisiontree.api.DecisionTreeApi;
 import org.mlsk.service.classifier.ClassifierService;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;

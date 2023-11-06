@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.classifier.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.classifier.model.ClassifierStartRequestModel;
+import org.mlsk.api.service.classifier.model.ClassifierStartRequestModel;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
 
 import static com.google.common.collect.Lists.newArrayList;

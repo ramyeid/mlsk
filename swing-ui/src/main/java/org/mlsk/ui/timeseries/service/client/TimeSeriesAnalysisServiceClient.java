@@ -1,8 +1,8 @@
 package org.mlsk.ui.timeseries.service.client;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.lib.rest.RestClient;
 import org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException;

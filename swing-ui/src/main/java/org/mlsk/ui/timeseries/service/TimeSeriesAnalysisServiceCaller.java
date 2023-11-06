@@ -1,7 +1,7 @@
 package org.mlsk.ui.timeseries.service;
 
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mlsk.ui.timeseries.service.client.TimeSeriesAnalysisServiceClient;
 import org.mlsk.ui.utils.TriFunction;
 

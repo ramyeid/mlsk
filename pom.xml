@@ -17,7 +17,7 @@
         <junit.version>5.8.0-M1</junit.version>
         <mockito.version>3.5.6</mockito.version>
         <log4j.version>2.14.1</log4j.version>
-        <jackson.version>2.11.2</jackson.version>
+        <jackson.version>2.16.0-rc1</jackson.version>
     </properties>
 
     <modules>
@@ -86,12 +86,16 @@
                         <configuration>
                             <failOnWarning>true</failOnWarning>
                             <ignoredDependencies>
+                                <!-- due to lib.. TODO check why -->
                                 <ignoredDependency>org.junit.jupiter</ignoredDependency>
-                                <ignoredDependency>org.mockito</ignoredDependency>
                                 <ignoredDependency>com.fasterxml.jackson.core</ignoredDependency>
-                                <ignoredDependency>org.springframework.boot</ignoredDependency>
-                                <!-- due to unused imports in code gen -->
+                                <!-- due to unused imports in openapi code gen -->
+                                <ignoredDependency>org.springframework</ignoredDependency>
                                 <ignoredDependency>jakarta.annotation</ignoredDependency>
+                                <!-- due to the use of MockedStatic in mlsk-ui and hence the need to include mockito-inline-->
+                                <ignoredDependency>org.mockito</ignoredDependency>
+                                <!-- due to IT in mlsk-service-impl -->
+                                <ignoredDependency>org.springframework.boot</ignoredDependency>
                             </ignoredDependencies>
                         </configuration>
                     </execution>
@@ -159,6 +163,16 @@
                 <version>${spring.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-jcl</artifactId>
+                <version>${spring.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-starter-log4j2</artifactId>
                 <version>2.5.3</version>
@@ -219,11 +233,6 @@
                 <version>1.0.13</version>
             </dependency>
             <dependency>
-                <groupId>io.swagger</groupId>
-                <artifactId>swagger-annotations</artifactId>
-                <version>1.5.18</version>
-            </dependency>
-            <dependency>
                 <groupId>org.junit.jupiter</groupId>
                 <artifactId>junit-jupiter</artifactId>
                 <version>${junit.version}</version>
@@ -246,6 +255,16 @@
                 <artifactId>mockito-junit-jupiter</artifactId>
                 <version>${mockito.version}</version>
                 <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-annotations</artifactId>
+                <version>2.2.18</version>
+            </dependency>
+            <dependency>
+                <groupId>javax.validation</groupId>
+                <artifactId>validation-api</artifactId>
+                <version>2.0.1.Final</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

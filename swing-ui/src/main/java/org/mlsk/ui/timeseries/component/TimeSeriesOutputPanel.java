@@ -1,6 +1,6 @@
 package org.mlsk.ui.timeseries.component;
 
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 
 import javax.swing.*;
 

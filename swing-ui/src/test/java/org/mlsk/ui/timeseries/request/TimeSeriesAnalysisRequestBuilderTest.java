@@ -2,9 +2,9 @@ package org.mlsk.ui.timeseries.request;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.exception.CsvParsingException;
 import org.mlsk.ui.timeseries.csv.CsvToTimeSeries;
 import org.mockito.MockedStatic;
@@ -37,7 +37,7 @@ public class TimeSeriesAnalysisRequestBuilderTest {
 
       TimeSeriesAnalysisRequestModel actual = requestBuilder.buildRequest(dateColumnValue, valueColumnName, dateFormat, csvLocation, "4");
 
-      TimeSeriesAnalysisRequestModel expected = new TimeSeriesAnalysisRequestModel().timeSeries(buildTimeSeries()).numberOfValues(4);
+      TimeSeriesAnalysisRequestModel expected = new TimeSeriesAnalysisRequestModel(buildTimeSeries(), 4);
       assertEquals(expected, actual);
     }
   }
@@ -90,13 +90,9 @@ public class TimeSeriesAnalysisRequestBuilderTest {
   }
 
   private static TimeSeriesModel buildTimeSeries() {
-    TimeSeriesRowModel row = new TimeSeriesRowModel().date("1990").value(BigDecimal.valueOf(1.));
+    TimeSeriesRowModel row = new TimeSeriesRowModel("1990", BigDecimal.valueOf(1.));
     List<TimeSeriesRowModel> rows = newArrayList(row);
 
-    return new TimeSeriesModel()
-        .rows(rows)
-        .dateColumnName("Date")
-        .valueColumnName("Value")
-        .dateFormat("Yyyy");
+    return new TimeSeriesModel(rows, "Date", "Value", "Yyyy");
   }
 }
