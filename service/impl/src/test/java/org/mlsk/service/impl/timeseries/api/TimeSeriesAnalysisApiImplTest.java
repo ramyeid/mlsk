@@ -7,7 +7,6 @@ import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
-import org.mlsk.service.impl.timeseries.mapper.TimeSeriesModelHelper;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
@@ -154,13 +153,13 @@ public class TimeSeriesAnalysisApiImplTest {
   }
 
   private static TimeSeriesAnalysisRequestModel buildTimeSeriesAnalysisRequestModel() {
-    TimeSeriesRowModel row1 = TimeSeriesModelHelper.buildTimeSeriesRowModel("date1", valueOf(123.123123132));
-    TimeSeriesRowModel row2 = TimeSeriesModelHelper.buildTimeSeriesRowModel("date2", valueOf(45454.31231));
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel("date1", valueOf(123.123123132));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel("date2", valueOf(45454.31231));
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2);
 
-    TimeSeriesModel timeSeries = TimeSeriesModelHelper.buildTimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy");
+    TimeSeriesModel timeSeries = new TimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy");
 
-    return TimeSeriesModelHelper.buildTimeSeriesAnalysisRequestModel(timeSeries, 2);
+    return new TimeSeriesAnalysisRequestModel(timeSeries, 2);
   }
 
   private static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest(long requestId) {
@@ -181,10 +180,10 @@ public class TimeSeriesAnalysisApiImplTest {
   }
 
   private static TimeSeriesModel buildTimeSeriesModelResult() {
-    TimeSeriesRowModel row1 = TimeSeriesModelHelper.buildTimeSeriesRowModel("date3", valueOf(77272.123));
-    TimeSeriesRowModel row2 = TimeSeriesModelHelper.buildTimeSeriesRowModel("date4", valueOf(989823.124));
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel("date3", valueOf(77272.123));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel("date4", valueOf(989823.124));
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2);
 
-    return TimeSeriesModelHelper.buildTimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy");
+    return new TimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy");
   }
 }

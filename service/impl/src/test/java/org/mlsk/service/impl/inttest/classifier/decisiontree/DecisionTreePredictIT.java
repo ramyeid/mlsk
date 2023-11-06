@@ -45,14 +45,14 @@ public class DecisionTreePredictIT extends AbstractIT {
   @Test
   public void should_return_classifier_result_from_engine_on_predict() {
     long requestId = 1L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId);
-    ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId);
-    ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId);
-    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest data1Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest data2Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData2Request(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, buildClassifierRequest(requestId), buildClassifierResponse(requestId));
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierDataRequestModel data1RequestModel = buildServiceClassifierData1RequestModel(requestId);
+    ClassifierDataRequestModel data2RequestModel = buildServiceClassifierData2RequestModel(requestId);
+    ClassifierRequestModel requestModel = buildServiceClassifierRequestModel(requestId);
+    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest data1Request = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData1RequestModel(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest data2Request = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData2RequestModel(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, buildEngineClassifierRequestModel(requestId), buildEngineClassifierResponseModel(requestId));
     mockEngine.registerRequests(startRequest, data1Request, data2Request, predictRequest);
 
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse = decisionTreeApi.start(startRequestModel);
@@ -60,8 +60,8 @@ public class DecisionTreePredictIT extends AbstractIT {
     decisionTreeApi.data(data2RequestModel);
     ResponseEntity<ClassifierResponseModel> actualPredictResponse = decisionTreeApi.predict(requestModel);
 
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId), actualStartResponse);
-    assertOnResponseEntity(buildClassifierResponseModel(requestId), actualPredictResponse);
+    assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId), actualStartResponse);
+    assertOnResponseEntity(buildServiceClassifierResponseModel(requestId), actualPredictResponse);
     assertOnEngineState(WAITING, WAITING);
   }
 
@@ -70,16 +70,16 @@ public class DecisionTreePredictIT extends AbstractIT {
     long requestId1 = 1L;
     long requestId2 = 2L;
     long requestId3 = 3L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
-    ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId1);
-    ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId1);
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId2), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId3), buildDefaultResponse());
-    MockEngine.MockedRequest data1Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest data2Request = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData2Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, buildClassifierRequest(requestId1), buildClassifierResponse(requestId1));
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierDataRequestModel data1RequestModel = buildServiceClassifierData1RequestModel(requestId1);
+    ClassifierDataRequestModel data2RequestModel = buildServiceClassifierData2RequestModel(requestId1);
+    ClassifierRequestModel requestModel = buildServiceClassifierRequestModel(requestId1);
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT2, START_URL, buildEngineClassifierStartRequestModel(requestId3), buildDefaultResponse());
+    MockEngine.MockedRequest data1Request = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData1RequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest data2Request = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData2RequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest predictRequest = buildMockRequest(ENDPOINT1, PREDICT_URL, buildEngineClassifierRequestModel(requestId1), buildEngineClassifierResponseModel(requestId1));
     mockEngine.registerRequests(startRequest1, data1Request, data2Request, predictRequest, startRequest2, startRequest3);
 
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse1 = decisionTreeApi.start(startRequestModel);
@@ -89,9 +89,9 @@ public class DecisionTreePredictIT extends AbstractIT {
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse1_ = decisionTreeApi.start(startRequestModel);
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse2 = decisionTreeApi.start(startRequestModel);
 
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId1), actualStartResponse1);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse1_);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId3), actualStartResponse2);
+    assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId1), actualStartResponse1);
+    assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId2), actualStartResponse1_);
+    assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId3), actualStartResponse2);
     assertOnEngineState(BOOKED, BOOKED);
   }
 
@@ -100,10 +100,10 @@ public class DecisionTreePredictIT extends AbstractIT {
     long requestId1 = 1L;
     long requestId2 = 2L;
     long unavailableRequestId = -1L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierRequestModel requestModel = buildClassifierRequestModel(unavailableRequestId);
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId2), buildDefaultResponse());
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierRequestModel requestModel = buildServiceClassifierRequestModel(unavailableRequestId);
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildEngineClassifierStartRequestModel(requestId2), buildDefaultResponse());
     mockEngine.registerRequests(startRequest1, startRequest2);
 
     try {
@@ -122,9 +122,9 @@ public class DecisionTreePredictIT extends AbstractIT {
   public void should_throw_exception_if_engine_not_booked_on_predict() {
     long requestId1 = 1L;
     long requestId2 = 2L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId2);
-    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), buildDefaultResponse());
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierRequestModel requestModel = buildServiceClassifierRequestModel(requestId2);
+    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId1), buildDefaultResponse());
     mockEngine.registerRequests(startRequest);
 
     try {
@@ -141,14 +141,14 @@ public class DecisionTreePredictIT extends AbstractIT {
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_predict() {
     long requestId = 1L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId);
-    ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId);
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierDataRequestModel data1RequestModel = buildServiceClassifierData1RequestModel(requestId);
+    ClassifierRequestModel requestModel = buildServiceClassifierRequestModel(requestId);
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while pushing predict: NullPointer");
-    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest failingPredictRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, buildClassifierRequest(requestId), exceptionToThrow);
-    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, buildClassifierCancelRequest(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData1RequestModel(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest failingPredictRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, buildEngineClassifierRequestModel(requestId), exceptionToThrow);
+    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, buildEngineClassifierCancelRequestModel(requestId), buildDefaultResponse());
     mockEngine.registerRequests(startRequest, dataRequest, failingPredictRequest, cancelRequest);
 
     try {
@@ -168,16 +168,16 @@ public class DecisionTreePredictIT extends AbstractIT {
     long requestId1 = 1L;
     long requestId2 = 2L;
     long requestId3 = 3L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
-    ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId1);
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierDataRequestModel data1RequestModel = buildServiceClassifierData1RequestModel(requestId1);
+    ClassifierRequestModel requestModel = buildServiceClassifierRequestModel(requestId1);
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while pushing predict: NullPointer");
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId2), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId3), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest failingPredictRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, null, exceptionToThrow);
-    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, null, buildDefaultResponse());
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT2, START_URL, buildEngineClassifierStartRequestModel(requestId3), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData1RequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest failingPredictRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, buildEngineClassifierRequestModel(requestId1), exceptionToThrow);
+    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, buildEngineClassifierCancelRequestModel(requestId1), buildDefaultResponse());
     mockEngine.registerRequests(startRequest1, dataRequest1, failingPredictRequest, cancelRequest);
 
     decisionTreeApi.start(startRequestModel);
@@ -187,22 +187,22 @@ public class DecisionTreePredictIT extends AbstractIT {
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse1 = decisionTreeApi.start(startRequestModel);
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse2 = decisionTreeApi.start(startRequestModel);
 
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId2), actualStartResponse1);
-    assertOnResponseEntity(buildClassifierStartResponseModel(requestId3), actualStartResponse2);
+    assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId2), actualStartResponse1);
+    assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId3), actualStartResponse2);
     assertOnEngineState(BOOKED, BOOKED);
   }
 
   @Test
   public void should_call_cancel_on_exception_on_predict() throws Exception {
     long requestId = 1L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierDataRequestModel dataRequestModel = buildClassifierData1RequestModel(requestId);
-    ClassifierRequestModel requestModel = buildClassifierRequestModel(requestId);
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierDataRequestModel dataRequestModel = buildServiceClassifierData1RequestModel(requestId);
+    ClassifierRequestModel requestModel = buildServiceClassifierRequestModel(requestId);
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while pushing predict: NullPointer");
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId), buildDefaultResponse());
-    MockEngine.MockedRequest failingPredictRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, buildClassifierRequest(requestId), exceptionToThrow);
-    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, buildClassifierCancelRequest(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData1RequestModel(requestId), buildDefaultResponse());
+    MockEngine.MockedRequest failingPredictRequest = buildFailingMockRequest(ENDPOINT1, PREDICT_URL, buildEngineClassifierRequestModel(requestId), exceptionToThrow);
+    MockEngine.MockedRequest cancelRequest = buildMockRequest(ENDPOINT1, CANCEL_URL, buildEngineClassifierCancelRequestModel(requestId), buildDefaultResponse());
     mockEngine.registerRequests(startRequest1, dataRequest1, failingPredictRequest, cancelRequest);
 
     decisionTreeApi.start(startRequestModel);

@@ -1,8 +1,10 @@
 package org.mlsk.service.impl.timeseries.engine;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
+import org.mlsk.api.engine.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.lib.model.Endpoint;
-import org.mlsk.lib.rest.RestClient;
+import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.timeseries.engine.exception.TimeSeriesAnalysisEngineRequestException;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -10,26 +12,27 @@ import org.mlsk.service.timeseries.TimeSeriesAnalysisEngine;
 import org.springframework.web.client.HttpServerErrorException;
 
 import static java.lang.String.format;
-import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
+import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesAnalysisRequestMapper.toTimeSeriesAnalysisRequestModel;
+import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesMapper.toTimeSeries;
 
-// TODO Use OpenAPI models and Generate Python API from OpenAPI
 public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine {
 
-  private final RestClient restClient;
+  private final TimeSeriesAnalysisEngineApi timeSeriesAnalysisClient;
 
-  public TimeSeriesAnalysisEngineClient(Endpoint endpoint) {
-    this(new RestClient(endpoint));
+  public TimeSeriesAnalysisEngineClient(Endpoint endpoint, EngineClientFactory engineClientFactory) {
+    this(engineClientFactory.buildTimeSeriesAnalysisClient(endpoint));
   }
 
   @VisibleForTesting
-  public TimeSeriesAnalysisEngineClient(RestClient restClient) {
-    this.restClient = restClient;
+  TimeSeriesAnalysisEngineClient(TimeSeriesAnalysisEngineApi timeSeriesAnalysisClient) {
+    this.timeSeriesAnalysisClient = timeSeriesAnalysisClient;
   }
 
   @Override
   public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(FORECAST_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = toTimeSeriesAnalysisRequestModel(timeSeriesAnalysisRequest);
+      return toTimeSeries(timeSeriesAnalysisClient.forecast(timeSeriesAnalysisRequestModel));
     } catch (HttpServerErrorException exception) {
       throw buildTimeSeriesAnalysisEngineRequestException(exception, "forecast");
     } catch (Exception exception) {
@@ -40,7 +43,8 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
   @Override
   public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, Double.class);
+      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = toTimeSeriesAnalysisRequestModel(timeSeriesAnalysisRequest);
+      return timeSeriesAnalysisClient.computeAccuracyOfForecast(timeSeriesAnalysisRequestModel).doubleValue();
     } catch (HttpServerErrorException exception) {
       throw buildTimeSeriesAnalysisEngineRequestException(exception, "computeForecastAccuracy");
     } catch (Exception exception) {
@@ -51,7 +55,8 @@ public class TimeSeriesAnalysisEngineClient implements TimeSeriesAnalysisEngine 
   @Override
   public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     try {
-      return restClient.post(PREDICT_URL, timeSeriesAnalysisRequest, TimeSeries.class);
+      TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = toTimeSeriesAnalysisRequestModel(timeSeriesAnalysisRequest);
+      return toTimeSeries(timeSeriesAnalysisClient.predict(timeSeriesAnalysisRequestModel));
     } catch (HttpServerErrorException exception) {
       throw buildTimeSeriesAnalysisEngineRequestException(exception, "predict");
     } catch (Exception exception) {

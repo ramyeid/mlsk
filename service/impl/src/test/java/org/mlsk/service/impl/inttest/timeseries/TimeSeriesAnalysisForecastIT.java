@@ -44,22 +44,22 @@ public class TimeSeriesAnalysisForecastIT extends AbstractIT {
   @Test
   public void should_return_time_series_result_from_engine_on_forecast() {
     long requestId = 1L;
-    TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
-    MockedRequest forecastMockedRequest = buildMockRequest(ENDPOINT1, FORECAST_URL, buildTimeSeriesAnalysisRequest(requestId), buildTimeSeriesResult());
+    TimeSeriesAnalysisRequestModel requestModel = buildServiceTimeSeriesAnalysisRequestModel();
+    MockedRequest forecastMockedRequest = buildMockRequest(ENDPOINT1, FORECAST_URL, buildEngineTimeSeriesAnalysisRequestModel(requestId), buildEngineTimeSeriesResultModel());
     mockEngine.registerRequests(forecastMockedRequest);
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.forecast(requestModel);
 
-    assertOnResponseEntity(buildTimeSeriesModelResult(), actualResponse);
+    assertOnResponseEntity(buildServiceTimeSeriesModelResultModel(), actualResponse);
     assertOnEngineState(WAITING, WAITING);
   }
 
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_forecast() {
     long requestId = 1L;
-    TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
+    TimeSeriesAnalysisRequestModel requestModel = buildServiceTimeSeriesAnalysisRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.BAD_REQUEST, "Exception NPE raised while forecasting: NullPointer");
-    MockedRequest forecastMockedRequest = buildFailingMockRequest(ENDPOINT1, FORECAST_URL, buildTimeSeriesAnalysisRequest(requestId), exceptionToThrow);
+    MockedRequest forecastMockedRequest = buildFailingMockRequest(ENDPOINT1, FORECAST_URL, buildEngineTimeSeriesAnalysisRequestModel(requestId), exceptionToThrow);
     mockEngine.registerRequests(forecastMockedRequest);
 
     try {

@@ -20,6 +20,7 @@ import java.math.BigDecimal;
 import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.math.BigDecimal.valueOf;
 import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRequest;
 import static org.mlsk.service.impl.inttest.classifier.decisiontree.helper.DecisionTreeHelper.*;
@@ -46,22 +47,22 @@ public class DecisionTreeIT extends AbstractIT {
     long requestId1 = 1L;
     long requestId2 = 2L;
     long requestId3 = 3L;
-    ClassifierStartRequestModel startRequestModel = buildClassifierStartRequestModel();
-    ClassifierDataRequestModel data1RequestModel = buildClassifierData1RequestModel(requestId1);
-    ClassifierDataRequestModel data2RequestModel = buildClassifierData2RequestModel(requestId2);
-    ClassifierDataRequestModel data3RequestModel = buildClassifierData1RequestModel(requestId3);
-    ClassifierRequestModel request1Model = buildClassifierRequestModel(requestId1);
-    ClassifierRequestModel request2Model = buildClassifierRequestModel(requestId2);
-    ClassifierRequestModel request3Model = buildClassifierRequestModel(requestId3);
-    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildClassifierStartRequest(requestId2), buildDefaultResponse());
-    MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT1, START_URL, buildClassifierStartRequest(requestId3), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId1), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildClassifierData2Request(requestId2), buildDefaultResponse());
-    MockEngine.MockedRequest dataRequest3 = buildMockRequest(ENDPOINT1, DATA_URL, buildClassifierData1Request(requestId3), buildDefaultResponse());
-    MockEngine.MockedRequest predictRequest1 = buildMockRequest(ENDPOINT1, PREDICT_URL, buildClassifierRequest(requestId1), buildClassifierResponse(requestId1));
-    MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, buildClassifierRequest(requestId3), 94.123);
-    MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(ENDPOINT2, PREDICT_ACCURACY_URL, buildClassifierRequest(requestId2), 123.1);
+    ClassifierStartRequestModel startRequestModel = buildServiceClassifierStartRequestModel();
+    ClassifierDataRequestModel data1RequestModel = buildServiceClassifierData1RequestModel(requestId1);
+    ClassifierDataRequestModel data2RequestModel = buildServiceClassifierData2RequestModel(requestId2);
+    ClassifierDataRequestModel data3RequestModel = buildServiceClassifierData1RequestModel(requestId3);
+    ClassifierRequestModel request1Model = buildServiceClassifierRequestModel(requestId1);
+    ClassifierRequestModel request2Model = buildServiceClassifierRequestModel(requestId2);
+    ClassifierRequestModel request3Model = buildServiceClassifierRequestModel(requestId3);
+    MockEngine.MockedRequest startRequest1 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest2 = buildMockRequest(ENDPOINT2, START_URL, buildEngineClassifierStartRequestModel(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest startRequest3 = buildMockRequest(ENDPOINT1, START_URL, buildEngineClassifierStartRequestModel(requestId3), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest1 = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData1RequestModel(requestId1), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest2 = buildMockRequest(ENDPOINT2, DATA_URL, buildEngineClassifierData2RequestModel(requestId2), buildDefaultResponse());
+    MockEngine.MockedRequest dataRequest3 = buildMockRequest(ENDPOINT1, DATA_URL, buildEngineClassifierData1RequestModel(requestId3), buildDefaultResponse());
+    MockEngine.MockedRequest predictRequest1 = buildMockRequest(ENDPOINT1, PREDICT_URL, buildEngineClassifierRequestModel(requestId1), buildEngineClassifierResponseModel(requestId1));
+    MockEngine.MockedRequest predictAccuracyRequest1 = buildMockRequest(ENDPOINT1, PREDICT_ACCURACY_URL, buildEngineClassifierRequestModel(requestId3), valueOf(94.123));
+    MockEngine.MockedRequest predictAccuracyRequest2 = buildMockRequest(ENDPOINT2, PREDICT_ACCURACY_URL, buildEngineClassifierRequestModel(requestId2), valueOf(123.1));
     mockEngine.registerRequests(startRequest1, startRequest2, dataRequest1, predictRequest1, dataRequest2, predictAccuracyRequest1, startRequest3, dataRequest3, predictAccuracyRequest2);
 
     decisionTreeApi.start(startRequestModel);
@@ -83,8 +84,8 @@ public class DecisionTreeIT extends AbstractIT {
     });
     actualPredictAccuracy1Future.join();
 
-    assertOnResponseEntity(buildClassifierResponseModel(requestId1), actualPredict1Future.get());
-    assertOnResponseEntity(BigDecimal.valueOf(123.1), actualPredictAccuracy2Future.get());
-    assertOnResponseEntity(BigDecimal.valueOf(94.123), actualPredictAccuracy1Future.get());
+    assertOnResponseEntity(buildServiceClassifierResponseModel(requestId1), actualPredict1Future.get());
+    assertOnResponseEntity(valueOf(123.1), actualPredictAccuracy2Future.get());
+    assertOnResponseEntity(valueOf(94.123), actualPredictAccuracy1Future.get());
   }
 }

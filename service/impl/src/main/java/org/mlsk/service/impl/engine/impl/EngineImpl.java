@@ -30,7 +30,8 @@ public class EngineImpl implements Engine {
   private final ResilientEngineProcess resilientEngineProcess;
   private final Endpoint endpoint;
   private final AtomicReference<EngineState> state;
-  private final EngineClientFactory engineClientFactory;
+  private final TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient;
+  private final ClassifierEngineClient classifierEngineClient;
 
   public EngineImpl(Endpoint endpoint) {
     this(new EngineClientFactory(), endpoint, new ResilientEngineProcess(endpoint, getLogsPath(), getEnginePath()), new AtomicReference<>(OFF));
@@ -41,7 +42,8 @@ public class EngineImpl implements Engine {
     this.resilientEngineProcess = resilientEngineProcess;
     this.endpoint = endpoint;
     this.state = state;
-    this.engineClientFactory = engineClientFactory;
+    this.timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(endpoint, engineClientFactory);
+    this.classifierEngineClient = new ClassifierEngineClient(endpoint, engineClientFactory);
   }
 
   @Override
@@ -100,50 +102,42 @@ public class EngineImpl implements Engine {
   }
 
   @Override
-  public synchronized TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(endpoint);
-    return engineClient.forecast(timeSeriesAnalysisRequest);
+  public synchronized void start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
+    this.classifierEngineClient.start(classifierStartRequest, classifierType);
   }
 
   @Override
-  public synchronized Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(endpoint);
-    return engineClient.computeForecastAccuracy(timeSeriesAnalysisRequest);
-  }
-
-  @Override
-  public synchronized TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
-    TimeSeriesAnalysisEngineClient engineClient = engineClientFactory.buildTimeSeriesAnalysisEngineClient(endpoint);
-    return engineClient.predict(timeSeriesAnalysisRequest);
-  }
-
-  @Override
-  public synchronized Void start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
-    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.start(classifierStartRequest, classifierType);
-  }
-
-  @Override
-  public synchronized Void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
-    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.data(classifierDataRequest, classifierType);
+  public synchronized void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
+    this.classifierEngineClient.data(classifierDataRequest, classifierType);
   }
 
   @Override
   public synchronized ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.predict(classifierRequest, classifierType);
+    return this.classifierEngineClient.predict(classifierRequest, classifierType);
   }
 
   @Override
   public synchronized Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.computePredictAccuracy(classifierRequest, classifierType);
+    return this.classifierEngineClient.computePredictAccuracy(classifierRequest, classifierType);
   }
 
   @Override
-  public synchronized Void cancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
-    ClassifierEngineClient classifierEngineClient = engineClientFactory.buildClassifierEngineClient(endpoint);
-    return classifierEngineClient.cancel(classifierCancelRequest, classifierType);
+  public synchronized void cancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
+    this.classifierEngineClient.cancel(classifierCancelRequest, classifierType);
+  }
+
+  @Override
+  public synchronized TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    return this.timeSeriesAnalysisEngineClient.forecast(timeSeriesAnalysisRequest);
+  }
+
+  @Override
+  public synchronized Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    return this.timeSeriesAnalysisEngineClient.computeForecastAccuracy(timeSeriesAnalysisRequest);
+  }
+
+  @Override
+  public synchronized TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+    return this.timeSeriesAnalysisEngineClient.predict(timeSeriesAnalysisRequest);
   }
 }

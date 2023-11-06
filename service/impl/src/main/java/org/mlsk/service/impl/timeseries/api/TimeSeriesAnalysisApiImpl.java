@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 
 import static java.math.BigDecimal.valueOf;
-import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesAnalysisRequestMapper.toTimeSeriesAnalysisRequest;
-import static org.mlsk.service.impl.timeseries.mapper.TimeSeriesMapper.toTimeSeriesModel;
+import static org.mlsk.service.impl.timeseries.api.mapper.TimeSeriesAnalysisRequestMapper.toTimeSeriesAnalysisRequest;
+import static org.mlsk.service.impl.timeseries.api.mapper.TimeSeriesMapper.toTimeSeriesModel;
 
 @RestController
 public class TimeSeriesAnalysisApiImpl implements TimeSeriesAnalysisApi {

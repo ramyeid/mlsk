@@ -45,22 +45,22 @@ public class TimeSeriesAnalysisForecastVsActualIT extends AbstractIT {
   @Test
   public void should_return_time_series_from_engine_on_forecast_vs_actual() {
     long requestId = 1L;
-    TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
-    MockEngine.MockedRequest forecastVsActualMockedRequest = buildMockRequest(ENDPOINT1, FORECAST_URL, buildTimeSeriesAnalysisExpectedRequestForecastVsActual(requestId), buildTimeSeriesResult());
+    TimeSeriesAnalysisRequestModel requestModel = buildServiceTimeSeriesAnalysisRequestModel();
+    MockEngine.MockedRequest forecastVsActualMockedRequest = buildMockRequest(ENDPOINT1, FORECAST_URL, buildEngineTimeSeriesAnalysisExpectedRequestForecastVsActualModel(requestId), buildEngineTimeSeriesResultModel());
     mockEngine.registerRequests(forecastVsActualMockedRequest);
 
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.forecastVsActual(requestModel);
 
-    assertOnResponseEntity(buildTimeSeriesModelResult(), actualResponse);
+    assertOnResponseEntity(buildServiceTimeSeriesModelResultModel(), actualResponse);
     assertOnEngineState(WAITING, WAITING);
   }
 
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_forecast_vs_actual() {
     long requestId = 1L;
-    TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
+    TimeSeriesAnalysisRequestModel requestModel = buildServiceTimeSeriesAnalysisRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while computing forecast: NullPointer");
-    MockEngine.MockedRequest forecastVsActualMockedRequest = buildFailingMockRequest(ENDPOINT1, FORECAST_URL, buildTimeSeriesAnalysisExpectedRequestForecastVsActual(requestId), exceptionToThrow);
+    MockEngine.MockedRequest forecastVsActualMockedRequest = buildFailingMockRequest(ENDPOINT1, FORECAST_URL, buildEngineTimeSeriesAnalysisExpectedRequestForecastVsActualModel(requestId), exceptionToThrow);
     mockEngine.registerRequests(forecastVsActualMockedRequest);
 
     try {

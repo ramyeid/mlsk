@@ -1,27 +1,30 @@
 package org.mlsk.service.impl.inttest;
 
+import org.mlsk.api.engine.classifier.decisiontree.client.DecisionTreeEngineApi;
+import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.engine.launcher.EngineLauncher;
 import org.mlsk.lib.model.Endpoint;
-import org.mlsk.lib.rest.RestClient;
 import org.mlsk.service.engine.Engine;
-import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.EngineFactory;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.EngineImpl;
 import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mlsk.service.impl.orchestrator.factory.OrchestratorFactory;
 import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
-import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 import org.mlsk.service.model.engine.EngineState;
+import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 import org.mockito.quality.Strictness;
-import org.springframework.http.HttpEntity;
+import org.mockito.stubbing.Answer;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriTemplate;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -37,6 +40,8 @@ import static java.util.concurrent.CompletableFuture.supplyAsync;
 import static java.util.stream.Collectors.joining;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
+import static org.mlsk.service.impl.engine.client.EngineClientFactory.buildRestTemplate;
+import static org.mlsk.service.impl.inttest.AbstractIT.RequestEntityMatcher.isSameResource;
 import static org.mlsk.service.impl.setup.ServiceConfiguration.buildServiceConfiguration;
 import static org.mlsk.service.model.engine.EngineState.OFF;
 import static org.mockito.Mockito.*;
@@ -49,8 +54,7 @@ public abstract class AbstractIT {
   protected static final String LOGS_PATH = "logsPath";
   protected static final String ENGINE_PATH = "enginePath";
 
-  @Mock
-  protected RestTemplate restTemplate;
+  private RestTemplate restTemplateSpy;
   @Mock
   protected EngineLauncher engineLauncher;
   @Mock
@@ -70,6 +74,7 @@ public abstract class AbstractIT {
     String ports = endpoints.stream().map(Endpoint::getPort).map(Object::toString).collect(joining(","));
     buildServiceConfiguration("", "--engine-ports", ports, "--logs-path", LOGS_PATH, "-engine-path", ENGINE_PATH);
 
+    restTemplateSpy = spy(buildRestTemplate());
     onRestTemplatePostForObjectCallMockEngine();
     setUpEngineFactory();
     setUpEngineLauncher(endpoints);
@@ -93,7 +98,7 @@ public abstract class AbstractIT {
   }
 
   protected InOrder buildInOrder() {
-    return inOrder(restTemplate, engineLauncher, engineFactory);
+    return inOrder(restTemplateSpy, engineLauncher, engineFactory);
   }
 
   protected void verifyServiceSetup(List<Endpoint> endpoints, InOrder inOrder) throws IOException {
@@ -103,7 +108,7 @@ public abstract class AbstractIT {
   }
 
   protected void verifyRestTemplateCalledOn(String resource, InOrder inOrder) {
-    inOrder.verify(restTemplate).postForObject(eq(resource), any(), any());
+    inOrder.verify(restTemplateSpy).exchange(isSameResource(resource), any(ParameterizedTypeReference.class));
   }
 
   protected void assertOnEngineState(EngineState... states) {
@@ -128,11 +133,12 @@ public abstract class AbstractIT {
   }
 
   private void onRestTemplatePostForObjectCallMockEngine() {
-    when(restTemplate.postForObject(any(String.class), any(), any())).thenAnswer(invocationOnMock -> {
-      String actualResource = invocationOnMock.getArgument(0, String.class);
-      Object actualRequest = invocationOnMock.getArgument(1, HttpEntity.class).getBody();
+    doAnswer(invocationOnMock -> {
+      RequestEntity.UriTemplateRequestEntity<?> requestEntity = invocationOnMock.getArgument(0, RequestEntity.UriTemplateRequestEntity.class);
+      Object actualRequest = requestEntity.getBody();
+      String actualResource = requestEntity.getUriTemplate();
       return mockEngine.engineCall(actualResource, actualRequest);
-    });
+    }).when(restTemplateSpy).exchange(any(RequestEntity.class), any(ParameterizedTypeReference.class));
   }
 
   protected static HttpServerErrorException buildHttpServerErrorException(HttpStatus status, String body) {
@@ -146,14 +152,30 @@ public abstract class AbstractIT {
   }
 
   private EngineClientFactory buildEngineClientFactory(Endpoint endpoint) {
-    RestClient restClient = new RestClient(endpoint, restTemplate);
-
-    TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(restClient);
-    ClassifierEngineClient classifierEngineClient = new ClassifierEngineClient(restClient);
+    DecisionTreeEngineApi decisionTreeEngineApi = new DecisionTreeEngineApi(new org.mlsk.api.engine.classifier.decisiontree.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
+    TimeSeriesAnalysisEngineApi timeSeriesAnalysisEngineApi = new TimeSeriesAnalysisEngineApi(new org.mlsk.api.engine.timeseries.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
 
     EngineClientFactory engineClientFactory = mock(EngineClientFactory.class);
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(endpoint)).thenReturn(timeSeriesAnalysisEngineClient);
-    when(engineClientFactory.buildClassifierEngineClient(endpoint)).thenReturn(classifierEngineClient);
+    when(engineClientFactory.buildDecisionTreeEngineApi(endpoint)).thenReturn(decisionTreeEngineApi);
+    when(engineClientFactory.buildTimeSeriesAnalysisClient(endpoint)).thenReturn(timeSeriesAnalysisEngineApi);
     return engineClientFactory;
+  }
+
+  public static class RequestEntityMatcher implements ArgumentMatcher<RequestEntity.UriTemplateRequestEntity<?>> {
+
+    private final String resource;
+
+    private RequestEntityMatcher(String resource) {
+      this.resource = resource;
+    }
+
+    static RequestEntity.UriTemplateRequestEntity<?> isSameResource(String resource) {
+      return argThat(new RequestEntityMatcher(resource));
+    }
+
+    @Override
+    public boolean matches(RequestEntity.UriTemplateRequestEntity<?> right) {
+      return resource.equals(right.getUriTemplate());
+    }
   }
 }
