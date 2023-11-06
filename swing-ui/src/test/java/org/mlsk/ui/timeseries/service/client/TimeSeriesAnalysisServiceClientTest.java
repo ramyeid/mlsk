@@ -3,10 +3,10 @@ package org.mlsk.ui.timeseries.service.client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mlsk.api.service.timeseries.client.TimeSeriesAnalysisServiceApi;
 import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
-import org.mlsk.lib.rest.RestClient;
 import org.mlsk.ui.timeseries.service.client.exception.TimeSeriesAnalysisServiceRequestException;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -19,7 +19,6 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -27,31 +26,28 @@ import static org.mockito.Mockito.*;
 public class TimeSeriesAnalysisServiceClientTest {
 
   @Mock
-  private RestClient restClient;
+  private TimeSeriesAnalysisServiceApi timeSeriesAnalysisServiceApi;
   private TimeSeriesAnalysisServiceClient client;
 
   @BeforeEach
   public void setUp() {
-    this.client = new TimeSeriesAnalysisServiceClient(restClient);
+    this.client = new TimeSeriesAnalysisServiceClient(timeSeriesAnalysisServiceApi);
   }
 
   @Test
   public void should_delegate_forecast_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
-    TimeSeriesModel responseTimeSeries = new TimeSeriesModel(newArrayList(new TimeSeriesRowModel("1962", valueOf(3.))), "Date", "Value", "%Y");
-    onPostReturn(responseTimeSeries);
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = buildTimeSeriesAnalysisRequestModel();
+    when(timeSeriesAnalysisServiceApi.forecast(buildTimeSeriesAnalysisRequestModel())).thenReturn(buildTimeSeriesModelResponse());
 
-    TimeSeriesModel actual_forecasted = client.forecast(timeSeriesAnalysisRequest);
+    TimeSeriesModel actualForecasted = client.forecast(timeSeriesAnalysisRequest);
 
-    verify(restClient).post(FORECAST_URL, timeSeriesAnalysisRequest, TimeSeriesModel.class);
-    assertEquals(responseTimeSeries, actual_forecasted);
+    verify(timeSeriesAnalysisServiceApi).forecast(timeSeriesAnalysisRequest);
+    assertEquals(buildTimeSeriesModelResponse(), actualForecasted);
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_forecast_failure() {
-    doThrowExceptionOnPost(new RuntimeException());
+    doThrow(new RuntimeException()).when(timeSeriesAnalysisServiceApi).forecast(any());
 
     try {
       client.forecast(mock(TimeSeriesAnalysisRequestModel.class));
@@ -64,7 +60,7 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_forecast_failure_with_http_server_error_exception() {
-    doThrowExceptionOnPost(buildHttpServerErrorException("Original Forecast Exception Message"));
+    doThrow(buildHttpServerErrorException("Original Forecast Exception Message")).when(timeSeriesAnalysisServiceApi).forecast(any());
 
     try {
       client.forecast(mock(TimeSeriesAnalysisRequestModel.class));
@@ -77,21 +73,18 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_delegate_forecast_vs_actual_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
-    TimeSeriesModel responseTimeSeries = new TimeSeriesModel(newArrayList(new TimeSeriesRowModel("1962", valueOf(3.))), "Date", "Value", "%Y");
-    onPostReturn(responseTimeSeries);
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = buildTimeSeriesAnalysisRequestModel();
+    when(timeSeriesAnalysisServiceApi.forecastVsActual(buildTimeSeriesAnalysisRequestModel())).thenReturn(buildTimeSeriesModelResponse());
 
-    TimeSeriesModel actual_forecasted = client.forecastVsActual(timeSeriesAnalysisRequest);
+    TimeSeriesModel actualForecasted = client.forecastVsActual(timeSeriesAnalysisRequest);
 
-    verify(restClient).post(FORECAST_VS_ACTUAL_URL, timeSeriesAnalysisRequest, TimeSeriesModel.class);
-    assertEquals(responseTimeSeries, actual_forecasted);
+    verify(timeSeriesAnalysisServiceApi).forecastVsActual(buildTimeSeriesAnalysisRequestModel());
+    assertEquals(buildTimeSeriesModelResponse(), actualForecasted);
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_forecast_vs_actual_failure() {
-    doThrowExceptionOnPost(new RuntimeException());
+    doThrow(new RuntimeException()).when(timeSeriesAnalysisServiceApi).forecastVsActual(any());
 
     try {
       client.forecastVsActual(mock(TimeSeriesAnalysisRequestModel.class));
@@ -104,7 +97,7 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_forecast_vs_actual_failure_with_http_server_error_exception() {
-    doThrowExceptionOnPost(buildHttpServerErrorException("Original Forecast Vs Actual Exception Message"));
+    doThrow(buildHttpServerErrorException("Original Forecast Vs Actual Exception Message")).when(timeSeriesAnalysisServiceApi).forecastVsActual(any());
 
     try {
       client.forecastVsActual(mock(TimeSeriesAnalysisRequestModel.class));
@@ -117,20 +110,18 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_delegate_compute_forecast_accuracy_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
-    onPostReturn(BigDecimal.valueOf(2.));
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = buildTimeSeriesAnalysisRequestModel();
+    when(timeSeriesAnalysisServiceApi.computeForecastAccuracy(buildTimeSeriesAnalysisRequestModel())).thenReturn(BigDecimal.valueOf(2.));
 
     BigDecimal actualAccuracy = client.computeForecastAccuracy(timeSeriesAnalysisRequest);
 
-    verify(restClient).post(FORECAST_ACCURACY_URL, timeSeriesAnalysisRequest, BigDecimal.class);
+    verify(timeSeriesAnalysisServiceApi).computeForecastAccuracy(buildTimeSeriesAnalysisRequestModel());
     assertEquals(2.d, actualAccuracy.doubleValue());
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_forecast_accuracy_failure() {
-    doThrowExceptionOnPost(new RuntimeException());
+    doThrow(new RuntimeException()).when(timeSeriesAnalysisServiceApi).computeForecastAccuracy(any());
 
     try {
       client.computeForecastAccuracy(mock(TimeSeriesAnalysisRequestModel.class));
@@ -143,7 +134,7 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_forecast_accuracy_failure_with_http_server_error_exception() {
-    doThrowExceptionOnPost(buildHttpServerErrorException("Original Forecast Accuracy Exception Message"));
+    doThrow(buildHttpServerErrorException("Original Forecast Accuracy Exception Message")).when(timeSeriesAnalysisServiceApi).computeForecastAccuracy(any());
 
     try {
       client.computeForecastAccuracy(mock(TimeSeriesAnalysisRequestModel.class));
@@ -156,21 +147,18 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_delegate_predict_call_to_service() {
-    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
-    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = new TimeSeriesAnalysisRequestModel(timeSeries, 1);
-    TimeSeriesModel responseTimeSeries = new TimeSeriesModel(newArrayList(new TimeSeriesRowModel("1962", valueOf(3.))), "Date", "Value", "%Y");
-    onPostReturn(responseTimeSeries);
+    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequest = buildTimeSeriesAnalysisRequestModel();
+    when(timeSeriesAnalysisServiceApi.predict(buildTimeSeriesAnalysisRequestModel())).thenReturn(buildTimeSeriesModelResponse());
 
-    TimeSeriesModel actual_predicted = client.predict(timeSeriesAnalysisRequest);
+    TimeSeriesModel actualPredicted = client.predict(timeSeriesAnalysisRequest);
 
-    verify(restClient).post(PREDICT_URL, timeSeriesAnalysisRequest, TimeSeriesModel.class);
-    assertEquals(responseTimeSeries, actual_predicted);
+    verify(timeSeriesAnalysisServiceApi).predict(buildTimeSeriesAnalysisRequestModel());
+    assertEquals(buildTimeSeriesModelResponse(), actualPredicted);
   }
 
   @Test
   public void should_rethrow_time_series_exception_on_predict_failure() {
-    doThrowExceptionOnPost(new RuntimeException());
+    doThrow(new RuntimeException()).when(timeSeriesAnalysisServiceApi).predict(any());
 
     try {
       client.predict(mock(TimeSeriesAnalysisRequestModel.class));
@@ -183,7 +171,7 @@ public class TimeSeriesAnalysisServiceClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_predict_failure_with_http_server_error_exception() {
-    doThrowExceptionOnPost(buildHttpServerErrorException("Original Predict Exception Message"));
+    doThrow(buildHttpServerErrorException("Original Predict Exception Message")).when(timeSeriesAnalysisServiceApi).predict(any());
 
     try {
       client.predict(mock(TimeSeriesAnalysisRequestModel.class));
@@ -194,12 +182,14 @@ public class TimeSeriesAnalysisServiceClientTest {
     }
   }
 
-  private void doThrowExceptionOnPost(Exception exception) {
-    when(restClient.post(any(), any(), any())).thenThrow(exception);
+  private static TimeSeriesAnalysisRequestModel buildTimeSeriesAnalysisRequestModel() {
+    List<TimeSeriesRowModel> timeSeriesRows = newArrayList(new TimeSeriesRowModel("1960", valueOf(1.)), new TimeSeriesRowModel("1961", valueOf(2.)));
+    TimeSeriesModel timeSeries = new TimeSeriesModel(timeSeriesRows, "Date", "Value", "%Y");
+    return new TimeSeriesAnalysisRequestModel(timeSeries, 1);
   }
 
-  private void onPostReturn(Object object) {
-    when(restClient.post(any(), any(), any())).thenReturn(object);
+  private static TimeSeriesModel buildTimeSeriesModelResponse() {
+    return new TimeSeriesModel(newArrayList(new TimeSeriesRowModel("1962", valueOf(3.))), "Date", "Value", "%Y");
   }
 
   private static HttpServerErrorException buildHttpServerErrorException(String exceptionMessage) {

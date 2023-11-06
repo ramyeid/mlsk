@@ -25,10 +25,6 @@
             <artifactId>mlsk-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>machine-learning-swissknife</groupId>
-            <artifactId>mlsk-service-public</artifactId>
-        </dependency>
-        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>

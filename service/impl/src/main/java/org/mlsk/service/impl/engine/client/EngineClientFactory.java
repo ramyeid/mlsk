@@ -3,11 +3,10 @@ package org.mlsk.service.impl.engine.client;
 import org.mlsk.api.engine.classifier.decisiontree.client.DecisionTreeEngineApi;
 import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
 import org.mlsk.lib.model.Endpoint;
-import org.springframework.http.MediaType;
-import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static org.mlsk.lib.rest.RestTemplateFactory.buildRestTemplate;
 
 public class EngineClientFactory {
 
@@ -25,13 +24,5 @@ public class EngineClientFactory {
     apiClient.setBasePath(endpoint.getUrl());
 
     return new DecisionTreeEngineApi(apiClient);
-  }
-
-  public static RestTemplate buildRestTemplate() {
-    RestTemplate restTemplate = new RestTemplate();
-    MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
-    messageConverter.setSupportedMediaTypes(newArrayList(MediaType.ALL));
-    restTemplate.setMessageConverters(newArrayList(messageConverter));
-    return restTemplate;
   }
 }
