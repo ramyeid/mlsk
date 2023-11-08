@@ -1,0 +1,15 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierRequestModel
+  description: This is the yaml detailing the ClassifierRequest
+paths: {}
+definitions:
+  ClassifierRequestModel:
+    type: object
+    required:
+      - requestId
+    properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request

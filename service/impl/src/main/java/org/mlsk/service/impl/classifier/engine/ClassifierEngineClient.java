@@ -1,14 +1,9 @@
 package org.mlsk.service.impl.classifier.engine;
 
 import com.google.common.annotations.VisibleForTesting;
-import org.mlsk.api.engine.classifier.decisiontree.client.DecisionTreeEngineApi;
-import org.mlsk.api.engine.classifier.model.ClassifierCancelRequestModel;
-import org.mlsk.api.engine.classifier.model.ClassifierDataRequestModel;
-import org.mlsk.api.engine.classifier.model.ClassifierRequestModel;
-import org.mlsk.api.engine.classifier.model.ClassifierStartRequestModel;
+import org.mlsk.api.engine.classifier.client.ClassifierEngineApi;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.classifier.ClassifierEngine;
-import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
 import org.mlsk.service.impl.classifier.engine.mapper.*;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
@@ -17,27 +12,23 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import static java.lang.String.format;
 
-//TODO unify all classifier engine api
-// - Create one ClassifierEngineApi instead of one for each (example: DecisionTreeEngineApi)
-// - Pass in the classifier type to know what to do on the client side
-// - This will enable us to remove the switch clause for each call.
 public class ClassifierEngineClient implements ClassifierEngine {
 
-  private final DecisionTreeEngineApi decisionTreeEngineApi;
+  private final ClassifierEngineApi classifierEngineApi;
 
   public ClassifierEngineClient(Endpoint endpoint, EngineClientFactory engineClientFactory) {
-    this(engineClientFactory.buildDecisionTreeEngineApi(endpoint));
+    this(engineClientFactory.buildClassifierClient(endpoint));
   }
 
   @VisibleForTesting
-  ClassifierEngineClient(DecisionTreeEngineApi decisionTreeEngineApi) {
-    this.decisionTreeEngineApi = decisionTreeEngineApi;
+  ClassifierEngineClient(ClassifierEngineApi classifierEngineApi) {
+    this.classifierEngineApi = classifierEngineApi;
   }
 
   @Override
-  public void start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
+  public void start(ClassifierStartRequest classifierStartRequest) {
     try {
-      callClassifierStart(classifierStartRequest, classifierType);
+      this.classifierEngineApi.start(ClassifierStartRequestMapper.toEngineModel(classifierStartRequest));
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "start");
     } catch (Exception exception) {
@@ -46,9 +37,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   @Override
-  public void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
+  public void data(ClassifierDataRequest classifierDataRequest) {
     try {
-      callClassifierData(classifierDataRequest, classifierType);
+      this.classifierEngineApi.data(ClassifierDataRequestMapper.toEngineModel(classifierDataRequest));
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "data");
     } catch (Exception exception) {
@@ -57,9 +48,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   @Override
-  public ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
+  public ClassifierResponse predict(ClassifierRequest classifierRequest) {
     try {
-      return callClassifierPredict(classifierRequest, classifierType);
+      return ClassifierResponseMapper.fromEngineModel(this.classifierEngineApi.predict(ClassifierRequestMapper.toEngineModel(classifierRequest)));
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "predict");
     } catch (Exception exception) {
@@ -68,9 +59,9 @@ public class ClassifierEngineClient implements ClassifierEngine {
   }
 
   @Override
-  public Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
+  public Double computePredictAccuracy(ClassifierRequest classifierRequest) {
     try {
-      return callClassifierComputePredictAccuracy(classifierRequest, classifierType);
+      return this.classifierEngineApi.computePredictAccuracy(ClassifierRequestMapper.toEngineModel(classifierRequest)).doubleValue();
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "predict accuracy");
     } catch (Exception exception) {
@@ -80,71 +71,13 @@ public class ClassifierEngineClient implements ClassifierEngine {
 
   // TODO Make this method generic for all requests not classifiers only
   @Override
-  public void cancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
+  public void cancel(ClassifierCancelRequest classifierCancelRequest) {
     try {
-      callClassifierCancel(classifierCancelRequest, classifierType);
+      this.classifierEngineApi.cancel(ClassifierCancelRequestMapper.toEngineModel(classifierCancelRequest));
     } catch (HttpServerErrorException exception) {
       throw buildClassifierEngineRequestException(exception, "cancel");
     } catch (Exception exception) {
       throw buildClassifierEngineRequestException(exception, "cancel");
-    }
-  }
-
-  private void callClassifierStart(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
-    ClassifierStartRequestModel classifierStartRequestModel = ClassifierStartRequestMapper.toEngineModel(classifierStartRequest);
-
-    switch (classifierType) {
-      case DECISION_TREE:
-        this.decisionTreeEngineApi.start(classifierStartRequestModel);
-        break;
-      default:
-        throw new RuntimeException("Unknown Classifier Type");
-    }
-  }
-
-  private void callClassifierData(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
-    ClassifierDataRequestModel classifierDataRequestModel = ClassifierDataRequestMapper.toEngineModel(classifierDataRequest);
-
-    switch (classifierType) {
-      case DECISION_TREE:
-        this.decisionTreeEngineApi.data(classifierDataRequestModel);
-        break;
-      default:
-        throw new RuntimeException("Unknown Classifier Type");
-    }
-  }
-
-  private ClassifierResponse callClassifierPredict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    ClassifierRequestModel classifierRequestModel = ClassifierRequestMapper.toEngineModel(classifierRequest);
-
-    switch (classifierType) {
-      case DECISION_TREE:
-        return ClassifierResponseMapper.fromEngineModel(this.decisionTreeEngineApi.predict(classifierRequestModel));
-      default:
-        throw new RuntimeException("Unknown Classifier Type");
-    }
-  }
-
-  private Double callClassifierComputePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    ClassifierRequestModel classifierRequestModel = ClassifierRequestMapper.toEngineModel(classifierRequest);
-
-    switch (classifierType) {
-      case DECISION_TREE:
-        return this.decisionTreeEngineApi.computePredictAccuracy(classifierRequestModel).doubleValue();
-      default:
-        throw new RuntimeException("Unknown Classifier Type");
-    }
-  }
-
-  private void callClassifierCancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
-    ClassifierCancelRequestModel classifierCancelRequestModel = ClassifierCancelRequestMapper.toEngineModel(classifierCancelRequest);
-
-    switch (classifierType) {
-      case DECISION_TREE:
-        this.decisionTreeEngineApi.cancel(classifierCancelRequestModel);
-        break;
-      default:
-        throw new RuntimeException("Unknown Classifier Type");
     }
   }
 

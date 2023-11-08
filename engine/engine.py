@@ -8,7 +8,7 @@ from utils.logger import setup_logger, get_logger
 from exception.engine_computation_exception import EngineComputationException
 import exception_handler
 from time_series.controller import time_series_analysis_controller
-from classifier.controller import decision_tree_controller
+from classifier.controller import classifier_controller
 
 app = Flask(__name__)
 
@@ -19,16 +19,16 @@ app.add_url_rule('/time-series-analysis/forecast-accuracy', methods=['POST'],
 app.add_url_rule('/time-series-analysis/predict', methods=['POST'],
                  view_func=time_series_analysis_controller.predict, endpoint='tsa_predict')
 
-app.add_url_rule('/decision-tree/start', methods=['POST'],
-                 view_func=decision_tree_controller.start, endpoint='dt_start')
-app.add_url_rule('/decision-tree/data', methods=['POST'],
-                 view_func=decision_tree_controller.on_data_received, endpoint='dt_data')
-app.add_url_rule('/decision-tree/predict', methods=['POST'],
-                 view_func=decision_tree_controller.predict, endpoint='dt_predict')
-app.add_url_rule('/decision-tree/predict-accuracy', methods=['POST'],
-                 view_func=decision_tree_controller.compute_accuracy_of_predict, endpoint='dt_predict_accuracy')
-app.add_url_rule('/decision-tree/cancel', methods=['POST'],
-                 view_func=decision_tree_controller.cancel, endpoint='dt_cancel')
+app.add_url_rule('/classifier/start', methods=['POST'],
+                 view_func=classifier_controller.start, endpoint='dt_start')
+app.add_url_rule('/classifier/data', methods=['POST'],
+                 view_func=classifier_controller.on_data_received, endpoint='dt_data')
+app.add_url_rule('/classifier/predict', methods=['POST'],
+                 view_func=classifier_controller.predict, endpoint='dt_predict')
+app.add_url_rule('/classifier/predict-accuracy', methods=['POST'],
+                 view_func=classifier_controller.compute_accuracy_of_predict, endpoint='dt_predict_accuracy')
+app.add_url_rule('/classifier/cancel', methods=['POST'],
+                 view_func=classifier_controller.cancel, endpoint='dt_cancel')
 
 app.register_error_handler(EngineComputationException, exception_handler.handle_engine_computation_exception)
 

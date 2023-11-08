@@ -9,6 +9,9 @@ public class ClassifierCancelRequestMapper {
   }
 
   public static ClassifierCancelRequestModel toEngineModel(ClassifierCancelRequest classifierCancelRequest) {
-    return new ClassifierCancelRequestModel(classifierCancelRequest.getRequestId());
+    return new ClassifierCancelRequestModel(
+        classifierCancelRequest.getRequestId(),
+        ClassifierTypeMapper.toEngineModel(classifierCancelRequest.getClassifierType())
+    );
   }
 }

@@ -269,7 +269,7 @@
                         </configuration>
                     </execution>
                     <execution>
-                        <id>decision-tree-engine-model</id>
+                        <id>classifier-engine-model</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
@@ -286,12 +286,12 @@
                             <modelPackage>org.mlsk.api.engine.classifier.model</modelPackage>
 
                             <inputSpec>
-                                ${basedir}/src/main/java/org/mlsk/api/engine/classifier/decisiontree/DecisionTreeEngineApi.yaml
+                                ${basedir}/src/main/java/org/mlsk/api/engine/classifier/ClassifierEngineApi.yaml
                             </inputSpec>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>decision-tree-engine-client</id>
+                        <id>classifier-engine-client</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
@@ -306,11 +306,11 @@
                             <generateModelDocumentation>false</generateModelDocumentation>
 
                             <modelPackage>org.mlsk.api.engine.classifier.model</modelPackage>
-                            <invokerPackage>org.mlsk.api.engine.classifier.decisiontree.client</invokerPackage>
-                            <apiPackage>org.mlsk.api.engine.classifier.decisiontree.client</apiPackage>
+                            <invokerPackage>org.mlsk.api.engine.classifier.client</invokerPackage>
+                            <apiPackage>org.mlsk.api.engine.classifier.client</apiPackage>
 
                             <inputSpec>
-                                ${basedir}/src/main/java/org/mlsk/api/engine/classifier/decisiontree/DecisionTreeEngineApi.yaml
+                                ${basedir}/src/main/java/org/mlsk/api/engine/classifier/ClassifierEngineApi.yaml
                             </inputSpec>
                         </configuration>
                     </execution>

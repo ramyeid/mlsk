@@ -1,86 +1,88 @@
 openapi: "3.0.0"
 info:
   version: "1.0"
-  title: MLSK - DecisionTree - Engine
+  title: MLSK - Classifier - Engine
   description: This is the API detailing all endpoints
-    of the Machine Learning Swiss Knife, Decision Tree, Engine side.
+    of the Machine Learning Swiss Knife, Classifier, Engine side.
+    All classifier will have a single api on the engine side to simplify the orchestrator (JAVA) side.
+    The classifier type will be propagated to each endpoint via ClassifierType enum
     The Service is written in PYTHON
 tags:
-  - name: DecisionTreeEngine
+  - name: ClassifierEngine
 paths:
-  '/decision-tree/start':
+  '/classifier/start':
     post:
       tags:
-        - DecisionTreeEngine
-      summary: Decision Tree Start Request
+        - ClassifierEngine
+      summary: Classifier Start Request
       operationId: start
-      description: Notify Engine that a decision tree algorithm will be launched
+      description: Notify Engine that a classifier algorithm will be launched
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '../model/ClassifierStartRequest.yaml#/definitions/ClassifierStartRequestModel'
+              $ref: 'model/ClassifierStartRequest.yaml#/definitions/ClassifierStartRequestModel'
       responses:
         '200':
           description: Returns OK, data has been set.
         '500':
           description: Engine Computation Exception with detailed exception message.
-  '/decision-tree/data':
+  '/classifier/data':
     post:
       tags:
-        - DecisionTreeEngine
-      summary: Decision Tree Data Request
+        - ClassifierEngine
+      summary: Classifier Data Request
       operationId: data
-      description: Incrementally send the data of the current decision tree data
+      description: Incrementally send the data of the current classifier data
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '../../../model/classifier/ClassifierDataRequest.yaml#/definitions/ClassifierDataRequestModel'
+              $ref: 'model/ClassifierDataRequest.yaml#/definitions/ClassifierDataRequestModel'
       responses:
         '200':
           description: Returns Ok, data has been set.
         '500':
           description: Engine Computation Exception with detailed exception message.
-  '/decision-tree/predict':
+  '/classifier/predict':
     post:
       tags:
-        - DecisionTreeEngine
-      summary: Decision Tree Predict
+        - ClassifierEngine
+      summary: Classifier Predict
       operationId: predict
-      description: Predict the values with Decision Tree algorithm.
+      description: Predict the values with Classifier algorithm.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '../../../model/classifier/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
+              $ref: 'model/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
       responses:
         '200':
           description: Returns the predicted values.
           content:
             application/json:
               schema:
-                $ref: '../../../model/classifier/ClassifierResponse.yaml#/definitions/ClassifierResponseModel'
+                $ref: 'model/ClassifierResponse.yaml#/definitions/ClassifierResponseModel'
         '500':
           description: Engine Computation Exception with detailed exception message.
-  '/decision-tree/predict-accuracy':
+  '/classifier/predict-accuracy':
     post:
       tags:
-        - DecisionTreeEngine
-      summary: Decision Tree Predict Accuracy
+        - ClassifierEngine
+      summary: Classifier Predict Accuracy
       operationId: computePredictAccuracy
       description: |
-        Compute Predict Accuracy with Decision Tree Algorithm using the last {numberOfValues}.
+        Compute Predict Accuracy with Classifier Algorithm using the last {numberOfValues}.
         Predict the last {numberOfValues} and compare to actual data.
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '../../../model/classifier/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
+              $ref: 'model/ClassifierRequest.yaml#/definitions/ClassifierRequestModel'
       responses:
         '200':
           description: Returns the accuracy of the predict algorithm.
@@ -90,11 +92,11 @@ paths:
                 type: number
         '500':
           description: Engine Computation Exception with detailed exception message.
-  '/decision-tree/cancel':
+  '/classifier/cancel':
     post:
       tags:
-        - DecisionTreeEngine
-      summary: Decision Tree Cancel Request
+        - ClassifierEngine
+      summary: Classifier Cancel Request
       operationId: cancel
       description: |
         Cancel any request data currently on the engine - Clears state.
@@ -103,7 +105,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../model/ClassifierCancelRequest.yaml#/definitions/ClassifierCancelRequestModel'
+              $ref: 'model/ClassifierCancelRequest.yaml#/definitions/ClassifierCancelRequestModel'
       responses:
         '200':
           description: Returns Ok, data has been cleared.

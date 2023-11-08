@@ -26,7 +26,7 @@ import static org.mlsk.service.impl.inttest.timeseries.helper.TimeSeriesAnalysis
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mlsk.service.model.engine.EngineState.COMPUTING;
 import static org.mlsk.service.model.engine.EngineState.WAITING;
-import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
+import static org.mlsk.service.model.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisIT extends AbstractIT {

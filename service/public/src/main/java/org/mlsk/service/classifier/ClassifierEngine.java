@@ -4,13 +4,13 @@ import org.mlsk.service.model.classifier.*;
 
 public interface ClassifierEngine {
 
-  void start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType);
+  void start(ClassifierStartRequest classifierStartRequest);
 
-  void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType);
+  void data(ClassifierDataRequest classifierDataRequest);
 
-  ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType);
+  ClassifierResponse predict(ClassifierRequest classifierRequest);
 
-  Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType);
+  Double computePredictAccuracy(ClassifierRequest classifierRequest);
 
-  void cancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType);
+  void cancel(ClassifierCancelRequest classifierCancelRequest);
 }

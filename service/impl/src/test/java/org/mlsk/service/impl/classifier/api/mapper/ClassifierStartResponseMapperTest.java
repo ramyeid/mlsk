@@ -3,6 +3,7 @@ package org.mlsk.service.impl.classifier.api.mapper;
 import org.junit.jupiter.api.Test;
 import org.mlsk.api.service.classifier.model.ClassifierStartResponseModel;
 import org.mlsk.service.model.classifier.ClassifierStartResponse;
+import org.mlsk.service.model.classifier.ClassifierType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mlsk.service.impl.classifier.api.mapper.ClassifierStartResponseMapper.toServiceModel;
@@ -19,12 +20,10 @@ public class ClassifierStartResponseMapperTest {
   }
 
   private static ClassifierStartResponse buildClassifierStartResponse() {
-    return new ClassifierStartResponse(10L);
+    return new ClassifierStartResponse(10L, ClassifierType.DECISION_TREE);
   }
 
   private static ClassifierStartResponseModel buildExpectedStartResponseModel() {
-    ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(10L);
-    return classifierStartResponseModel;
+    return new ClassifierStartResponseModel(10L);
   }
 }

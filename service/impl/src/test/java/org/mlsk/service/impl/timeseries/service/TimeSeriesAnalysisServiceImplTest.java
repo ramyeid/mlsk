@@ -18,7 +18,7 @@ import java.util.List;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
+import static org.mlsk.service.model.timeseries.utils.TimeSeriesAnalysisConstants.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;

@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.inttest;
 
-import org.mlsk.api.engine.classifier.decisiontree.client.DecisionTreeEngineApi;
+import org.mlsk.api.engine.classifier.client.ClassifierEngineApi;
 import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.engine.launcher.EngineLauncher;
@@ -150,11 +150,11 @@ public abstract class AbstractIT {
   }
 
   private EngineClientFactory buildEngineClientFactory(Endpoint endpoint) {
-    DecisionTreeEngineApi decisionTreeEngineApi = new DecisionTreeEngineApi(new org.mlsk.api.engine.classifier.decisiontree.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
+    ClassifierEngineApi classifierEngineApi = new ClassifierEngineApi(new org.mlsk.api.engine.classifier.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
     TimeSeriesAnalysisEngineApi timeSeriesAnalysisEngineApi = new TimeSeriesAnalysisEngineApi(new org.mlsk.api.engine.timeseries.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
 
     EngineClientFactory engineClientFactory = mock(EngineClientFactory.class);
-    when(engineClientFactory.buildDecisionTreeEngineApi(endpoint)).thenReturn(decisionTreeEngineApi);
+    when(engineClientFactory.buildClassifierClient(endpoint)).thenReturn(classifierEngineApi);
     when(engineClientFactory.buildTimeSeriesAnalysisClient(endpoint)).thenReturn(timeSeriesAnalysisEngineApi);
     return engineClientFactory;
   }

@@ -2,7 +2,9 @@ package org.mlsk.service.impl.classifier.engine.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.mlsk.api.engine.classifier.model.ClassifierCancelRequestModel;
+import org.mlsk.api.engine.classifier.model.ClassifierTypeModel;
 import org.mlsk.service.model.classifier.ClassifierCancelRequest;
+import org.mlsk.service.model.classifier.ClassifierType;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierCancelRequestMapper.toEngineModel;
@@ -19,11 +21,11 @@ public class ClassifierCancelRequestMapperTest {
   }
 
   private static ClassifierCancelRequestModel buildExpectedModel() {
-    return new ClassifierCancelRequestModel(11L);
+    return new ClassifierCancelRequestModel(11L, ClassifierTypeModel.DECISION_TREE);
   }
 
   private static ClassifierCancelRequest buildClassifierCancelRequest() {
-    return new ClassifierCancelRequest(11L);
+    return new ClassifierCancelRequest(11L, ClassifierType.DECISION_TREE);
   }
 
 }

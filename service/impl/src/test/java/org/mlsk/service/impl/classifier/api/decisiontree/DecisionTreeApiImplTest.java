@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.api.service.classifier.model.*;
 import org.mlsk.service.classifier.ClassifierService;
-import org.mlsk.service.impl.classifier.api.decisiontree.DecisionTreeApiImpl;
 import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.model.classifier.*;
 import org.mockito.InOrder;
@@ -17,10 +16,9 @@ import java.math.BigDecimal;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
-import static org.mlsk.service.classifier.ClassifierType.DECISION_TREE;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
+import static org.mlsk.service.model.classifier.ClassifierType.DECISION_TREE;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.when;
 
@@ -47,7 +45,7 @@ public class DecisionTreeApiImplTest {
     decisionTreeApi.start(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).start(buildClassifierStartRequest(requestId), DECISION_TREE);
+    inOrder.verify(service).start(buildClassifierStartRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -70,7 +68,7 @@ public class DecisionTreeApiImplTest {
     decisionTreeApi.data(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).data(buildClassifierDataRequest(requestId), DECISION_TREE);
+    inOrder.verify(service).data(buildClassifierDataRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -92,7 +90,7 @@ public class DecisionTreeApiImplTest {
     decisionTreeApi.predict(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).predict(buildClassifierRequest(requestId), DECISION_TREE);
+    inOrder.verify(service).predict(buildClassifierRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -115,7 +113,7 @@ public class DecisionTreeApiImplTest {
     decisionTreeApi.computePredictAccuracy(model);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(service).computePredictAccuracy(buildClassifierRequest(requestId), DECISION_TREE);
+    inOrder.verify(service).computePredictAccuracy(buildClassifierRequest(requestId));
     inOrder.verifyNoMoreInteractions();
   }
 
@@ -131,15 +129,15 @@ public class DecisionTreeApiImplTest {
   }
 
   private void onServiceStartReturn(ClassifierStartResponse startResponse) {
-    when(service.start(any(), eq(DECISION_TREE))).thenReturn(startResponse);
+    when(service.start(any())).thenReturn(startResponse);
   }
 
   private void onServicePredictReturn(ClassifierResponse classifierResponse) {
-    when(service.predict(any(), eq(DECISION_TREE))).thenReturn(classifierResponse);
+    when(service.predict(any())).thenReturn(classifierResponse);
   }
 
   private void onServiceComputePredictAccuracyReturn(double accuracy) {
-    when(service.computePredictAccuracy(any(), eq(DECISION_TREE))).thenReturn(accuracy);
+    when(service.computePredictAccuracy(any())).thenReturn(accuracy);
   }
 
   private InOrder buildInOrder() {
@@ -151,11 +149,11 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest(long requestId) {
-    return new ClassifierStartRequest(requestId, "predictionColumn", newArrayList("col1", "col2"), 12);
+    return new ClassifierStartRequest(requestId, "predictionColumn", newArrayList("col1", "col2"), 12, DECISION_TREE);
   }
 
   private static ClassifierStartResponse buildClassifierStartResponse(long requestId) {
-    return new ClassifierStartResponse(requestId);
+    return new ClassifierStartResponse(requestId, DECISION_TREE);
   }
 
   private static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
@@ -167,7 +165,7 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierDataRequest buildClassifierDataRequest(long requestId) {
-    return new ClassifierDataRequest(requestId, "columnName", newArrayList(0, 1, 2));
+    return new ClassifierDataRequest(requestId, "columnName", newArrayList(0, 1, 2), DECISION_TREE);
   }
 
   private static ClassifierRequestModel buildClassifierRequestModel(long requestId) {
@@ -175,7 +173,7 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierRequest buildClassifierRequest(long requestId) {
-    return new ClassifierRequest(requestId);
+    return new ClassifierRequest(requestId, DECISION_TREE);
   }
 
   private static ClassifierResponseModel buildClassifierResponseModel(long requestId) {
@@ -183,7 +181,7 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierResponse buildClassifierResponse(long requestId) {
-    return new ClassifierResponse(requestId, "columnName", newArrayList(0, 1));
+    return new ClassifierResponse(requestId, "columnName", newArrayList(0, 1), DECISION_TREE);
   }
 
 }

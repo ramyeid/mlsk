@@ -21,7 +21,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
-import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.*;
+import static org.mlsk.service.model.classifier.utils.ClassifierConstants.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRequest;
 import static org.mlsk.service.impl.inttest.classifier.decisiontree.helper.DecisionTreeHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;

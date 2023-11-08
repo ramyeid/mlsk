@@ -10,7 +10,7 @@ public class ClassifierRequestTest {
 
   @Test
   public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
-    ClassifierRequest classifierRequest = new ClassifierRequest(123);
+    ClassifierRequest classifierRequest = new ClassifierRequest(123, ClassifierType.DECISION_TREE);
     ObjectMapper objectMapper = new ObjectMapper();
 
     String serializedRequest = objectMapper.writeValueAsString(classifierRequest);

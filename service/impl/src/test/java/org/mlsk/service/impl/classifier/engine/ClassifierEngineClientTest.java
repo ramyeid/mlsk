@@ -3,9 +3,8 @@ package org.mlsk.service.impl.classifier.engine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.api.engine.classifier.decisiontree.client.DecisionTreeEngineApi;
+import org.mlsk.api.engine.classifier.client.ClassifierEngineApi;
 import org.mlsk.api.engine.classifier.model.*;
-import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
 import org.mlsk.service.model.classifier.*;
 import org.mockito.Mock;
@@ -26,33 +25,31 @@ public class ClassifierEngineClientTest {
   private static final long REQUEST_ID = 10L;
 
   @Mock
-  private DecisionTreeEngineApi decisionTreeEngineApi;
+  private ClassifierEngineApi classifierEngineApi;
 
   private ClassifierEngineClient client;
 
   @BeforeEach
   public void setUp() {
-    this.client = new ClassifierEngineClient(decisionTreeEngineApi);
+    this.client = new ClassifierEngineClient(classifierEngineApi);
   }
 
   @Test
   public void should_delegate_start_call_to_engine() {
     ClassifierStartRequest classifierStartRequest = buildClassifierStartRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
-    client.start(classifierStartRequest, classifierType);
+    client.start(classifierStartRequest);
 
-    verify(decisionTreeEngineApi).start(buildClassifierStartRequestModel());
+    verify(classifierEngineApi).start(buildClassifierStartRequestModel());
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_start_failure() {
     ClassifierStartRequest classifierStartRequest = buildClassifierStartRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).start(any());
+    doThrow(new InvalidParameterException()).when(classifierEngineApi).start(any());
 
     try {
-      client.start(classifierStartRequest, classifierType);
+      client.start(classifierStartRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -63,11 +60,10 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_start_failure_with_http_server_error_exception() {
     ClassifierStartRequest classifierStartRequest = buildClassifierStartRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(buildHttpServerErrorException("Original Start Exception Message")).when(decisionTreeEngineApi).start(any());
+    doThrow(buildHttpServerErrorException("Original Start Exception Message")).when(classifierEngineApi).start(any());
 
     try {
-      client.start(classifierStartRequest, classifierType);
+      client.start(classifierStartRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -78,21 +74,19 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_delegate_data_call_to_engine() {
     ClassifierDataRequest classifierDataRequest = buildClassifierDataRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
-    client.data(classifierDataRequest, classifierType);
+    client.data(classifierDataRequest);
 
-    verify(decisionTreeEngineApi).data(buildClassifierDataRequestModel());
+    verify(classifierEngineApi).data(buildClassifierDataRequestModel());
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_data_failure() {
     ClassifierDataRequest classifierDataRequest = buildClassifierDataRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).data(any());
+    doThrow(new InvalidParameterException()).when(classifierEngineApi).data(any());
 
     try {
-      client.data(classifierDataRequest, classifierType);
+      client.data(classifierDataRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -103,11 +97,10 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_data_failure_with_http_server_error_exception() {
     ClassifierDataRequest classifierDataRequest = buildClassifierDataRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(buildHttpServerErrorException("Original Data Exception Message")).when(decisionTreeEngineApi).data(any());
+    doThrow(buildHttpServerErrorException("Original Data Exception Message")).when(classifierEngineApi).data(any());
 
     try {
-      client.data(classifierDataRequest, classifierType);
+      client.data(classifierDataRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -118,23 +111,21 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_delegate_predict_call_to_engine() {
     ClassifierRequest classifierRequest = buildClassifierRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    when(decisionTreeEngineApi.predict(buildClassifierRequestModel())).thenReturn(buildClassifierResponseModel());
+    when(classifierEngineApi.predict(buildClassifierRequestModel())).thenReturn(buildClassifierResponseModel());
 
-    ClassifierResponse actualResponse = client.predict(classifierRequest, classifierType);
+    ClassifierResponse actualResponse = client.predict(classifierRequest);
 
-    verify(decisionTreeEngineApi).predict(buildClassifierRequestModel());
+    verify(classifierEngineApi).predict(buildClassifierRequestModel());
     assertEquals(buildClassifierResponse(), actualResponse);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_predict_failure() {
     ClassifierRequest classifierRequest = buildClassifierRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).predict(any());
+    doThrow(new InvalidParameterException()).when(classifierEngineApi).predict(any());
 
     try {
-      client.predict(classifierRequest, classifierType);
+      client.predict(classifierRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -145,11 +136,10 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_predict_failure_with_http_server_error_exception() {
     ClassifierRequest classifierRequest = buildClassifierRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(buildHttpServerErrorException("Original Predict Exception Message")).when(decisionTreeEngineApi).predict(any());
+    doThrow(buildHttpServerErrorException("Original Predict Exception Message")).when(classifierEngineApi).predict(any());
 
     try {
-      client.predict(classifierRequest, classifierType);
+      client.predict(classifierRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -160,23 +150,21 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_delegate_predict_accuracy_call_to_engine() {
     ClassifierRequest classifierRequest = buildClassifierRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    when(decisionTreeEngineApi.computePredictAccuracy(buildClassifierRequestModel())).thenReturn(valueOf(123.2));
+    when(classifierEngineApi.computePredictAccuracy(buildClassifierRequestModel())).thenReturn(valueOf(123.2));
 
-    Double actualAccuracy = client.computePredictAccuracy(classifierRequest, classifierType);
+    Double actualAccuracy = client.computePredictAccuracy(classifierRequest);
 
-    verify(decisionTreeEngineApi).computePredictAccuracy(buildClassifierRequestModel());
+    verify(classifierEngineApi).computePredictAccuracy(buildClassifierRequestModel());
     assertEquals(123.2, actualAccuracy);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_predict_accuracy_failure() {
     ClassifierRequest classifierRequest = buildClassifierRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).computePredictAccuracy(any());
+    doThrow(new InvalidParameterException()).when(classifierEngineApi).computePredictAccuracy(any());
 
     try {
-      client.computePredictAccuracy(classifierRequest, classifierType);
+      client.computePredictAccuracy(classifierRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -187,11 +175,10 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_predict_accuracy_failure_with_http_server_error_exception() {
     ClassifierRequest classifierRequest = buildClassifierRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(buildHttpServerErrorException("Original Predict Accuracy Exception Message")).when(decisionTreeEngineApi).computePredictAccuracy(any());
+    doThrow(buildHttpServerErrorException("Original Predict Accuracy Exception Message")).when(classifierEngineApi).computePredictAccuracy(any());
 
     try {
-      client.computePredictAccuracy(classifierRequest, classifierType);
+      client.computePredictAccuracy(classifierRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -202,21 +189,19 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_delegate_cancel_call_to_engine() {
     ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
-    client.cancel(classifierCancelRequest, classifierType);
+    client.cancel(classifierCancelRequest);
 
-    verify(decisionTreeEngineApi).cancel(buildClassifierCancelRequestModel());
+    verify(classifierEngineApi).cancel(buildClassifierCancelRequestModel());
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_cancel_failure() {
     ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).cancel(any());
+    doThrow(new InvalidParameterException()).when(classifierEngineApi).cancel(any());
 
     try {
-      client.cancel(classifierCancelRequest, classifierType);
+      client.cancel(classifierCancelRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -227,11 +212,10 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_cancel_failure_with_http_server_error_exception() {
     ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
-    ClassifierType classifierType = ClassifierType.DECISION_TREE;
-    doThrow(buildHttpServerErrorException("Original Cancel Exception Message")).when(decisionTreeEngineApi).cancel(any());
+    doThrow(buildHttpServerErrorException("Original Cancel Exception Message")).when(classifierEngineApi).cancel(any());
 
     try {
-      client.cancel(classifierCancelRequest, classifierType);
+      client.cancel(classifierCancelRequest);
       fail("should fail");
 
     } catch (Exception exception) {
@@ -240,43 +224,43 @@ public class ClassifierEngineClientTest {
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest() {
-    return new ClassifierStartRequest(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 1);
+    return new ClassifierStartRequest(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 1, ClassifierType.DECISION_TREE);
   }
 
   private static ClassifierStartRequestModel buildClassifierStartRequestModel() {
-    return new ClassifierStartRequestModel(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 1);
+    return new ClassifierStartRequestModel(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 1, ClassifierTypeModel.DECISION_TREE);
   }
 
   private static ClassifierDataRequest buildClassifierDataRequest() {
-    return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(1, 0, 1));
+    return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(1, 0, 1), ClassifierType.DECISION_TREE);
   }
 
   private static ClassifierDataRequestModel buildClassifierDataRequestModel() {
-    return new ClassifierDataRequestModel(REQUEST_ID, "columnName", newArrayList(1, 0, 1));
+    return new ClassifierDataRequestModel(REQUEST_ID, "columnName", newArrayList(1, 0, 1), ClassifierTypeModel.DECISION_TREE);
   }
 
   private static ClassifierRequest buildClassifierRequest() {
-    return new ClassifierRequest(REQUEST_ID);
+    return new ClassifierRequest(REQUEST_ID, ClassifierType.DECISION_TREE);
   }
 
   private static ClassifierRequestModel buildClassifierRequestModel() {
-    return new ClassifierRequestModel(REQUEST_ID);
+    return new ClassifierRequestModel(REQUEST_ID, ClassifierTypeModel.DECISION_TREE);
   }
 
   private static ClassifierResponse buildClassifierResponse() {
-    return new ClassifierResponse(REQUEST_ID, "columnName", newArrayList(0, 1));
+    return new ClassifierResponse(REQUEST_ID, "columnName", newArrayList(0, 1), ClassifierType.DECISION_TREE);
   }
 
   private static ClassifierResponseModel buildClassifierResponseModel() {
-    return new ClassifierResponseModel(REQUEST_ID, "columnName", newArrayList(0, 1));
+    return new ClassifierResponseModel(REQUEST_ID, "columnName", newArrayList(0, 1), ClassifierTypeModel.DECISION_TREE);
   }
 
   private static ClassifierCancelRequest buildClassifierCancelRequest() {
-    return new ClassifierCancelRequest(REQUEST_ID);
+    return new ClassifierCancelRequest(REQUEST_ID, ClassifierType.DECISION_TREE);
   }
 
   private static ClassifierCancelRequestModel buildClassifierCancelRequestModel() {
-    return new ClassifierCancelRequestModel(REQUEST_ID);
+    return new ClassifierCancelRequestModel(REQUEST_ID, ClassifierTypeModel.DECISION_TREE);
   }
 
   private static HttpServerErrorException buildHttpServerErrorException(String exceptionMessage) {

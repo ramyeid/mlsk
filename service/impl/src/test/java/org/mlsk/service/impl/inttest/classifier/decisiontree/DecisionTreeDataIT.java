@@ -20,7 +20,7 @@ import org.springframework.web.client.HttpServerErrorException;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mlsk.service.classifier.resource.decisiontree.DecisionTreeConstants.*;
+import static org.mlsk.service.model.classifier.utils.ClassifierConstants.*;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildFailingMockRequest;
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRequest;
 import static org.mlsk.service.impl.inttest.classifier.decisiontree.helper.DecisionTreeHelper.*;
