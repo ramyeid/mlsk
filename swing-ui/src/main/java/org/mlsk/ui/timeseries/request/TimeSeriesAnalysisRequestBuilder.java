@@ -1,7 +1,7 @@
 package org.mlsk.ui.timeseries.request;
 
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 
 import static java.lang.Integer.parseInt;
 import static org.mlsk.ui.timeseries.csv.CsvToTimeSeries.toTimeSeries;
@@ -14,9 +14,7 @@ public class TimeSeriesAnalysisRequestBuilder {
 
       TimeSeriesModel timeSeries = toTimeSeries(csvLocation, dateColumnName, valueColumnName, dateFormat);
 
-      return new TimeSeriesAnalysisRequestModel()
-          .timeSeries(timeSeries)
-          .numberOfValues(numberOfValues);
+      return new TimeSeriesAnalysisRequestModel(timeSeries, numberOfValues);
     } catch (Exception exception) {
       throw new TimeSeriesAnalysisRequestBuilderException(exception);
     }

@@ -1,8 +1,8 @@
 package org.mlsk.service.impl.timeseries.mapper;
 
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -13,26 +13,15 @@ public final class TimeSeriesModelHelper {
   }
 
   public static TimeSeriesRowModel buildTimeSeriesRowModel(String date, BigDecimal value) {
-    TimeSeriesRowModel timeSeriesRowModel = new TimeSeriesRowModel();
-    timeSeriesRowModel.setDate(date);
-    timeSeriesRowModel.setValue(value);
-    return timeSeriesRowModel;
+    return new TimeSeriesRowModel(date, value);
   }
 
   public static TimeSeriesModel buildTimeSeriesModel(List<TimeSeriesRowModel> rows, String dateColumnName, String valueColumnName, String dateFormat) {
-    TimeSeriesModel timeSeriesModel = new TimeSeriesModel();
-    timeSeriesModel.setRows(rows);
-    timeSeriesModel.setDateColumnName(dateColumnName);
-    timeSeriesModel.setValueColumnName(valueColumnName);
-    timeSeriesModel.setDateFormat(dateFormat);
-    return timeSeriesModel;
+    return new TimeSeriesModel(rows, dateColumnName, valueColumnName, dateFormat);
   }
 
   public static TimeSeriesAnalysisRequestModel buildTimeSeriesAnalysisRequestModel(TimeSeriesModel timeSeries, int numberOfValues) {
-    TimeSeriesAnalysisRequestModel timeSeriesAnalysisRequestModel = new TimeSeriesAnalysisRequestModel();
-    timeSeriesAnalysisRequestModel.setTimeSeries(timeSeries);
-    timeSeriesAnalysisRequestModel.setNumberOfValues(numberOfValues);
-    return timeSeriesAnalysisRequestModel;
+    return new TimeSeriesAnalysisRequestModel(timeSeries, numberOfValues);
   }
 
 }

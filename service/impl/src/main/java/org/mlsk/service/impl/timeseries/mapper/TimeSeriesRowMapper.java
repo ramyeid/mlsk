@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.timeseries.mapper;
 
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
 
 import static java.math.BigDecimal.valueOf;

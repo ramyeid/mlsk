@@ -1,8 +1,8 @@
 package org.mlsk.ui.timeseries.csv;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.exception.CsvParsingException;
 
 import java.math.BigDecimal;
@@ -61,11 +61,7 @@ public class CsvToTimeSeriesTest {
     TimeSeriesRowModel timeSeriesRow3 = buildTimeSeriesRow("1960-04", 4.0);
     TimeSeriesRowModel timeSeriesRow4 = buildTimeSeriesRow("1960-05", 5.0);
     List<TimeSeriesRowModel> timeSeriesRows = newArrayList(timeSeriesRow, timeSeriesRow1, timeSeriesRow2, timeSeriesRow3, timeSeriesRow4);
-    return new TimeSeriesModel()
-        .rows(timeSeriesRows)
-        .dateColumnName("Date")
-        .valueColumnName("Passengers")
-        .dateFormat("%Y-%m");
+    return new TimeSeriesModel(timeSeriesRows, "Date", "Passengers", "%Y-%m");
   }
 
   private static TimeSeriesRowModel buildTimeSeriesRow(String date, Double value) {

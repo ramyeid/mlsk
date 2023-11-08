@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.timeseries.mapper;
 
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 

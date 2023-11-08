@@ -1,9 +1,9 @@
 package org.mlsk.service.impl.timeseries.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
@@ -28,18 +28,18 @@ public class TimeSeriesAnalysisRequestMapperTest {
   }
 
   private static TimeSeriesAnalysisRequestModel buildRequestModel() {
-    TimeSeriesRowModel row1 = new TimeSeriesRowModel().date("date1").value(valueOf(123.1));
-    TimeSeriesRowModel row2 = new TimeSeriesRowModel().date("date2").value(valueOf(124.1));
-    TimeSeriesRowModel row3 = new TimeSeriesRowModel().date("date3").value(valueOf(125.1));
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel("date1", valueOf(123.1));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel("date2", valueOf(124.1));
+    TimeSeriesRowModel row3 = new TimeSeriesRowModel("date3", valueOf(125.1));
 
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2, row3);
     String dateColumnName = "dateColumnName";
     String valueColumnName = "valueColumnName";
     String dateFormat = "dateFormat";
-    TimeSeriesModel timeSeriesModel = new TimeSeriesModel().rows(rows).dateColumnName(dateColumnName).valueColumnName(valueColumnName).dateFormat(dateFormat);
+    TimeSeriesModel timeSeriesModel = new TimeSeriesModel(rows, dateColumnName, valueColumnName, dateFormat);
 
     int numberOfValues = 123;
-    return new TimeSeriesAnalysisRequestModel().timeSeries(timeSeriesModel).numberOfValues(numberOfValues);
+    return new TimeSeriesAnalysisRequestModel(timeSeriesModel, numberOfValues);
   }
 
   private static TimeSeriesAnalysisRequest buildExpectedRequest(long requestId) {

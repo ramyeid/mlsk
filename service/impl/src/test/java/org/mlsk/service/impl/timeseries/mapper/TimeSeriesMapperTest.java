@@ -1,8 +1,8 @@
 package org.mlsk.service.impl.timeseries.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
 
@@ -46,26 +46,26 @@ public class TimeSeriesMapperTest {
   }
 
   private static TimeSeriesModel buildExpectedTimeSeriesModel() {
-    TimeSeriesRowModel row1 = new TimeSeriesRowModel().date("date1").value(valueOf(123.1));
-    TimeSeriesRowModel row2 = new TimeSeriesRowModel().date("date2").value(valueOf(941.2));
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel("date1", valueOf(123.1));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel("date2", valueOf(941.2));
 
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2);
     String dateColumnName = "ActionDate";
     String valueColumnName = "NumberOfEmployees";
     String dateFormat = "yyyy-MM-dd";
-    return new TimeSeriesModel().rows(rows).dateColumnName(dateColumnName).valueColumnName(valueColumnName).dateFormat(dateFormat);
+    return new TimeSeriesModel(rows, dateColumnName, valueColumnName, dateFormat);
   }
 
   private static TimeSeriesModel buildTimeSeriesModel() {
-    TimeSeriesRowModel row1 = new TimeSeriesRowModel().date("1").value(valueOf(1));
-    TimeSeriesRowModel row2 = new TimeSeriesRowModel().date("2").value(valueOf(2));
-    TimeSeriesRowModel row3 = new TimeSeriesRowModel().date("3").value(valueOf(3));
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel("1", valueOf(1));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel("2", valueOf(2));
+    TimeSeriesRowModel row3 = new TimeSeriesRowModel("3", valueOf(3));
 
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2, row3);
     String dateColumnName = "Date";
     String valueColumnName = "Passengers";
     String dateFormat = "yyyy-MM";
-    return new TimeSeriesModel().rows(rows).dateColumnName(dateColumnName).valueColumnName(valueColumnName).dateFormat(dateFormat);
+    return new TimeSeriesModel(rows, dateColumnName, valueColumnName, dateFormat);
   }
 
   private static TimeSeries buildExpectedTimeSeries() {

@@ -2,9 +2,9 @@ package org.mlsk.service.impl.timeseries.api;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.mlsk.api.timeseries.api.TimeSeriesAnalysisApi;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.api.TimeSeriesAnalysisApi;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.timeseries.TimeSeriesAnalysisService;

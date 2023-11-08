@@ -7,6 +7,9 @@ paths: {}
 definitions:
   TimeSeriesAnalysisRequestModel:
     type: object
+    required:
+      - timeSeries
+      - numberOfValues
     properties:
       timeSeries:
         $ref: '../../model/timeseries/TimeSeries.yaml#/definitions/TimeSeriesModel'

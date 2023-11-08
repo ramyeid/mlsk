@@ -2,7 +2,7 @@ package org.mlsk.ui.timeseries.component;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mockito.ArgumentMatcher;
 
 import javax.swing.*;
@@ -39,11 +39,7 @@ public class TimeSeriesOutputPanelTest {
   }
 
   private static TimeSeriesModel emptyTimeSeriesModel() {
-    return new TimeSeriesModel()
-        .rows(emptyList())
-        .dateColumnName("date")
-        .dateFormat("yyyy-MM")
-        .valueColumnName("value");
+    return new TimeSeriesModel(emptyList(), "date", "value", "yyyy-MM");
   }
 
   private static ArgumentMatcher<JLabel> labelMatcher(String expectedMessage) {

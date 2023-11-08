@@ -1,9 +1,9 @@
 package org.mlsk.service.impl.timeseries.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesAnalysisRequestModel;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -21,7 +21,7 @@ public class TimeSeriesModelHelperTest {
 
     TimeSeriesRowModel actualTimeSeriesRowModel = buildTimeSeriesRowModel(date, value);
 
-    TimeSeriesRowModel expectedTimeSeriesRowModel = new TimeSeriesRowModel().date(date).value(value);
+    TimeSeriesRowModel expectedTimeSeriesRowModel = new TimeSeriesRowModel(date, value);
     assertEquals(expectedTimeSeriesRowModel, actualTimeSeriesRowModel);
   }
 
@@ -37,7 +37,7 @@ public class TimeSeriesModelHelperTest {
 
     TimeSeriesModel actualTimeSeriesModel = buildTimeSeriesModel(rows, dateColumnName, valueColumnName, dateFormat);
 
-    TimeSeriesModel expectedTimeSeriesModel = new TimeSeriesModel().rows(rows).dateColumnName(dateColumnName).valueColumnName(valueColumnName).dateFormat(dateFormat);
+    TimeSeriesModel expectedTimeSeriesModel = new TimeSeriesModel(rows, dateColumnName, valueColumnName, dateFormat);
     assertEquals(expectedTimeSeriesModel, actualTimeSeriesModel);
   }
 
@@ -52,7 +52,7 @@ public class TimeSeriesModelHelperTest {
 
     TimeSeriesAnalysisRequestModel actualRequestModel = buildTimeSeriesAnalysisRequestModel(timeSeriesModel, numberOfValues);
 
-    TimeSeriesAnalysisRequestModel expectedRequestModel = new TimeSeriesAnalysisRequestModel().timeSeries(timeSeriesModel).numberOfValues(numberOfValues);
+    TimeSeriesAnalysisRequestModel expectedRequestModel = new TimeSeriesAnalysisRequestModel(timeSeriesModel, numberOfValues);
     assertEquals(expectedRequestModel, actualRequestModel);
   }
 }

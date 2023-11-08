@@ -7,6 +7,8 @@ paths: {}
 definitions:
   ClassifierCancelRequestModel:
     type: object
+    required:
+      - requestId
     properties:
       requestId:
         type: long

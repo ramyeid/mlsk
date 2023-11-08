@@ -3,7 +3,7 @@ package org.mlsk.service.impl.classifier.decisiontree.api;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.api.classifier.model.*;
+import org.mlsk.api.service.classifier.model.*;
 import org.mlsk.service.classifier.ClassifierService;
 import org.mlsk.service.impl.classifier.api.decisiontree.DecisionTreeApiImpl;
 import org.mlsk.service.impl.orchestrator.request.generator.RequestIdGenerator;
@@ -147,11 +147,7 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierStartRequestModel buildClassifierStartRequestModel() {
-    ClassifierStartRequestModel classifierStartRequestModel = new ClassifierStartRequestModel();
-    classifierStartRequestModel.setPredictionColumnName("predictionColumn");
-    classifierStartRequestModel.setActionColumnNames(newArrayList("col1", "col2"));
-    classifierStartRequestModel.setNumberOfValues(12);
-    return classifierStartRequestModel;
+    return new ClassifierStartRequestModel("predictionColumn", newArrayList("col1", "col2"), 12);
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest(long requestId) {
@@ -163,17 +159,11 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierStartResponseModel buildClassifierStartResponseModel(long requestId) {
-    ClassifierStartResponseModel classifierStartResponseModel = new ClassifierStartResponseModel();
-    classifierStartResponseModel.setRequestId(requestId);
-    return classifierStartResponseModel;
+    return new ClassifierStartResponseModel(requestId);
   }
 
   private static ClassifierDataRequestModel buildClassifierDataRequestModel(long requestId) {
-    ClassifierDataRequestModel classifierDataRequestModel = new ClassifierDataRequestModel();
-    classifierDataRequestModel.setRequestId(requestId);
-    classifierDataRequestModel.setColumnName("columnName");
-    classifierDataRequestModel.setValues(newArrayList(0, 1, 2));
-    return classifierDataRequestModel;
+    return new ClassifierDataRequestModel(requestId, "columnName", newArrayList(0, 1, 2));
   }
 
   private static ClassifierDataRequest buildClassifierDataRequest(long requestId) {
@@ -181,7 +171,7 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierRequestModel buildClassifierRequestModel(long requestId) {
-    return new ClassifierRequestModel().requestId(requestId);
+    return new ClassifierRequestModel(requestId);
   }
 
   private static ClassifierRequest buildClassifierRequest(long requestId) {
@@ -189,11 +179,7 @@ public class DecisionTreeApiImplTest {
   }
 
   private static ClassifierResponseModel buildClassifierResponseModel(long requestId) {
-    ClassifierResponseModel classifierResponseModel = new ClassifierResponseModel();
-    classifierResponseModel.setColumnName("columnName");
-    classifierResponseModel.setValues(newArrayList(0, 1));
-    classifierResponseModel.setRequestId(requestId);
-    return classifierResponseModel;
+    return new ClassifierResponseModel(requestId, "columnName", newArrayList(0, 1));
   }
 
   private static ClassifierResponse buildClassifierResponse(long requestId) {

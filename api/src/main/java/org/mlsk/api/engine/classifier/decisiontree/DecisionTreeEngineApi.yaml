@@ -6,12 +6,12 @@ info:
     of the Machine Learning Swiss Knife, Decision Tree, Engine side.
     The Service is written in PYTHON
 tags:
-  - name: DecisionTree
+  - name: DecisionTreeEngine
 paths:
   '/decision-tree/start':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeEngine
       summary: Decision Tree Start Request
       operationId: start
       description: Notify Engine that a decision tree algorithm will be launched
@@ -29,7 +29,7 @@ paths:
   '/decision-tree/data':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeEngine
       summary: Decision Tree Data Request
       operationId: data
       description: Incrementally send the data of the current decision tree data
@@ -47,7 +47,7 @@ paths:
   '/decision-tree/predict':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeEngine
       summary: Decision Tree Predict
       operationId: predict
       description: Predict the values with Decision Tree algorithm.
@@ -69,7 +69,7 @@ paths:
   '/decision-tree/predict-accuracy':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeEngine
       summary: Decision Tree Predict Accuracy
       operationId: computePredictAccuracy
       description: |
@@ -93,7 +93,7 @@ paths:
   '/decision-tree/cancel':
     post:
       tags:
-        - DecisionTree
+        - DecisionTreeEngine
       summary: Decision Tree Cancel Request
       operationId: cancel
       description: |
@@ -103,7 +103,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../model/classifier/ClassifierCancelRequest.yaml#/definitions/ClassifierCancelRequestModel'
+              $ref: '../model/ClassifierCancelRequest.yaml#/definitions/ClassifierCancelRequestModel'
       responses:
         '200':
           description: Returns Ok, data has been cleared.

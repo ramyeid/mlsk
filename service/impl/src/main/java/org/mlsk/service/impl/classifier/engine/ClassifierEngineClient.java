@@ -7,8 +7,12 @@ import org.mlsk.service.classifier.ClassifierEngine;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
 import org.mlsk.service.model.classifier.*;
+import org.springframework.http.MediaType;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.HttpServerErrorException;
+import org.springframework.web.client.RestTemplate;
 
+import static com.google.common.collect.Lists.newArrayList;
 import static java.lang.String.format;
 
 // TODO Use OpenAPI models and Generate Python API from OpenAPI
@@ -18,11 +22,16 @@ public class ClassifierEngineClient implements ClassifierEngine {
 
   public ClassifierEngineClient(Endpoint endpoint) {
     this(new RestClient(endpoint));
+    RestTemplate restTemplate = new RestTemplate();
+    MappingJackson2HttpMessageConverter messageConverter = new MappingJackson2HttpMessageConverter();
+    messageConverter.setSupportedMediaTypes(newArrayList(MediaType.ALL));
+    restTemplate.setMessageConverters(newArrayList(messageConverter));
   }
 
   @VisibleForTesting
   public ClassifierEngineClient(RestClient restClient) {
     this.restClient = restClient;
+
   }
 
   @Override

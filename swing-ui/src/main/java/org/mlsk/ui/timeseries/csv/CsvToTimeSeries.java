@@ -3,8 +3,8 @@ package org.mlsk.ui.timeseries.csv;
 import com.opencsv.CSVReader;
 import com.opencsv.bean.CsvToBeanBuilder;
 import com.opencsv.bean.HeaderColumnNameTranslateMappingStrategy;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.ui.exception.CsvParsingException;
 
 import java.io.FileReader;
@@ -41,11 +41,7 @@ public final class CsvToTimeSeries {
           .build()
           .parse();
 
-      return new TimeSeriesModel()
-          .rows(rows)
-          .dateColumnName(dateColumnName)
-          .valueColumnName(valueColumnName)
-          .dateFormat(dateFormat);
+      return new TimeSeriesModel(rows, dateColumnName, valueColumnName, dateFormat);
     } catch (CsvParsingException exception) {
       throw exception;
     } catch (Exception exception) {

@@ -7,15 +7,19 @@ paths: {}
 definitions:
   ClassifierDataRequestModel:
     type: object
+    required:
+      - requestId
+      - columnName
+      - values
     properties:
       requestId:
         type: long
         description: Unique id assigned to a request
+      columnName:
+        type: string
+        description: name of the current data column
       values:
         type: array
         description: values of current column name
         items:
           type: integer
-      columnName:
-        type: string
-        description: name of the current data column

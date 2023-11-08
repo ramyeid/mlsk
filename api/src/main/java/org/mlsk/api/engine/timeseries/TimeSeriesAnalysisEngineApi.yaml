@@ -6,12 +6,12 @@ info:
     of the Machine Learning Swiss Knife, Time Series Analysis, Engine side.
     The Service is written in PYTHON
 tags:
-  - name: TimeSeriesAnalysis
+  - name: TimeSeriesAnalysisEngine
 paths:
   '/time-series-analysis/forecast':
     post:
       tags:
-        - TimeSeriesAnalysis
+        - TimeSeriesAnalysisEngine
       summary: Time Series Analysis Forecast
       operationId: forecast
       description: Forecast with Time Series Analysis Algorithm
@@ -36,7 +36,7 @@ paths:
   '/time-series-analysis/forecast-accuracy':
     post:
       tags:
-        - TimeSeriesAnalysis
+        - TimeSeriesAnalysisEngine
       summary: Time Series Analysis Forecast Accuracy
       operationId: compute_accuracy_of_forecast
       description: |
@@ -61,7 +61,7 @@ paths:
   '/time-series-analysis/predict':
     post:
       tags:
-        - TimeSeriesAnalysis
+        - TimeSeriesAnalysisEngine
       summary: Time Series Analysis Predict
       operationId: predict
       description: Predict with Time Series Analysis Algorithm.
@@ -70,7 +70,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '../../model/timeseries/TimeSeriesAnalysisRequest.yaml#/definitions/TimeSeriesAnalysisRequestModel'
+              $ref: '../model/TimeSeriesAnalysisRequest.yaml#/definitions/TimeSeriesAnalysisRequestModel'
       responses:
         '200':
           description: |

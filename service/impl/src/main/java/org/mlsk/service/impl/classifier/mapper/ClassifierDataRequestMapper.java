@@ -1,6 +1,6 @@
 package org.mlsk.service.impl.classifier.mapper;
 
-import org.mlsk.api.classifier.model.ClassifierDataRequestModel;
+import org.mlsk.api.service.classifier.model.ClassifierDataRequestModel;
 import org.mlsk.service.model.classifier.ClassifierDataRequest;
 
 import java.util.List;

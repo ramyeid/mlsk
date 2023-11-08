@@ -18,8 +18,38 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jcl</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -28,9 +58,8 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>jakarta.annotation</groupId>
-            <artifactId>jakarta.annotation-api</artifactId>
-            <scope>compile</scope>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
         </dependency>
     </dependencies>
 
@@ -39,20 +68,16 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>5.3.0</version>
+                <version>6.6.0</version>
                 <configuration>
-                    <generatorName>spring</generatorName>
                     <output>${basedir}/target/generated-sources</output>
                     <generateApis>true</generateApis>
                     <generateApiTests>false</generateApiTests>
                     <generateApiDocumentation>false</generateApiDocumentation>
-                    <generateModels>true</generateModels>
-                    <generateModelTests>false</generateModelTests>
-                    <generateModelDocumentation>false</generateModelDocumentation>
-                    <generateSupportingFiles>false</generateSupportingFiles>
 
                     <configOptions>
                         <openApiNullable>false</openApiNullable>
+                        <useOptional>true</useOptional>
                         <java8>true</java8>
                         <skipDefaultInterface>true</skipDefaultInterface>
                         <sourceFolder>src/main/java</sourceFolder>
@@ -62,31 +87,231 @@
                 </configuration>
                 <executions>
                     <execution>
-                        <id>time-series-analysis</id>
+                        <id>time-series-analysis-service-model</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+                            <!-- Using spring generator, since it will generate constructor with required parameters -->
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.timeseries.model</modelPackage>
+
                             <inputSpec>
                                 ${basedir}/src/main/java/org/mlsk/api/service/timeseries/TimeSeriesAnalysisServiceApi.yaml
                             </inputSpec>
-                            <apiPackage>org.mlsk.api.timeseries.api</apiPackage>
-                            <modelPackage>org.mlsk.api.timeseries.model</modelPackage>
                         </configuration>
                     </execution>
                     <execution>
-                        <id>decision-tree</id>
+                        <id>time-series-analysis-service-api</id>
                         <phase>generate-sources</phase>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.timeseries.model</modelPackage>
+                            <apiPackage>org.mlsk.api.service.timeseries.api</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/service/timeseries/TimeSeriesAnalysisServiceApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>time-series-analysis-service-client</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <library>resttemplate</library>
+                            <generatorName>java</generatorName>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.timeseries.model</modelPackage>
+                            <invokerPackage>org.mlsk.api.service.timeseries.client</invokerPackage>
+                            <apiPackage>org.mlsk.api.service.timeseries.client</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/service/timeseries/TimeSeriesAnalysisServiceApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>time-series-analysis-engine-model</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Using spring generator, since it will generate constructor with required parameters -->
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.engine.timeseries.model</modelPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/engine/timeseries/TimeSeriesAnalysisEngineApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>time-series-analysis-engine-client</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <library>resttemplate</library>
+                            <generatorName>java</generatorName>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.engine.timeseries.model</modelPackage>
+                            <invokerPackage>org.mlsk.api.engine.timeseries.client</invokerPackage>
+                            <apiPackage>org.mlsk.api.engine.timeseries.client</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/engine/timeseries/TimeSeriesAnalysisEngineApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>decision-tree-service-model</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Using spring generator, since it will generate constructor with required parameters -->
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.classifier.model</modelPackage>
+
                             <inputSpec>
                                 ${basedir}/src/main/java/org/mlsk/api/service/classifier/decisiontree/DecisionTreeServiceApi.yaml
                             </inputSpec>
-                            <apiPackage>org.mlsk.api.decisiontree.api</apiPackage>
-                            <modelPackage>org.mlsk.api.classifier.model</modelPackage>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>decision-tree-service-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.classifier.model</modelPackage>
+                            <apiPackage>org.mlsk.api.service.classifier.decisiontree.api</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/service/classifier/decisiontree/DecisionTreeServiceApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>decision-tree-service-client</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <library>resttemplate</library>
+                            <generatorName>java</generatorName>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.classifier.model</modelPackage>
+                            <invokerPackage>org.mlsk.api.service.classifier.decisiontree.client</invokerPackage>
+                            <apiPackage>org.mlsk.api.service.classifier.decisiontree.client</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/service/classifier/decisiontree/DecisionTreeServiceApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>decision-tree-engine-model</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Using spring generator, since it will generate constructor with required parameters -->
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.engine.classifier.model</modelPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/engine/classifier/decisiontree/DecisionTreeEngineApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>decision-tree-engine-client</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <library>resttemplate</library>
+                            <generatorName>java</generatorName>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.engine.classifier.model</modelPackage>
+                            <invokerPackage>org.mlsk.api.engine.classifier.decisiontree.client</invokerPackage>
+                            <apiPackage>org.mlsk.api.engine.classifier.decisiontree.client</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/engine/classifier/decisiontree/DecisionTreeEngineApi.yaml
+                            </inputSpec>
                         </configuration>
                     </execution>
                 </executions>

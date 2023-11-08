@@ -7,6 +7,11 @@ paths: {}
 definitions:
   TimeSeriesModel:
     type: object
+    required:
+      - rows
+      - dateColumnName
+      - valueColumnName
+      - dateFormat
     properties:
       rows:
         type: array

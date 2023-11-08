@@ -7,6 +7,11 @@ paths: {}
 definitions:
   ClassifierStartRequestModel:
     type: object
+    required:
+      - requestId
+      - predictionColumnName
+      - actionColumnNames
+      - numberOfValues
     properties:
       requestId:
         type: long

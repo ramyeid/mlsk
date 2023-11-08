@@ -1,7 +1,7 @@
 package org.mlsk.service.impl.timeseries.mapper;
 
 import org.junit.jupiter.api.Test;
-import org.mlsk.api.timeseries.model.TimeSeriesRowModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.service.model.timeseries.TimeSeriesRow;
 
 import static java.math.BigDecimal.valueOf;
@@ -34,11 +34,11 @@ public class TimeSeriesRowMapperTest {
   }
 
   private static TimeSeriesRowModel buildExpectedTimeSeriesRowModel() {
-    return new TimeSeriesRowModel().date("date1").value(valueOf(123.1));
+    return new TimeSeriesRowModel("date1", valueOf(123.1));
   }
 
   private static TimeSeriesRowModel buildTimeSeriesRowModel() {
-    return new TimeSeriesRowModel().date("1").value(valueOf(1));
+    return new TimeSeriesRowModel("1", valueOf(1));
   }
 
   private static TimeSeriesRow buildExpectedTimeSeriesRow() {

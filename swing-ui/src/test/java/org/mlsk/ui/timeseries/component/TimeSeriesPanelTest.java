@@ -3,7 +3,7 @@ package org.mlsk.ui.timeseries.component;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.api.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.service.timeseries.model.TimeSeriesModel;
 import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
