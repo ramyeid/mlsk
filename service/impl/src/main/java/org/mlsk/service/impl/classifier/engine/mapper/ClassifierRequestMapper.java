@@ -9,6 +9,9 @@ public final class ClassifierRequestMapper {
   }
 
   public static ClassifierRequestModel toEngineModel(ClassifierRequest classifierRequest) {
-    return new ClassifierRequestModel(classifierRequest.getRequestId());
+    return new ClassifierRequestModel(
+        classifierRequest.getRequestId(),
+        ClassifierTypeMapper.toEngineModel(classifierRequest.getClassifierType())
+    );
   }
 }

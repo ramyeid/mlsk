@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.model.Endpoint;
-import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
@@ -102,28 +101,28 @@ public class EngineImpl implements Engine {
   }
 
   @Override
-  public synchronized void start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType) {
-    this.classifierEngineClient.start(classifierStartRequest, classifierType);
+  public synchronized void start(ClassifierStartRequest classifierStartRequest) {
+    this.classifierEngineClient.start(classifierStartRequest);
   }
 
   @Override
-  public synchronized void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType) {
-    this.classifierEngineClient.data(classifierDataRequest, classifierType);
+  public synchronized void data(ClassifierDataRequest classifierDataRequest) {
+    this.classifierEngineClient.data(classifierDataRequest);
   }
 
   @Override
-  public synchronized ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    return this.classifierEngineClient.predict(classifierRequest, classifierType);
+  public synchronized ClassifierResponse predict(ClassifierRequest classifierRequest) {
+    return this.classifierEngineClient.predict(classifierRequest);
   }
 
   @Override
-  public synchronized Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType) {
-    return this.classifierEngineClient.computePredictAccuracy(classifierRequest, classifierType);
+  public synchronized Double computePredictAccuracy(ClassifierRequest classifierRequest) {
+    return this.classifierEngineClient.computePredictAccuracy(classifierRequest);
   }
 
   @Override
-  public synchronized void cancel(ClassifierCancelRequest classifierCancelRequest, ClassifierType classifierType) {
-    this.classifierEngineClient.cancel(classifierCancelRequest, classifierType);
+  public synchronized void cancel(ClassifierCancelRequest classifierCancelRequest) {
+    this.classifierEngineClient.cancel(classifierCancelRequest);
   }
 
   @Override

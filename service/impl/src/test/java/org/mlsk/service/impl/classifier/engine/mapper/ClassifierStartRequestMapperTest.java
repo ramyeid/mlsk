@@ -2,7 +2,9 @@ package org.mlsk.service.impl.classifier.engine.mapper;
 
 import org.junit.jupiter.api.Test;
 import org.mlsk.api.engine.classifier.model.ClassifierStartRequestModel;
+import org.mlsk.api.engine.classifier.model.ClassifierTypeModel;
 import org.mlsk.service.model.classifier.ClassifierStartRequest;
+import org.mlsk.service.model.classifier.ClassifierType;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,11 +22,11 @@ public class ClassifierStartRequestMapperTest {
   }
 
   private static ClassifierStartRequestModel buildExpectedModel() {
-    return new ClassifierStartRequestModel(11L, "predictionColumnName", newArrayList("actionColumn1", "actionColumn2"), 5);
+    return new ClassifierStartRequestModel(11L, "predictionColumnName", newArrayList("actionColumn1", "actionColumn2"), 5, ClassifierTypeModel.DECISION_TREE);
   }
 
   private static ClassifierStartRequest buildClassifierStartRequest() {
-    return new ClassifierStartRequest(11L, "predictionColumnName", newArrayList("actionColumn1", "actionColumn2"), 5);
+    return new ClassifierStartRequest(11L, "predictionColumnName", newArrayList("actionColumn1", "actionColumn2"), 5, ClassifierType.DECISION_TREE);
   }
 
 }

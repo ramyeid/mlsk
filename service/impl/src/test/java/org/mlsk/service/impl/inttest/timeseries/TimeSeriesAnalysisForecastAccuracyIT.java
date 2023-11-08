@@ -25,7 +25,7 @@ import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRe
 import static org.mlsk.service.impl.inttest.timeseries.helper.TimeSeriesAnalysisHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mlsk.service.model.engine.EngineState.WAITING;
-import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.FORECAST_ACCURACY_URL;
+import static org.mlsk.service.model.timeseries.utils.TimeSeriesAnalysisConstants.FORECAST_ACCURACY_URL;
 
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisForecastAccuracyIT extends AbstractIT {

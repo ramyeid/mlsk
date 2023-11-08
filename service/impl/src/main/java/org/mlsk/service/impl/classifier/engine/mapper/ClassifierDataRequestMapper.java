@@ -9,6 +9,11 @@ public final class ClassifierDataRequestMapper {
   }
 
   public static ClassifierDataRequestModel toEngineModel(ClassifierDataRequest classifierDataRequest) {
-    return new ClassifierDataRequestModel(classifierDataRequest.getRequestId(), classifierDataRequest.getColumnName(), classifierDataRequest.getValues());
+    return new ClassifierDataRequestModel(
+        classifierDataRequest.getRequestId(),
+        classifierDataRequest.getColumnName(),
+        classifierDataRequest.getValues(),
+        ClassifierTypeMapper.toEngineModel(classifierDataRequest.getClassifierType())
+    );
   }
 }

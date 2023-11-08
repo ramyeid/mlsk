@@ -3,6 +3,7 @@ package org.mlsk.service.impl.classifier.api.mapper;
 import org.junit.jupiter.api.Test;
 import org.mlsk.api.service.classifier.model.ClassifierResponseModel;
 import org.mlsk.service.model.classifier.ClassifierResponse;
+import org.mlsk.service.model.classifier.ClassifierType;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -20,7 +21,7 @@ public class ClassifierResponseMapperTest {
   }
 
   private static ClassifierResponse buildClassifierResponse() {
-    return new ClassifierResponse(1L, "columnName", newArrayList(1, 2, 3));
+    return new ClassifierResponse(1L, "columnName", newArrayList(1, 2, 3), ClassifierType.DECISION_TREE);
   }
 
   private static ClassifierResponseModel buildExpectedResponseModel() {

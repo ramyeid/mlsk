@@ -12,6 +12,7 @@ definitions:
       - predictionColumnName
       - actionColumnNames
       - numberOfValues
+      - classifierType
     properties:
       requestId:
         type: long
@@ -27,3 +28,5 @@ definitions:
       numberOfValues:
         type: integer
         description: Number Of values to predict/etc. using the algorithm
+      classifierType:
+        $ref: './ClassifierType.yaml#/definitions/ClassifierTypeModel'

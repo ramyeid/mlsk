@@ -4,11 +4,11 @@ import org.mlsk.service.model.classifier.*;
 
 public interface ClassifierService {
 
-  ClassifierStartResponse start(ClassifierStartRequest classifierStartRequest, ClassifierType classifierType);
+  ClassifierStartResponse start(ClassifierStartRequest classifierStartRequest);
 
-  void data(ClassifierDataRequest classifierDataRequest, ClassifierType classifierType);
+  void data(ClassifierDataRequest classifierDataRequest);
 
-  ClassifierResponse predict(ClassifierRequest classifierRequest, ClassifierType classifierType);
+  ClassifierResponse predict(ClassifierRequest classifierRequest);
 
-  Double computePredictAccuracy(ClassifierRequest classifierRequest, ClassifierType classifierType);
+  Double computePredictAccuracy(ClassifierRequest classifierRequest);
 }

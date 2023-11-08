@@ -6,7 +6,8 @@ from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
 from utils.controller_utils import build_default_response
 from exception.engine_computation_exception import EngineComputationException
-from classifier.service.decision_tree_service import DecisionTreeService
+from classifier.service.classifier_service_factory import ClassifierServiceFactory
+from classifier.model.classifier_type import ClassifierType
 from classifier.model.classifier_start_request import ClassifierStartRequest
 from classifier.model.classifier_data_request import ClassifierDataRequest
 from classifier.model.classifier_request import ClassifierRequest
@@ -34,8 +35,9 @@ def start() -> str:
 
     classifier_start_request = ClassifierStartRequest.from_json(request.json)
     request_id = classifier_start_request.get_request_id()
+    classifier_type = classifier_start_request.get_classifier_type()
 
-    get_logger().info('[Start][%d] Start Decision Tree', request_id)
+    get_logger().info('[Start][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
 
     __throw_exception_if_data_available_on_start(request_id)
 
@@ -50,13 +52,13 @@ def start() -> str:
 
   except Exception as exception:
     __cancel_request(request_id)
-    error_message = '[%s] Exception %s raised while starting decision tree: %s' % (request_id, type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while starting %s: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info('[End][%d] Start Decision Tree', request_id)
+    get_logger().info('[End][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
 
 
 def on_data_received() -> str:
@@ -74,8 +76,9 @@ def on_data_received() -> str:
 
     classifier_data_request = ClassifierDataRequest.from_json(request.json)
     request_id = classifier_data_request.get_request_id()
+    classifier_type = classifier_data_request.get_classifier_type()
 
-    get_logger().info('[Start][%d] Receiving Decision Tree Data', request_id)
+    get_logger().info('[Start][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
 
     __throw_exception_if_start_was_not_called(request_id)
 
@@ -87,13 +90,13 @@ def on_data_received() -> str:
 
   except Exception as exception:
     __cancel_request(request_id)
-    error_message = '[%s] Exception %s raised while receiving decision tree data: %s' % (request_id, type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while receiving %s data: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info('[End][%d] Receiving Decision Tree Data', request_id)
+    get_logger().info('[End][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
 
 
 def predict() -> str:
@@ -114,10 +117,11 @@ def predict() -> str:
 
     classifier_request = ClassifierRequest.from_json(request.json)
     request_id = classifier_request.get_request_id()
+    classifier_type = classifier_request.get_classifier_type()
 
-    get_logger().info('[Start][%d] Decision Tree Predict', request_id)
+    get_logger().info('[Start][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
 
-    __throw_exception_if_data_is_none_on_computation(request_id)
+    __throw_exception_if_data_is_none_on_computation(request_id, classifier_type)
 
     classifier_data = classifier_data_builder_registry.get_builder(request_id).build_classifier_data()
 
@@ -125,23 +129,23 @@ def predict() -> str:
     action_column_names = classifier_data.get_action_column_names()
     prediction_column_name = classifier_data.get_prediction_column_name()
     number_of_values = classifier_data.get_number_of_values()
-    decision_tree_service = DecisionTreeService(data, action_column_names, prediction_column_name, number_of_values)
+    classifier_service = ClassifierServiceFactory.build_service(classifier_type, data, action_column_names, prediction_column_name, number_of_values)
 
-    predicted_data_frame = decision_tree_service.predict()
+    predicted_data_frame = classifier_service.predict()
 
-    classifier_response = ClassifierResponse.from_data_frame(predicted_data_frame, request_id, prediction_column_name)
+    classifier_response = ClassifierResponse.from_data_frame(predicted_data_frame, request_id, prediction_column_name, classifier_type)
 
     return json.dumps(classifier_response, cls=JsonComplexEncoder)
 
   except Exception as exception:
-    error_message = '[%s] Exception %s raised while predicting: %s' % (request_id, type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while %s predicting: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
     __cancel_request(request_id)
-    get_logger().info('[End][%d] Decision Tree Predict', request_id)
+    get_logger().info('[End][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
 
 
 def compute_accuracy_of_predict() -> str:
@@ -163,10 +167,11 @@ def compute_accuracy_of_predict() -> str:
 
     classifier_request = ClassifierRequest.from_json(request.json)
     request_id = classifier_request.get_request_id()
+    classifier_type = classifier_request.get_classifier_type()
 
-    get_logger().info('[Start][%d] Decision Tree Predict accuracy', request_id)
+    get_logger().info('[Start][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
 
-    __throw_exception_if_data_is_none_on_computation(request_id)
+    __throw_exception_if_data_is_none_on_computation(request_id, classifier_type)
 
     classifier_data = classifier_data_builder_registry.get_builder(request_id).build_classifier_data()
 
@@ -174,19 +179,19 @@ def compute_accuracy_of_predict() -> str:
     action_column_names = classifier_data.get_action_column_names()
     prediction_column_name = classifier_data.get_prediction_column_name()
     number_of_values = classifier_data.get_number_of_values()
-    decision_tree_service = DecisionTreeService(data, action_column_names, prediction_column_name, number_of_values)
+    classifier_service = ClassifierServiceFactory.build_service(classifier_type, data, action_column_names, prediction_column_name, number_of_values)
 
-    return str(decision_tree_service.compute_predict_accuracy())
+    return str(classifier_service.compute_predict_accuracy())
 
   except Exception as exception:
-    error_message = '[%s] Exception %s raised while computing predict accuracy: %s' % (request_id, type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while computing %s predict accuracy: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
     __cancel_request(request_id)
-    get_logger().info('[End][%d] Decision Tree Predict accuracy', request_id)
+    get_logger().info('[End][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
 
 
 # TODO: Make this generic for all engine instead of only for Classifier Requests
@@ -203,8 +208,9 @@ def cancel() -> str:
   try:
     classifier_cancel_request = ClassifierCancelRequest.from_json(request.json)
     request_id = classifier_cancel_request.get_request_id()
+    classifier_type = classifier_cancel_request.get_classifier_type()
 
-    get_logger().info('[Start][%d] Cancel Decision Tree Request', request_id)
+    get_logger().info('[Start][%d] Cancel %s Request', request_id, classifier_type.to_lower_case_with_space())
 
     __cancel_request(request_id)
 
@@ -212,22 +218,22 @@ def cancel() -> str:
 
   except Exception as exception:
     __cancel_request(request_id)
-    error_message = '[%s] Exception %s raised while cancelling decision tree: %s' % (request_id, type(exception).__name__, exception)
+    error_message = '[%s] Exception %s raised while cancelling %s: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
     raise EngineComputationException(error_message)
 
   finally:
-    get_logger().info('[End][%d] Cancel Decision Tree Request', request_id)
+    get_logger().info('[End][%d] Cancel %s Request', request_id, classifier_type.to_lower_case_with_space())
 
 
-def __throw_exception_if_data_is_none_on_computation(request_id: int) -> None:
+def __throw_exception_if_data_is_none_on_computation(request_id: int, classifier_type: ClassifierType) -> None:
   global classifier_data_builder_registry
 
   if not classifier_data_builder_registry.contains_builder(request_id) or\
      not classifier_data_builder_registry.get_builder(request_id).contains_start_data() or\
      not classifier_data_builder_registry.get_builder(request_id).contains_data():
-    error_message = 'Error, No Data was set to launch Decision Tree computation.'
+    error_message = 'Error, No Data was set to launch %s computation.' % (classifier_type.to_lower_case_with_space())
     raise EngineComputationException(error_message)
 
 

@@ -5,9 +5,10 @@ from sklearn.metrics import accuracy_score
 import numpy as np
 import pandas as pd
 from classifier.service.classifier_exception import ClassifierException
+from classifier.service.classifier_service import IClassifierService
 
 
-class DecisionTreeService:
+class DecisionTreeService(IClassifierService):
   '''
   Service that will predict the values using decision tree algorithm
 
@@ -31,7 +32,7 @@ class DecisionTreeService:
   def predict(self) -> pd.DataFrame:
     '''
     Predict the next {number_of_values} values to come using Decision Tree algorithm
-    This method will compute Decision tree with feature and target values taken from [data]
+    This method will compute Decision tree with feature and target values taken from {data}
 
     Returns
       pandas.DataFrame -> data frame containing one column with predicted values only
@@ -49,7 +50,7 @@ class DecisionTreeService:
 
   def compute_predict_accuracy(self) -> float:
     '''
-    Compute the accuracy of the predict service.
+    Compute the accuracy of the predict service using Decision tree service.
     Predict the last {number_of_values} values and compare them to the actual values
 
     Returns

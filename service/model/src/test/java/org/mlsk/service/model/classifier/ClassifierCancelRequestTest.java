@@ -10,7 +10,7 @@ public class ClassifierCancelRequestTest {
 
   @Test
   public void should_be_able_to_deserialize_and_serialize_to_json() throws JsonProcessingException {
-    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(1L);
+    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(1L, ClassifierType.DECISION_TREE);
     ObjectMapper objectMapper = new ObjectMapper();
 
     String serializedDataResponse = objectMapper.writeValueAsString(classifierCancelRequest);

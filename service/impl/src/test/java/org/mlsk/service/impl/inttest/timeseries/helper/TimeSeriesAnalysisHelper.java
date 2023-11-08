@@ -22,7 +22,12 @@ public final class TimeSeriesAnalysisHelper {
     org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel row2 = new org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel("date2", valueOf(2.));
 
     List<org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel> rows = newArrayList(row1, row2);
-    return new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy-MM");
+    return new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(
+        rows,
+        "dateColumnName",
+        "valueColumnName",
+        "yyyy-MM"
+    );
   }
 
   public static TimeSeriesModel buildServiceTimeSeriesModelResultModel() {
@@ -30,7 +35,12 @@ public final class TimeSeriesAnalysisHelper {
     TimeSeriesRowModel row2 = new TimeSeriesRowModel("date2", valueOf(2.));
 
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2);
-    return new TimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy-MM");
+    return new TimeSeriesModel(
+        rows,
+        "dateColumnName",
+        "valueColumnName",
+        "yyyy-MM"
+    );
   }
 
   public static org.mlsk.api.engine.timeseries.model.TimeSeriesModel buildEngineTimeSeriesResult2Model() {
@@ -38,7 +48,12 @@ public final class TimeSeriesAnalysisHelper {
     org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel row2 = new org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel("date4", valueOf(4.));
 
     List<org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel> rows = newArrayList(row1, row2);
-    return new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(rows, "date", "value", "yyyy");
+    return new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(
+        rows,
+        "date",
+        "value",
+        "yyyy"
+    );
   }
 
   public static TimeSeriesModel buildServiceTimeSeriesModelResult2Model() {
@@ -46,7 +61,12 @@ public final class TimeSeriesAnalysisHelper {
     TimeSeriesRowModel row2 = new TimeSeriesRowModel("date4", valueOf(4.));
 
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2);
-    return new TimeSeriesModel(rows, "date", "value", "yyyy");
+    return new TimeSeriesModel(
+        rows,
+        "date",
+        "value",
+        "yyyy"
+    );
   }
 
   public static org.mlsk.api.engine.timeseries.model.TimeSeriesAnalysisRequestModel buildEngineTimeSeriesAnalysisRequestModel(long requestId) {
@@ -56,7 +76,12 @@ public final class TimeSeriesAnalysisHelper {
     org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel row4 = new org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel("date2", valueOf(44.));
 
     List<org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel> rows = newArrayList(row1, row2, row3, row4);
-    org.mlsk.api.engine.timeseries.model.TimeSeriesModel timeSeries = new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy-MM");
+    org.mlsk.api.engine.timeseries.model.TimeSeriesModel timeSeries = new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(
+        rows,
+        "dateColumnName",
+        "valueColumnName",
+        "yyyy-MM"
+    );
 
     return new org.mlsk.api.engine.timeseries.model.TimeSeriesAnalysisRequestModel(requestId, timeSeries, 2);
   }
@@ -68,7 +93,12 @@ public final class TimeSeriesAnalysisHelper {
     TimeSeriesRowModel row4 = new TimeSeriesRowModel("date2", valueOf(44.));
 
     List<TimeSeriesRowModel> rows = newArrayList(row1, row2, row3, row4);
-    TimeSeriesModel timeSeries = new TimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy-MM");
+    TimeSeriesModel timeSeries = new TimeSeriesModel(
+        rows,
+        "dateColumnName",
+        "valueColumnName",
+        "yyyy-MM"
+    );
 
     return new TimeSeriesAnalysisRequestModel(timeSeries, 2);
   }
@@ -78,7 +108,12 @@ public final class TimeSeriesAnalysisHelper {
     org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel row2 = new org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel("date0", valueOf(22.));
 
     List<org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel> rows = newArrayList(row1, row2);
-    org.mlsk.api.engine.timeseries.model.TimeSeriesModel timeSeries = new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(rows, "dateColumnName", "valueColumnName", "yyyy-MM");
+    org.mlsk.api.engine.timeseries.model.TimeSeriesModel timeSeries = new org.mlsk.api.engine.timeseries.model.TimeSeriesModel(
+        rows,
+        "dateColumnName",
+        "valueColumnName",
+        "yyyy-MM"
+    );
 
     return new org.mlsk.api.engine.timeseries.model.TimeSeriesAnalysisRequestModel(requestId, timeSeries, 2);
   }

@@ -9,6 +9,12 @@ public final class ClassifierStartRequestMapper {
   }
 
   public static ClassifierStartRequestModel toEngineModel(ClassifierStartRequest classifierStartRequest) {
-    return new ClassifierStartRequestModel(classifierStartRequest.getRequestId(), classifierStartRequest.getPredictionColumnName(), classifierStartRequest.getActionColumnNames(), classifierStartRequest.getNumberOfValues());
+    return new ClassifierStartRequestModel(
+        classifierStartRequest.getRequestId(),
+        classifierStartRequest.getPredictionColumnName(),
+        classifierStartRequest.getActionColumnNames(),
+        classifierStartRequest.getNumberOfValues(),
+        ClassifierTypeMapper.toEngineModel(classifierStartRequest.getClassifierType())
+    );
   }
 }

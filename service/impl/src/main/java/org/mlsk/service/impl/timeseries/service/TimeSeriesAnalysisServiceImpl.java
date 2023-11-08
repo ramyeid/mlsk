@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import static java.lang.String.format;
-import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.*;
+import static org.mlsk.service.model.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
 @Service
 public class TimeSeriesAnalysisServiceImpl implements TimeSeriesAnalysisService {

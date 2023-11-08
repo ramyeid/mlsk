@@ -1,0 +1,28 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ClassifierResponseModel
+  description: This is the yaml detailing the ClassifierResponse
+paths: {}
+definitions:
+  ClassifierResponseModel:
+    type: object
+    required:
+      - requestId
+      - columnName
+      - values
+      - classifierType
+    properties:
+      requestId:
+        type: long
+        description: Unique id assigned to a request
+      columnName:
+        type: string
+        description: name of the current data column
+      values:
+        type: array
+        description: computed values of current column name
+        items:
+          type: integer
+      classifierType:
+        $ref: './ClassifierType.yaml#/definitions/ClassifierTypeModel'

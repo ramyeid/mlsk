@@ -5,18 +5,24 @@ import java.util.Objects;
 public class ClassifierCancelRequest {
 
   private final long requestId;
+  private final ClassifierType classifierType;
 
-  public ClassifierCancelRequest(long requestId) {
+  public ClassifierCancelRequest(long requestId, ClassifierType classifierType) {
     this.requestId = requestId;
+    this.classifierType = classifierType;
   }
 
   // Needed for deserialization from json
   public ClassifierCancelRequest() {
-    this(0L);
+    this(0L, null);
   }
 
   public long getRequestId() {
     return requestId;
+  }
+
+  public ClassifierType getClassifierType() {
+    return classifierType;
   }
 
   @Override
@@ -24,18 +30,19 @@ public class ClassifierCancelRequest {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
     ClassifierCancelRequest that = (ClassifierCancelRequest) o;
-    return Objects.equals(requestId, that.requestId);
+    return Objects.equals(requestId, that.requestId) && classifierType == that.classifierType;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(requestId);
+    return Objects.hash(requestId, classifierType);
   }
 
   @Override
   public String toString() {
-    return "ClassifierDropRequest{" +
-        "requestId='" + requestId + '\'' +
+    return "ClassifierCancelRequest{" +
+        "requestId=" + requestId +
+        ", classifierType=" + classifierType +
         '}';
   }
 }
