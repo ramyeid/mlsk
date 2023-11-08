@@ -3,13 +3,17 @@ package org.mlsk.service.impl.engine.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mlsk.api.engine.classifier.decisiontree.client.DecisionTreeEngineApi;
+import org.mlsk.api.engine.classifier.model.*;
+import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
+import org.mlsk.api.engine.timeseries.model.TimeSeriesAnalysisRequestModel;
+import org.mlsk.api.engine.timeseries.model.TimeSeriesModel;
+import org.mlsk.api.engine.timeseries.model.TimeSeriesRowModel;
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.classifier.ClassifierType;
-import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
-import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
 import org.mlsk.service.model.classifier.*;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
@@ -19,6 +23,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -39,9 +44,9 @@ public class EngineImplTest {
   @Mock
   private EngineClientFactory engineClientFactory;
   @Mock
-  private TimeSeriesAnalysisEngineClient tsaEngineClient;
+  private TimeSeriesAnalysisEngineApi tsaEngineClient;
   @Mock
-  private ClassifierEngineClient classifierEngineClient;
+  private DecisionTreeEngineApi decisionTreeEngineApi;
 
   private AtomicReference<EngineState> engineStateSpy;
   private EngineImpl engineImpl;
@@ -49,6 +54,8 @@ public class EngineImplTest {
   @BeforeEach
   public void setUp() {
     engineStateSpy = spy(new AtomicReference<>(OFF));
+    onBuildClassifierEngineClient();
+    onBuildTimeSeriesAnalysisEngineClient();
     engineImpl = new EngineImpl(engineClientFactory, ENDPOINT, resilientEngineProcess, engineStateSpy);
   }
 
@@ -180,21 +187,18 @@ public class EngineImplTest {
 
   @Test
   public void should_delegate_forecast_call_to_engine() {
-    onBuildTimeSeriesAnalysisEngineClient();
-    onForecastReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
+    onForecastReturn(buildTimeSeriesAnalysisRequestModel(), buildTimeSeriesModel());
 
     engineImpl.forecast(buildTimeSeriesAnalysisRequest());
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(ENDPOINT);
-    inOrder.verify(tsaEngineClient).forecast(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(tsaEngineClient).forecast(buildTimeSeriesAnalysisRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_time_series_on_forecast() {
-    onBuildTimeSeriesAnalysisEngineClient();
-    onForecastReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
+    onForecastReturn(buildTimeSeriesAnalysisRequestModel(), buildTimeSeriesModel());
 
     TimeSeries actualTimeSeries = engineImpl.forecast(buildTimeSeriesAnalysisRequest());
 
@@ -203,21 +207,18 @@ public class EngineImplTest {
 
   @Test
   public void should_delegate_compute_forecast_accuracy_call_to_engine() {
-    onBuildTimeSeriesAnalysisEngineClient();
-    onComputeForecastAccuracyReturn(buildTimeSeriesAnalysisRequest(), 123.1);
+    onComputeForecastAccuracyReturn(buildTimeSeriesAnalysisRequestModel(), 123.1);
 
     engineImpl.computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(ENDPOINT);
-    inOrder.verify(tsaEngineClient).computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(tsaEngineClient).computeAccuracyOfForecast(buildTimeSeriesAnalysisRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_accuracy_on_compute_forecast_accuracy() {
-    onBuildTimeSeriesAnalysisEngineClient();
-    onComputeForecastAccuracyReturn(buildTimeSeriesAnalysisRequest(), 3.0);
+    onComputeForecastAccuracyReturn(buildTimeSeriesAnalysisRequestModel(), 3.0);
 
     Double actualAccuracy = engineImpl.computeForecastAccuracy(buildTimeSeriesAnalysisRequest());
 
@@ -226,21 +227,18 @@ public class EngineImplTest {
 
   @Test
   public void should_delegate_predict_call_to_engine() {
-    onBuildTimeSeriesAnalysisEngineClient();
-    onPredictReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
+    onPredictReturn(buildTimeSeriesAnalysisRequestModel(), buildTimeSeriesModel());
 
     engineImpl.predict(buildTimeSeriesAnalysisRequest());
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildTimeSeriesAnalysisEngineClient(ENDPOINT);
-    inOrder.verify(tsaEngineClient).predict(buildTimeSeriesAnalysisRequest());
+    inOrder.verify(tsaEngineClient).predict(buildTimeSeriesAnalysisRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_time_series_on_predict() {
-    onBuildTimeSeriesAnalysisEngineClient();
-    onPredictReturn(buildTimeSeriesAnalysisRequest(), buildTimeSeries());
+    onPredictReturn(buildTimeSeriesAnalysisRequestModel(), buildTimeSeriesModel());
 
     TimeSeries actualTimeSeries = engineImpl.predict(buildTimeSeriesAnalysisRequest());
 
@@ -249,50 +247,44 @@ public class EngineImplTest {
 
   @Test
   public void should_delegate_classifier_start_call_to_engine() {
-    ClassifierType classifierType = mock(ClassifierType.class);
-    onBuildClassifierEngineClient();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
     engineImpl.start(buildClassifierStartRequest(), classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).start(buildClassifierStartRequest(), classifierType);
+    inOrder.verify(decisionTreeEngineApi).start(buildClassifierStartRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_delegate_classifier_data_call_to_engine() {
-    ClassifierType classifierType = mock(ClassifierType.class);
-    onBuildClassifierEngineClient();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
     engineImpl.data(buildClassifierDataRequest(), classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).data(buildClassifierDataRequest(), classifierType);
+    inOrder.verify(decisionTreeEngineApi).data(buildClassifierDataRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_delegate_classifier_predict_call_to_engine() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    onBuildClassifierEngineClient();
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    onClassifierPredictReturn(buildClassifierResponseModel());
 
     engineImpl.predict(classifierRequest, classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).predict(classifierRequest, classifierType);
+    inOrder.verify(decisionTreeEngineApi).predict(buildClassifierRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_classifier_response_on_classifier_predict() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    onBuildClassifierEngineClient();
-    onClassifierPredictReturn(buildClassifierResponse());
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    onClassifierPredictReturn(buildClassifierResponseModel());
 
     ClassifierResponse actualResponse = engineImpl.predict(classifierRequest, classifierType);
 
@@ -301,23 +293,21 @@ public class EngineImplTest {
 
   @Test
   public void should_delegate_classifier_predict_accuracy_call_to_engine() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    onBuildClassifierEngineClient();
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    onClassifierPredictAccuracyReturn(12.);
 
     engineImpl.computePredictAccuracy(classifierRequest, classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).computePredictAccuracy(classifierRequest, classifierType);
+    inOrder.verify(decisionTreeEngineApi).computePredictAccuracy(buildClassifierRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_return_classifier_response_on_classifier_predict_accuracy() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    onBuildClassifierEngineClient();
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
     onClassifierPredictAccuracyReturn(123.123);
 
     Double actualAccuracy = engineImpl.computePredictAccuracy(classifierRequest, classifierType);
@@ -327,52 +317,50 @@ public class EngineImplTest {
 
   @Test
   public void should_delegate_classifier_cancel_call_to_engine() {
-    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    onBuildClassifierEngineClient();
+    ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
     engineImpl.cancel(classifierCancelRequest, classifierType);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineClientFactory).buildClassifierEngineClient(ENDPOINT);
-    inOrder.verify(classifierEngineClient).cancel(classifierCancelRequest, classifierType);
+    inOrder.verify(decisionTreeEngineApi).cancel(buildClassifierCancelRequestModel());
     inOrder.verifyNoMoreInteractions();
   }
 
   private InOrder buildInOrder() {
-    return inOrder(engineClientFactory, tsaEngineClient, classifierEngineClient, engineStateSpy, resilientEngineProcess);
+    return inOrder(engineClientFactory, tsaEngineClient, decisionTreeEngineApi, engineStateSpy, resilientEngineProcess);
   }
 
   private void onBuildClassifierEngineClient() {
-    when(engineClientFactory.buildClassifierEngineClient(any())).thenReturn(classifierEngineClient);
+    when(engineClientFactory.buildDecisionTreeEngineApi(any())).thenReturn(decisionTreeEngineApi);
   }
 
   private void onBuildTimeSeriesAnalysisEngineClient() {
-    when(engineClientFactory.buildTimeSeriesAnalysisEngineClient(any())).thenReturn(tsaEngineClient);
+    when(engineClientFactory.buildTimeSeriesAnalysisClient(any())).thenReturn(tsaEngineClient);
   }
 
   private void throwExceptionOnLaunchEngine() throws Exception {
     doThrow(new RuntimeException("Exception while relaunch")).when(resilientEngineProcess).launchEngine(any());
   }
 
-  private void onForecastReturn(TimeSeriesAnalysisRequest request, TimeSeries timeSeries) {
+  private void onForecastReturn(TimeSeriesAnalysisRequestModel request, TimeSeriesModel timeSeries) {
     when(tsaEngineClient.forecast(request)).thenReturn(timeSeries);
   }
 
-  private void onComputeForecastAccuracyReturn(TimeSeriesAnalysisRequest request, Double accuracy) {
-    when(tsaEngineClient.computeForecastAccuracy(request)).thenReturn(accuracy);
+  private void onComputeForecastAccuracyReturn(TimeSeriesAnalysisRequestModel request, double accuracy) {
+    when(tsaEngineClient.computeAccuracyOfForecast(request)).thenReturn(BigDecimal.valueOf(accuracy));
   }
 
-  private void onPredictReturn(TimeSeriesAnalysisRequest request, TimeSeries timeSeries) {
+  private void onPredictReturn(TimeSeriesAnalysisRequestModel request, TimeSeriesModel timeSeries) {
     when(tsaEngineClient.predict(request)).thenReturn(timeSeries);
   }
 
-  private void onClassifierPredictReturn(ClassifierResponse classifierResponse) {
-    when(classifierEngineClient.predict(any(), any())).thenReturn(classifierResponse);
+  private void onClassifierPredictReturn(ClassifierResponseModel classifierResponse) {
+    when(decisionTreeEngineApi.predict(any())).thenReturn(classifierResponse);
   }
 
   private void onClassifierPredictAccuracyReturn(double accuracy) {
-    when(classifierEngineClient.computePredictAccuracy(any(), any())).thenReturn(accuracy);
+    when(decisionTreeEngineApi.computePredictAccuracy(any())).thenReturn(BigDecimal.valueOf(accuracy));
   }
 
   private static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest() {
@@ -386,6 +374,17 @@ public class EngineImplTest {
     return new TimeSeriesAnalysisRequest(REQUEST_ID, timeSeries, 1);
   }
 
+  private static TimeSeriesAnalysisRequestModel buildTimeSeriesAnalysisRequestModel() {
+    TimeSeriesRowModel row1 = new TimeSeriesRowModel("1960", BigDecimal.valueOf(1.));
+    TimeSeriesRowModel row2 = new TimeSeriesRowModel("1961", BigDecimal.valueOf(2.));
+    TimeSeriesRowModel row3 = new TimeSeriesRowModel("1962", BigDecimal.valueOf(3.));
+
+    List<TimeSeriesRowModel> rows = newArrayList(row1, row2, row3);
+    TimeSeriesModel timeSeries = new TimeSeriesModel(rows, "Date", "Value", "%Y");
+
+    return new TimeSeriesAnalysisRequestModel(REQUEST_ID, timeSeries, 1);
+  }
+
   private static TimeSeries buildTimeSeries() {
     TimeSeriesRow row = new TimeSeriesRow("1961", 2.);
 
@@ -393,15 +392,50 @@ public class EngineImplTest {
     return new TimeSeries(rows, "Date", "Value", "%Y");
   }
 
+  private static TimeSeriesModel buildTimeSeriesModel() {
+    TimeSeriesRowModel row = new TimeSeriesRowModel("1961", BigDecimal.valueOf(2.));
+
+    List<TimeSeriesRowModel> rows = newArrayList(row);
+    return new TimeSeriesModel(rows, "Date", "Value", "%Y");
+  }
+
   private static ClassifierStartRequest buildClassifierStartRequest() {
     return new ClassifierStartRequest(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 2);
+  }
+
+  private static ClassifierStartRequestModel buildClassifierStartRequestModel() {
+    return new ClassifierStartRequestModel(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 2);
   }
 
   private static ClassifierDataRequest buildClassifierDataRequest() {
     return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(0, 1, 0));
   }
 
+  private static ClassifierDataRequestModel buildClassifierDataRequestModel() {
+    return new ClassifierDataRequestModel(REQUEST_ID, "columnName", newArrayList(0, 1, 0));
+  }
+
+  private static ClassifierRequest buildClassifierRequest() {
+    return new ClassifierRequest(REQUEST_ID);
+  }
+
+  private static ClassifierRequestModel buildClassifierRequestModel() {
+    return new ClassifierRequestModel(REQUEST_ID);
+  }
+
+  private static ClassifierCancelRequest buildClassifierCancelRequest() {
+    return new ClassifierCancelRequest(REQUEST_ID);
+  }
+
+  private static ClassifierCancelRequestModel buildClassifierCancelRequestModel() {
+    return new ClassifierCancelRequestModel(REQUEST_ID);
+  }
+
   private static ClassifierResponse buildClassifierResponse() {
     return new ClassifierResponse(REQUEST_ID, "columnName", newArrayList(0, 1, 0));
+  }
+
+  private static ClassifierResponseModel buildClassifierResponseModel() {
+    return new ClassifierResponseModel(REQUEST_ID, "columnName", newArrayList(0, 1, 0));
   }
 }

@@ -17,11 +17,11 @@ import java.math.BigDecimal;
 
 import static java.math.BigDecimal.valueOf;
 import static org.mlsk.service.classifier.ClassifierType.DECISION_TREE;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierDataRequestMapper.toClassifierDataRequest;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierResponseMapper.toClassifierResponseModel;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierRequestMapper.toClassifierRequest;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierStartRequestMapper.toClassifierStartRequest;
-import static org.mlsk.service.impl.classifier.mapper.ClassifierStartResponseMapper.toClassifierStartResponseModel;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierDataRequestMapper.toClassifierDataRequest;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierResponseMapper.toClassifierResponseModel;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierRequestMapper.toClassifierRequest;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierStartRequestMapper.toClassifierStartRequest;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierStartResponseMapper.toClassifierStartResponseModel;
 
 @RestController
 public class DecisionTreeApiImpl implements DecisionTreeApi {

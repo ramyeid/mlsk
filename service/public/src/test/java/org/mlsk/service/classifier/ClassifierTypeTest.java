@@ -10,46 +10,6 @@ public class ClassifierTypeTest {
   private static final DecisionTreeResource DECISION_TREE_RESOURCE = new DecisionTreeResource();
 
   @Test
-  public void should_correctly_delegate_call_on_start_url() {
-
-    String actual = ClassifierType.DECISION_TREE.getStartUrl();
-
-    assertEquals(DECISION_TREE_RESOURCE.getStartUrl(), actual);
-  }
-
-  @Test
-  public void should_correctly_delegate_call_on_data_url() {
-
-    String actual = ClassifierType.DECISION_TREE.getDataUrl();
-
-    assertEquals(DECISION_TREE_RESOURCE.getDataUrl(), actual);
-  }
-
-  @Test
-  public void should_correctly_delegate_call_on_predict_url() {
-
-    String actual = ClassifierType.DECISION_TREE.getPredictUrl();
-
-    assertEquals(DECISION_TREE_RESOURCE.getPredictUrl(), actual);
-  }
-
-  @Test
-  public void should_correctly_delegate_call_on_predict_accuracy_url() {
-
-    String actual = ClassifierType.DECISION_TREE.getPredictAccuracyUrl();
-
-    assertEquals(DECISION_TREE_RESOURCE.getPredictAccuracyUrl(), actual);
-  }
-
-  @Test
-  public void should_correctly_delegate_call_on_cancel_url() {
-
-    String actual = ClassifierType.DECISION_TREE.getCancelUrl();
-
-    assertEquals(DECISION_TREE_RESOURCE.getCancelUrl(), actual);
-  }
-
-  @Test
   public void should_correctly_delegate_call_on_start_action() {
 
     String actual = ClassifierType.DECISION_TREE.getStartAction();

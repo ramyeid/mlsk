@@ -46,8 +46,8 @@ public class TimeSeriesAnalysisForecastAccuracyIT extends AbstractIT {
   @Test
   public void should_return_accuracy_result_from_engine_on_compute_forecast_accuracy() {
     long requestId = 1L;
-    TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
-    MockEngine.MockedRequest accuracyMockedRequest = buildMockRequest(ENDPOINT1, FORECAST_ACCURACY_URL, buildTimeSeriesAnalysisRequest(requestId), 2.0);
+    TimeSeriesAnalysisRequestModel requestModel = buildServiceTimeSeriesAnalysisRequestModel();
+    MockEngine.MockedRequest accuracyMockedRequest = buildMockRequest(ENDPOINT1, FORECAST_ACCURACY_URL, buildEngineTimeSeriesAnalysisRequestModel(requestId), valueOf(2.0));
     mockEngine.registerRequests(accuracyMockedRequest);
 
     ResponseEntity<BigDecimal> actualResponse = timeSeriesAnalysisApi.computeForecastAccuracy(requestModel);
@@ -59,9 +59,9 @@ public class TimeSeriesAnalysisForecastAccuracyIT extends AbstractIT {
   @Test
   public void should_throw_exception_if_engine_returns_an_exception_on_compute_accuracy() {
     long requestId = 1L;
-    TimeSeriesAnalysisRequestModel requestModel = buildTimeSeriesAnalysisRequestModel();
+    TimeSeriesAnalysisRequestModel requestModel = buildServiceTimeSeriesAnalysisRequestModel();
     HttpServerErrorException exceptionToThrow = buildHttpServerErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Exception NPE raised while computing accuracy: NullPointer");
-    MockEngine.MockedRequest accuracyMockedRequest = buildFailingMockRequest(ENDPOINT1, FORECAST_ACCURACY_URL, buildTimeSeriesAnalysisRequest(requestId), exceptionToThrow);
+    MockEngine.MockedRequest accuracyMockedRequest = buildFailingMockRequest(ENDPOINT1, FORECAST_ACCURACY_URL, buildEngineTimeSeriesAnalysisRequestModel(requestId), exceptionToThrow);
     mockEngine.registerRequests(accuracyMockedRequest);
 
     try {

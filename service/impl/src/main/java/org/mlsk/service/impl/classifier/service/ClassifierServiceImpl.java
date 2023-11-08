@@ -30,7 +30,10 @@ public class ClassifierServiceImpl implements ClassifierService {
     try {
       LOGGER.info("[Start][{}] Start Request - Book Engine", requestId);
       orchestrator.bookEngine(requestId, classifierType.getStartAction());
-      orchestrator.runOnEngine(requestId, classifierType.getStartAction(), engine -> engine.start(classifierStartRequest, classifierType));
+      orchestrator.runOnEngine(requestId, classifierType.getStartAction(), engine -> {
+        engine.start(classifierStartRequest, classifierType);
+        return null;
+      });
       return new ClassifierStartResponse(requestId);
     } catch (Exception exception) {
       cancelRequest(requestId, classifierType.getStartAction(), classifierType);
@@ -46,7 +49,10 @@ public class ClassifierServiceImpl implements ClassifierService {
     long requestId = classifierDataRequest.getRequestId();
     try {
       LOGGER.info("[Start][{}] Data Request - Sending data to Engine", requestId);
-      orchestrator.runOnEngine(requestId, classifierType.getDataAction(), engine -> engine.data(classifierDataRequest, classifierType));
+      orchestrator.runOnEngine(requestId, classifierType.getDataAction(), engine -> {
+        engine.data(classifierDataRequest, classifierType);
+        return null;
+      });
     } catch (Exception exception) {
       cancelRequest(requestId, classifierType.getDataAction(), classifierType);
       releaseEngine(requestId, classifierType.getDataAction());
@@ -90,7 +96,10 @@ public class ClassifierServiceImpl implements ClassifierService {
     catchExceptionAndLog(() -> {
       LOGGER.info("[{}] Cancelling request on engine with action {}", requestId, actionName);
       ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(requestId);
-      orchestrator.runOnEngine(requestId, classifierType.getCancelAction(), engine -> engine.cancel(classifierCancelRequest, classifierType));
+      orchestrator.runOnEngine(requestId, classifierType.getCancelAction(), engine -> {
+        engine.cancel(classifierCancelRequest, classifierType);
+        return null;
+      });
     }, requestId);
   }
 

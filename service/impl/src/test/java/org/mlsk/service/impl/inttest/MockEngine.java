@@ -1,6 +1,8 @@
 package org.mlsk.service.impl.inttest;
 
 import org.mlsk.lib.model.Endpoint;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +47,7 @@ public class MockEngine {
     setupWaitUntilEngineCall();
   }
 
-  public Object engineCall(String actualResource, Object actualRequest) throws Exception {
+  public ResponseEntity<?> engineCall(String actualResource, Object actualRequest) throws Exception {
     Optional<MockedRequest> mockedRequestOptional = retrieveMatchingRequest(actualResource, actualRequest);
 
     if (mockedRequestOptional.isPresent()) {
@@ -53,7 +55,7 @@ public class MockEngine {
       releaseWaitUntilEngineCallLatchIfNecessary();
       throwExceptionIfNecessary(mockedRequest);
       hangEngineIfNecessary(mockedRequest);
-      return mockedRequest.result;
+      return new ResponseEntity<>(mockedRequest.result, HttpStatus.ACCEPTED);
     }
     return null;
   }

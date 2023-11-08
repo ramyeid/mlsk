@@ -3,7 +3,8 @@ package org.mlsk.service.impl.classifier.engine;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mlsk.lib.rest.RestClient;
+import org.mlsk.api.engine.classifier.decisiontree.client.DecisionTreeEngineApi;
+import org.mlsk.api.engine.classifier.model.*;
 import org.mlsk.service.classifier.ClassifierType;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
 import org.mlsk.service.model.classifier.*;
@@ -15,10 +16,9 @@ import org.springframework.web.client.HttpServerErrorException;
 import java.security.InvalidParameterException;
 
 import static com.google.common.collect.Lists.newArrayList;
+import static java.math.BigDecimal.valueOf;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mlsk.service.impl.testhelper.RestClientHelper.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ClassifierEngineClientTest {
@@ -26,32 +26,30 @@ public class ClassifierEngineClientTest {
   private static final long REQUEST_ID = 10L;
 
   @Mock
-  private RestClient restClient;
+  private DecisionTreeEngineApi decisionTreeEngineApi;
 
   private ClassifierEngineClient client;
 
   @BeforeEach
   public void setUp() {
-    this.client = new ClassifierEngineClient(restClient);
+    this.client = new ClassifierEngineClient(decisionTreeEngineApi);
   }
 
   @Test
   public void should_delegate_start_call_to_engine() {
     ClassifierStartRequest classifierStartRequest = buildClassifierStartRequest();
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getStartUrl()).thenReturn("startUrl");
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
     client.start(classifierStartRequest, classifierType);
 
-    verifyPostWithBodyWithoutResponseCalled(restClient, "startUrl", classifierStartRequest);
+    verify(decisionTreeEngineApi).start(buildClassifierStartRequestModel());
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_start_failure() {
     ClassifierStartRequest classifierStartRequest = buildClassifierStartRequest();
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getStartUrl()).thenReturn("startUrl");
-    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "startUrl", classifierStartRequest, new InvalidParameterException());
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).start(any());
 
     try {
       client.start(classifierStartRequest, classifierType);
@@ -65,9 +63,8 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_start_failure_with_http_server_error_exception() {
     ClassifierStartRequest classifierStartRequest = buildClassifierStartRequest();
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getStartUrl()).thenReturn("startUrl");
-    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "startUrl", classifierStartRequest, buildHttpServerErrorException("Original Start Exception Message"));
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(buildHttpServerErrorException("Original Start Exception Message")).when(decisionTreeEngineApi).start(any());
 
     try {
       client.start(classifierStartRequest, classifierType);
@@ -81,20 +78,18 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_delegate_data_call_to_engine() {
     ClassifierDataRequest classifierDataRequest = buildClassifierDataRequest();
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getDataUrl()).thenReturn("dataUrl");
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
     client.data(classifierDataRequest, classifierType);
 
-    verifyPostWithBodyWithoutResponseCalled(restClient, "dataUrl", classifierDataRequest);
+    verify(decisionTreeEngineApi).data(buildClassifierDataRequestModel());
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_data_failure() {
     ClassifierDataRequest classifierDataRequest = buildClassifierDataRequest();
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getDataUrl()).thenReturn("dataUrl");
-    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "dataUrl", classifierDataRequest, new InvalidParameterException());
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).data(any());
 
     try {
       client.data(classifierDataRequest, classifierType);
@@ -108,9 +103,8 @@ public class ClassifierEngineClientTest {
   @Test
   public void should_throw_exception_with_body_on_data_failure_with_http_server_error_exception() {
     ClassifierDataRequest classifierDataRequest = buildClassifierDataRequest();
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getDataUrl()).thenReturn("dataUrl");
-    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "dataUrl", classifierDataRequest, buildHttpServerErrorException("Original Data Exception Message"));
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(buildHttpServerErrorException("Original Data Exception Message")).when(decisionTreeEngineApi).data(any());
 
     try {
       client.data(classifierDataRequest, classifierType);
@@ -123,23 +117,21 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_delegate_predict_call_to_engine() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    onPostWithBodyWithResponseReturn(restClient, "predictUrl", classifierRequest, ClassifierResponse.class, buildClassifierResponse());
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    when(decisionTreeEngineApi.predict(buildClassifierRequestModel())).thenReturn(buildClassifierResponseModel());
 
     ClassifierResponse actualResponse = client.predict(classifierRequest, classifierType);
 
-    verifyPostWithBodyWithResponseCalled(restClient, "predictUrl", classifierRequest, ClassifierResponse.class);
+    verify(decisionTreeEngineApi).predict(buildClassifierRequestModel());
     assertEquals(buildClassifierResponse(), actualResponse);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_predict_failure() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictUrl", classifierRequest, ClassifierResponse.class, new InvalidParameterException());
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).predict(any());
 
     try {
       client.predict(classifierRequest, classifierType);
@@ -152,10 +144,9 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_predict_failure_with_http_server_error_exception() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getPredictUrl()).thenReturn("predictUrl");
-    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictUrl", classifierRequest, ClassifierResponse.class, buildHttpServerErrorException("Original Predict Exception Message"));
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(buildHttpServerErrorException("Original Predict Exception Message")).when(decisionTreeEngineApi).predict(any());
 
     try {
       client.predict(classifierRequest, classifierType);
@@ -168,23 +159,21 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_delegate_predict_accuracy_call_to_engine() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getPredictAccuracyUrl()).thenReturn("predictAccuracyUrl");
-    onPostWithBodyWithResponseReturn(restClient, "predictAccuracyUrl", classifierRequest, Double.class, 123.2);
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    when(decisionTreeEngineApi.computePredictAccuracy(buildClassifierRequestModel())).thenReturn(valueOf(123.2));
 
     Double actualAccuracy = client.computePredictAccuracy(classifierRequest, classifierType);
 
-    verifyPostWithBodyWithResponseCalled(restClient, "predictAccuracyUrl", classifierRequest, Double.class);
+    verify(decisionTreeEngineApi).computePredictAccuracy(buildClassifierRequestModel());
     assertEquals(123.2, actualAccuracy);
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_predict_accuracy_failure() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getPredictAccuracyUrl()).thenReturn("predictAccuracyUrl");
-    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictAccuracyUrl", classifierRequest, Double.class, new InvalidParameterException());
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).computePredictAccuracy(any());
 
     try {
       client.computePredictAccuracy(classifierRequest, classifierType);
@@ -197,10 +186,9 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_predict_accuracy_failure_with_http_server_error_exception() {
-    ClassifierRequest classifierRequest = new ClassifierRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getPredictAccuracyUrl()).thenReturn("predictAccuracyUrl");
-    doThrowExceptionOnPostWithBodyWithResponse(restClient, "predictAccuracyUrl", classifierRequest, Double.class, buildHttpServerErrorException("Original Predict Accuracy Exception Message"));
+    ClassifierRequest classifierRequest = buildClassifierRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(buildHttpServerErrorException("Original Predict Accuracy Exception Message")).when(decisionTreeEngineApi).computePredictAccuracy(any());
 
     try {
       client.computePredictAccuracy(classifierRequest, classifierType);
@@ -213,21 +201,19 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_delegate_cancel_call_to_engine() {
-    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getCancelUrl()).thenReturn("cancelUrl");
+    ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
 
     client.cancel(classifierCancelRequest, classifierType);
 
-    verifyPostWithBodyWithoutResponseCalled(restClient, "cancelUrl", classifierCancelRequest);
+    verify(decisionTreeEngineApi).cancel(buildClassifierCancelRequestModel());
   }
 
   @Test
   public void should_rethrow_classifier_exception_on_cancel_failure() {
-    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getCancelUrl()).thenReturn("cancelUrl");
-    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "cancelUrl", classifierCancelRequest, new InvalidParameterException());
+    ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(new InvalidParameterException()).when(decisionTreeEngineApi).cancel(any());
 
     try {
       client.cancel(classifierCancelRequest, classifierType);
@@ -240,10 +226,9 @@ public class ClassifierEngineClientTest {
 
   @Test
   public void should_throw_exception_with_body_on_cancel_failure_with_http_server_error_exception() {
-    ClassifierCancelRequest classifierCancelRequest = new ClassifierCancelRequest(REQUEST_ID);
-    ClassifierType classifierType = mock(ClassifierType.class);
-    when(classifierType.getCancelUrl()).thenReturn("cancelUrl");
-    doThrowExceptionOnPostWithBodyWithoutResponse(restClient, "cancelUrl", classifierCancelRequest, buildHttpServerErrorException("Original Cancel Exception Message"));
+    ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
+    ClassifierType classifierType = ClassifierType.DECISION_TREE;
+    doThrow(buildHttpServerErrorException("Original Cancel Exception Message")).when(decisionTreeEngineApi).cancel(any());
 
     try {
       client.cancel(classifierCancelRequest, classifierType);
@@ -258,12 +243,40 @@ public class ClassifierEngineClientTest {
     return new ClassifierStartRequest(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 1);
   }
 
+  private static ClassifierStartRequestModel buildClassifierStartRequestModel() {
+    return new ClassifierStartRequestModel(REQUEST_ID, "predictionColumnName", newArrayList("col0", "col1"), 1);
+  }
+
   private static ClassifierDataRequest buildClassifierDataRequest() {
     return new ClassifierDataRequest(REQUEST_ID, "columnName", newArrayList(1, 0, 1));
   }
 
+  private static ClassifierDataRequestModel buildClassifierDataRequestModel() {
+    return new ClassifierDataRequestModel(REQUEST_ID, "columnName", newArrayList(1, 0, 1));
+  }
+
+  private static ClassifierRequest buildClassifierRequest() {
+    return new ClassifierRequest(REQUEST_ID);
+  }
+
+  private static ClassifierRequestModel buildClassifierRequestModel() {
+    return new ClassifierRequestModel(REQUEST_ID);
+  }
+
   private static ClassifierResponse buildClassifierResponse() {
     return new ClassifierResponse(REQUEST_ID, "columnName", newArrayList(0, 1));
+  }
+
+  private static ClassifierResponseModel buildClassifierResponseModel() {
+    return new ClassifierResponseModel(REQUEST_ID, "columnName", newArrayList(0, 1));
+  }
+
+  private static ClassifierCancelRequest buildClassifierCancelRequest() {
+    return new ClassifierCancelRequest(REQUEST_ID);
+  }
+
+  private static ClassifierCancelRequestModel buildClassifierCancelRequestModel() {
+    return new ClassifierCancelRequestModel(REQUEST_ID);
   }
 
   private static HttpServerErrorException buildHttpServerErrorException(String exceptionMessage) {
