@@ -25,7 +25,6 @@ import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResp
 import static org.mlsk.service.model.engine.EngineState.WAITING;
 import static org.mlsk.service.timeseries.utils.TimeSeriesAnalysisConstants.FORECAST_URL;
 
-
 @ExtendWith(MockitoExtension.class)
 public class TimeSeriesAnalysisForecastVsActualIT extends AbstractIT {
 

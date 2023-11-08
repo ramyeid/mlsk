@@ -9,8 +9,8 @@ import org.mlsk.api.engine.classifier.model.ClassifierStartRequestModel;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.classifier.ClassifierEngine;
 import org.mlsk.service.classifier.ClassifierType;
-import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.classifier.engine.exception.ClassifierEngineRequestException;
+import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.model.classifier.*;
 import org.springframework.web.client.HttpServerErrorException;
 
