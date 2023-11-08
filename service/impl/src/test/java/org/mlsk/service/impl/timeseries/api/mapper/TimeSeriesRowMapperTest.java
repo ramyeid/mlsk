@@ -6,8 +6,8 @@ import org.mlsk.service.model.timeseries.TimeSeriesRow;
 
 import static java.math.BigDecimal.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.timeseries.api.mapper.TimeSeriesRowMapper.toTimeSeriesRow;
-import static org.mlsk.service.impl.timeseries.api.mapper.TimeSeriesRowMapper.toTimeSeriesRowModel;
+import static org.mlsk.service.impl.timeseries.api.mapper.TimeSeriesRowMapper.fromServiceModel;
+import static org.mlsk.service.impl.timeseries.api.mapper.TimeSeriesRowMapper.toServiceModel;
 
 public class TimeSeriesRowMapperTest {
 
@@ -15,7 +15,7 @@ public class TimeSeriesRowMapperTest {
   public void should_correctly_map_to_time_series_row() {
     TimeSeriesRowModel timeSeriesRowModel = buildTimeSeriesRowModel();
 
-    TimeSeriesRow actualTimeSeriesRow = toTimeSeriesRow(timeSeriesRowModel);
+    TimeSeriesRow actualTimeSeriesRow = fromServiceModel(timeSeriesRowModel);
 
     assertEquals(buildExpectedTimeSeriesRow(), actualTimeSeriesRow);
   }
@@ -24,7 +24,7 @@ public class TimeSeriesRowMapperTest {
   public void should_correctly_map_to_time_series_row_model() {
     TimeSeriesRow timeSeriesRow = buildTimeSeriesRow();
 
-    TimeSeriesRowModel actualTimeSeriesRowModel = toTimeSeriesRowModel(timeSeriesRow);
+    TimeSeriesRowModel actualTimeSeriesRowModel = toServiceModel(timeSeriesRow);
 
     assertEquals(buildExpectedTimeSeriesRowModel(), actualTimeSeriesRowModel);
   }

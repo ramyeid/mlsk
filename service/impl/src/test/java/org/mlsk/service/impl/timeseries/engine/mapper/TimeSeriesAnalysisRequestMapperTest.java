@@ -13,7 +13,7 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesAnalysisRequestMapper.toTimeSeriesAnalysisRequestModel;
+import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesAnalysisRequestMapper.toEngineModel;
 
 public class TimeSeriesAnalysisRequestMapperTest {
 
@@ -21,7 +21,7 @@ public class TimeSeriesAnalysisRequestMapperTest {
   public void should_correctly_map_to_time_series_analysis_request_model() {
     TimeSeriesAnalysisRequest timeSeriesAnalysisRequest = buildTimeSeriesAnalysisRequest();
 
-    TimeSeriesAnalysisRequestModel actualModel = toTimeSeriesAnalysisRequestModel(timeSeriesAnalysisRequest);
+    TimeSeriesAnalysisRequestModel actualModel = toEngineModel(timeSeriesAnalysisRequest);
 
     assertEquals(buildExpectedModel(), actualModel);
   }

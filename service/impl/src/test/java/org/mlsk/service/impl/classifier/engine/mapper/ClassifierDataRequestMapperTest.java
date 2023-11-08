@@ -6,7 +6,7 @@ import org.mlsk.service.model.classifier.ClassifierDataRequest;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierDataRequestMapper.toClassifierDataRequestModel;
+import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierDataRequestMapper.toEngineModel;
 
 public class ClassifierDataRequestMapperTest {
 
@@ -14,7 +14,7 @@ public class ClassifierDataRequestMapperTest {
   public void should_correctly_map_to_classifier_data_request_model() {
     ClassifierDataRequest classifierDataRequest = buildDataRequest();
 
-    ClassifierDataRequestModel actualDataRequestModel = toClassifierDataRequestModel(classifierDataRequest);
+    ClassifierDataRequestModel actualDataRequestModel = toEngineModel(classifierDataRequest);
 
     assertEquals(buildExpectedModel(), actualDataRequestModel);
   }

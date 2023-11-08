@@ -6,7 +6,7 @@ import org.mlsk.service.model.classifier.ClassifierResponse;
 
 import static com.google.common.collect.Lists.newArrayList;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.classifier.api.mapper.ClassifierResponseMapper.toClassifierResponseModel;
+import static org.mlsk.service.impl.classifier.api.mapper.ClassifierResponseMapper.toServiceModel;
 
 public class ClassifierResponseMapperTest {
 
@@ -14,7 +14,7 @@ public class ClassifierResponseMapperTest {
   public void should_correctly_map_to_classifier_response_model() {
     ClassifierResponse classifierResponse = buildClassifierResponse();
 
-    ClassifierResponseModel actualResponseModel = toClassifierResponseModel(classifierResponse);
+    ClassifierResponseModel actualResponseModel = toServiceModel(classifierResponse);
 
     assertEquals(buildExpectedResponseModel(), actualResponseModel);
   }

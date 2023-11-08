@@ -10,7 +10,7 @@ public final class ClassifierStartRequestMapper {
   private ClassifierStartRequestMapper() {
   }
 
-  public static ClassifierStartRequest toClassifierStartRequest(long requestId, ClassifierStartRequestModel classifierStartRequestModel) {
+  public static ClassifierStartRequest fromServiceModel(long requestId, ClassifierStartRequestModel classifierStartRequestModel) {
     String predictionColumnName = classifierStartRequestModel.getPredictionColumnName();
     List<String> actionColumnNames = classifierStartRequestModel.getActionColumnNames();
     Integer numberOfValues = classifierStartRequestModel.getNumberOfValues();

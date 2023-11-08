@@ -5,7 +5,7 @@ import org.mlsk.api.engine.classifier.model.ClassifierCancelRequestModel;
 import org.mlsk.service.model.classifier.ClassifierCancelRequest;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierCancelRequestMapper.toClassifierCancelRequestModel;
+import static org.mlsk.service.impl.classifier.engine.mapper.ClassifierCancelRequestMapper.toEngineModel;
 
 public class ClassifierCancelRequestMapperTest {
 
@@ -13,7 +13,7 @@ public class ClassifierCancelRequestMapperTest {
   public void should_correctly_map_to_classifier_cancel_request_model() {
     ClassifierCancelRequest classifierCancelRequest = buildClassifierCancelRequest();
 
-    ClassifierCancelRequestModel actualCancelRequestModel = toClassifierCancelRequestModel(classifierCancelRequest);
+    ClassifierCancelRequestModel actualCancelRequestModel = toEngineModel(classifierCancelRequest);
 
     assertEquals(buildExpectedModel(), actualCancelRequestModel);
   }

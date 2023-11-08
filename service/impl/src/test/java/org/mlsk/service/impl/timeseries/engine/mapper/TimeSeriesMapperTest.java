@@ -11,8 +11,8 @@ import java.util.List;
 import static com.google.common.collect.Lists.newArrayList;
 import static java.math.BigDecimal.valueOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesMapper.toTimeSeries;
-import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesMapper.toTimeSeriesModel;
+import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesMapper.fromEngineModel;
+import static org.mlsk.service.impl.timeseries.engine.mapper.TimeSeriesMapper.toEngineModel;
 
 public class TimeSeriesMapperTest {
 
@@ -20,7 +20,7 @@ public class TimeSeriesMapperTest {
   public void should_correctly_map_to_time_series() {
     TimeSeriesModel timeSeriesModel = buildTimeSeriesModel();
 
-    TimeSeries actualTimeSeries = toTimeSeries(timeSeriesModel);
+    TimeSeries actualTimeSeries = fromEngineModel(timeSeriesModel);
 
     assertEquals(buildExpectedTimeSeries(), actualTimeSeries);
   }
@@ -29,7 +29,7 @@ public class TimeSeriesMapperTest {
   public void should_correctly_map_to_time_series_model() {
     TimeSeries timeSeries = buildTimeSeries();
 
-    TimeSeriesModel actualTimeSeriesModel = toTimeSeriesModel(timeSeries);
+    TimeSeriesModel actualTimeSeriesModel = toEngineModel(timeSeries);
 
     assertEquals(buildExpectedTimeSeriesModel(), actualTimeSeriesModel);
   }
