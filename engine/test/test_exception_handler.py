@@ -2,7 +2,7 @@
 
 import unittest
 from flask.wrappers import Response
-from engine.engine import app
+from engine_server import app
 from exception_handler import handle_engine_computation_exception
 from exception.engine_computation_exception import EngineComputationException
 

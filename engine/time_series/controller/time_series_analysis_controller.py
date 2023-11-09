@@ -2,6 +2,7 @@
 
 import json
 from flask import request
+from engine_state import get_engine
 from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
 from exception.engine_computation_exception import EngineComputationException
@@ -29,6 +30,8 @@ def forecast() -> str:
 
     get_logger().info('[Start][%d] forecast request', request_id)
 
+    get_engine().register_new_time_series_request(request_id)
+
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()
@@ -52,6 +55,7 @@ def forecast() -> str:
     raise EngineComputationException(error_message)
 
   finally:
+    get_engine().release_request(request_id)
     get_logger().info('[End][%d] forecast request', request_id)
 
 
@@ -76,6 +80,8 @@ def compute_accuracy_of_forecast() -> str:
 
     get_logger().info('[Start][%d] compute forecast accuracy request', request_id)
 
+    get_engine().register_new_time_series_request(request_id)
+
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()
@@ -93,6 +99,7 @@ def compute_accuracy_of_forecast() -> str:
     raise EngineComputationException(error_message)
 
   finally:
+    get_engine().release_request(request_id)
     get_logger().info('[End][%d] compute forecast accuracy request', request_id)
 
 
@@ -114,6 +121,8 @@ def predict() -> str:
     request_id = time_series_analysis_request.get_request_id()
 
     get_logger().info('[Start][%d] predict request', request_id)
+
+    get_engine().register_new_time_series_request(request_id)
 
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
@@ -138,4 +147,5 @@ def predict() -> str:
     raise EngineComputationException(error_message)
 
   finally:
+    get_engine().release_request(request_id)
     get_logger().info('[End][%d] predict request', request_id)

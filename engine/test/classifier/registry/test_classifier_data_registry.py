@@ -52,7 +52,7 @@ class TestClassifierDataBuilderRegistry(unittest.TestCase):
     self.assertEqual('RequestId (123) not inflight!', str(context.exception))
 
 
-  def test_cancel_request_removes_builder(self) -> None:
+  def test_release_request_removes_builder(self) -> None:
     # Given
     data_builder_registry = ClassifierDataBuilderRegistry()
     data_builder_registry.new_builder(123)
@@ -60,7 +60,7 @@ class TestClassifierDataBuilderRegistry(unittest.TestCase):
     contains_123_pre_cancel = data_builder_registry.contains_builder(123)
 
     # When
-    contains_data = data_builder_registry.cancel_request(123)
+    contains_data = data_builder_registry.release_request(123)
 
     # Then
     count_post_cancel = data_builder_registry.len()

@@ -34,7 +34,7 @@ class ClassifierDataBuilderRegistry:
     return request_id in self.classifier_data_builders
 
 
-  def cancel_request(self, request_id: int) -> None:
+  def release_request(self, request_id: int) -> None:
     if request_id in self.classifier_data_builders:
       self.classifier_data_builders.pop(request_id)
 

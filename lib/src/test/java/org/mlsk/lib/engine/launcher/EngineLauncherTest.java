@@ -40,7 +40,7 @@ public class EngineLauncherTest {
     engineLauncher.launchEngine(endpoint, logsPath, enginePath);
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(processBuilder).command("python3", "engine.py", "--port", "123", "--logs-path", logsPath);
+    inOrder.verify(processBuilder).command("python3", "engine_server.py", "--port", "123", "--logs-path", logsPath);
     inOrder.verify(processBuilder).directory(new File(enginePath));
     inOrder.verify(processBuilder).start();
     inOrder.verifyNoMoreInteractions();

@@ -10,6 +10,7 @@ import exception_handler
 from time_series.controller import time_series_analysis_controller
 from classifier.controller import classifier_controller
 
+
 app = Flask(__name__)
 
 app.add_url_rule('/time-series-analysis/forecast', methods=['POST'],
