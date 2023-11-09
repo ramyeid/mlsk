@@ -76,8 +76,14 @@ public class OrchestratorImplTest {
     doNothingOnLaunchEngine(engine1Spy);
     doThrowExceptionOnLaunchEngine(engine2Spy);
 
-    orchestrator.launchEngines();
+    try {
+      orchestrator.launchEngines();
+      fail("should fail since engines did not launch successfully");
 
+    } catch (Exception exception) {
+      assertInstanceOf(RuntimeException.class, exception);
+      assertEquals("Exception while relaunch", exception.getMessage());
+    }
     InOrder inOrder = buildInOrder();
     inOrder.verify(engine1Spy).launchEngine(any());
     inOrder.verify(engine1Spy).markAsReadyForNewRequest();

@@ -55,6 +55,7 @@ public class OrchestratorImpl implements Orchestrator {
         engine.markAsReadyForNewRequest();
       } catch (Exception exception) {
         engine.markAsNotAvailable();
+        throw exception;
       }
     });
   }
