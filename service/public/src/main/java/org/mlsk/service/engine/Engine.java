@@ -7,17 +7,19 @@ import org.mlsk.service.timeseries.TimeSeriesAnalysisEngine;
 
 public interface Engine extends TimeSeriesAnalysisEngine, ClassifierEngine {
 
-  void launchEngine();
-
-  void markAsWaitingForRequest();
-
-  void bookEngine();
-
-  void markAsComputing();
-
-  void onEngineKilled();
+  void launchEngine(Runnable onEngineKilled);
 
   EngineState getState();
 
   Endpoint getEndpoint();
+
+  void markAsNotAvailable();
+
+  void markAsReadyForNewRequest();
+
+  boolean markAsBooked();
+
+  void markAsStartingAction();
+
+  void markAsActionEnded();
 }

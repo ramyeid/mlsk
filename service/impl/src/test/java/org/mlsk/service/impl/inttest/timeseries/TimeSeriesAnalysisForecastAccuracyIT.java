@@ -24,7 +24,7 @@ import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildFailin
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRequest;
 import static org.mlsk.service.impl.inttest.timeseries.helper.TimeSeriesAnalysisHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
-import static org.mlsk.service.model.engine.EngineState.WAITING;
+import static org.mlsk.service.model.engine.EngineState.IDLE;
 import static org.mlsk.service.model.timeseries.utils.TimeSeriesAnalysisConstants.FORECAST_ACCURACY_URL;
 
 @ExtendWith(MockitoExtension.class)
@@ -53,7 +53,7 @@ public class TimeSeriesAnalysisForecastAccuracyIT extends AbstractIT {
     ResponseEntity<BigDecimal> actualResponse = timeSeriesAnalysisApi.computeForecastAccuracy(requestModel);
 
     assertOnResponseEntity(valueOf(2.0), actualResponse);
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 
   @Test
@@ -70,7 +70,7 @@ public class TimeSeriesAnalysisForecastAccuracyIT extends AbstractIT {
 
     } catch (Exception exception) {
       assertOnTimeSeriesAnalysisServiceException(exception, "Failed on post computeForecastAccuracy to engine: Exception NPE raised while computing accuracy: NullPointer");
-      assertOnEngineState(WAITING, WAITING);
+      assertOnEngineState(IDLE, IDLE);
     }
   }
 }

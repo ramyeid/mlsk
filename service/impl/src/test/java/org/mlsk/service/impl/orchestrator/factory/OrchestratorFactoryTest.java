@@ -44,8 +44,10 @@ public class OrchestratorFactoryTest {
     InOrder inOrder = inOrder(engine1, engine2, engineFactory);
     inOrder.verify(engineFactory).buildEngine(engineEndpoint1);
     inOrder.verify(engineFactory).buildEngine(engineEndpoint2);
-    inOrder.verify(engine1).launchEngine();
-    inOrder.verify(engine2).launchEngine();
+    inOrder.verify(engine1).launchEngine(any());
+    inOrder.verify(engine1).markAsReadyForNewRequest();
+    inOrder.verify(engine2).launchEngine(any());
+    inOrder.verify(engine2).markAsReadyForNewRequest();
     inOrder.verifyNoMoreInteractions();
   }
 

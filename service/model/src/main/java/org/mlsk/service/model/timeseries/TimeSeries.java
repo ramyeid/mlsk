@@ -21,8 +21,9 @@ public class TimeSeries {
     this.dateFormat = dateFormat;
   }
 
+  // Needed for deserialization from json
   public TimeSeries() {
-    this(newArrayList(), "", "", "");
+    this(null, null, null, null);
   }
 
   public static TimeSeries concat(TimeSeries firstTimeSeries, TimeSeries secondTimeSeries) {
