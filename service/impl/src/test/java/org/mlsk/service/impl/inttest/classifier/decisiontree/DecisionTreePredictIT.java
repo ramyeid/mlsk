@@ -24,7 +24,7 @@ import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRe
 import static org.mlsk.service.impl.inttest.classifier.decisiontree.helper.DecisionTreeHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mlsk.service.model.engine.EngineState.BOOKED;
-import static org.mlsk.service.model.engine.EngineState.WAITING;
+import static org.mlsk.service.model.engine.EngineState.IDLE;
 
 @ExtendWith(MockitoExtension.class)
 public class DecisionTreePredictIT extends AbstractIT {
@@ -62,7 +62,7 @@ public class DecisionTreePredictIT extends AbstractIT {
 
     assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId), actualStartResponse);
     assertOnResponseEntity(buildServiceClassifierResponseModel(requestId), actualPredictResponse);
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 
   @Test
@@ -134,7 +134,7 @@ public class DecisionTreePredictIT extends AbstractIT {
 
     } catch (Exception exception) {
       assertOnClassifierServiceException(exception, "No available engine with 2 to run decision-tree-predict");
-      assertOnEngineState(BOOKED, WAITING);
+      assertOnEngineState(BOOKED, IDLE);
     }
   }
 
@@ -159,7 +159,7 @@ public class DecisionTreePredictIT extends AbstractIT {
 
     } catch (Exception exception) {
       assertOnClassifierServiceException(exception, "Failed on post predict to engine: Exception NPE raised while pushing predict: NullPointer");
-      assertOnEngineState(WAITING, WAITING);
+      assertOnEngineState(IDLE, IDLE);
     }
   }
 
@@ -215,6 +215,6 @@ public class DecisionTreePredictIT extends AbstractIT {
     verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + DATA_URL, inOrder);
     verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + CANCEL_URL, inOrder);
     inOrder.verifyNoMoreInteractions();
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 }

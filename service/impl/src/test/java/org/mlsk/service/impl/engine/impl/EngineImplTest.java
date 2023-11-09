@@ -27,8 +27,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static com.google.common.collect.Lists.newArrayList;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertInstanceOf;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mlsk.service.model.engine.EngineState.*;
 import static org.mockito.Mockito.*;
 
@@ -77,63 +76,83 @@ public class EngineImplTest {
   @Test
   public void should_set_state_as_waiting() {
 
-    engineImpl.markAsWaitingForRequest();
+    engineImpl.markAsReadyForNewRequest();
 
-    assertEquals(WAITING, engineImpl.getState());
-    assertEquals(WAITING, engineStateSpy.get());
+    assertEquals(IDLE, engineImpl.getState());
+    assertEquals(IDLE, engineStateSpy.get());
   }
 
   @Test
-  public void should_set_state_as_booked() {
+  public void should_set_state_as_booked_when_state_is_waiting() {
+    engineImpl.markAsReadyForNewRequest();
 
-    engineImpl.bookEngine();
+    boolean wasBooked = engineImpl.markAsBooked();
 
+    assertTrue(wasBooked);
     assertEquals(BOOKED, engineImpl.getState());
     assertEquals(BOOKED, engineStateSpy.get());
   }
 
   @Test
+  public void should_not_set_state_as_booked_when_state_is_not_waiting() {
+    engineImpl.markAsNotAvailable();
+
+    boolean wasBooked = engineImpl.markAsBooked();
+
+    assertFalse(wasBooked);
+    assertEquals(OFF, engineImpl.getState());
+    assertEquals(OFF, engineStateSpy.get());
+  }
+
+  @Test
   public void should_set_state_as_computing() {
 
-    engineImpl.markAsComputing();
+    engineImpl.markAsStartingAction();
 
     assertEquals(COMPUTING, engineImpl.getState());
     assertEquals(COMPUTING, engineStateSpy.get());
   }
 
   @Test
-  public void should_modify_state_and_launch_engine_when_engine_off() throws Exception {
+  public void should_set_state_as_booked_when_action_completed() {
 
-    engineImpl.launchEngine();
+    engineImpl.markAsActionEnded();
+
+    assertEquals(BOOKED, engineImpl.getState());
+    assertEquals(BOOKED, engineStateSpy.get());
+  }
+
+  @Test
+  public void should_and_launch_engine_when_engine_off() throws Exception {
+
+    engineImpl.launchEngine(() -> {});
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engineStateSpy).get();
     inOrder.verify(resilientEngineProcess).launchEngine(any());
-    inOrder.verify(engineStateSpy).set(WAITING);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
-  public void should_modify_state_and_launch_engine_when_engine_is_down() throws Exception {
-    engineStateSpy.set(WAITING);
+  public void should_launch_engine_when_engine_is_down() throws Exception {
+    engineStateSpy.set(IDLE);
     when(resilientEngineProcess.isEngineUp()).thenReturn(false);
 
-    engineImpl.launchEngine();
+    engineImpl.launchEngine(() -> {});
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engineStateSpy).get();
     inOrder.verify(resilientEngineProcess).isEngineUp();
     inOrder.verify(resilientEngineProcess).launchEngine(any());
-    inOrder.verify(engineStateSpy).set(WAITING);
     inOrder.verifyNoMoreInteractions();
   }
 
   @Test
   public void should_do_nothing_if_engine_is_up_and_waiting() {
-    engineStateSpy.set(WAITING);
+    engineStateSpy.set(IDLE);
     when(resilientEngineProcess.isEngineUp()).thenReturn(true);
 
-    engineImpl.launchEngine();
+    engineImpl.launchEngine(() -> {});
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(engineStateSpy).get();
@@ -146,42 +165,13 @@ public class EngineImplTest {
     throwExceptionOnLaunchEngine();
 
     try {
-      engineImpl.launchEngine();
+      engineImpl.launchEngine(() -> {});
 
     } catch (Exception exception) {
       assertInstanceOf(UnableToLaunchEngineException.class, exception);
       assertEquals("Unable to launch engine Endpoint{host='host', port='1231'}", exception.getMessage());
       assertEquals(OFF, engineStateSpy.get());
     }
-  }
-
-  @Test
-  public void should_modify_state_and_relaunch_engine_when_killed() throws Exception {
-    engineStateSpy.set(WAITING);
-
-    engineImpl.onEngineKilled();
-
-    InOrder inOrder = buildInOrder();
-    inOrder.verify(engineStateSpy).set(OFF);
-    inOrder.verify(engineStateSpy).get();
-    inOrder.verify(resilientEngineProcess).launchEngine(any());
-    inOrder.verify(engineStateSpy).set(WAITING);
-    inOrder.verifyNoMoreInteractions();
-  }
-
-  @Test
-  public void should_keep_state_off_when_engine_fail_to_relaunch() throws Exception {
-    engineStateSpy.set(WAITING);
-    throwExceptionOnLaunchEngine();
-
-    engineImpl.onEngineKilled();
-
-    InOrder inOrder = buildInOrder();
-    inOrder.verify(engineStateSpy).set(OFF);
-    inOrder.verify(engineStateSpy).get();
-    inOrder.verify(resilientEngineProcess).launchEngine(any());
-    inOrder.verify(engineStateSpy).set(OFF);
-    inOrder.verifyNoMoreInteractions();
   }
 
   @Test

@@ -22,7 +22,7 @@ import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildFailin
 import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRequest;
 import static org.mlsk.service.impl.inttest.timeseries.helper.TimeSeriesAnalysisHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
-import static org.mlsk.service.model.engine.EngineState.WAITING;
+import static org.mlsk.service.model.engine.EngineState.IDLE;
 import static org.mlsk.service.model.timeseries.utils.TimeSeriesAnalysisConstants.PREDICT_URL;
 
 @ExtendWith(MockitoExtension.class)
@@ -51,7 +51,7 @@ public class TimeSeriesAnalysisPredictIT extends AbstractIT {
     ResponseEntity<TimeSeriesModel> actualResponse = timeSeriesAnalysisApi.predict(requestModel);
 
     assertOnResponseEntity(buildServiceTimeSeriesModelResult2Model(), actualResponse);
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 
   @Test
@@ -68,7 +68,7 @@ public class TimeSeriesAnalysisPredictIT extends AbstractIT {
 
     } catch (Exception exception) {
       assertOnTimeSeriesAnalysisServiceException(exception, "Failed on post predict to engine: Exception NPE raised while predicting: NullPointer");
-      assertOnEngineState(WAITING, WAITING);
+      assertOnEngineState(IDLE, IDLE);
     }
   }
 }

@@ -26,7 +26,7 @@ import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRe
 import static org.mlsk.service.impl.inttest.classifier.decisiontree.helper.DecisionTreeHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mlsk.service.model.engine.EngineState.BOOKED;
-import static org.mlsk.service.model.engine.EngineState.WAITING;
+import static org.mlsk.service.model.engine.EngineState.IDLE;
 
 @ExtendWith(MockitoExtension.class)
 public class DecisionTreeDataIT extends AbstractIT {
@@ -107,7 +107,7 @@ public class DecisionTreeDataIT extends AbstractIT {
 
     } catch (Exception exception) {
       assertOnClassifierServiceException(exception, "No available engine with 2 to run decision-tree-data");
-      assertOnEngineState(BOOKED, WAITING);
+      assertOnEngineState(BOOKED, IDLE);
     }
   }
 
@@ -129,7 +129,7 @@ public class DecisionTreeDataIT extends AbstractIT {
 
     } catch (Exception exception) {
       assertOnClassifierServiceException(exception, "Failed on post data to engine: Exception NPE raised while pushing data: NullPointer");
-      assertOnEngineState(WAITING, WAITING);
+      assertOnEngineState(IDLE, IDLE);
     }
   }
 
@@ -185,6 +185,6 @@ public class DecisionTreeDataIT extends AbstractIT {
     verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + DATA_URL, inOrder);
     verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + CANCEL_URL, inOrder);
     inOrder.verifyNoMoreInteractions();
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 }

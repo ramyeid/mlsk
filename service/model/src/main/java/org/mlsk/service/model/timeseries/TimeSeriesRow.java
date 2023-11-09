@@ -12,8 +12,9 @@ public class TimeSeriesRow {
     this.value = value;
   }
 
+  // Needed for deserialization from json
   public TimeSeriesRow() {
-    this("", 0.);
+    this(null, 0.);
   }
 
   public String getDate() {

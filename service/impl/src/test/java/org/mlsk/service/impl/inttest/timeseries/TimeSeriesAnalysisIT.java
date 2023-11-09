@@ -25,7 +25,7 @@ import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.*;
 import static org.mlsk.service.impl.inttest.timeseries.helper.TimeSeriesAnalysisHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mlsk.service.model.engine.EngineState.COMPUTING;
-import static org.mlsk.service.model.engine.EngineState.WAITING;
+import static org.mlsk.service.model.engine.EngineState.IDLE;
 import static org.mlsk.service.model.timeseries.utils.TimeSeriesAnalysisConstants.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -63,7 +63,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     assertOnResponseEntity(buildServiceTimeSeriesModelResultModel(), actualForecast);
     assertOnResponseEntity(buildServiceTimeSeriesModelResult2Model(), actualPredict);
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 
   @Test
@@ -88,7 +88,7 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
     verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + FORECAST_URL, inOrder);
     verifyRestTemplateCalledOn(ENDPOINT2.getUrl() + PREDICT_URL, inOrder);
     inOrder.verifyNoMoreInteractions();
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 
   @Test
@@ -142,6 +142,6 @@ public class TimeSeriesAnalysisIT extends AbstractIT {
 
     assertOnResponseEntity(valueOf(2.), actualForecastAccuracyFuture.get());
     assertOnResponseEntity(buildServiceTimeSeriesModelResultModel(), actualForecastVsActualFuture.get());
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 }

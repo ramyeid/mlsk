@@ -45,10 +45,30 @@ public class RequestRegistryTest {
   public void should_return_empty_optional_if_request_booked_has_been_removed() {
     long requestId = 3L;
     requestRegistry.register(requestId, new Endpoint("host", 123L));
-    requestRegistry.remove(requestId);
+    requestRegistry.release(requestId);
 
     Optional<Request> actualRequest = requestRegistry.get(requestId);
 
     assertTrue(actualRequest.isEmpty());
+  }
+
+  @Test
+  public void should_release_all_requests_of_endpoint() {
+    Endpoint endpoint1 = new Endpoint("host", 123L);
+    Endpoint endpoint2 = new Endpoint("host1", 123L);
+    Endpoint endpoint3 = new Endpoint("host2", 123L);
+    requestRegistry.register(1L, endpoint1);
+    requestRegistry.register(2L, endpoint2);
+    requestRegistry.register(3L, endpoint1);
+    requestRegistry.register(4L, endpoint3);
+    requestRegistry.register(5L, endpoint1);
+
+    requestRegistry.releaseAll(endpoint1);
+
+    assertTrue(requestRegistry.get(1L).isEmpty());
+    assertEquals(new Request(2L, endpoint2), requestRegistry.get(2L).get());
+    assertTrue(requestRegistry.get(3L).isEmpty());
+    assertEquals(new Request(4L, endpoint3), requestRegistry.get(4L).get());
+    assertTrue(requestRegistry.get(5L).isEmpty());
   }
 }

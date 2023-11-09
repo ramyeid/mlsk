@@ -19,6 +19,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static java.lang.String.format;
 import static java.util.Collections.unmodifiableList;
 import static org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException.buildNoAvailableEngineException;
 import static org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException.buildNoAvailableBlockedEngineException;
@@ -48,7 +49,14 @@ public class OrchestratorImpl implements Orchestrator {
 
   @Override
   public void launchEngines() {
-    this.engines.forEach(Engine::launchEngine);
+    this.engines.forEach(engine -> {
+      try {
+        engine.launchEngine(() -> this.onEngineKilled(engine));
+        engine.markAsReadyForNewRequest();
+      } catch (Exception exception) {
+        engine.markAsNotAvailable();
+      }
+    });
   }
 
   @Override
@@ -86,12 +94,32 @@ public class OrchestratorImpl implements Orchestrator {
     return requestToComplete;
   }
 
-  private synchronized Engine retrieveAvailableEngineAndBook(String actionName) {
-    Predicate<Engine> waitingEngine = engine -> engine.getState().equals(EngineState.WAITING);
-    Engine availableEngine = getEngine(waitingEngine, buildNoAvailableEngineExceptionSupplier(actionName));
+  @VisibleForTesting
+  void onEngineKilled(Engine engine) {
+    LOGGER.error("Engine {} died unexpectedly ", engine.getEndpoint());
+    LOGGER.info("Relaunching engine {}", engine.getEndpoint());
+    engine.markAsNotAvailable();
+    this.requestRegistry.releaseAll(engine.getEndpoint());
+    try {
+      engine.launchEngine(() -> this.onEngineKilled(engine));
+      engine.markAsReadyForNewRequest();
+    } catch (Exception exception) {
+      LOGGER.error(format("Error while relaunching engine: %s", engine.getEndpoint()), exception);
+      engine.markAsNotAvailable();
+    }
+  }
 
-    availableEngine.bookEngine();
-    return availableEngine;
+  private synchronized Engine retrieveAvailableEngineAndBook(String actionName) {
+    int maxRetries = 2;
+    for (int i = 0; i < maxRetries; ++i) {
+      Predicate<Engine> waitingEngine = engine -> engine.getState().equals(EngineState.IDLE);
+      Engine availableEngine = getEngine(waitingEngine, buildNoAvailableEngineExceptionSupplier(actionName));
+
+      if (availableEngine.markAsBooked()) {
+        return availableEngine;
+      }
+    }
+    throw buildNoAvailableEngineExceptionSupplier(actionName).get();
   }
 
   private Engine retrieveBookedEngine(Request request, String actionName) {
@@ -100,29 +128,36 @@ public class OrchestratorImpl implements Orchestrator {
   }
 
   private void removeRequestAndMarkAsWaiting(Request requestToRemove, String actionName) {
-    synchronized (requestToRemove) {
+    try {
+      requestToRemove.safeLock();
+
       LOGGER.info("[{}] Engine {} in waiting mode after computing action: {}", requestToRemove.getRequestId(), requestToRemove.getEndpoint(), actionName);
       Engine bookedEngine = retrieveBookedEngine(requestToRemove, actionName);
-      bookedEngine.markAsWaitingForRequest();
+      bookedEngine.markAsReadyForNewRequest();
 
       LOGGER.info("[{}] Releasing engine {} with action {}", requestToRemove.getRequestId(), requestToRemove.getEndpoint(), actionName);
-      requestRegistry.remove(requestToRemove.getRequestId());
+      requestRegistry.release(requestToRemove.getRequestId());
+    } finally {
+      requestToRemove.releaseLock();
     }
   }
 
   private <Result> Result callOnEngine(Request request, Engine engine, String actionName, Function<Engine, Result> action) {
-    synchronized (request) {
-      try {
-        LOGGER.info("[{}] Engine {} computing action: {}", request.getRequestId(), engine.getEndpoint(), actionName);
-        engine.markAsComputing();
-        return action.apply(engine);
-      } catch (Exception exception) {
-        LOGGER.error("[{}] Error while launching: {} on engine {}: {}", request.getRequestId(), actionName, engine.getEndpoint(), exception.getMessage());
-        throw exception;
-      } finally {
-        LOGGER.info("[{}] Engine {} reset to booked mode after computing action: {}", request.getRequestId(), engine.getEndpoint(), actionName);
-        engine.bookEngine();
-      }
+    try {
+      LOGGER.info("[{}] Engine {} computing action: {}", request.getRequestId(), engine.getEndpoint(), actionName);
+
+      request.safeLock();
+      engine.markAsStartingAction();
+
+      return action.apply(engine);
+    } catch (Exception exception) {
+      LOGGER.error("[{}] Error while launching: {} on engine {}: {}", request.getRequestId(), actionName, engine.getEndpoint(), exception.getMessage());
+      throw exception;
+    } finally {
+      LOGGER.info("[{}] Engine {} reset to booked mode after computing action: {}", request.getRequestId(), engine.getEndpoint(), actionName);
+
+      engine.markAsActionEnded();
+      request.releaseLock();
     }
   }
 

@@ -26,7 +26,7 @@ import static org.mlsk.service.impl.inttest.MockEngine.MockedRequest.buildMockRe
 import static org.mlsk.service.impl.inttest.classifier.decisiontree.helper.DecisionTreeHelper.*;
 import static org.mlsk.service.impl.testhelper.ResponseEntityHelper.assertOnResponseEntity;
 import static org.mlsk.service.model.engine.EngineState.BOOKED;
-import static org.mlsk.service.model.engine.EngineState.WAITING;
+import static org.mlsk.service.model.engine.EngineState.IDLE;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -55,7 +55,7 @@ public class DecisionTreeStartIT extends AbstractIT {
     ResponseEntity<ClassifierStartResponseModel> actualStartResponse = decisionTreeApi.start(startRequestModel);
 
     assertOnResponseEntity(buildServiceClassifierStartResponseModel(requestId), actualStartResponse);
-    assertOnEngineState(BOOKED, WAITING);
+    assertOnEngineState(BOOKED, IDLE);
   }
 
   @Test
@@ -73,7 +73,7 @@ public class DecisionTreeStartIT extends AbstractIT {
 
     } catch (Exception exception) {
       assertOnClassifierServiceException(exception, "Failed on post start to engine: Exception NPE raised while starting: NullPointer");
-      assertOnEngineState(WAITING, WAITING);
+      assertOnEngineState(IDLE, IDLE);
     }
   }
 
@@ -116,7 +116,7 @@ public class DecisionTreeStartIT extends AbstractIT {
     verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + START_URL, inOrder);
     verifyRestTemplateCalledOn(ENDPOINT1.getUrl() + CANCEL_URL, inOrder);
     inOrder.verifyNoMoreInteractions();
-    assertOnEngineState(WAITING, WAITING);
+    assertOnEngineState(IDLE, IDLE);
   }
 
   @Test

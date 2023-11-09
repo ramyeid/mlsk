@@ -56,31 +56,39 @@ public class EngineImpl implements Engine {
   }
 
   @Override
-  public synchronized void markAsWaitingForRequest() {
-    this.state.set(WAITING);
+  public void markAsNotAvailable() {
+    this.state.set(OFF);
   }
 
   @Override
-  public synchronized void bookEngine() {
-    this.state.set(BOOKED);
+  public void markAsReadyForNewRequest() {
+    this.state.set(IDLE);
   }
 
   @Override
-  public synchronized void markAsComputing() {
+  public boolean markAsBooked() {
+    return this.state.compareAndSet(IDLE, BOOKED);
+  }
+
+  @Override
+  public void markAsStartingAction() {
     this.state.set(COMPUTING);
   }
 
   @Override
-  public synchronized void launchEngine() {
+  public void markAsActionEnded() {
+    this.state.set(BOOKED);
+  }
+
+  @Override
+  public void launchEngine(Runnable onEngineKilled) {
     if (this.state.get() == OFF || !this.resilientEngineProcess.isEngineUp()) {
       try {
         LOGGER.info("[Start] Launching engine: {}", this.endpoint);
-        this.resilientEngineProcess.launchEngine(this::onEngineKilled);
-        this.markAsWaitingForRequest();
+        this.resilientEngineProcess.launchEngine(onEngineKilled);
       } catch (Exception exception) {
         LOGGER.error(format("Error while creating engine: %s", this.endpoint), exception);
         String message = format("Unable to launch engine %s", endpoint);
-        this.state.set(OFF);
         throw new UnableToLaunchEngineException(message, exception);
       } finally {
         LOGGER.info("[End] Launching engine: {}", this.endpoint);
@@ -89,54 +97,42 @@ public class EngineImpl implements Engine {
   }
 
   @Override
-  public synchronized void onEngineKilled() {
-    LOGGER.error("Engine {} died unexpectedly ", this.endpoint);
-    LOGGER.info("Relaunching engine {}", this.endpoint);
-    this.state.set(OFF);
-    try {
-      this.launchEngine();
-    } catch (Exception exception) {
-      LOGGER.error(format("Error while relaunching engine: %s", this.endpoint), exception);
-    }
-  }
-
-  @Override
-  public synchronized void start(ClassifierStartRequest classifierStartRequest) {
+  public void start(ClassifierStartRequest classifierStartRequest) {
     this.classifierEngineClient.start(classifierStartRequest);
   }
 
   @Override
-  public synchronized void data(ClassifierDataRequest classifierDataRequest) {
+  public void data(ClassifierDataRequest classifierDataRequest) {
     this.classifierEngineClient.data(classifierDataRequest);
   }
 
   @Override
-  public synchronized ClassifierResponse predict(ClassifierRequest classifierRequest) {
+  public ClassifierResponse predict(ClassifierRequest classifierRequest) {
     return this.classifierEngineClient.predict(classifierRequest);
   }
 
   @Override
-  public synchronized Double computePredictAccuracy(ClassifierRequest classifierRequest) {
+  public Double computePredictAccuracy(ClassifierRequest classifierRequest) {
     return this.classifierEngineClient.computePredictAccuracy(classifierRequest);
   }
 
   @Override
-  public synchronized void cancel(ClassifierCancelRequest classifierCancelRequest) {
+  public void cancel(ClassifierCancelRequest classifierCancelRequest) {
     this.classifierEngineClient.cancel(classifierCancelRequest);
   }
 
   @Override
-  public synchronized TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public TimeSeries forecast(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     return this.timeSeriesAnalysisEngineClient.forecast(timeSeriesAnalysisRequest);
   }
 
   @Override
-  public synchronized Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public Double computeForecastAccuracy(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     return this.timeSeriesAnalysisEngineClient.computeForecastAccuracy(timeSeriesAnalysisRequest);
   }
 
   @Override
-  public synchronized TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
+  public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     return this.timeSeriesAnalysisEngineClient.predict(timeSeriesAnalysisRequest);
   }
 }
