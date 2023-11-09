@@ -2,6 +2,7 @@
 
 import json
 from flask import request
+from engine_state import get_engine
 from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
 from utils.controller_utils import build_default_response
@@ -13,11 +14,6 @@ from classifier.model.classifier_data_request import ClassifierDataRequest
 from classifier.model.classifier_request import ClassifierRequest
 from classifier.model.classifier_cancel_request import ClassifierCancelRequest
 from classifier.model.classifier_response import ClassifierResponse
-from classifier.registry.classifier_data_registry import ClassifierDataBuilderRegistry, ClassifierDataBuilder
-
-
-# TODO: Move this to a singleton Engine class
-classifier_data_builder_registry = ClassifierDataBuilderRegistry()
 
 
 def start() -> str:
@@ -31,8 +27,6 @@ def start() -> str:
 
   request_id = None
   try:
-    global classifier_data_builder_registry
-
     classifier_start_request = ClassifierStartRequest.from_json(request.json)
     request_id = classifier_start_request.get_request_id()
     classifier_type = classifier_start_request.get_classifier_type()
@@ -45,13 +39,13 @@ def start() -> str:
     action_column_names = classifier_start_request.get_action_column_names()
     number_of_values = classifier_start_request.get_number_of_values()
 
-    classifier_data_builder = classifier_data_builder_registry.new_builder(request_id)
+    classifier_data_builder = get_engine().register_classifier_request(request_id)
     classifier_data_builder.set_start_data(prediction_column_name, action_column_names, number_of_values)
 
     return build_default_response()
 
   except Exception as exception:
-    __cancel_request(request_id)
+    __release_request(request_id)
     error_message = '[%s] Exception %s raised while starting %s: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
@@ -72,8 +66,6 @@ def on_data_received() -> str:
 
   request_id = None
   try:
-    global classifier_data_builder_registry
-
     classifier_data_request = ClassifierDataRequest.from_json(request.json)
     request_id = classifier_data_request.get_request_id()
     classifier_type = classifier_data_request.get_classifier_type()
@@ -84,12 +76,12 @@ def on_data_received() -> str:
 
     column_name = classifier_data_request.get_column_name()
     values = classifier_data_request.get_values()
-    classifier_data_builder_registry.get_builder(request_id).add_data(column_name, values)
+    get_engine().get_classifier_data_builder(request_id).add_data(column_name, values)
 
     return build_default_response()
 
   except Exception as exception:
-    __cancel_request(request_id)
+    __release_request(request_id)
     error_message = '[%s] Exception %s raised while receiving %s data: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
@@ -113,8 +105,6 @@ def predict() -> str:
 
   request_id = None
   try:
-    global classifier_data_builder_registry
-
     classifier_request = ClassifierRequest.from_json(request.json)
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
@@ -123,7 +113,7 @@ def predict() -> str:
 
     __throw_exception_if_data_is_none_on_computation(request_id, classifier_type)
 
-    classifier_data = classifier_data_builder_registry.get_builder(request_id).build_classifier_data()
+    classifier_data = get_engine().get_classifier_data_builder(request_id).build_classifier_data()
 
     data = classifier_data.to_data_frame()
     action_column_names = classifier_data.get_action_column_names()
@@ -144,7 +134,7 @@ def predict() -> str:
     raise EngineComputationException(error_message)
 
   finally:
-    __cancel_request(request_id)
+    __release_request(request_id)
     get_logger().info('[End][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
 
 
@@ -163,8 +153,6 @@ def compute_accuracy_of_predict() -> str:
 
   request_id = None
   try:
-    global classifier_data_builder_registry
-
     classifier_request = ClassifierRequest.from_json(request.json)
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
@@ -173,7 +161,7 @@ def compute_accuracy_of_predict() -> str:
 
     __throw_exception_if_data_is_none_on_computation(request_id, classifier_type)
 
-    classifier_data = classifier_data_builder_registry.get_builder(request_id).build_classifier_data()
+    classifier_data = get_engine().get_classifier_data_builder(request_id).build_classifier_data()
 
     data = classifier_data.to_data_frame()
     action_column_names = classifier_data.get_action_column_names()
@@ -190,7 +178,7 @@ def compute_accuracy_of_predict() -> str:
     raise EngineComputationException(error_message)
 
   finally:
-    __cancel_request(request_id)
+    __release_request(request_id)
     get_logger().info('[End][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
 
 
@@ -212,12 +200,12 @@ def cancel() -> str:
 
     get_logger().info('[Start][%d] Cancel %s Request', request_id, classifier_type.to_lower_case_with_space())
 
-    __cancel_request(request_id)
+    __release_request(request_id)
 
     return build_default_response()
 
   except Exception as exception:
-    __cancel_request(request_id)
+    __release_request(request_id)
     error_message = '[%s] Exception %s raised while cancelling %s: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
     get_logger().error(error_message)
     get_logger().exception(exception)
@@ -228,33 +216,25 @@ def cancel() -> str:
 
 
 def __throw_exception_if_data_is_none_on_computation(request_id: int, classifier_type: ClassifierType) -> None:
-  global classifier_data_builder_registry
-
-  if not classifier_data_builder_registry.contains_builder(request_id) or\
-     not classifier_data_builder_registry.get_builder(request_id).contains_start_data() or\
-     not classifier_data_builder_registry.get_builder(request_id).contains_data():
+  if not get_engine().contains_classifier_data_builder(request_id) or\
+     not get_engine().get_classifier_data_builder(request_id).contains_start_data() or\
+     not get_engine().get_classifier_data_builder(request_id).contains_data():
     error_message = 'Error, No Data was set to launch %s computation.' % (classifier_type.to_lower_case_with_space())
     raise EngineComputationException(error_message)
 
 
 def __throw_exception_if_data_available_on_start(request_id: int) -> None:
-  global classifier_data_builder_registry
-
-  if classifier_data_builder_registry.contains_builder(request_id):
+  if get_engine().contains_classifier_data_builder(request_id):
     error_message = 'Error, Launching start with existing State, Resetting State.'
     raise EngineComputationException(error_message)
 
 
 def __throw_exception_if_start_was_not_called(request_id: int) -> None:
-  global classifier_data_builder_registry
-
-  if not classifier_data_builder_registry.contains_builder(request_id) or\
-     not classifier_data_builder_registry.get_builder(request_id).contains_start_data():
+  if not get_engine().contains_classifier_data_builder(request_id) or\
+     not get_engine().get_classifier_data_builder(request_id).contains_start_data():
     error_message = 'Error, Receiving Data without Start, Resetting State.'
     raise EngineComputationException(error_message)
 
 
-def __cancel_request(request_id: int) -> None:
-  global classifier_data_builder_registry
-
-  classifier_data_builder_registry.cancel_request(request_id)
+def __release_request(request_id: int) -> None:
+  get_engine().release_request(request_id)

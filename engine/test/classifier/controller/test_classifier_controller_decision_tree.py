@@ -3,7 +3,8 @@
 
 import unittest
 import json
-from engine.engine import app
+from engine_server import app
+from engine_state import get_engine
 from classifier.registry.classifier_data_registry_exception import ClassifierDataRegistryException
 from classifier.controller import classifier_controller
 
@@ -23,19 +24,20 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
 
   def setUp(self) -> None:
-    classifier_controller.classifier_data_builder_registry.reset()
+    get_engine().release_all_inflight_requests()
 
 
   def assert_on_state(self, request_id: int, expected_prediction_column_name: str, expected_action_column_names: [str], expected_number_of_values: int, expected_data: dict) -> None:
-    classifier_data_builder = classifier_controller.classifier_data_builder_registry.get_builder(request_id)
+    classifier_data_builder = get_engine().get_classifier_data_builder(request_id)
     self.assertEqual(expected_prediction_column_name, classifier_data_builder.get_prediction_column_name())
     self.assertEqual(expected_action_column_names, classifier_data_builder.get_action_column_names())
     self.assertEqual(expected_number_of_values, classifier_data_builder.get_number_of_values())
     self.assertEqual(expected_data, classifier_data_builder.get_data())
 
 
-  def assert_request_cancelled(self, request_id: int) -> None:
-    self.assertFalse(classifier_controller.classifier_data_builder_registry.contains_builder(request_id))
+  def assert_request_released(self, request_id: int) -> None:
+    self.assertFalse(get_engine().contains_classifier_data_builder(request_id))
+    self.assertFalse(get_engine().contains_request(request_id))
 
 
   def test_set_data_on_start(self) -> None:
@@ -59,14 +61,14 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while starting decision tree: ' \
             b'Error, Launching start with existing State, Resetting State."\n', response.data)
 
 
   def test_exception_thrown_if_data_exists_on_start(self) -> None:
     # Given
-    classifier_controller.classifier_data_builder_registry.new_builder(123)
+    get_engine().register_classifier_request(123)
     add_data(123, 'Sex', [1,2,3,4])
     body_as_string = build_start_body_as_string(123)
 
@@ -74,7 +76,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while starting decision tree: ' \
             b'Error, Launching start with existing State, Resetting State."\n', response.data)
 
@@ -101,7 +103,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.DATA_RESOURCE, data=data_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while receiving decision tree data: ' \
             b'Error, Receiving Data without Start, Resetting State."\n', response.data)
 
@@ -127,7 +129,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'{"requestId": 123, "columnName": "Sex", "values": [0], "classifierType": "DECISION_TREE"}', response.data)
 
 
@@ -155,7 +157,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while decision tree predicting: ' \
             b'Error, No Data was set to launch decision tree computation."\n', response.data)
 
@@ -178,7 +180,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     expected_exception = b'"[123] Exception ClassifierException raised while decision tree predicting: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Width\', \'Height\'])"\n'
     self.assertEqual(expected_exception, response.data)
 
@@ -204,7 +206,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception ClassifierException raised while decision tree predicting: '\
             b'Error: Action column sizes are not equal; sizes found: [9, 10]"\n', response.data)
 
@@ -230,7 +232,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception ClassifierException raised while decision tree predicting: '\
             b'Error: Invalid prediction column size. Prediction: 7, Action: 9, Values to predict: 1"\n', response.data)
 
@@ -256,7 +258,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(100.0, float(response.data))
 
 
@@ -284,7 +286,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while computing decision tree predict accuracy: '\
             b'Error, No Data was set to launch decision tree computation."\n', response.data)
 
@@ -307,7 +309,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     expected_exception = b'"[123] Exception ClassifierException raised while computing decision tree predict accuracy: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Sex\', \'Height\'])"\n'
     self.assertEqual(expected_exception, response.data)
 
@@ -333,7 +335,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception ClassifierException raised while computing decision tree predict accuracy: '\
             b'Error: Action column sizes are not equal; sizes found: [9, 5]"\n', response.data)
 
@@ -359,7 +361,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception ClassifierException raised while computing decision tree predict accuracy: '\
             b'Error: Invalid prediction column size. Prediction: 8, Action: 9, Values to predict: 1"\n', response.data)
 
@@ -379,7 +381,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(b'{"Status":"Ok"}', response.data)
 
 
@@ -449,19 +451,19 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response_2 = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string_2, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assert_request_cancelled(123)
+    self.assert_request_released(123)
     self.assertEqual(100.0, float(response_1.data))
-    self.assert_request_cancelled(999)
+    self.assert_request_released(999)
     self.assertEqual(b'{"requestId": 999, "columnName": "Sex", "values": [0], "classifierType": "DECISION_TREE"}', response_2.data)
 
 
 def set_start_data(request_id: int, prediction_column_name: str, action_column_names: [str], number_of_values: int) -> None:
-  classifier_data_builder = classifier_controller.classifier_data_builder_registry.new_builder(123)
+  classifier_data_builder = get_engine().register_classifier_request(123)
   classifier_data_builder.set_start_data(prediction_column_name, action_column_names, number_of_values)
 
 
 def add_data(request_id: int, column: str, values: [int]) -> None:
-  classifier_controller.classifier_data_builder_registry.get_builder(request_id).add_data(column, values)
+  get_engine().get_classifier_data_builder(request_id).add_data(column, values)
 
 
 def build_start_body_as_string(request_id: int) -> str:

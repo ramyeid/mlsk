@@ -40,7 +40,7 @@ public class ServiceConfiguration {
   public static void buildServiceConfiguration(String... args) throws ParseException {
     Option enginePortsOption = new Option("enginePorts", "engine-ports", true, "Ports of the engine to be launched");
     Option logsPathOption = new Option("logsPath", "logs-path", true, "absolute path towards Logs");
-    Option enginePathOption = new Option("enginePath", "engine-path", true, "absolute path towards engine.py");
+    Option enginePathOption = new Option("enginePath", "engine-path", true, "absolute path towards engine_server.py");
     CommandLineParser parser = new DefaultParser();
 
     enginePortsOption.setRequired(true);
