@@ -4,8 +4,7 @@
 import unittest
 import json
 from engine_server import app
-from engine_state import get_engine
-from classifier.registry.classifier_data_registry_exception import ClassifierDataRegistryException
+from engine_state import get_engine, RequestType
 from classifier.controller import classifier_controller
 
 
@@ -28,15 +27,15 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
 
   def assert_on_state(self, request_id: int, expected_prediction_column_name: str, expected_action_column_names: [str], expected_number_of_values: int, expected_data: dict) -> None:
-    classifier_data_builder = get_engine().get_classifier_data_builder(request_id)
-    self.assertEqual(expected_prediction_column_name, classifier_data_builder.get_prediction_column_name())
-    self.assertEqual(expected_action_column_names, classifier_data_builder.get_action_column_names())
-    self.assertEqual(expected_number_of_values, classifier_data_builder.get_number_of_values())
-    self.assertEqual(expected_data, classifier_data_builder.get_data())
+    classifier_request = get_engine().get_request(request_id)
+    classifier_data = classifier_request.build_classifier_data()
+    self.assertEqual(expected_prediction_column_name, classifier_data.get_prediction_column_name())
+    self.assertEqual(expected_action_column_names, classifier_data.get_action_column_names())
+    self.assertEqual(expected_number_of_values, classifier_data.get_number_of_values())
+    self.assertEqual(expected_data, classifier_data.get_data())
 
 
   def assert_request_released(self, request_id: int) -> None:
-    self.assertFalse(get_engine().contains_classifier_data_builder(request_id))
     self.assertFalse(get_engine().contains_request(request_id))
 
 
@@ -63,12 +62,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Then
     self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while starting decision tree: ' \
-            b'Error, Launching start with existing State, Resetting State."\n', response.data)
+            b'Error, Launching start with existing inflight request with id: 123."\n', response.data)
 
 
   def test_exception_thrown_if_data_exists_on_start(self) -> None:
     # Given
-    get_engine().register_classifier_request(123)
+    get_engine().register_new_request(123, RequestType.CLASSIFIER)
     add_data(123, 'Sex', [1,2,3,4])
     body_as_string = build_start_body_as_string(123)
 
@@ -78,7 +77,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Then
     self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while starting decision tree: ' \
-            b'Error, Launching start with existing State, Resetting State."\n', response.data)
+            b'Error, Launching start with existing inflight request with id: 123."\n', response.data)
 
 
   def test_state_set_on_data(self) -> None:
@@ -105,7 +104,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Then
     self.assert_request_released(123)
     self.assertEqual(b'"[123] Exception EngineComputationException raised while receiving decision tree data: ' \
-            b'Error, Receiving Data without Start, Resetting State."\n', response.data)
+            b'Error, Receiving Data without Start."\n', response.data)
 
 
   def test_predict_and_reset_state(self) -> None:
@@ -458,12 +457,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
 
 def set_start_data(request_id: int, prediction_column_name: str, action_column_names: [str], number_of_values: int) -> None:
-  classifier_data_builder = get_engine().register_classifier_request(123)
-  classifier_data_builder.set_start_data(prediction_column_name, action_column_names, number_of_values)
+  classifier_request = get_engine().register_new_request(123, RequestType.CLASSIFIER)
+  classifier_request.set_classifier_start_data(prediction_column_name, action_column_names, number_of_values)
 
 
 def add_data(request_id: int, column: str, values: [int]) -> None:
-  get_engine().get_classifier_data_builder(request_id).add_data(column, values)
+  get_engine().get_request(request_id).add_classifier_data(column, values)
 
 
 def build_start_body_as_string(request_id: int) -> str:
