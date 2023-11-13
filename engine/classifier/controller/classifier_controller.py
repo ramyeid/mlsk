@@ -2,7 +2,7 @@
 
 import json
 from flask import request
-from engine_state import get_engine
+from engine_state import get_engine, RequestType
 from utils.json_complex_encoder import JsonComplexEncoder
 from utils.logger import get_logger
 from utils.controller_utils import build_default_response
@@ -39,8 +39,8 @@ def start() -> str:
     action_column_names = classifier_start_request.get_action_column_names()
     number_of_values = classifier_start_request.get_number_of_values()
 
-    classifier_data_builder = get_engine().register_classifier_request(request_id)
-    classifier_data_builder.set_start_data(prediction_column_name, action_column_names, number_of_values)
+    classifier_request = get_engine().register_new_request(request_id, RequestType.CLASSIFIER)
+    classifier_request.set_classifier_start_data(prediction_column_name, action_column_names, number_of_values)
 
     return build_default_response()
 
@@ -76,7 +76,7 @@ def on_data_received() -> str:
 
     column_name = classifier_data_request.get_column_name()
     values = classifier_data_request.get_values()
-    get_engine().get_classifier_data_builder(request_id).add_data(column_name, values)
+    get_engine().get_request(request_id).add_classifier_data(column_name, values)
 
     return build_default_response()
 
@@ -113,7 +113,7 @@ def predict() -> str:
 
     __throw_exception_if_data_is_none_on_computation(request_id, classifier_type)
 
-    classifier_data = get_engine().get_classifier_data_builder(request_id).build_classifier_data()
+    classifier_data = get_engine().get_request(request_id).build_classifier_data()
 
     data = classifier_data.to_data_frame()
     action_column_names = classifier_data.get_action_column_names()
@@ -161,7 +161,7 @@ def compute_accuracy_of_predict() -> str:
 
     __throw_exception_if_data_is_none_on_computation(request_id, classifier_type)
 
-    classifier_data = get_engine().get_classifier_data_builder(request_id).build_classifier_data()
+    classifier_data = get_engine().get_request(request_id).build_classifier_data()
 
     data = classifier_data.to_data_frame()
     action_column_names = classifier_data.get_action_column_names()
@@ -216,23 +216,23 @@ def cancel() -> str:
 
 
 def __throw_exception_if_data_is_none_on_computation(request_id: int, classifier_type: ClassifierType) -> None:
-  if not get_engine().contains_classifier_data_builder(request_id) or\
-     not get_engine().get_classifier_data_builder(request_id).contains_start_data() or\
-     not get_engine().get_classifier_data_builder(request_id).contains_data():
+  if not get_engine().contains_request(request_id) or\
+     not get_engine().get_request(request_id).contains_classifier_start_data() or\
+     not get_engine().get_request(request_id).contains_clasifier_data():
     error_message = 'Error, No Data was set to launch %s computation.' % (classifier_type.to_lower_case_with_space())
     raise EngineComputationException(error_message)
 
 
 def __throw_exception_if_data_available_on_start(request_id: int) -> None:
-  if get_engine().contains_classifier_data_builder(request_id):
-    error_message = 'Error, Launching start with existing State, Resetting State.'
+  if get_engine().contains_request(request_id):
+    error_message = 'Error, Launching start with existing inflight request with id: %s.' % (request_id)
     raise EngineComputationException(error_message)
 
 
 def __throw_exception_if_start_was_not_called(request_id: int) -> None:
-  if not get_engine().contains_classifier_data_builder(request_id) or\
-     not get_engine().get_classifier_data_builder(request_id).contains_start_data():
-    error_message = 'Error, Receiving Data without Start, Resetting State.'
+  if not get_engine().contains_request(request_id) or\
+     not get_engine().get_request(request_id).contains_classifier_start_data():
+    error_message = 'Error, Receiving Data without Start.'
     raise EngineComputationException(error_message)
 
 
