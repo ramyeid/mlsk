@@ -22,7 +22,7 @@ public class EngineFactoryTest {
 
   @Test
   public void should_build_engine() throws ParseException {
-    buildServiceConfiguration("", "--engine-ports", "4564", "--logs-path", "logsPath", "-engine-path", "enginePath");
+    buildServiceConfiguration("", "--engine-ports", "4564", "--logs-path", "logsPath", "-engine-path", "enginePath", "--log-level", "logLevel", "--engine-log-level", "engineLogLevel");
     Endpoint endpoint = new Endpoint("host", 4564L);
 
     Engine engine = engineFactory.buildEngine(endpoint);

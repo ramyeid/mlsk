@@ -67,5 +67,8 @@ python3 -m pydoc {file}
 ### Launch an engine
 
 ```bash
-python3 engine_server.py --port 6767 --logs-path /Users/ramyeid/Documents/FYP/V1/mlsk/build/logs/ --log-level INFO
+python3 engine_server.py \
+  --port 6767 \
+  --logs-path /Users/ramyeid/Documents/FYP/V1/mlsk/build/logs/ \
+  --log-level INFO
 ```

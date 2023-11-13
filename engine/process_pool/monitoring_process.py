@@ -93,9 +93,8 @@ class MonitoringProcess:
                 current_states[i] == latest_states[i] and\
                 current_states[i] == ProcessState.BUSY:
               logger.warning('[MonitorProcessPool] The task running on process `%s` has been running for longer than %s seconds, something is wrong - consider restarting the process!' % (i, elapsed_since_last_flip_flop_seconds))
-
-        sleep(monitor_interval)
       except Exception as exception:
         logger.error('[MonitorProcessPool] Exception while monitoring: %s' % (exception))
       finally:
         logger.debug('[MonitorProcessPool][End] Monitoring current %s processes at %s' % (len(process_state_holders), datetime.now()))
+        sleep(monitor_interval)

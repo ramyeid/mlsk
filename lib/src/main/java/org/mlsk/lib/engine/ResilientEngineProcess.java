@@ -17,24 +17,26 @@ public class ResilientEngineProcess {
   private final EngineLauncher engineLauncher;
   private final String enginePath;
   private final String logsPath;
+  private final String engineLogLevel;
 
-  public ResilientEngineProcess(Endpoint endpoint, String logsPath, String enginePath) {
-    this(endpoint, new EngineLauncher(), logsPath, enginePath);
+  public ResilientEngineProcess(Endpoint endpoint, String logsPath, String enginePath, String engineLogLevel) {
+    this(endpoint, new EngineLauncher(), logsPath, enginePath, engineLogLevel);
   }
 
   @VisibleForTesting
-  public ResilientEngineProcess(Endpoint endpoint, EngineLauncher engineLauncher, String logsPath, String enginePath) {
+  public ResilientEngineProcess(Endpoint endpoint, EngineLauncher engineLauncher, String logsPath, String enginePath, String engineLogLevel) {
     this.endpoint = endpoint;
     this.engineLauncher = engineLauncher;
     this.enginePath = enginePath;
     this.logsPath = logsPath;
+    this.engineLogLevel = engineLogLevel;
   }
 
   public void launchEngine(Runnable onProcessKilled) throws Exception {
     try {
       LOGGER.info("[Start] Launching engine with endpoint: {}", endpoint);
 
-      process = engineLauncher.launchEngine(endpoint, logsPath, enginePath);
+      process = engineLauncher.launchEngine(endpoint, logsPath, enginePath, engineLogLevel);
 
       process.waitFor(3, TimeUnit.SECONDS);
 

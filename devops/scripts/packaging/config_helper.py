@@ -19,9 +19,19 @@ def read_service_port() -> str:
   return project_information[const.SERVICE_PORT_OPTION]
 
 
+def read_service_log_level() -> str:
+  project_information = read_project_information()
+  return project_information[const.SERVICE_LOG_LEVEL_OPTION]
+
+
 def read_engine_ports() -> str:
   project_information = read_project_information()
   return project_information[const.ENGINE_PORTS_OPTION]
+
+
+def read_engine_log_level() -> str:
+  project_information = read_project_information()
+  return project_information[const.ENGINE_LOG_LEVEL_OPTION]
 
 
 def read_web_ui_port() -> str:
@@ -35,6 +45,8 @@ def read_project_information() -> dict:
   return {
     const.SERVICE_HOST_OPTION: config_parser.get(const.SERVICE_SECTION, const.HOST_SECTION),
     const.SERVICE_PORT_OPTION: config_parser.get(const.SERVICE_SECTION, const.PORT_SECTION),
+    const.SERVICE_LOG_LEVEL_OPTION: config_parser.get(const.SERVICE_SECTION, const.LOG_LEVEL_SECTION),
     const.ENGINE_PORTS_OPTION: config_parser.get(const.ENGINE_SECTION, const.PORTS_SECTION),
+    const.ENGINE_LOG_LEVEL_OPTION: config_parser.get(const.ENGINE_SECTION, const.LOG_LEVEL_SECTION),
     const.WEB_UI_PORT_OPTION:  config_parser.get(const.WEB_UI_SECTION, const.PORT_SECTION)
   }

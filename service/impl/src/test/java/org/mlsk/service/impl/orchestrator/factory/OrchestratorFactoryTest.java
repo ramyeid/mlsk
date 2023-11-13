@@ -56,7 +56,7 @@ public class OrchestratorFactoryTest {
   }
 
   private static void buildServiceConfigurationWithEnginePorts(String ports) throws ParseException {
-    buildServiceConfiguration("", "--engine-ports", ports, "--logs-path", "ignored", "-engine-path", "ignored");
+    buildServiceConfiguration("", "--engine-ports", ports, "--logs-path", "ignored", "-engine-path", "ignored", "--log-level", "logLevel", "--engine-log-level", "engineLogLevel");
   }
 
 }

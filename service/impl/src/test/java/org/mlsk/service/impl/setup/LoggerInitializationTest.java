@@ -11,7 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import static org.apache.logging.log4j.Level.INFO;
+import static org.apache.logging.log4j.Level.DEBUG;
 import static org.mlsk.service.impl.setup.ServiceConfiguration.buildServiceConfiguration;
 import static org.mockito.Mockito.*;
 
@@ -32,7 +32,7 @@ public class LoggerInitializationTest {
   @Test
   @SuppressWarnings("rawtypes")
   public void should_correctly_build_logger_configuration() throws ParseException {
-    buildServiceConfiguration("", "--engine-ports", "ports", "--logs-path", "logsPath", "-engine-path", "enginePath");
+    buildServiceConfiguration("", "--engine-ports", "ports", "--logs-path", "logsPath", "-engine-path", "enginePath", "--log-level", "DEBUG", "--engine-log-level", "engineLogLevel");
     mockBuilder();
     ComponentBuilder policyComponentBuilder = mockPolicyComponentBuilder();
     ComponentBuilder sizeBasedTriggerPolicy = mockSizeBasedTriggerPolicy();
@@ -48,7 +48,7 @@ public class LoggerInitializationTest {
     verifyOnPattern(layoutComponentBuilder, inOrder);
     verifyOnRollingFileAppender(policyComponentBuilder, layoutComponentBuilder, appenderComponentBuilder, inOrder);
     verifyOnRootLogger(inOrder, rootLoggerComponentBuilder, appenderRefComponentBuilder);
-    inOrder.verify(builder).setStatusLevel(INFO);
+    inOrder.verify(builder).setStatusLevel(DEBUG);
     inOrder.verify(builder).setConfigurationName("RollingBuilder");
     inOrder.verify(builder).add(appenderComponentBuilder);
     inOrder.verify(builder).add(rootLoggerComponentBuilder);
@@ -57,7 +57,7 @@ public class LoggerInitializationTest {
   }
 
   private void verifyOnRootLogger(InOrder inOrder, RootLoggerComponentBuilder rootLoggerComponentBuilder, AppenderRefComponentBuilder appenderRefComponentBuilder) {
-    inOrder.verify(builder).newRootLogger(INFO);
+    inOrder.verify(builder).newRootLogger(DEBUG);
     inOrder.verify(builder).newAppenderRef("FileAppender");
     inOrder.verify(rootLoggerComponentBuilder).add(appenderRefComponentBuilder);
 
@@ -86,7 +86,7 @@ public class LoggerInitializationTest {
   }
 
   private void mockBuilder() {
-    when(builder.setStatusLevel(INFO)).thenReturn(builder);
+    when(builder.setStatusLevel(DEBUG)).thenReturn(builder);
     when(builder.setConfigurationName("RollingBuilder")).thenReturn(builder);
     when(builder.add(any(AppenderComponentBuilder.class))).thenReturn(builder);
     when(builder.add(any(RootLoggerComponentBuilder.class))).thenReturn(builder);
@@ -100,7 +100,7 @@ public class LoggerInitializationTest {
 
   private RootLoggerComponentBuilder mockRootLoggerComponentBuilder() {
     RootLoggerComponentBuilder rootLoggerComponentBuilder = mock(RootLoggerComponentBuilder.class);
-    when(builder.newRootLogger(INFO)).thenReturn(rootLoggerComponentBuilder);
+    when(builder.newRootLogger(DEBUG)).thenReturn(rootLoggerComponentBuilder);
     when(rootLoggerComponentBuilder.add(any(AppenderRefComponentBuilder.class))).thenReturn(rootLoggerComponentBuilder);
     return rootLoggerComponentBuilder;
   }

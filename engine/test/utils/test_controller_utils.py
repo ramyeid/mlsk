@@ -41,10 +41,10 @@ class TestControllerUtils(unittest.TestCase):
   def test_return_correct_response_when_request_is_released(self) -> None:
     # Given
     request = Request(1, RequestType.TIME_SERIES_ANALYSIS)
-    request_release_type = ReleaseRequestType.RELEASE
+    release_request_type = ReleaseRequestType.RELEASE
 
     # When
-    request.post_release_request(request_release_type)
+    request.post_release_request(release_request_type)
     actual_response_body, actual_response_code = controller_utils.block_on_release_request_and_return_503(request)
 
     # Then
@@ -52,13 +52,13 @@ class TestControllerUtils(unittest.TestCase):
     self.assertEqual(503, actual_response_code)
 
 
-  def test_return_correct_invalid_response_when_request_release_type_is_ignore(self) -> None:
+  def test_return_correct_invalid_response_when_release_request_type_is_ignore(self) -> None:
     # Given
     request = Request(1, RequestType.TIME_SERIES_ANALYSIS)
-    request_release_type = ReleaseRequestType.IGNORE
+    release_request_type = ReleaseRequestType.IGNORE
 
     # When
-    request.post_release_request(request_release_type)
+    request.post_release_request(release_request_type)
     actual_response_body, actual_response_code = controller_utils.block_on_release_request_and_return_503(request)
 
     # Then

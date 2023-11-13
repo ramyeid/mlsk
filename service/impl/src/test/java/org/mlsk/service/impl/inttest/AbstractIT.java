@@ -51,6 +51,8 @@ public abstract class AbstractIT {
   protected static final Endpoint ENDPOINT2 = new Endpoint("localhost", 6767L);
   protected static final String LOGS_PATH = "logsPath";
   protected static final String ENGINE_PATH = "enginePath";
+  protected static final String LOG_LEVEL = "logLevel";
+  protected static final String ENGINE_LOG_LEVEL = "engineLogLevel";
 
   private RestTemplate restTemplateSpy;
   @Mock
@@ -70,7 +72,7 @@ public abstract class AbstractIT {
 
   protected void setup(List<Endpoint> endpoints) throws Exception {
     String ports = endpoints.stream().map(Endpoint::getPort).map(Object::toString).collect(joining(","));
-    buildServiceConfiguration("", "--engine-ports", ports, "--logs-path", LOGS_PATH, "-engine-path", ENGINE_PATH);
+    buildServiceConfiguration("", "--engine-ports", ports, "--logs-path", LOGS_PATH, "-engine-path", ENGINE_PATH, "--log-level", LOG_LEVEL, "--engine-log-level", ENGINE_LOG_LEVEL);
 
     restTemplateSpy = spy(buildRestTemplate());
     onRestTemplatePostForObjectCallMockEngine();
@@ -101,7 +103,7 @@ public abstract class AbstractIT {
 
   protected void verifyServiceSetup(List<Endpoint> endpoints, InOrder inOrder) throws IOException {
     for (Endpoint endpoint : endpoints) {
-      inOrder.verify(engineLauncher).launchEngine(endpoint, LOGS_PATH, ENGINE_PATH);
+      inOrder.verify(engineLauncher).launchEngine(endpoint, LOGS_PATH, ENGINE_PATH, ENGINE_LOG_LEVEL);
     }
   }
 
@@ -125,7 +127,7 @@ public abstract class AbstractIT {
   private void setUpEngineLauncher(List<Endpoint> endpoints) throws IOException {
     for (Endpoint endpoint : endpoints) {
       MockProcess mockProcess = new MockProcess();
-      when(engineLauncher.launchEngine(endpoint, LOGS_PATH, ENGINE_PATH)).thenReturn(mockProcess.getProcess());
+      when(engineLauncher.launchEngine(endpoint, LOGS_PATH, ENGINE_PATH, ENGINE_LOG_LEVEL)).thenReturn(mockProcess.getProcess());
       processes.add(mockProcess);
     }
   }
@@ -145,7 +147,7 @@ public abstract class AbstractIT {
 
   private Engine buildEngine(Endpoint endpoint) {
     EngineClientFactory engineClientFactory = buildEngineClientFactory(endpoint);
-    ResilientEngineProcess resilientEngineProcess = new ResilientEngineProcess(endpoint, engineLauncher, LOGS_PATH, ENGINE_PATH);
+    ResilientEngineProcess resilientEngineProcess = new ResilientEngineProcess(endpoint, engineLauncher, LOGS_PATH, ENGINE_PATH, ENGINE_LOG_LEVEL);
     return new EngineImpl(engineClientFactory, endpoint, resilientEngineProcess, new AtomicReference<>(OFF));
   }
 

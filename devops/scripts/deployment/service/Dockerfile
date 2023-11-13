@@ -24,4 +24,6 @@ ENTRYPOINT ["java", \
             "-jar","/mlsk-service-impl.jar", \
             "--engine-ports", "6767,6768,6769", \
             "--engine-path", "/engine", \
-            "--logs-path", "/mlsk-logs"]
+            "--logs-path", "/mlsk-logs", \
+            "--log-level", "INFO" \
+            "--engine-log-level", "INFO"]

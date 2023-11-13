@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-
 from flask import jsonify
 from flask.typing import ResponseReturnValue
 from engine_state import Request, ReleaseRequestType
@@ -27,8 +26,8 @@ def block_on_release_request_and_return_503(request: Request) -> ResponseReturnV
 
   Note: This method is most commonly used with multiprocessing_utils#any_of
   '''
-  request_release_type = request.get_release_request_rx().recv()
-  if request_release_type == ReleaseRequestType.IGNORE:
+  release_request_type = request.get_release_request_rx().recv()
+  if release_request_type == ReleaseRequestType.IGNORE:
     return 'This result should not be used', -1
   else:
     return '%s request dropped' % (request.get_request_id()), 503

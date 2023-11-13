@@ -4,13 +4,16 @@
 HOST_SECTION = 'host'
 PORT_SECTION = 'port'
 PORTS_SECTION = 'ports'
+LOG_LEVEL_SECTION = 'logLevel'
 SERVICE_SECTION = 'SERVICE'
 ENGINE_SECTION = 'ENGINE'
 WEB_UI_SECTION = 'WEB_UI'
 WEB_UI_PORT_OPTION = 'webui_port'
 ENGINE_PORTS_OPTION = 'engine_ports'
+ENGINE_LOG_LEVEL_OPTION = 'engine_log_level'
 SERVICE_PORT_OPTION = 'service_port'
 SERVICE_HOST_OPTION = 'service_host'
+SERVICE_LOG_LEVEL_OPTION = 'service_log_level'
 
 #Paths
 BUILD_DIRECTORY = '../../build/'

@@ -23,6 +23,7 @@ public class ResilientEngineProcessTest {
 
   private static final String LOGS_PATH = "LogsPath";
   private static final String ENGINE_PATH = "EnginePath";
+  private static final String ENGINE_LOG_LEVEL = "EngineLogLevel";
   private static final Endpoint ENDPOINT = new Endpoint("localhost", 6767L);
 
   @Mock
@@ -36,7 +37,7 @@ public class ResilientEngineProcessTest {
 
   @BeforeEach
   public void setUp() throws IOException {
-    this.resilientEngineProcess = new ResilientEngineProcess(ENDPOINT, engineLauncher, LOGS_PATH, ENGINE_PATH);
+    this.resilientEngineProcess = new ResilientEngineProcess(ENDPOINT, engineLauncher, LOGS_PATH, ENGINE_PATH, ENGINE_LOG_LEVEL);
   }
 
   @Test
@@ -48,7 +49,7 @@ public class ResilientEngineProcessTest {
     resilientEngineProcess.launchEngine(mock(Runnable.class));
 
     InOrder inOrder = buildInOrder();
-    inOrder.verify(engineLauncher).launchEngine(ENDPOINT, LOGS_PATH, ENGINE_PATH);
+    inOrder.verify(engineLauncher).launchEngine(ENDPOINT, LOGS_PATH, ENGINE_PATH, ENGINE_LOG_LEVEL);
     inOrder.verify(process).waitFor(3, TimeUnit.SECONDS);
     inOrder.verify(process).onExit();
     inOrder.verify(onExitFuture).thenAcceptAsync(any());
@@ -106,7 +107,7 @@ public class ResilientEngineProcessTest {
   }
 
   private void onLaunchEngineReturn(Process process) throws IOException {
-    when(engineLauncher.launchEngine(ENDPOINT, LOGS_PATH, ENGINE_PATH)).thenReturn(process);
+    when(engineLauncher.launchEngine(ENDPOINT, LOGS_PATH, ENGINE_PATH, ENGINE_LOG_LEVEL)).thenReturn(process);
   }
 
   private void onProcessExitReturn(CompletableFuture<Process> future) {
