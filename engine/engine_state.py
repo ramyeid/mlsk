@@ -41,6 +41,10 @@ class Request:
     self.classifier_data_builder = ClassifierDataBuilder()
 
 
+  def get_request_id(self) -> int:
+    return self.request_id
+
+
   def get_release_request_rx(self) -> Connection:
     return self.release_request_rx
 
@@ -82,6 +86,20 @@ class Request:
       return self.classifier_data_builder.contains_data()
     else:
       return False
+
+
+  def __str__(self) -> str:
+        return str(self.to_json())
+
+
+  def __repr__(self) -> str:
+    return self.__str__()
+
+
+  def to_json(self) -> dict:
+    return dict(requestId=self.request_id,\
+      requestType=self.request_type,\
+      classifier_data_builder=str(self.classifier_data_builder))
 
 
 class Engine:
@@ -132,9 +150,3 @@ class Engine:
 
   def request_count(self) -> None:
     return len(self.inflight_requests)
-
-
-ENGINE = Engine()
-
-def get_engine():
-  return ENGINE

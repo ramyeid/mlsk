@@ -3,12 +3,13 @@
 
 import unittest
 import json
-from engine_server import app
-from engine_state import get_engine, RequestType
-from classifier.controller import classifier_controller
+from flask.typing import ResponseReturnValue
+from engine_server import setup_server
+from engine_state import RequestType
 
 
-test_app = app.test_client()
+flask_app, engine = setup_server()
+test_app = flask_app.test_client()
 
 
 class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
@@ -23,11 +24,16 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
 
   def setUp(self) -> None:
-    get_engine().release_all_inflight_requests()
+    engine.release_all_inflight_requests()
+
+
+  def assert_on_response(self, body: str, status_code: int, response: ResponseReturnValue) -> None:
+    self.assertEqual(str.encode(body), response.data)
+    self.assertEqual(status_code, response.status_code)
 
 
   def assert_on_state(self, request_id: int, expected_prediction_column_name: str, expected_action_column_names: [str], expected_number_of_values: int, expected_data: dict) -> None:
-    classifier_request = get_engine().get_request(request_id)
+    classifier_request = engine.get_request(request_id)
     classifier_data = classifier_request.build_classifier_data()
     self.assertEqual(expected_prediction_column_name, classifier_data.get_prediction_column_name())
     self.assertEqual(expected_action_column_names, classifier_data.get_action_column_names())
@@ -36,7 +42,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
 
   def assert_request_released(self, request_id: int) -> None:
-    self.assertFalse(get_engine().contains_request(request_id))
+    self.assertFalse(engine.contains_request(request_id))
 
 
   def test_set_data_on_start(self) -> None:
@@ -48,7 +54,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_on_state(123, 'Sex', ['Width', 'Height'], 5, {})
-    self.assertEqual(b'{"Status":"Ok"}', response.data)
+    self.assert_on_response('', 204, response)
 
 
   def test_exception_thrown_if_start_data_exists_on_start(self) -> None:
@@ -61,13 +67,17 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception EngineComputationException raised while starting decision tree: ' \
-            b'Error, Launching start with existing inflight request with id: 123."\n', response.data)
+    self.assert_on_response(
+      '[123] Exception RequestRegistryException raised while starting decision tree: ' \
+      'RequestId (123) already inflight!',
+      500,
+      response
+    )
 
 
   def test_exception_thrown_if_data_exists_on_start(self) -> None:
     # Given
-    get_engine().register_new_request(123, RequestType.CLASSIFIER)
+    engine.register_new_request(123, RequestType.CLASSIFIER)
     add_data(123, 'Sex', [1,2,3,4])
     body_as_string = build_start_body_as_string(123)
 
@@ -76,8 +86,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception EngineComputationException raised while starting decision tree: ' \
-            b'Error, Launching start with existing inflight request with id: 123."\n', response.data)
+    self.assert_on_response(
+      '[123] Exception RequestRegistryException raised while starting decision tree: ' \
+      'RequestId (123) already inflight!',
+      500,
+      response
+    )
 
 
   def test_state_set_on_data(self) -> None:
@@ -91,11 +105,16 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_on_state(123, 'Sex', ['Width', 'Height'], 5, {'Sex': [1, 0, 1, 0 ,0]})
-    self.assertEqual(b'{"Status":"Ok"}', response.data)
+    self.assert_on_response(
+      '',
+      204,
+      response
+    )
 
 
-  def test_exception_thrown_if_data_does_not_exists_on_data(self) -> None:
+  def test_exception_thrown_if_start_data_does_not_exists_on_data(self) -> None:
     # Given
+    new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
     data_body_as_string = build_data_body_as_string(123)
 
     # When
@@ -103,8 +122,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception EngineComputationException raised while receiving decision tree data: ' \
-            b'Error, Receiving Data without Start."\n', response.data)
+    self.assert_on_response(
+      '[123] Exception EngineComputationException raised while receiving decision tree data: ' \
+      'Error, Receiving Data without Start.',
+      500,
+      response
+    )
 
 
   def test_predict_and_reset_state(self) -> None:
@@ -129,11 +152,16 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'{"requestId": 123, "columnName": "Sex", "values": [0], "classifierType": "DECISION_TREE"}', response.data)
+    self.assert_on_response(
+      '{"requestId": 123, "columnName": "Sex", "values": [0], "classifierType": "DECISION_TREE"}',
+      200,
+      response
+    )
 
 
   def test_throw_exception_if_start_not_called_on_predict(self) -> None:
     # Given
+    new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
     predict_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_body_as_string = json.dumps(predict_body)
 
@@ -141,8 +169,13 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assertEqual(b'"[123] Exception EngineComputationException raised while decision tree predicting: ' \
-            b'Error, No Data was set to launch decision tree computation."\n', response.data)
+    self.assert_request_released(123)
+    self.assert_on_response(
+      '[123] Exception EngineComputationException raised while decision tree predicting: ' \
+      'Error, No Data was set to launch decision tree computation.',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_data_not_called_on_predict(self) -> None:
@@ -157,8 +190,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception EngineComputationException raised while decision tree predicting: ' \
-            b'Error, No Data was set to launch decision tree computation."\n', response.data)
+    self.assert_on_response(
+      '[123] Exception EngineComputationException raised while decision tree predicting: ' \
+      'Error, No Data was set to launch decision tree computation.',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_not_all_columns_received_on_predict(self) -> None:
@@ -180,8 +217,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    expected_exception = b'"[123] Exception ClassifierException raised while decision tree predicting: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Width\', \'Height\'])"\n'
-    self.assertEqual(expected_exception, response.data)
+    self.assert_on_response(
+      '[123] Exception ClassifierException raised while decision tree predicting: ' \
+      'Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Width\', \'Height\'])',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_action_columns_do_not_have_same_size_on_predict(self) -> None:
@@ -206,8 +247,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception ClassifierException raised while decision tree predicting: '\
-            b'Error: Action column sizes are not equal; sizes found: [9, 10]"\n', response.data)
+    self.assert_on_response(
+      '[123] Exception ClassifierException raised while decision tree predicting: ' \
+      'Error: Action column sizes are not equal; sizes found: [9, 10]',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_actual_values_missing_greater_than_number_of_values_on_predict(self) -> None:
@@ -232,8 +277,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception ClassifierException raised while decision tree predicting: '\
-            b'Error: Invalid prediction column size. Prediction: 7, Action: 9, Values to predict: 1"\n', response.data)
+    self.assert_on_response(
+      '[123] Exception ClassifierException raised while decision tree predicting: ' \
+      'Error: Invalid prediction column size. Prediction: 7, Action: 9, Values to predict: 1',
+      500,
+      response
+    )
 
 
   def test_predict_accuracy_and_reset_state(self) -> None:
@@ -258,11 +307,16 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(100.0, float(response.data))
+    self.assert_on_response(
+      '100.0',
+      200,
+      response
+    )
 
 
   def test_throw_exception_if_start_not_called_on_predict_accuracy(self) -> None:
     # Given
+    new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
     predict_accuracy_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string = json.dumps(predict_accuracy_body)
 
@@ -270,8 +324,13 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
-    self.assertEqual(b'"[123] Exception EngineComputationException raised while computing decision tree predict accuracy: ' \
-            b'Error, No Data was set to launch decision tree computation."\n', response.data)
+    self.assert_request_released(123)
+    self.assert_on_response(
+      '[123] Exception EngineComputationException raised while computing decision tree predict accuracy: ' \
+      'Error, No Data was set to launch decision tree computation.',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_data_not_called_on_predict_accuracy(self) -> None:
@@ -286,8 +345,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception EngineComputationException raised while computing decision tree predict accuracy: '\
-            b'Error, No Data was set to launch decision tree computation."\n', response.data)
+    self.assert_on_response(
+      '[123] Exception EngineComputationException raised while computing decision tree predict accuracy: ' \
+      'Error, No Data was set to launch decision tree computation.',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_not_all_columns_received_on_predict_accuracy(self) -> None:
@@ -309,8 +372,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    expected_exception = b'"[123] Exception ClassifierException raised while computing decision tree predict accuracy: Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Sex\', \'Height\'])"\n'
-    self.assertEqual(expected_exception, response.data)
+    self.assert_on_response(
+      '[123] Exception ClassifierException raised while computing decision tree predict accuracy: ' \
+      'Error: Column expected ([\'Width\', \'Height\', \'Sex\']) different than received ([\'Sex\', \'Height\'])',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_action_columns_do_not_have_same_size_on_predict_accuracy(self) -> None:
@@ -335,8 +402,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception ClassifierException raised while computing decision tree predict accuracy: '\
-            b'Error: Action column sizes are not equal; sizes found: [9, 5]"\n', response.data)
+    self.assert_on_response(
+      '[123] Exception ClassifierException raised while computing decision tree predict accuracy: ' \
+      'Error: Action column sizes are not equal; sizes found: [9, 5]',
+      500,
+      response
+    )
 
 
   def test_throw_exception_if_actual_values_missing_on_predict_accuracy(self) -> None:
@@ -361,8 +432,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'"[123] Exception ClassifierException raised while computing decision tree predict accuracy: '\
-            b'Error: Invalid prediction column size. Prediction: 8, Action: 9, Values to predict: 1"\n', response.data)
+    self.assert_on_response(
+      '[123] Exception ClassifierException raised while computing decision tree predict accuracy: ' \
+      'Error: Invalid prediction column size. Prediction: 8, Action: 9, Values to predict: 1',
+      500,
+      response
+    )
 
 
   def test_reset_state_on_cancel(self) -> None:
@@ -381,7 +456,11 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(b'{"Status":"Ok"}', response.data)
+    self.assert_on_response(
+      '',
+      204,
+      response
+    )
 
 
   def test_reset_state_on_cancel_and_start_new_request(self) -> None:
@@ -451,18 +530,26 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
     # Then
     self.assert_request_released(123)
-    self.assertEqual(100.0, float(response_1.data))
+    self.assert_on_response(
+      '100.0',
+      200,
+      response_1
+    )
     self.assert_request_released(999)
-    self.assertEqual(b'{"requestId": 999, "columnName": "Sex", "values": [0], "classifierType": "DECISION_TREE"}', response_2.data)
+    self.assert_on_response(
+      '{"requestId": 999, "columnName": "Sex", "values": [0], "classifierType": "DECISION_TREE"}',
+      200,
+      response_2
+    )
 
 
 def set_start_data(request_id: int, prediction_column_name: str, action_column_names: [str], number_of_values: int) -> None:
-  classifier_request = get_engine().register_new_request(123, RequestType.CLASSIFIER)
-  classifier_request.set_classifier_start_data(prediction_column_name, action_column_names, number_of_values)
+  new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
+  new_request.set_classifier_start_data(prediction_column_name, action_column_names, number_of_values)
 
 
 def add_data(request_id: int, column: str, values: [int]) -> None:
-  get_engine().get_request(request_id).add_classifier_data(column, values)
+  engine.get_request(request_id).add_classifier_data(column, values)
 
 
 def build_start_body_as_string(request_id: int) -> str:

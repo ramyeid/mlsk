@@ -66,6 +66,21 @@ class ClassifierDataBuilder:
     return ClassifierData(self.prediction_column_name, self.action_column_names, self.number_of_values, self.data)
 
 
+  def __str__(self) -> str:
+    return str(self.to_json())
+
+
+  def __repr__(self) -> str:
+    return self.__str__()
+
+
+  def to_json(self) -> dict:
+    return dict(predictionColumnName=self.prediction_column_name,\
+      actionColumnNames=self.action_column_names,\
+      numberOfValues=self.number_of_values,\
+      data=str(self.data))
+
+
 class ClassifierData:
   '''
   Represents the data used in the controller to build the service
