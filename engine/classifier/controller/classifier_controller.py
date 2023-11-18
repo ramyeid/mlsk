@@ -2,9 +2,9 @@
 
 import json
 from flask import request
+from logging import Logger
 from engine_state import Engine, Request, RequestType
 from utils.json_complex_encoder import JsonComplexEncoder
-from utils.logger import get_logger
 from utils.controller_utils import build_no_content_response
 from exception.engine_computation_exception import EngineComputationException
 from classifier.service.classifier_service_factory import ClassifierServiceFactory
@@ -19,8 +19,9 @@ from classifier.model.classifier_response import ClassifierResponse
 class ClassifierController:
 
 
-  def __init__(self, engine: Engine):
+  def __init__(self, engine: Engine, logger: Logger):
     self.engine = engine
+    self.logger = logger
 
 
   def start(self) -> str:
@@ -38,7 +39,7 @@ class ClassifierController:
       request_id = classifier_start_request.get_request_id()
       classifier_type = classifier_start_request.get_classifier_type()
 
-      get_logger().info('[Start][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[Start][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
 
       new_request = self.engine.register_new_request(request_id, RequestType.CLASSIFIER)
 
@@ -48,12 +49,12 @@ class ClassifierController:
       self.engine.release_request(request_id)
 
       error_message = '[%s] Exception %s raised while starting %s: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
-      get_logger().info('[End][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[End][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
 
 
   def on_data_received(self) -> str:
@@ -71,7 +72,7 @@ class ClassifierController:
       request_id = classifier_data_request.get_request_id()
       classifier_type = classifier_data_request.get_classifier_type()
 
-      get_logger().info('[Start][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[Start][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
 
       return self._on_data_received(self.engine, classifier_data_request)
 
@@ -79,12 +80,12 @@ class ClassifierController:
       self.engine.release_request(request_id)
 
       error_message = '[%s] Exception %s raised while receiving %s data: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
-      get_logger().info('[End][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[End][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
 
 
   def predict(self) -> str:
@@ -105,20 +106,20 @@ class ClassifierController:
       request_id = classifier_request.get_request_id()
       classifier_type = classifier_request.get_classifier_type()
 
-      get_logger().info('[Start][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[Start][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
 
       return self._predict(self.engine, classifier_request)
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while %s predicting: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
       self.engine.release_request(request_id)
 
-      get_logger().info('[End][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[End][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
 
 
   def compute_accuracy_of_predict(self) -> str:
@@ -140,20 +141,20 @@ class ClassifierController:
       request_id = classifier_request.get_request_id()
       classifier_type = classifier_request.get_classifier_type()
 
-      get_logger().info('[Start][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[Start][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
 
       return self._compute_accuracy_of_predict(self.engine, classifier_request)
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while computing %s predict accuracy: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
       self.engine.release_request(request_id)
 
-      get_logger().info('[End][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[End][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
 
 
   # TODO: Make this generic for all engine instead of only for Classifier Requests
@@ -172,7 +173,7 @@ class ClassifierController:
       request_id = classifier_cancel_request.get_request_id()
       classifier_type = classifier_cancel_request.get_classifier_type()
 
-      get_logger().info('[Start][%d] Cancel %s Request', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[Start][%d] Cancel %s Request', request_id, classifier_type.to_lower_case_with_space())
 
       self.engine.release_request(request_id)
 
@@ -182,12 +183,12 @@ class ClassifierController:
       self.engine.release_request(request_id)
 
       error_message = '[%s] Exception %s raised while cancelling %s: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
-      get_logger().info('[End][%d] Cancel %s Request', request_id, classifier_type.to_lower_case_with_space())
+      self.logger.info('[End][%d] Cancel %s Request', request_id, classifier_type.to_lower_case_with_space())
 
 
   @classmethod

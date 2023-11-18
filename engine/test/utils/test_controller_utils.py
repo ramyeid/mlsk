@@ -2,6 +2,7 @@
 
 import unittest
 from flask.wrappers import Response
+from logging import Logger
 from exception.engine_computation_exception import EngineComputationException
 from utils import controller_utils
 from engine_state import Request, RequestType
@@ -22,9 +23,10 @@ class TestControllerUtils(unittest.TestCase):
     self.assertEqual(204, actual_response_code)
 
 
-
   def test_return_correct_response_whe_handling_engine_computation_exception(self) -> None:
-    flask_app, _engine = setup_server()
+    logger = Logger('Test')
+    logger.setLevel('CRITICAL')
+    flask_app, _engine = setup_server(logger)
     with flask_app.app_context():
       # Given
       exception = EngineComputationException('Exception Message')

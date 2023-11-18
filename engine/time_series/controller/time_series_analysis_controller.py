@@ -2,9 +2,9 @@
 
 import json
 from flask import request
+from logging import Logger
 from engine_state import Engine, RequestType
 from utils.json_complex_encoder import JsonComplexEncoder
-from utils.logger import get_logger
 from exception.engine_computation_exception import EngineComputationException
 from time_series.service.time_series_analysis_service import TimeSeriesAnalysisService
 from time_series.model.time_series_analysis_request import TimeSeriesAnalysisRequest
@@ -14,8 +14,9 @@ from time_series.model.time_series import TimeSeries
 class TimeSeriesAnalysisController:
 
 
-  def __init__(self, engine: Engine):
+  def __init__(self, engine: Engine, logger: Logger):
     self.engine = engine
+    self.logger = logger
 
 
   def forecast(self) -> str:
@@ -35,7 +36,7 @@ class TimeSeriesAnalysisController:
       time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
       request_id = time_series_analysis_request.get_request_id()
 
-      get_logger().info('[Start][%d] forecast request', request_id)
+      self.logger.info('[Start][%d] forecast request', request_id)
 
       new_request = self.engine.register_new_request(request_id, RequestType.TIME_SERIES_ANALYSIS)
 
@@ -43,13 +44,13 @@ class TimeSeriesAnalysisController:
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while forecasting: %s' % (request_id, type(exception).__name__, exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
       self.engine.release_request(request_id)
-      get_logger().info('[End][%d] forecast request', request_id)
+      self.logger.info('[End][%d] forecast request', request_id)
 
 
   def compute_accuracy_of_forecast(self) -> str:
@@ -71,7 +72,7 @@ class TimeSeriesAnalysisController:
       time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
       request_id = time_series_analysis_request.get_request_id()
 
-      get_logger().info('[Start][%d] compute forecast accuracy request', request_id)
+      self.logger.info('[Start][%d] compute forecast accuracy request', request_id)
 
       new_request = self.engine.register_new_request(request_id, RequestType.TIME_SERIES_ANALYSIS)
 
@@ -79,13 +80,13 @@ class TimeSeriesAnalysisController:
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while computing forecast accuracy: %s' % (request_id, type(exception).__name__, exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
       self.engine.release_request(request_id)
-      get_logger().info('[End][%d] compute forecast accuracy request', request_id)
+      self.logger.info('[End][%d] compute forecast accuracy request', request_id)
 
 
   def predict(self) -> str:
@@ -105,7 +106,7 @@ class TimeSeriesAnalysisController:
       time_series_analysis_request = TimeSeriesAnalysisRequest.from_json(request.json)
       request_id = time_series_analysis_request.get_request_id()
 
-      get_logger().info('[Start][%d] predict request', request_id)
+      self.logger.info('[Start][%d] predict request', request_id)
 
       new_request = self.engine.register_new_request(request_id, RequestType.TIME_SERIES_ANALYSIS)
 
@@ -113,13 +114,13 @@ class TimeSeriesAnalysisController:
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while predicting: %s' % (request_id, type(exception).__name__, exception)
-      get_logger().error(error_message)
-      get_logger().exception(exception)
+      self.logger.error(error_message)
+      self.logger.exception(exception)
       raise EngineComputationException(error_message)
 
     finally:
       self.engine.release_request(request_id)
-      get_logger().info('[End][%d] predict request', request_id)
+      self.logger.info('[End][%d] predict request', request_id)
 
 
   @classmethod

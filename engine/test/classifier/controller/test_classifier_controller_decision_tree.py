@@ -4,11 +4,13 @@
 import unittest
 import json
 from flask.typing import ResponseReturnValue
+from logging import Logger
 from engine_server import setup_server
 from engine_state import RequestType
 
-
-flask_app, engine = setup_server()
+logger = Logger('TestEngine')
+logger.setLevel('CRITICAL')
+flask_app, engine = setup_server(logger)
 test_app = flask_app.test_client()
 
 
