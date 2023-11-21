@@ -3,8 +3,10 @@
 import json
 from flask import request
 from logging import Logger
+from process_pool.process_pool import ProcessPool
 from engine_state import Engine, RequestType
 from utils.json_complex_encoder import JsonComplexEncoder
+from utils.controller_utils import block_on_release_request_and_return_503, unblock_release_with_ignore_on_computation_done
 from exception.engine_computation_exception import EngineComputationException
 from time_series.service.time_series_analysis_service import TimeSeriesAnalysisService
 from time_series.model.time_series_analysis_request import TimeSeriesAnalysisRequest
@@ -14,8 +16,9 @@ from time_series.model.time_series import TimeSeries
 class TimeSeriesAnalysisController:
 
 
-  def __init__(self, engine: Engine, logger: Logger):
+  def __init__(self, process_pool: ProcessPool, engine: Engine, logger: Logger):
     self.engine = engine
+    self.process_pool = process_pool
     self.logger = logger
 
 
@@ -38,9 +41,10 @@ class TimeSeriesAnalysisController:
 
       self.logger.info('[Start][%d] forecast request', request_id)
 
-      new_request = self.engine.register_new_request(request_id, RequestType.TIME_SERIES_ANALYSIS)
+      new_request = self.process_pool.get_multiprocessing_manager().Request(request_id, RequestType.TIME_SERIES_ANALYSIS)
+      self.engine.register_new_request(new_request)
 
-      return self._forecast(time_series_analysis_request)
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [new_request]], [self._forecast_async, [time_series_analysis_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [new_request]])
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while forecasting: %s' % (request_id, type(exception).__name__, exception)
@@ -74,9 +78,10 @@ class TimeSeriesAnalysisController:
 
       self.logger.info('[Start][%d] compute forecast accuracy request', request_id)
 
-      new_request = self.engine.register_new_request(request_id, RequestType.TIME_SERIES_ANALYSIS)
+      new_request = self.process_pool.get_multiprocessing_manager().Request(request_id, RequestType.TIME_SERIES_ANALYSIS)
+      self.engine.register_new_request(new_request)
 
-      return self._compute_accuracy_of_forecast(time_series_analysis_request)
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [new_request]], [self._compute_accuracy_of_forecast_async, [time_series_analysis_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [new_request]])
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while computing forecast accuracy: %s' % (request_id, type(exception).__name__, exception)
@@ -108,9 +113,10 @@ class TimeSeriesAnalysisController:
 
       self.logger.info('[Start][%d] predict request', request_id)
 
-      new_request = self.engine.register_new_request(request_id, RequestType.TIME_SERIES_ANALYSIS)
+      new_request = self.process_pool.get_multiprocessing_manager().Request(request_id, RequestType.TIME_SERIES_ANALYSIS)
+      self.engine.register_new_request(new_request)
 
-      return self._predict(time_series_analysis_request)
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [new_request]], [self._predict_async, [time_series_analysis_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [new_request]])
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while predicting: %s' % (request_id, type(exception).__name__, exception)
@@ -124,7 +130,7 @@ class TimeSeriesAnalysisController:
 
 
   @classmethod
-  def _forecast(cls, time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
+  def _forecast_async(cls, time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()
@@ -143,7 +149,7 @@ class TimeSeriesAnalysisController:
 
 
   @classmethod
-  def _compute_accuracy_of_forecast(cls, time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
+  def _compute_accuracy_of_forecast_async(cls, time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()
@@ -156,7 +162,7 @@ class TimeSeriesAnalysisController:
 
 
   @classmethod
-  def _predict(cls, time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
+  def _predict_async(cls, time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()

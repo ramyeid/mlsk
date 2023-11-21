@@ -3,9 +3,10 @@
 import json
 from flask import request
 from logging import Logger
+from process_pool.process_pool import ProcessPool
 from engine_state import Engine, Request, RequestType
 from utils.json_complex_encoder import JsonComplexEncoder
-from utils.controller_utils import build_no_content_response
+from utils.controller_utils import build_no_content_response, block_on_release_request_and_return_503, unblock_release_with_ignore_on_computation_done
 from exception.engine_computation_exception import EngineComputationException
 from classifier.service.classifier_service_factory import ClassifierServiceFactory
 from classifier.model.classifier_type import ClassifierType
@@ -19,8 +20,9 @@ from classifier.model.classifier_response import ClassifierResponse
 class ClassifierController:
 
 
-  def __init__(self, engine: Engine, logger: Logger):
+  def __init__(self, process_pool: ProcessPool, engine: Engine, logger: Logger):
     self.engine = engine
+    self.process_pool = process_pool
     self.logger = logger
 
 
@@ -41,9 +43,10 @@ class ClassifierController:
 
       self.logger.info('[Start][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
 
-      new_request = self.engine.register_new_request(request_id, RequestType.CLASSIFIER)
+      new_request = self.process_pool.get_multiprocessing_manager().Request(request_id, RequestType.CLASSIFIER)
+      self.engine.register_new_request(new_request)
 
-      return self._start(self.engine, new_request, classifier_start_request)
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [new_request]], [self._start_async, [self.engine, new_request, classifier_start_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [new_request]])
 
     except Exception as exception:
       self.engine.release_request(request_id)
@@ -74,7 +77,9 @@ class ClassifierController:
 
       self.logger.info('[Start][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
 
-      return self._on_data_received(self.engine, classifier_data_request)
+      registered_request = self.engine.get_request(request_id)
+
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [registered_request]], [self._on_data_received_async, [self.engine, classifier_data_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [registered_request]])
 
     except Exception as exception:
       self.engine.release_request(request_id)
@@ -108,7 +113,9 @@ class ClassifierController:
 
       self.logger.info('[Start][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
 
-      return self._predict(self.engine, classifier_request)
+      registered_request = self.engine.get_request(request_id)
+
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [registered_request]], [self._predict_async, [self.engine, classifier_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [registered_request]])
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while %s predicting: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
@@ -143,7 +150,9 @@ class ClassifierController:
 
       self.logger.info('[Start][%d] %s Predict accuracy', request_id, classifier_type.to_lower_case_with_space())
 
-      return self._compute_accuracy_of_predict(self.engine, classifier_request)
+      registered_request = self.engine.get_request(request_id)
+
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [registered_request]], [self._compute_accuracy_of_predict_async, [self.engine, classifier_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [registered_request]])
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while computing %s predict accuracy: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
@@ -192,7 +201,7 @@ class ClassifierController:
 
 
   @classmethod
-  def _start(cls, engine: Engine, request: Request, classifier_start_request: ClassifierStartRequest) -> str:
+  def _start_async(cls, engine: Engine, request: Request, classifier_start_request: ClassifierStartRequest) -> str:
     request_id = classifier_start_request.get_request_id()
 
     cls.__throw_exception_if_data_available_on_start(engine, request_id)
@@ -211,7 +220,7 @@ class ClassifierController:
 
 
   @classmethod
-  def _on_data_received(cls, engine: Engine, classifier_data_request: ClassifierDataRequest) -> str:
+  def _on_data_received_async(cls, engine: Engine, classifier_data_request: ClassifierDataRequest) -> str:
     request_id = classifier_data_request.get_request_id()
 
     cls.__throw_exception_if_start_was_not_called(engine, request_id)
@@ -224,7 +233,7 @@ class ClassifierController:
 
 
   @classmethod
-  def _predict(cls, engine: Engine, classifier_request: ClassifierRequest) -> str:
+  def _predict_async(cls, engine: Engine, classifier_request: ClassifierRequest) -> str:
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
 
@@ -246,7 +255,7 @@ class ClassifierController:
 
 
   @classmethod
-  def _compute_accuracy_of_predict(cls, engine: Engine, classifier_request: ClassifierRequest) -> str:
+  def _compute_accuracy_of_predict_async(cls, engine: Engine, classifier_request: ClassifierRequest) -> str:
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
 

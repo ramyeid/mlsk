@@ -3,7 +3,7 @@
 from typing import Any, Callable, List, Tuple
 from time import sleep
 from threading import Thread
-from multiprocessing import Pipe
+from multiprocessing import Pipe, Value, Lock
 from multiprocessing.connection import Connection
 from utils.logger import LoggerInfo, setup_logger
 from process_pool.multiprocessing_manager import MultiProcessingManager
@@ -98,6 +98,10 @@ class ProcessPool:
     return self.task_queue.empty()
 
 
+  def get_multiprocessing_manager(self) -> MultiProcessingManager:
+    return self.multiprocessing_manager
+
+
   def get_process_state(self) -> List[ProcessState]:
     '''
     Returns the states of all processes
@@ -153,8 +157,10 @@ class ProcessPool:
       - It is important to note that the any_of will be launched in 1 process but we will have two threads running on this process handling both callables.
     '''
     quickest_result_rx, quickest_result_tx = Pipe()
+    was_result_posted = self.multiprocessing_manager.Value('resultAlreadyPosted', False)
+    result_posting_lock = self.multiprocessing_manager.Lock()
 
-    self.execute(self._any_of_process_func, [quickest_result_tx, self.logger_info, func1_and_args, func2_and_args])
+    self.execute(self._any_of_process_func, [quickest_result_tx, was_result_posted, result_posting_lock, func1_and_args, func2_and_args])
 
     try:
       task_result = quickest_result_rx.recv()
@@ -169,7 +175,8 @@ class ProcessPool:
   @classmethod
   def _any_of_process_func(cls,
                 quickest_result_tx: Connection,
-                logger_info: LoggerInfo,
+                was_result_posted: Value,
+                result_posting_lock: Lock,
                 func1_and_args: Tuple[Callable[..., Any], List[Any]],
                 func2_and_args: Tuple[Callable[..., Any], List[Any]]) -> None:
     '''
@@ -177,8 +184,8 @@ class ProcessPool:
 
     This method represents the async function injected in the TaskQueue to be launched.
     '''
-    thread1 = Thread(target=cls._any_of_single_thread_func, args=([func1_and_args[0], func1_and_args[1], quickest_result_tx, logger_info]))
-    thread2 = Thread(target=cls._any_of_single_thread_func, args=([func2_and_args[0], func2_and_args[1], quickest_result_tx, logger_info]))
+    thread1 = Thread(target=cls._any_of_single_thread_func, args=([func1_and_args[0], func1_and_args[1], quickest_result_tx, was_result_posted, result_posting_lock]))
+    thread2 = Thread(target=cls._any_of_single_thread_func, args=([func2_and_args[0], func2_and_args[1], quickest_result_tx, was_result_posted, result_posting_lock]))
 
     thread1.start()
     thread2.start()
@@ -188,21 +195,31 @@ class ProcessPool:
 
 
   @classmethod
-  def _any_of_single_thread_func(cls, func: Callable[..., Any], func_args: List[Any], quickest_result_tx: Connection, logger_info: LoggerInfo) -> None:
+  def _any_of_single_thread_func(cls, func: Callable[..., Any], func_args: List[Any], quickest_result_tx: Connection, was_result_posted: Value, result_posting_lock: Lock) -> None:
     '''
     Call `func` callable.
     Post the TaskResult in `quickest_result_tx` Pipe.
     '''
+    result = None
+    raised_exception = None
+    did_fail = None
     try:
-      logger = setup_logger(logger_info)
       result = func(*func_args)
-      task_result = TaskResult(False, result=result)
-      quickest_result_tx.send(task_result)
-    except BrokenPipeError as broken_pipe_exception:
-      logger.info('BokenPipeError, seems like this task was cancelled from the outside since it was stuck: %s' % (broken_pipe_exception))
-    except Exception as raised_exception:
-      task_result = TaskResult(True, raised_exception=raised_exception)
-      quickest_result_tx.send(task_result)
+      did_fail = False
+    except Exception as raised_exception_in:
+      raised_exception = raised_exception_in
+      did_fail = True
+    finally:
+      # The first callable to complete would post the result, after which the `quickest_result_tx` would be destroyed.
+      # In order to avoid a BrokenPipError, we will check if a result was posted before posting another.
+      # This becomes an obvious critical section that needs to be synchronized by a mutex, to make sure that the fastest callable
+      # will be able to set `was_result_posted` to true before another accesses it.
+      result_posting_lock.acquire()
+      if not was_result_posted.get():
+        task_result = TaskResult(did_fail, result=result, raised_exception=raised_exception)
+        quickest_result_tx.send(task_result)
+        was_result_posted.set(True)
+      result_posting_lock.release()
 
 
   def __throw_if_no_idle_process(self) -> None:

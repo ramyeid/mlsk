@@ -8,11 +8,6 @@ from logging import Logger
 from engine_server import setup_server
 from engine_state import RequestType
 
-logger = Logger('TestEngine')
-logger.setLevel('CRITICAL')
-flask_app, engine = setup_server(logger)
-test_app = flask_app.test_client()
-
 
 class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
@@ -25,8 +20,19 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
   CANCEL_RESOURCE = '/classifier/cancel'
 
 
+  @classmethod
+  def setUpClass(cls) -> None:
+    cls.flask_app, cls.engine, cls.process_pool, cls.logger = setup_server(None, None, 'CRITICAL')
+    cls.test_app = cls.flask_app.test_client()
+
+
   def setUp(self) -> None:
-    engine.release_all_inflight_requests()
+    self.engine.release_all_inflight_requests()
+
+
+  @classmethod
+  def tearDownClass(cls) -> None:
+    cls.process_pool.shutdown()
 
 
   def assert_on_response(self, body: str, status_code: int, response: ResponseReturnValue) -> None:
@@ -35,7 +41,7 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
 
   def assert_on_state(self, request_id: int, expected_prediction_column_name: str, expected_action_column_names: [str], expected_number_of_values: int, expected_data: dict) -> None:
-    classifier_request = engine.get_request(request_id)
+    classifier_request = self.engine.get_request(request_id)
     classifier_data = classifier_request.build_classifier_data()
     self.assertEqual(expected_prediction_column_name, classifier_data.get_prediction_column_name())
     self.assertEqual(expected_action_column_names, classifier_data.get_action_column_names())
@@ -44,15 +50,15 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
 
   def assert_request_released(self, request_id: int) -> None:
-    self.assertFalse(engine.contains_request(request_id))
+    self.assertFalse(self.engine.contains_request(request_id))
 
 
   def test_set_data_on_start(self) -> None:
     # Given
-    body_as_string = build_start_body_as_string(123)
+    body_as_string = self.build_start_body_as_string(123)
 
     # When
-    response = test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_state(123, 'Sex', ['Width', 'Height'], 5, {})
@@ -61,11 +67,11 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_exception_thrown_if_start_data_exists_on_start(self) -> None:
     # Given
-    set_start_data(123, 'Sex', ['Width', 'Height'], 5)
-    body_as_string = build_start_body_as_string(123)
+    self.set_start_data(123, 'Sex', ['Width', 'Height'], 5)
+    body_as_string = self.build_start_body_as_string(123)
 
     # When
-    response = test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -79,12 +85,13 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_exception_thrown_if_data_exists_on_start(self) -> None:
     # Given
-    engine.register_new_request(123, RequestType.CLASSIFIER)
-    add_data(123, 'Sex', [1,2,3,4])
-    body_as_string = build_start_body_as_string(123)
+    new_request = self.process_pool.get_multiprocessing_manager().Request(123, RequestType.CLASSIFIER)
+    self.engine.register_new_request(new_request)
+    self.add_data(123, 'Sex', [1,2,3,4])
+    body_as_string = self.build_start_body_as_string(123)
 
     # When
-    response = test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.START_RESOURCE, data=body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -98,12 +105,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_state_set_on_data(self) -> None:
     # Given
-    start_body_as_string = build_start_body_as_string(123)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
-    data_body_as_string = build_data_body_as_string(123)
+    start_body_as_string = self.build_start_body_as_string(123)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    data_body_as_string = self.build_data_body_as_string(123)
 
     # When
-    response = test_app.post(self.DATA_RESOURCE, data=data_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.DATA_RESOURCE, data=data_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_state(123, 'Sex', ['Width', 'Height'], 5, {'Sex': [1, 0, 1, 0 ,0]})
@@ -116,11 +123,12 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_exception_thrown_if_start_data_does_not_exists_on_data(self) -> None:
     # Given
-    new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
-    data_body_as_string = build_data_body_as_string(123)
+    new_request = self.process_pool.get_multiprocessing_manager().Request(123, RequestType.CLASSIFIER)
+    self.engine.register_new_request(new_request)
+    data_body_as_string = self.build_data_body_as_string(123)
 
     # When
-    response = test_app.post(self.DATA_RESOURCE, data=data_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.DATA_RESOURCE, data=data_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -136,21 +144,21 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     width_data_body = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string = json.dumps(width_data_body)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_body_as_string = json.dumps(predict_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -163,12 +171,13 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_throw_exception_if_start_not_called_on_predict(self) -> None:
     # Given
-    new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
+    new_request = self.process_pool.get_multiprocessing_manager().Request(123, RequestType.CLASSIFIER)
+    self.engine.register_new_request(new_request)
     predict_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_body_as_string = json.dumps(predict_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -182,13 +191,13 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_throw_exception_if_data_not_called_on_predict(self) -> None:
     # Given
-    start_body_as_string = build_start_body_as_string(123)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    start_body_as_string = self.build_start_body_as_string(123)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     predict_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_body_as_string = json.dumps(predict_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -204,18 +213,18 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     width_data_body = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string = json.dumps(width_data_body)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_body_as_string = json.dumps(predict_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -231,21 +240,21 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     width_data_body = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string = json.dumps(width_data_body)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 1, 1], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_body_as_string = json.dumps(predict_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -261,21 +270,21 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     width_data_body = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string = json.dumps(width_data_body)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_body_as_string = json.dumps(predict_body)
 
     # When
-    response = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -291,21 +300,21 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     width_data_body = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string = json.dumps(width_data_body)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_accuracy_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string = json.dumps(predict_accuracy_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -318,12 +327,13 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_throw_exception_if_start_not_called_on_predict_accuracy(self) -> None:
     # Given
-    new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
+    new_request = self.process_pool.get_multiprocessing_manager().Request(123, RequestType.CLASSIFIER)
+    self.engine.register_new_request(new_request)
     predict_accuracy_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string = json.dumps(predict_accuracy_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -337,13 +347,13 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
 
   def test_throw_exception_if_data_not_called_on_predict_accuracy(self) -> None:
     # Given
-    start_body_as_string = build_start_body_as_string(123)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    start_body_as_string = self.build_start_body_as_string(123)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     predict_accuracy_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string = json.dumps(predict_accuracy_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -359,18 +369,18 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_accuracy_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string = json.dumps(predict_accuracy_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -386,21 +396,21 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     width_data_body = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string = json.dumps(width_data_body)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_accuracy_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string = json.dumps(predict_accuracy_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -416,21 +426,21 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     width_data_body = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string = json.dumps(width_data_body)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string, content_type=self.CONTENT_TYPE)
     height_data_body = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string = json.dumps(height_data_body)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string, content_type=self.CONTENT_TYPE)
     predict_accuracy_body = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string = json.dumps(predict_accuracy_body)
 
     # When
-    response = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -446,15 +456,15 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     cancel_body = dict(requestId=123, classifierType='DECISION_TREE')
     cancel_body_as_string = json.dumps(cancel_body)
 
     # When
-    response = test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -469,18 +479,18 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # Given
     start_body = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string = json.dumps(start_body)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string, content_type=self.CONTENT_TYPE)
     sex_data_body = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0], classifierType='DECISION_TREE')
     sex_data_body_as_string = json.dumps(sex_data_body)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string, content_type=self.CONTENT_TYPE)
     cancel_body = dict(requestId=123, classifierType='DECISION_TREE')
     cancel_body_as_string = json.dumps(cancel_body)
 
     # When
-    response = test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
+    response = self.test_app.post(self.CANCEL_RESOURCE, data=cancel_body_as_string, content_type=self.CONTENT_TYPE)
     start_body_2 = dict(requestId=123, predictionColumnName='Width', actionColumnNames=['Sex', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_2_as_string = json.dumps(start_body_2)
-    test_app.post(self.START_RESOURCE, data=start_body_2_as_string, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_2_as_string, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_on_state(123, 'Width', ['Sex', 'Height'], 1, {})
@@ -491,44 +501,44 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     # StartBody1
     start_body_1 = dict(requestId=123, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string_1 = json.dumps(start_body_1)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string_1, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string_1, content_type=self.CONTENT_TYPE)
     # Data1
     sex_data_body_1 = dict(requestId=123, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1, 0], classifierType='DECISION_TREE')
     sex_data_body_as_string_1 = json.dumps(sex_data_body_1)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string_1, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string_1, content_type=self.CONTENT_TYPE)
     # StartBody2
     start_body_2 = dict(requestId=999, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=1, classifierType='DECISION_TREE')
     start_body_as_string_2 = json.dumps(start_body_2)
-    test_app.post(self.START_RESOURCE, data=start_body_as_string_2, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.START_RESOURCE, data=start_body_as_string_2, content_type=self.CONTENT_TYPE)
     # Data1
     width_data_body_1 = dict(requestId=123, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string_1 = json.dumps(width_data_body_1)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string_1, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string_1, content_type=self.CONTENT_TYPE)
     # Data2
     sex_data_body_2 = dict(requestId=999, columnName='Sex', values=[0, 1, 0, 1, 0, 1, 0, 1], classifierType='DECISION_TREE')
     sex_data_body_as_string_2 = json.dumps(sex_data_body_2)
-    test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string_2, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=sex_data_body_as_string_2, content_type=self.CONTENT_TYPE)
     # Data2
     width_data_body_2 = dict(requestId=999, columnName='Width', values=[0, 0, 1, 1, 0, 0, 1, 1, 0], classifierType='DECISION_TREE')
     width_data_body_as_string_2 = json.dumps(width_data_body_2)
-    test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string_2, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=width_data_body_as_string_2, content_type=self.CONTENT_TYPE)
     # Data1
     height_data_body_1 = dict(requestId=123, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string_1 = json.dumps(height_data_body_1)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string_1, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string_1, content_type=self.CONTENT_TYPE)
     # Data2
     height_data_body_2 = dict(requestId=999, columnName='Height', values=[0, 0, 0, 0, 1, 1, 1, 1, 0], classifierType='DECISION_TREE')
     height_data_body_as_string_2 = json.dumps(height_data_body_2)
-    test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string_2, content_type=self.CONTENT_TYPE)
+    self.test_app.post(self.DATA_RESOURCE, data=height_data_body_as_string_2, content_type=self.CONTENT_TYPE)
 
     # When1
     predict_accuracy_body_1 = dict(requestId=123, classifierType='DECISION_TREE')
     predict_accuracy_body_as_string_1 = json.dumps(predict_accuracy_body_1)
-    response_1 = test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string_1, content_type=self.CONTENT_TYPE)
+    response_1 = self.test_app.post(self.PREDICT_ACCURACY_RESOURCE, data=predict_accuracy_body_as_string_1, content_type=self.CONTENT_TYPE)
     # When2
     predict_body_2 = dict(requestId=999, classifierType='DECISION_TREE')
     predict_body_as_string_2 = json.dumps(predict_body_2)
-    response_2 = test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string_2, content_type=self.CONTENT_TYPE)
+    response_2 = self.test_app.post(self.PREDICT_RESOURCE, data=predict_body_as_string_2, content_type=self.CONTENT_TYPE)
 
     # Then
     self.assert_request_released(123)
@@ -545,20 +555,30 @@ class TestClassifierControllerWithDecisionTreeService(unittest.TestCase):
     )
 
 
-def set_start_data(request_id: int, prediction_column_name: str, action_column_names: [str], number_of_values: int) -> None:
-  new_request = engine.register_new_request(123, RequestType.CLASSIFIER)
-  new_request.set_classifier_start_data(prediction_column_name, action_column_names, number_of_values)
+  @classmethod
+  def set_start_data(cls, request_id: int, prediction_column_name: str, action_column_names: [str], number_of_values: int) -> None:
+    new_request = cls.process_pool.get_multiprocessing_manager().Request(123, RequestType.CLASSIFIER)
+    cls.engine.register_new_request(new_request)
+    new_request.set_classifier_start_data(prediction_column_name, action_column_names, number_of_values)
 
 
-def add_data(request_id: int, column: str, values: [int]) -> None:
-  engine.get_request(request_id).add_classifier_data(column, values)
+  @classmethod
+  def add_data(cls, request_id: int, column: str, values: [int]) -> None:
+    cls.engine.get_request(request_id).add_classifier_data(column, values)
 
 
-def build_start_body_as_string(request_id: int) -> str:
-  body = dict(requestId=request_id, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=5, classifierType='DECISION_TREE')
-  return json.dumps(body)
+  @classmethod
+  def build_start_body_as_string(cls, request_id: int) -> str:
+    body = dict(requestId=request_id, predictionColumnName='Sex', actionColumnNames=['Width', 'Height'], numberOfValues=5, classifierType='DECISION_TREE')
+    return json.dumps(body)
 
 
-def build_data_body_as_string(request_id: int) -> str:
-  data_body = dict(requestId=request_id, columnName='Sex', values=[1, 0, 1, 0, 0], classifierType='DECISION_TREE')
-  return json.dumps(data_body)
+  @classmethod
+  def build_data_body_as_string(cls, request_id: int) -> str:
+    data_body = dict(requestId=request_id, columnName='Sex', values=[1, 0, 1, 0, 0], classifierType='DECISION_TREE')
+    return json.dumps(data_body)
+
+
+
+if __name__ == '__main__':
+  unittest.main()

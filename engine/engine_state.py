@@ -21,6 +21,15 @@ class RequestType(Enum):
   TIME_SERIES_ANALYSIS = 'TIME_SERIES_ANALYSIS'
 
 
+class ReleaseRequestType(Enum):
+  '''
+  Represents the messages sent on the Pipe of the request release
+  '''
+
+  IGNORE = 'IGNORE'   # Simply ignore this message and move on, used to unblock the thread launched to check the pipe
+  RELEASE = 'RELEASE' # Real release message received
+
+
 class Request:
   '''
   Represents the inflight request state, currently being handled by the engine
@@ -49,8 +58,8 @@ class Request:
     return self.release_request_rx
 
 
-  def post_release_request(self) -> None:
-    return self.release_request_tx.send(1)
+  def post_release_request(self, release_type: ReleaseRequestType) -> None:
+    return self.release_request_tx.send(release_type)
 
 
   def set_classifier_start_data(self, prediction_column_names: str, action_column_names: [str], number_of_values: int) -> None:
@@ -116,11 +125,13 @@ class Engine:
     self.inflight_requests = {}
 
 
-  def register_new_request(self, request_id: int, request_type: RequestType) -> Request:
+  def register_new_request(self, request: Request):
+    request_id = request.get_request_id()
+
     if request_id in self.inflight_requests:
       raise RequestRegistryException('RequestId ({}) already inflight!'.format(request_id))
-    self.inflight_requests[request_id] = Request(request_id, request_type)
-    return self.get_request(request_id)
+
+    self.inflight_requests[request_id] = request
 
 
   def get_request(self, request_id: int) -> Request:
@@ -136,7 +147,7 @@ class Engine:
   def release_request(self, request_id: int) -> bool:
     if request_id in self.inflight_requests:
       request_to_release = self.inflight_requests.pop(request_id)
-      request_to_release.post_release_request()
+      request_to_release.post_release_request(ReleaseRequestType.RELEASE)
       return True
     else:
       return False

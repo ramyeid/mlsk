@@ -3,7 +3,7 @@
 
 from flask import jsonify
 from flask.typing import ResponseReturnValue
-from engine_state import Request
+from engine_state import Request, ReleaseRequestType
 from exception.engine_computation_exception import EngineComputationException
 
 
@@ -17,6 +17,29 @@ def build_no_content_response() -> ResponseReturnValue:
   '''
 
   return '', 204
+
+
+def block_on_release_request_and_return_503(request: Request) -> ResponseReturnValue:
+  '''
+  Wait for a request to be released.
+
+  If a request is eventually released we will return a string containing the request with a 503 (ServiceUnavailable) status code
+
+  Note: This method is most commonly used with multiprocessing_utils#any_of
+  '''
+  request_release_type = request.get_release_request_rx().recv()
+  if request_release_type == ReleaseRequestType.IGNORE:
+    return 'This result should not be used', -1
+  else:
+    return '%s request dropped' % (request.request_id), 503
+
+
+def unblock_release_with_ignore_on_computation_done(request: Request) -> None:
+  '''
+  The method `block_on_release_request_and_return_503` will block the thread indefinitely until a data is posted on the release pipe.
+  In this method, we are simply posting an ignore message in order to unblock the thread.
+  '''
+  request.post_release_request(ReleaseRequestType.IGNORE)
 
 
 def handle_engine_computation_exception(err: EngineComputationException) -> ResponseReturnValue:
