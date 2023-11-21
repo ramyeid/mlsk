@@ -5,23 +5,24 @@ import argparse
 import atexit
 import signal
 from flask import Flask
-from utils.logger import setup_logger, get_logger
+from logging import Logger
+from utils.logger import LoggerInfo, setup_logger
 from utils.controller_utils import handle_engine_computation_exception
 from exception.engine_computation_exception import EngineComputationException
-from engine_state import Engine, Request
+from engine_state import Engine
 from time_series.controller.time_series_analysis_controller import TimeSeriesAnalysisController
 from classifier.controller.classifier_controller import ClassifierController
 
 
-def on_shutdown() -> None:
-  get_logger().info('Engine will shutdown')
+def on_shutdown(logger: Logger) -> None:
+  logger.info('Engine will shutdown')
 
 
-def setup_server() -> Tuple[Flask, Engine]:
+def setup_server(logger: Logger) -> Tuple[Flask, Engine]:
   # Create Components
   engine = Engine()
-  time_series_analysis_controller = TimeSeriesAnalysisController(engine)
-  classifier_controller = ClassifierController(engine)
+  time_series_analysis_controller = TimeSeriesAnalysisController(engine, logger)
+  classifier_controller = ClassifierController(engine, logger)
 
   # Setup Flask Endpoints
   app = Flask(__name__)
@@ -55,13 +56,14 @@ if __name__ == '__main__':
   parser.add_argument('--logs-path', dest='logs_path', help='location to dump logs', required=True)
   args = parser.parse_args()
 
-  logger = setup_logger(args.logs_path, args.port)
+  logger_info = LoggerInfo(args.logs_path, args.port)
+  logger = setup_logger(logger_info)
 
-  atexit.register(on_shutdown)
+  atexit.register(on_shutdown, logger)
   signal.signal(signal.SIGTERM, on_shutdown)
   signal.signal(signal.SIGINT, on_shutdown)
 
-  flask_app, _engine = setup_server()
+  flask_app, _engine = setup_server(logger)
 
   logger.info('Engine is up')
   flask_app.run(host='0.0.0.0', port=args.port)

@@ -51,6 +51,7 @@ class TimeSeriesAnalysisRequest:
   def to_json(self) -> dict:
     return dict(requestId = self.request_id, timeSeries=self.time_series.to_json(), numberOfValues=self.number_of_values)
 
+
   @classmethod
   def from_json(cls, data: dict) -> TimeSeriesAnalysisRequest:
     request_id = int(data['requestId'])

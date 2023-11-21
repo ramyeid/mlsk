@@ -4,13 +4,15 @@ import unittest
 import json
 from datetime import datetime
 from flask.typing import ResponseReturnValue
+from logging import Logger
 from engine_server import setup_server
 from time_series.model.time_series import TimeSeries
 from time_series.model.time_series_row import TimeSeriesRow
 from test.test_utils.assertion_utils import assert_with_diff, assert_on_time_series_with_diff
 
-
-flask_app, engine = setup_server()
+logger = Logger('TestEngine')
+logger.setLevel('CRITICAL')
+flask_app, engine = setup_server(logger)
 test_app = flask_app.test_client()
 
 
