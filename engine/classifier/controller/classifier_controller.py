@@ -20,7 +20,12 @@ from classifier.model.classifier_response import ClassifierResponse
 class ClassifierController:
 
 
-  def __init__(self, process_pool: ProcessPool, engine: Engine, logger: Logger):
+  def __init__(self,
+              classifier_service_factory: ClassifierServiceFactory,
+              engine: Engine,
+              process_pool: ProcessPool,
+              logger: Logger):
+    self.classifier_service_factory = classifier_service_factory
     self.engine = engine
     self.process_pool = process_pool
     self.logger = logger
@@ -115,7 +120,7 @@ class ClassifierController:
 
       registered_request = self.engine.get_request(request_id)
 
-      return self.process_pool.any_of([block_on_release_request_and_return_503, [registered_request]], [self._predict_async, [self.engine, classifier_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [registered_request]])
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [registered_request]], [self._predict_async, [self.classifier_service_factory, self.engine, classifier_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [registered_request]])
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while %s predicting: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
@@ -152,7 +157,7 @@ class ClassifierController:
 
       registered_request = self.engine.get_request(request_id)
 
-      return self.process_pool.any_of([block_on_release_request_and_return_503, [registered_request]], [self._compute_accuracy_of_predict_async, [self.engine, classifier_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [registered_request]])
+      return self.process_pool.any_of([block_on_release_request_and_return_503, [registered_request]], [self._compute_accuracy_of_predict_async, [self.classifier_service_factory, self.engine, classifier_request]], unblock_func1=[unblock_release_with_ignore_on_computation_done, [registered_request]])
 
     except Exception as exception:
       error_message = '[%s] Exception %s raised while computing %s predict accuracy: %s' % (request_id, type(exception).__name__, classifier_type.to_lower_case_with_space(), exception)
@@ -233,7 +238,10 @@ class ClassifierController:
 
 
   @classmethod
-  def _predict_async(cls, engine: Engine, classifier_request: ClassifierRequest) -> str:
+  def _predict_async(cls,
+                     classifier_service_factory: ClassifierServiceFactory,
+                     engine: Engine,
+                     classifier_request: ClassifierRequest) -> str:
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
 
@@ -245,7 +253,7 @@ class ClassifierController:
     action_column_names = classifier_data.get_action_column_names()
     prediction_column_name = classifier_data.get_prediction_column_name()
     number_of_values = classifier_data.get_number_of_values()
-    classifier_service = ClassifierServiceFactory.build_service(classifier_type, data, action_column_names, prediction_column_name, number_of_values)
+    classifier_service = classifier_service_factory.build_service(classifier_type, data, action_column_names, prediction_column_name, number_of_values)
 
     predicted_data_frame = classifier_service.predict()
 
@@ -255,7 +263,10 @@ class ClassifierController:
 
 
   @classmethod
-  def _compute_accuracy_of_predict_async(cls, engine: Engine, classifier_request: ClassifierRequest) -> str:
+  def _compute_accuracy_of_predict_async(cls,
+                                         classifier_service_factory: ClassifierServiceFactory,
+                                         engine: Engine,
+                                         classifier_request: ClassifierRequest) -> str:
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
 
@@ -267,7 +278,7 @@ class ClassifierController:
     action_column_names = classifier_data.get_action_column_names()
     prediction_column_name = classifier_data.get_prediction_column_name()
     number_of_values = classifier_data.get_number_of_values()
-    classifier_service = ClassifierServiceFactory.build_service(classifier_type, data, action_column_names, prediction_column_name, number_of_values)
+    classifier_service = classifier_service_factory.build_service(classifier_type, data, action_column_names, prediction_column_name, number_of_values)
 
     return str(classifier_service.compute_predict_accuracy())
 

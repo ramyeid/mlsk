@@ -1,14 +1,75 @@
 #!/usr/bin/python3
 
+from typing import Any
 import unittest
 import json
+import pandas as pd
 from datetime import datetime
+from time import sleep
 from flask.typing import ResponseReturnValue
 from logging import Logger
+from threading import Thread
+from multiprocessing import Pipe
+from multiprocessing.connection import Connection
 from engine_server import setup_server
+from engine_state import Engine
+from time_series.service.time_series_analysis_service import TimeSeriesAnalysisService
+from time_series.service.time_series_analysis_service_factory import TimeSeriesAnalysisServiceFactory
 from time_series.model.time_series import TimeSeries
 from time_series.model.time_series_row import TimeSeriesRow
 from test.test_utils.assertion_utils import assert_with_diff, assert_on_time_series_with_diff
+
+
+class MockTimeSeriesAnalysisServiceFactory:
+
+
+  def __init__(self):
+    self.build_mock = False
+
+
+  def do_build_mock(self, block_call_rx: Connection, did_reach_service_tx: Connection):
+    self.build_mock = True
+    self.block_call_rx = block_call_rx
+    self.did_reach_service_tx = did_reach_service_tx
+
+
+  def do_build_service(self):
+    self.build_mock = False
+
+
+  def build_service(self, data: pd.DataFrame, date_column_name: str,
+                    value_column_name: str, number_of_values: int) -> TimeSeriesAnalysisService:
+    if self.build_mock:
+      return MockTimeSeriesAnalysisService(self.block_call_rx, self.did_reach_service_tx)
+    else:
+      return TimeSeriesAnalysisServiceFactory().build_service(data, date_column_name, value_column_name, number_of_values)
+
+
+class MockTimeSeriesAnalysisService:
+
+  def __init__(self, block_call_rx: Connection, did_reach_service_tx: Connection):
+    self.block_call_rx = block_call_rx
+    self.did_reach_service_tx = did_reach_service_tx
+
+
+  def predict(self) -> Any:
+    self._notify_service_reached_and_block()
+    return None
+
+
+  def forecast(self) -> Any:
+    self._notify_service_reached_and_block()
+    return None
+
+
+  def compute_forecast_accuracy(self) -> Any:
+    self._notify_service_reached_and_block()
+    return None
+
+
+  def _notify_service_reached_and_block(self) -> None:
+    self.did_reach_service_tx.send('1')
+    self.block_call_rx.recv()
 
 
 class TestTimeSeriesAnalysisController(unittest.TestCase):
@@ -19,11 +80,13 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls) -> None:
-    cls.flask_app, cls.engine, cls.process_pool, cls._logger = setup_server(None, None, 'CRITICAL')
+    cls.time_series_analysis_service_factory = MockTimeSeriesAnalysisServiceFactory()
+    cls.flask_app, cls.engine, cls.process_pool, cls._logger = setup_server(None, None, 'CRITICAL', time_series_analysis_service_factory=cls.time_series_analysis_service_factory)
     cls.test_app = cls.flask_app.test_client()
 
 
   def setUp(self) -> None:
+    self.time_series_analysis_service_factory.do_build_service()
     self.engine.release_all_inflight_requests()
 
 
@@ -44,8 +107,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = self.test_app.post('/time-series-analysis/forecast', data=body_as_string,
-                              content_type=self.CONTENT_TYPE)
+    response = self.post_forecast(body_as_string)
     actual_time_series = TimeSeries.from_json(json.loads(response.data))
 
     # Then
@@ -55,6 +117,37 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     expected_time_series = TimeSeries([time_series_row, time_series_row1], 'Date', 'Passengers', 'yyyy-MM')
     assert_on_time_series_with_diff(expected_time_series, actual_time_series, 3)
     self.assertEqual(200, response.status_code)
+
+
+  def test_forecast_release_request(self) -> None:
+    # Given
+    block_call_rx, block_call_tx = Pipe()
+    did_reach_service_rx, did_reach_service_tx = Pipe()
+    self.time_series_analysis_service_factory.do_build_mock(block_call_rx, did_reach_service_tx)
+    request_id = 123
+    body = dict(requestId=request_id,
+                timeSeries=dict(rows=build_rows(),
+                                dateColumnName='Date',
+                                valueColumnName='Passengers',
+                                dateFormat='yyyy-MM'),
+                numberOfValues=2)
+    body_as_string = json.dumps(body)
+
+    # When
+    # Start thread to release a request once received by mock service
+    thread = Thread(target=self.release_request_on_reception_after, args=(self.engine, did_reach_service_rx, request_id, 1))
+    thread.start()
+    # Post forecast which will hang
+    # In the meantime, the thread created above is running and will eventually release the request
+    response = self.post_forecast(body_as_string)
+
+    # Then
+    self.assert_request_released(123)
+    self.assert_on_response(
+      '123 request dropped',
+      503,
+      response
+    )
 
 
   def test_forecast_exception(self) -> None:
@@ -69,8 +162,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = self.test_app.post('/time-series-analysis/forecast', data=body_as_string,
-                              content_type=self.CONTENT_TYPE)
+    response = self.post_forecast(body_as_string)
 
     # Then
     self.assert_request_released(123)
@@ -94,14 +186,44 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = self.test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
-                              content_type=self.CONTENT_TYPE)
+    response = self.post_forecast_accuracy(body_as_string)
     actual_accuracy = float(response.data)
 
     # Then
     self.assert_request_released(123)
     assert_with_diff(98.39, actual_accuracy, 2) # Assertion can fail, depending on machine.
     self.assertEqual(200, response.status_code)
+
+
+  def test_compute_forecast_accuracy_release_request(self) -> None:
+    # Given
+    block_call_rx, block_call_tx = Pipe()
+    did_reach_service_rx, did_reach_service_tx = Pipe()
+    self.time_series_analysis_service_factory.do_build_mock(block_call_rx, did_reach_service_tx)
+    request_id = 123
+    body = dict(requestId=request_id,
+                timeSeries=dict(rows=build_rows(),
+                                dateColumnName='Date',
+                                valueColumnName='Passengers',
+                                dateFormat='yyyy-MM'),
+                numberOfValues=1)
+    body_as_string = json.dumps(body)
+
+    # When
+    # Start thread to release a request once received by mock service
+    thread = Thread(target=self.release_request_on_reception_after, args=(self.engine, did_reach_service_rx, request_id, 1))
+    thread.start()
+    # Post forecast accuracy which will hang
+    # In the meantime, the thread created above is running and will eventually release the request
+    response = self.post_forecast_accuracy(body_as_string)
+
+    # Then
+    self.assert_request_released(123)
+    self.assert_on_response(
+      '123 request dropped',
+      503,
+      response
+    )
 
 
   def test_compute_forecast_accuracy_exception(self) -> None:
@@ -116,8 +238,8 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = self.test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
-                              content_type=self.CONTENT_TYPE)
+    response = self.post_forecast_accuracy(body_as_string)
+
     # Then
     self.assert_request_released(123)
     self.assert_on_response(
@@ -140,8 +262,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = self.test_app.post('/time-series-analysis/predict', data=body_as_string,
-                              content_type=self.CONTENT_TYPE)
+    response = self.post_predict(body_as_string)
     actual_time_series = TimeSeries.from_json(json.loads(response.data))
 
     # Then
@@ -151,6 +272,38 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     expected_time_series = TimeSeries([time_series_row, time_series_row1], 'Date', 'Passengers', 'yyyy-MM')
     self.assertEqual(expected_time_series, actual_time_series)
     self.assertEqual(200, response.status_code)
+
+
+  def test_predict_release_request(self) -> None:
+    # Given
+    block_call_rx, block_call_tx = Pipe()
+    did_reach_service_rx, did_reach_service_tx = Pipe()
+    self.time_series_analysis_service_factory.do_build_mock(block_call_rx, did_reach_service_tx)
+    request_id = 123
+    body = dict(requestId=123,
+                timeSeries=dict(rows=build_rows(),
+                                dateColumnName='Date',
+                                valueColumnName='Passengers',
+                                dateFormat='yyyy-MM'),
+                numberOfValues=2)
+    body_as_string = json.dumps(body)
+
+
+    # When
+    # Start thread to release a request once received by mock service
+    thread = Thread(target=self.release_request_on_reception_after, args=(self.engine, did_reach_service_rx, request_id, 1))
+    thread.start()
+    # Post predict which will hang
+    # In the meantime, the thread created above is running and will eventually release the request
+    response = self.post_predict(body_as_string)
+
+    # Then
+    self.assert_request_released(123)
+    self.assert_on_response(
+      '123 request dropped',
+      503,
+      response
+    )
 
 
   def test_predict_exception(self) -> None:
@@ -165,8 +318,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = self.test_app.post('/time-series-analysis/predict', data=body_as_string,
-                              content_type=self.CONTENT_TYPE)
+    response = self.post_predict(body_as_string)
 
     # Then
     self.assert_request_released(123)
@@ -185,6 +337,38 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
   def assert_request_released(self, request_id: int) -> None:
     self.assertFalse(self.engine.contains_request(request_id))
+
+
+  @classmethod
+  def post_forecast(cls, body_as_string: str) -> ResponseReturnValue:
+    return cls.test_app.post('/time-series-analysis/forecast', data=body_as_string,
+                             content_type=cls.CONTENT_TYPE)
+
+
+  @classmethod
+  def post_predict(cls, body_as_string: str) -> ResponseReturnValue:
+    return cls.test_app.post('/time-series-analysis/predict', data=body_as_string,
+                             content_type=cls.CONTENT_TYPE)
+
+
+  @classmethod
+  def post_forecast_accuracy(cls, body_as_string: str) -> ResponseReturnValue:
+    return cls.test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
+                              content_type=cls.CONTENT_TYPE)
+
+
+  @classmethod
+  def release_request_on_reception_after(cls,
+                                        engine: Engine,
+                                        did_reach_service_rx: Connection,
+                                        request_id: int,
+                                        sleep_time: int) -> None:
+    # Wait until request reached the service
+    did_reach_service_rx.recv()
+    # Sleep to introduce some jitter
+    sleep(sleep_time)
+    # Now that the request reached the service and the call is stuck, let's release the request
+    engine.release_request(request_id)
 
 
 def build_rows() -> [dict]:

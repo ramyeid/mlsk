@@ -14,7 +14,9 @@ from process_pool.process import ProcessStateHolder
 from utils.controller_utils import handle_engine_computation_exception
 from exception.engine_computation_exception import EngineComputationException
 from engine_state import Request, Engine
+from time_series.service.time_series_analysis_service_factory import TimeSeriesAnalysisServiceFactory
 from time_series.controller.time_series_analysis_controller import TimeSeriesAnalysisController
+from classifier.service.classifier_service_factory import ClassifierServiceFactory
 from classifier.controller.classifier_controller import ClassifierController
 
 
@@ -22,7 +24,11 @@ def on_shutdown(logger: Logger) -> None:
   logger.info('Engine will shutdown')
 
 
-def setup_server(logs_path: Optional[str], port: Optional[str], log_level: str) -> Tuple[Flask, Engine, ProcessPool, Logger]:
+def setup_server(logs_path: Optional[str],
+                 port: Optional[str],
+                 log_level: str,
+                 time_series_analysis_service_factory: TimeSeriesAnalysisServiceFactory=TimeSeriesAnalysisServiceFactory(),
+                 classifier_service_factory: ClassifierServiceFactory=ClassifierServiceFactory()) -> Tuple[Flask, Engine, ProcessPool, Logger]:
   # Create MultiProcessingManager
   # In order to register cross-process shareable objects
   MultiProcessingManager.register('Engine', Engine)
@@ -45,8 +51,8 @@ def setup_server(logs_path: Optional[str], port: Optional[str], log_level: str) 
   engine = multiprocessing_manager.Engine()
 
   # Create Controllers
-  time_series_analysis_controller = TimeSeriesAnalysisController(process_pool, engine, logger)
-  classifier_controller = ClassifierController(process_pool, engine, logger)
+  time_series_analysis_controller = TimeSeriesAnalysisController(time_series_analysis_service_factory, engine, process_pool, logger)
+  classifier_controller = ClassifierController(classifier_service_factory, engine, process_pool, logger)
 
   # Setup Flask Endpoints
   app = Flask(__name__)

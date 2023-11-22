@@ -31,7 +31,7 @@ def block_on_release_request_and_return_503(request: Request) -> ResponseReturnV
   if request_release_type == ReleaseRequestType.IGNORE:
     return 'This result should not be used', -1
   else:
-    return '%s request dropped' % (request.request_id), 503
+    return '%s request dropped' % (request.get_request_id()), 503
 
 
 def unblock_release_with_ignore_on_computation_done(request: Request) -> None:
