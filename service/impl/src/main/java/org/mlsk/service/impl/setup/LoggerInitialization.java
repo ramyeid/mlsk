@@ -1,13 +1,14 @@
 package org.mlsk.service.impl.setup;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.builder.api.*;
 import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
 
-import static org.apache.logging.log4j.Level.INFO;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.getLogLevel;
 import static org.mlsk.service.impl.setup.ServiceConfiguration.getLogsPath;
 
 public class LoggerInitialization implements ApplicationContextInitializer<ConfigurableApplicationContext> {
@@ -35,7 +36,7 @@ public class LoggerInitialization implements ApplicationContextInitializer<Confi
     AppenderComponentBuilder appenderBuilder = buildRollingFileAppender(builder, triggeringPolicy, layoutBuilder);
     RootLoggerComponentBuilder rootLogger = buildRootLogger(builder);
 
-    BuiltConfiguration configuration = builder.setStatusLevel(INFO)
+    BuiltConfiguration configuration = builder.setStatusLevel(Level.valueOf(getLogLevel()))
         .setConfigurationName("RollingBuilder")
         .add(appenderBuilder)
         .add(rootLogger)
@@ -50,7 +51,7 @@ public class LoggerInitialization implements ApplicationContextInitializer<Confi
   }
 
   private static RootLoggerComponentBuilder buildRootLogger(ConfigurationBuilder<BuiltConfiguration> builder) {
-    return builder.newRootLogger(INFO)
+    return builder.newRootLogger(Level.valueOf(getLogLevel()))
         .add(builder.newAppenderRef(ROLLING_FILE_APPENDER_NAME));
   }
 

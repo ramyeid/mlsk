@@ -21,9 +21,9 @@ public class EngineLauncher {
     this.processBuilder = processBuilder;
   }
 
-    public Process launchEngine(Endpoint endpoint, String logsPath, String enginePath) throws IOException {
+    public Process launchEngine(Endpoint endpoint, String logsPath, String enginePath, String engineLogLevel) throws IOException {
     return processBuilder
-        .command("python3", "engine_server.py", "--port", valueOf(endpoint.getPort()), "--logs-path", logsPath, "--log-level", "INFO")
+        .command("python3", "engine_server.py", "--port", valueOf(endpoint.getPort()), "--logs-path", logsPath, "--log-level", engineLogLevel)
         .directory(new File(enginePath))
         .start();
   }

@@ -230,12 +230,12 @@ class TestRequest(unittest.TestCase):
   def test_release_request_rx_should_complete_when_posting_release_request_on_tx(self) -> None:
     # Given
     request = Request(123, RequestType.TIME_SERIES_ANALYSIS)
-    request_release_type = ReleaseRequestType.RELEASE
+    release_request_type = ReleaseRequestType.RELEASE
     thread = threading.Thread(target=assert_on_release_pipe_content, args=([request, ReleaseRequestType.RELEASE]))
 
     # When
     thread.start()
-    request.post_release_request(request_release_type)
+    request.post_release_request(release_request_type)
     # should be unblocked instantly
     thread.join()
 

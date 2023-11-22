@@ -36,9 +36,9 @@ public class EngineLauncherTest {
     Endpoint endpoint = new Endpoint("host", 123L);
     String logsPath = "logsPath";
     String enginePath = "enginePath";
-    String engineLogLevel = "INFO";
+    String engineLogLevel = "engineLogLevel";
 
-    engineLauncher.launchEngine(endpoint, logsPath, enginePath);
+    engineLauncher.launchEngine(endpoint, logsPath, enginePath, engineLogLevel);
 
     InOrder inOrder = buildInOrder();
     inOrder.verify(processBuilder).command("python3", "engine_server.py", "--port", "123", "--logs-path", logsPath, "--log-level", engineLogLevel);

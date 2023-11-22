@@ -49,7 +49,7 @@ public class OrchestratorImplTest {
 
   @BeforeEach
   public void setUp() throws ParseException {
-    buildServiceConfiguration("", "--engine-ports", "4647,4648", "--logs-path", "logsPath", "-engine-path", "enginePath");
+    buildServiceConfiguration("", "--engine-ports", "4647,4648", "--logs-path", "logsPath", "-engine-path", "enginePath", "--log-level", "INFO", "--engine-log-level", "INFO");
     this.engine1Spy = spy(new EngineImpl(ENDPOINT1));
     this.engine2Spy = spy(new EngineImpl(ENDPOINT2));
     this.orchestrator = new OrchestratorImpl(newArrayList(engine1Spy, engine2Spy), requestRegistry);

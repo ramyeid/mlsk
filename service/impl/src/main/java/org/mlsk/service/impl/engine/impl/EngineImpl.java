@@ -18,8 +18,7 @@ import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static java.lang.String.format;
-import static org.mlsk.service.impl.setup.ServiceConfiguration.getEnginePath;
-import static org.mlsk.service.impl.setup.ServiceConfiguration.getLogsPath;
+import static org.mlsk.service.impl.setup.ServiceConfiguration.*;
 import static org.mlsk.service.model.engine.EngineState.*;
 
 public class EngineImpl implements Engine {
@@ -33,7 +32,7 @@ public class EngineImpl implements Engine {
   private final ClassifierEngineClient classifierEngineClient;
 
   public EngineImpl(Endpoint endpoint) {
-    this(new EngineClientFactory(), endpoint, new ResilientEngineProcess(endpoint, getLogsPath(), getEnginePath()), new AtomicReference<>(OFF));
+    this(new EngineClientFactory(), endpoint, new ResilientEngineProcess(endpoint, getLogsPath(), getEnginePath(), getEngineLogLevel()), new AtomicReference<>(OFF));
   }
 
   @VisibleForTesting

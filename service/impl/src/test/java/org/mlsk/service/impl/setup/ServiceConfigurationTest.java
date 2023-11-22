@@ -15,13 +15,17 @@ public class ServiceConfigurationTest {
     String enginePorts = "6767,6768";
     String logsPath = "LogsPath";
     String enginePath = "EnginePath";
+    String engineLogLevel = "EngineLogLevel";
+    String logLevel = "logLevel";
 
-    buildServiceConfiguration("", "--engine-ports", enginePorts, "--logs-path", logsPath, "-engine-path", enginePath);
+    buildServiceConfiguration("", "--engine-ports", enginePorts, "--logs-path", logsPath, "-engine-path", enginePath, "--log-level", logLevel, "--engine-log-level", engineLogLevel);
 
     Endpoint endpoint1 = new Endpoint("localhost", 6767L);
     Endpoint endpoint2 = new Endpoint("localhost", 6768L);
     assertEquals(newArrayList(endpoint1, endpoint2), getEngineEndpoints());
     assertEquals(logsPath, getLogsPath());
     assertEquals(enginePath, getEnginePath());
+    assertEquals(logLevel, getLogLevel());
+    assertEquals(engineLogLevel, getEngineLogLevel());
   }
 }
