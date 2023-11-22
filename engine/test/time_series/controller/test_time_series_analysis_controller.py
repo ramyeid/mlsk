@@ -10,16 +10,26 @@ from time_series.model.time_series import TimeSeries
 from time_series.model.time_series_row import TimeSeriesRow
 from test.test_utils.assertion_utils import assert_with_diff, assert_on_time_series_with_diff
 
-logger = Logger('TestEngine')
-logger.setLevel('CRITICAL')
-flask_app, engine = setup_server(logger)
-test_app = flask_app.test_client()
-
 
 class TestTimeSeriesAnalysisController(unittest.TestCase):
 
 
   CONTENT_TYPE = 'application/json'
+
+
+  @classmethod
+  def setUpClass(cls) -> None:
+    cls.flask_app, cls.engine, cls.process_pool, cls._logger = setup_server(None, None, 'CRITICAL')
+    cls.test_app = cls.flask_app.test_client()
+
+
+  def setUp(self) -> None:
+    self.engine.release_all_inflight_requests()
+
+
+  @classmethod
+  def tearDownClass(cls) -> None:
+    cls.process_pool.shutdown()
 
 
   def test_forecast(self) -> None:
@@ -34,7 +44,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = test_app.post('/time-series-analysis/forecast', data=body_as_string,
+    response = self.test_app.post('/time-series-analysis/forecast', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
     actual_time_series = TimeSeries.from_json(json.loads(response.data))
 
@@ -59,7 +69,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = test_app.post('/time-series-analysis/forecast', data=body_as_string,
+    response = self.test_app.post('/time-series-analysis/forecast', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
 
     # Then
@@ -84,7 +94,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
+    response = self.test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
     actual_accuracy = float(response.data)
 
@@ -106,7 +116,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
+    response = self.test_app.post('/time-series-analysis/forecast-accuracy', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
     # Then
     self.assert_request_released(123)
@@ -130,7 +140,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = test_app.post('/time-series-analysis/predict', data=body_as_string,
+    response = self.test_app.post('/time-series-analysis/predict', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
     actual_time_series = TimeSeries.from_json(json.loads(response.data))
 
@@ -155,7 +165,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
     body_as_string = json.dumps(body)
 
     # When
-    response = test_app.post('/time-series-analysis/predict', data=body_as_string,
+    response = self.test_app.post('/time-series-analysis/predict', data=body_as_string,
                               content_type=self.CONTENT_TYPE)
 
     # Then
@@ -174,7 +184,7 @@ class TestTimeSeriesAnalysisController(unittest.TestCase):
 
 
   def assert_request_released(self, request_id: int) -> None:
-    self.assertFalse(engine.contains_request(request_id))
+    self.assertFalse(self.engine.contains_request(request_id))
 
 
 def build_rows() -> [dict]:

@@ -8,6 +8,7 @@ from classifier.service.classifier_exception import ClassifierException
 
 class TestDecisionTreeService(unittest.TestCase):
 
+
   def test_predict_throw_exception_if_not_all_expected_columns_are_received(self) -> None:
     # Given
     initial_data = { 'col0': pd.Series([0, 0, 0, 0, 1, 1, 1, 1, 0], index=['0', '1', '2', '3', '4','5', '6', '7', '8']),
