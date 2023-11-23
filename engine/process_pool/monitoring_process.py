@@ -66,29 +66,28 @@ class MonitoringProcess:
     logger = setup_logger(logger_info)
     latest_states = [process_state_holder.get() for process_state_holder in process_state_holders]
     latest_flip_flop_counts = [process_state_holder.get_flip_flop_count() for process_state_holder in process_state_holders]
-    latest_flip_flop_date_times = [datetime.now() for process_state_holder in process_state_holders]
     while should_monitor.get():
       try:
         logger.debug('[MonitorProcessPool][Start] Monitoring current %s processes at %s' % (len(process_state_holders), str(datetime.now())))
         current_states = [process_state_holder.get() for process_state_holder in process_state_holders]
         current_flip_flop_counts = [process_state_holder.get_flip_flop_count() for process_state_holder in process_state_holders]
+        current_last_state_change_time = [process_state_holder.get_last_state_change_time() for process_state_holder in process_state_holders]
 
         logger.debug('[MonitorProcessPool] Current States: %s' % (current_states))
         logger.debug('[MonitorProcessPool] Current FlipFlop count: %s' % (current_flip_flop_counts))
         logger.debug('[MonitorProcessPool] Latest FlipFlop States: %s' % (latest_states))
         logger.debug('[MonitorProcessPool] Latest FlipFlop count: %s' % (latest_flip_flop_counts))
-        logger.debug('[MonitorProcessPool] Latest FlipFlop Time: %s' % ([str(flip_flop_date) for flip_flop_date in latest_flip_flop_date_times]))
+        logger.debug('[MonitorProcessPool] Latest FlipFlop Time: %s' % ([str(flip_flop_date) for flip_flop_date in current_last_state_change_time]))
 
         for i in range(len(process_state_holders)):
           if (current_flip_flop_counts[i] != latest_flip_flop_counts[i]):
             # Let's update the current state in this process!
             latest_states[i] = process_state_holders[i].get()
             latest_flip_flop_counts[i] = process_state_holders[i].get_flip_flop_count()
-            latest_flip_flop_date_times[i] = datetime.now()
 
           else:
             # We did change status in the last 3 seconds, let's check if we're stuck at BUSY for longer than 5 seconds!
-            elapsed_since_last_flip_flop_seconds = (datetime.now() - latest_flip_flop_date_times[i]).total_seconds()
+            elapsed_since_last_flip_flop_seconds = (datetime.now() - current_last_state_change_time[i]).total_seconds()
             if elapsed_since_last_flip_flop_seconds > stuck_threshold and\
                 current_states[i] == latest_states[i] and\
                 current_states[i] == ProcessState.BUSY:

@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from enum import Enum
+from datetime import datetime
 from queue import Queue
 import multiprocessing
 from process_pool.task_result import TaskResult
@@ -28,6 +29,7 @@ class ProcessStateHolder:
   def __init__(self):
     self.state = ProcessState.IDLE
     self.flip_flop_count = 0
+    self.last_state_change_time = datetime.now()
 
 
   def to_idle(self) -> None:
@@ -35,7 +37,7 @@ class ProcessStateHolder:
     Switch the state to IDLE and increment the flip flop count
     '''
     self.state = ProcessState.IDLE
-    self.flip_flop_count = self.flip_flop_count + 1
+    self._increment_count_and_update_time()
 
 
   def to_busy(self) -> None:
@@ -43,7 +45,7 @@ class ProcessStateHolder:
     Switch the state to BUSY and increment the flip flop count
     '''
     self.state = ProcessState.BUSY
-    self.flip_flop_count = self.flip_flop_count + 1
+    self._increment_count_and_update_time()
 
 
   def get(self) -> ProcessState:
@@ -58,6 +60,15 @@ class ProcessStateHolder:
     Return the flip flop count
     '''
     return self.flip_flop_count
+
+
+  def get_last_state_change_time(self) -> datetime:
+    return self.last_state_change_time
+
+
+  def _increment_count_and_update_time(self) -> None:
+    self.flip_flop_count = self.flip_flop_count + 1
+    self.last_state_change_time = datetime.now()
 
 
 class Process:
