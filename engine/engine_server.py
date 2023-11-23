@@ -14,6 +14,8 @@ from process_pool.process import ProcessStateHolder
 from utils.controller_utils import handle_engine_computation_exception
 from exception.engine_computation_exception import EngineComputationException
 from engine_state import Request, Engine
+from admin.service.admin_service_factory import AdminServiceFactory
+from admin.controller.admin_controller import AdminController
 from time_series.service.time_series_analysis_service_factory import TimeSeriesAnalysisServiceFactory
 from time_series.controller.time_series_analysis_controller import TimeSeriesAnalysisController
 from classifier.service.classifier_service_factory import ClassifierServiceFactory
@@ -27,6 +29,7 @@ def on_shutdown(logger: Logger) -> None:
 def setup_server(logs_path: Optional[str],
                  port: Optional[str],
                  log_level: str,
+                 admin_service_factory: AdminServiceFactory=AdminServiceFactory(),
                  time_series_analysis_service_factory: TimeSeriesAnalysisServiceFactory=TimeSeriesAnalysisServiceFactory(),
                  classifier_service_factory: ClassifierServiceFactory=ClassifierServiceFactory()) -> Tuple[Flask, Engine, ProcessPool, Logger]:
   # Create MultiProcessingManager
@@ -51,6 +54,7 @@ def setup_server(logs_path: Optional[str],
   engine = multiprocessing_manager.Engine()
 
   # Create Controllers
+  admin_controller = AdminController(admin_service_factory, engine, process_pool, logger)
   time_series_analysis_controller = TimeSeriesAnalysisController(time_series_analysis_service_factory, engine, process_pool, logger)
   classifier_controller = ClassifierController(classifier_service_factory, engine, process_pool, logger)
 
@@ -74,6 +78,19 @@ def setup_server(logs_path: Optional[str],
                   view_func=classifier_controller.compute_accuracy_of_predict, endpoint='dt_predict_accuracy')
   app.add_url_rule('/classifier/cancel', methods=['POST'],
                   view_func=classifier_controller.cancel, endpoint='dt_cancel')
+
+  app.add_url_rule('/admin/engine/ping', methods=['GET'],
+                  view_func=admin_controller.ping, endpoint='a_ping')
+  app.add_url_rule('/admin/request/release', methods=['POST'],
+                  view_func=admin_controller.release_request, endpoint='a_release_request')
+  app.add_url_rule('/admin/process/start', methods=['POST'],
+                  view_func=admin_controller.start, endpoint='a_start_process')
+  app.add_url_rule('/admin/process/stop', methods=['POST'],
+                  view_func=admin_controller.stop_process, endpoint='a_stop_process')
+  app.add_url_rule('/admin/process/restart', methods=['POST'],
+                  view_func=admin_controller.restart_process, endpoint='a_restart_process')
+  app.add_url_rule('/admin/engine/restart', methods=['POST'],
+                  view_func=admin_controller.restart_engine, endpoint='a_restart_engine')
 
   app.register_error_handler(EngineComputationException, handle_engine_computation_exception)
 
