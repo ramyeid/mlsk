@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from typing import Any, Callable, List, Tuple
+from typing import Any, Callable, Dict, List, Tuple
 from time import sleep
 from threading import Thread
 from multiprocessing import Pipe, Value, Lock
@@ -34,7 +34,7 @@ class ProcessPool:
     multiprocessing_manager (MultiProcessingManager)              - Custom SyncManager to create objects shared across multiple processes.
     logger_info             (LoggerInfo)                          - Wrapper for the information needed to create a new logger in the subproceses.
     task_queue              (Queue)                               - Queue containing tasks to be executed asynchronously on processes.
-    processes               (List[Process])                       - List of processes to execute and maintain state.
+    processes               (Dict[int, Process])                  - Dict of processes to execute and maintain state per process id.
     monitor_process         (MonitoringProcess)                   - Process used to monitor the ongoing processes and to dump a log if any process is stuck.
   '''
 
@@ -42,8 +42,8 @@ class ProcessPool:
     self.multiprocessing_manager = multiprocessing_manager
     self.logger_info = logger_info
     self.task_queue =  multiprocessing_manager.Queue(task_queue_size)
-    self.processes = [Process(multiprocessing_manager.ProcessStateHolder(), self.task_queue) for i in range(process_count) ]
-    processes_state_holders = [process.get_state_holder() for process in self.processes]
+    self.processes = {i: Process(multiprocessing_manager.ProcessStateHolder(), self.task_queue) for i in range(process_count)}
+    processes_state_holders = {id: process.get_state_holder() for id, process in self.processes.items()}
     self.monitor_process  = MonitoringProcess(multiprocessing_manager, processes_state_holders, monitor_interval, monitor_stuck_threshold, self.logger_info)
 
 
@@ -52,7 +52,7 @@ class ProcessPool:
     Start all processes
     '''
     self.monitor_process.start()
-    for process in self.processes:
+    for process in self.processes.values():
       process.start()
 
 
@@ -61,7 +61,7 @@ class ProcessPool:
     Terminate all processes
     '''
     self.monitor_process.terminate()
-    for process in self.processes:
+    for process in self.processes.values():
       process.terminate()
 
 
@@ -79,15 +79,15 @@ class ProcessPool:
     self.monitor_process.turn_off()
 
 
-  def restart_process(self, index: int) -> None:
+  def restart_process(self, id: int) -> None:
     '''
     Restart a process abruptly.
 
     This is used in case a certain process is stuck.
     '''
-    self.processes[index].terminate()
-    self.processes[index] = Process(self.multiprocessing_manager.ProcessStateHolder(), self.task_queue)
-    self.processes[index].start()
+    self.processes[id].terminate()
+    self.processes[id] = Process(self.multiprocessing_manager.ProcessStateHolder(), self.task_queue)
+    self.processes[id].start()
     sleep(1) # Jitter to wait until process is up and running
 
 
@@ -102,18 +102,18 @@ class ProcessPool:
     return self.multiprocessing_manager
 
 
-  def get_process_state(self) -> List[ProcessState]:
+  def get_process_state(self) -> Dict[int, ProcessState]:
     '''
     Returns the states of all processes
     '''
-    return [process.get_state() for process in self.processes]
+    return {id: process.get_state() for id, process in self.processes.items()}
 
 
-  def get_process_state_holders(self) -> List[ProcessStateHolder]:
+  def get_process_state_holders(self) -> Dict[int, ProcessStateHolder]:
     '''
     Returns the states holders of all processes
     '''
-    return [process.get_state_holder() for process in self.processes]
+    return {id: process.get_state_holder() for id, process in self.processes.items()}
 
 
   def execute(self, func: Callable[..., Any], func_args: List[Any]) -> Connection:
@@ -223,5 +223,5 @@ class ProcessPool:
 
 
   def __throw_if_no_idle_process(self) -> None:
-    if ProcessState.IDLE not in self.get_process_state():
+    if ProcessState.IDLE not in self.get_process_state().values():
       raise ProcessPoolException('No Process is IDLE, something is wrong with the java layer orchestrator, we are getting more requests than possible!')

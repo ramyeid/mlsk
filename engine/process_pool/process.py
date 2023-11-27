@@ -30,6 +30,11 @@ class ProcessStateHolder:
     self.state = ProcessState.IDLE
     self.flip_flop_count = 0
     self.last_state_change_time = datetime.now()
+    self.start_datetime = None
+
+
+  def update_start_datetime(self):
+    self.start_datetime = datetime.now()
 
 
   def to_idle(self) -> None:
@@ -62,7 +67,17 @@ class ProcessStateHolder:
     return self.flip_flop_count
 
 
+  def get_start_datetime(self) -> datetime:
+    '''
+    Return the datetime when the process was started
+    '''
+    return self.start_datetime
+
+
   def get_last_state_change_time(self) -> datetime:
+    '''
+    Return the datetime of the last state change / flip flop
+    '''
     return self.last_state_change_time
 
 
@@ -86,6 +101,7 @@ class Process:
     Start the multiprocessing process
     '''
     self.multiprocessing_process.start()
+    self.state_holder.update_start_datetime()
 
 
   def terminate(self) -> None:

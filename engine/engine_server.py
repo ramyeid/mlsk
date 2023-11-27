@@ -79,17 +79,17 @@ def setup_server(logs_path: Optional[str],
   app.add_url_rule('/classifier/cancel', methods=['POST'],
                   view_func=classifier_controller.cancel, endpoint='dt_cancel')
 
-  app.add_url_rule('/admin/engine/ping', methods=['GET'],
+  app.add_url_rule('/admin/ping', methods=['GET'],
                   view_func=admin_controller.ping, endpoint='a_ping')
   app.add_url_rule('/admin/request/release', methods=['POST'],
                   view_func=admin_controller.release_request, endpoint='a_release_request')
   app.add_url_rule('/admin/process/start', methods=['POST'],
-                  view_func=admin_controller.start, endpoint='a_start_process')
+                  view_func=admin_controller.start_process, endpoint='a_start_process')
   app.add_url_rule('/admin/process/stop', methods=['POST'],
                   view_func=admin_controller.stop_process, endpoint='a_stop_process')
   app.add_url_rule('/admin/process/restart', methods=['POST'],
                   view_func=admin_controller.restart_process, endpoint='a_restart_process')
-  app.add_url_rule('/admin/engine/restart', methods=['POST'],
+  app.add_url_rule('/admin/restart', methods=['POST'],
                   view_func=admin_controller.restart_engine, endpoint='a_restart_engine')
 
   app.register_error_handler(EngineComputationException, handle_engine_computation_exception)
