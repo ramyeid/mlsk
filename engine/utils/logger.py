@@ -11,9 +11,9 @@ class LoggerInfo:
   since we will need to re-create the logger in each subprocess.
 
   Attributes
-    logs_path (int)         - Pointer to the path where to dump the log
-    port      (RequestType) - Current port used by the engine
-    level     (int)         - Level of log
+    logs_path (str) - Pointer to the path where to dump the log
+    port      (str) - Current port used by the engine
+    level     (int) - Level of log
   '''
 
   def __init__(self, logs_path: str, port: str, level: int=logging.INFO):
