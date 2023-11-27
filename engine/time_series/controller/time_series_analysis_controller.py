@@ -2,6 +2,7 @@
 
 import json
 from flask import request
+from flask.typing import ResponseReturnValue
 from logging import Logger
 from process_pool.process_pool import ProcessPool
 from engine_state import Engine, RequestType
@@ -27,7 +28,7 @@ class TimeSeriesAnalysisController:
     self.logger = logger
 
 
-  def forecast(self) -> str:
+  def forecast(self) -> ResponseReturnValue:
     '''
     Forecast values and add the forecasted values to the learning data to predict the next value
 
@@ -62,7 +63,7 @@ class TimeSeriesAnalysisController:
       self.logger.info('[End][%d] forecast request', request_id)
 
 
-  def compute_accuracy_of_forecast(self) -> str:
+  def compute_accuracy_of_forecast(self) -> ResponseReturnValue:
     '''
     Test forecast with the current values of the csv passed
     Forecast the last {number_of_values} elements and compare them to the actual value
@@ -99,7 +100,7 @@ class TimeSeriesAnalysisController:
       self.logger.info('[End][%d] compute forecast accuracy request', request_id)
 
 
-  def predict(self) -> str:
+  def predict(self) -> ResponseReturnValue:
     '''
     Predict exact values.
 
@@ -137,7 +138,7 @@ class TimeSeriesAnalysisController:
   @classmethod
   def _forecast_async(cls,
                       time_series_analysis_service_factory: TimeSeriesAnalysisServiceFactory,
-                      time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
+                      time_series_analysis_request: TimeSeriesAnalysisRequest) -> ResponseReturnValue:
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()
@@ -162,7 +163,7 @@ class TimeSeriesAnalysisController:
   @classmethod
   def _compute_accuracy_of_forecast_async(cls,
                                           time_series_analysis_service_factory: TimeSeriesAnalysisServiceFactory,
-                                          time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
+                                          time_series_analysis_request: TimeSeriesAnalysisRequest) -> ResponseReturnValue:
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()
@@ -181,7 +182,7 @@ class TimeSeriesAnalysisController:
   @classmethod
   def _predict_async(cls,
                      time_series_analysis_service_factory: TimeSeriesAnalysisServiceFactory,
-                     time_series_analysis_request: TimeSeriesAnalysisRequest) -> str:
+                     time_series_analysis_request: TimeSeriesAnalysisRequest) -> ResponseReturnValue:
     time_series = time_series_analysis_request.get_time_series()
     data = time_series.to_data_frame()
     date_column_name = time_series.get_date_column_name()

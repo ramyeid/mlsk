@@ -1,5 +1,7 @@
 #!/usr/bin/python3
 
+from engine_state import Engine
+from process_pool.process_pool import ProcessPool
 from admin.service.admin_service import AdminService
 
 
@@ -9,5 +11,5 @@ class AdminServiceFactory:
   '''
 
 
-  def build_service(self) -> AdminService:
-    return AdminService()
+  def build_service(self, engine: Engine, process_pool: ProcessPool) -> AdminService:
+    return AdminService(engine, process_pool)

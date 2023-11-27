@@ -2,6 +2,7 @@
 
 import json
 from flask import request
+from flask.typing import ResponseReturnValue
 from logging import Logger
 from process_pool.process_pool import ProcessPool
 from engine_state import Engine, Request, RequestType
@@ -31,7 +32,7 @@ class ClassifierController:
     self.logger = logger
 
 
-  def start(self) -> str:
+  def start(self) -> ResponseReturnValue:
     '''
     Signal that a computation will start
 
@@ -65,7 +66,7 @@ class ClassifierController:
       self.logger.info('[End][%d] Start %s', request_id, classifier_type.to_lower_case_with_space())
 
 
-  def on_data_received(self) -> str:
+  def on_data_received(self) -> ResponseReturnValue:
     '''
     Receive the data of the computation
 
@@ -98,7 +99,7 @@ class ClassifierController:
       self.logger.info('[End][%d] Receiving %s Data', request_id, classifier_type.to_lower_case_with_space())
 
 
-  def predict(self) -> str:
+  def predict(self) -> ResponseReturnValue:
     '''
     Predict values.
 
@@ -134,7 +135,7 @@ class ClassifierController:
       self.logger.info('[End][%d] %s Predict', request_id, classifier_type.to_lower_case_with_space())
 
 
-  def compute_accuracy_of_predict(self) -> str:
+  def compute_accuracy_of_predict(self) -> ResponseReturnValue:
     '''
     Compute accuracy of predict.
     Compute prediction on {number_of_values} and compare with actual.
@@ -206,7 +207,7 @@ class ClassifierController:
 
 
   @classmethod
-  def _start_async(cls, engine: Engine, request: Request, classifier_start_request: ClassifierStartRequest) -> str:
+  def _start_async(cls, engine: Engine, request: Request, classifier_start_request: ClassifierStartRequest) -> ResponseReturnValue:
     request_id = classifier_start_request.get_request_id()
 
     cls.__throw_exception_if_data_available_on_start(engine, request_id)
@@ -225,7 +226,7 @@ class ClassifierController:
 
 
   @classmethod
-  def _on_data_received_async(cls, engine: Engine, classifier_data_request: ClassifierDataRequest) -> str:
+  def _on_data_received_async(cls, engine: Engine, classifier_data_request: ClassifierDataRequest) -> ResponseReturnValue:
     request_id = classifier_data_request.get_request_id()
 
     cls.__throw_exception_if_start_was_not_called(engine, request_id)
@@ -241,7 +242,7 @@ class ClassifierController:
   def _predict_async(cls,
                      classifier_service_factory: ClassifierServiceFactory,
                      engine: Engine,
-                     classifier_request: ClassifierRequest) -> str:
+                     classifier_request: ClassifierRequest) -> ResponseReturnValue:
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
 
@@ -266,7 +267,7 @@ class ClassifierController:
   def _compute_accuracy_of_predict_async(cls,
                                          classifier_service_factory: ClassifierServiceFactory,
                                          engine: Engine,
-                                         classifier_request: ClassifierRequest) -> str:
+                                         classifier_request: ClassifierRequest) -> ResponseReturnValue:
     request_id = classifier_request.get_request_id()
     classifier_type = classifier_request.get_classifier_type()
 

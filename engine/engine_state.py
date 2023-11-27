@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 
+from typing import Dict
 from enum import Enum
+from datetime import datetime
 from multiprocessing import Pipe
 from multiprocessing.connection import Connection
 from classifier.registry.classifier_data_builder import ClassifierDataBuilder, ClassifierData
@@ -38,6 +40,7 @@ class Request:
   Attributes
     request_id              (int)                     - unique Id of an inflight request
     request_type            (RequestType)             - type of the inflight request
+    creation_datetime       (datetime)                - Creation datetime of request
     release_request_rx      (Connection)              - receiver of a channel where a release request will be posted
     release_request_tx      (Connection)              - transmitter of a channel where a release request will be posted
     classifier_data_builder (ClassifierDataBuilder)   - holds the state of the inflight classifier request
@@ -46,12 +49,21 @@ class Request:
   def __init__(self, request_id: int, request_type: RequestType):
     self.request_id = request_id
     self.request_type = request_type
+    self.creation_datetime = datetime.now()
     self.release_request_rx, self.release_request_tx = Pipe()
     self.classifier_data_builder = ClassifierDataBuilder()
 
 
   def get_request_id(self) -> int:
     return self.request_id
+
+
+  def get_request_type(self) -> RequestType:
+    return self.request_type
+
+
+  def get_creation_datetime(self) -> datetime:
+    return self.creation_datetime
 
 
   def get_release_request_rx(self) -> Connection:
@@ -98,7 +110,7 @@ class Request:
 
 
   def __str__(self) -> str:
-        return str(self.to_json())
+    return str(self.to_json())
 
 
   def __repr__(self) -> str:
@@ -108,7 +120,9 @@ class Request:
   def to_json(self) -> dict:
     return dict(requestId=self.request_id,\
       requestType=self.request_type,\
-      classifier_data_builder=str(self.classifier_data_builder))
+      classifierDataBuilder=str(self.classifier_data_builder),\
+      creationDateime=self.creation_datetime
+    )
 
 
 class Engine:
@@ -125,7 +139,11 @@ class Engine:
     self.inflight_requests = {}
 
 
-  def register_new_request(self, request: Request):
+  def get_inflight_requests(self) -> Dict[int, Request]:
+    return self.inflight_requests
+
+
+  def register_new_request(self, request: Request) -> None:
     request_id = request.get_request_id()
 
     if request_id in self.inflight_requests:
