@@ -1,0 +1,17 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: EnginesDetailResponseModel
+  description: This is the yaml detailing the EnginesDetailResponseModel returned by admin's ping api.
+paths: {}
+definitions:
+  EnginesDetailResponseModel:
+    type: object
+    required:
+      - enginesDetailResponse
+    properties:
+      enginesDetailResponse:
+        type: array
+        description: details about all engines owned by the orchestrator
+        items:
+          $ref: '../../../model/admin/EngineDetailResponse.yaml#/definitions/EngineDetailResponseModel'

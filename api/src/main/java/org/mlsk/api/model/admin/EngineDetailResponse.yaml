@@ -1,0 +1,23 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: EngineDetailResponseModel
+  description: This is the yaml detailing the EngineDetailResponse returned by admin's ping api.
+paths: {}
+definitions:
+  EngineDetailResponseModel:
+    type: object
+    required:
+      - processesDetails
+      - inflightRequestsDetails
+    properties:
+      processesDetails:
+        type: array
+        description: details about all running processes on the engine
+        items:
+          $ref: './ProcessDetailResponse.yaml#/definitions/ProcessDetailResponseModel'
+      inflightRequestsDetails:
+        type: string
+        description: details about all inflight requests currently being served by the engine
+        items:
+          $ref: './RequestDetailResponse.yaml#/definitions/RequestDetailResponseModel'

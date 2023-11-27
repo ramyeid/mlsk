@@ -1,0 +1,26 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: MLSK - Admin - Engine
+  description: This is the API detailing all endpoints
+    of the Machine Learning Swiss Knife, Administrator, Engine side.
+    The Service is written in PYTHON
+tags:
+  - name: AdminEngine
+paths:
+  '/admin/ping':
+    get:
+      tags:
+        - AdminEngine
+      summary: Ping engine and return engine details
+      operationId: ping
+      description: Make sure that engine is up and retrieve inflight requests and running processes
+      responses:
+        '200':
+          description: Returns OK, Engine is up and running
+          content:
+            application/json:
+              schema:
+                $ref: '../../model/admin/EngineDetailResponse.yaml#/definitions/EngineDetailResponseModel'
+        '500':
+          description: Engine Computation Exception with detailed exception message.

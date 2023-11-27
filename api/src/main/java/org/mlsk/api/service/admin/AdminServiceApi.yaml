@@ -1,0 +1,32 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: MLSK - Admin - Service
+  description: This is the API detailing all endpoints
+    of the Machine Learning Swiss Knife, Administrator, Service side.
+    The Service is written in JAVA
+tags:
+  - name: AdminService
+paths:
+  '/admin/ping':
+    post:
+      tags:
+        - AdminService
+      summary: Ping engine(s) and return engine(s) details
+      operationId: ping
+      description: Make sure that engine(s) are up and retrieve their inflight requests and running processes
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: number
+      responses:
+        '200':
+          description: Returns OK, Engine(s) are up and running
+          content:
+            application/json:
+              schema:
+                $ref: './model/EnginesDetailResponse.yaml#/definitions/EnginesDetailResponseModel'
+        '500':
+          description: Admin Service Exception with detailed exception message.

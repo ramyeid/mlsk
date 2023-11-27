@@ -1,0 +1,23 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: RequestDetailModel
+  description: This is the yaml detailing the RequestDetailModel
+paths: {}
+definitions:
+  RequestDetailResponseModel:
+    type: object
+    required:
+      - id
+      - type
+      - creationDatetime
+    properties:
+      id:
+        type: long
+        description: Unique id assigned to a process
+      type:
+        type: string
+        description: Type of the inflight request
+      creationDatetime:
+        type: long
+        description: Datetime of when the request was created/registered

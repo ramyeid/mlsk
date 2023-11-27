@@ -1,0 +1,27 @@
+openapi: "3.0.0"
+info:
+  version: "1.0"
+  title: ProcessDetailModel
+  description: This is the yaml detailing the ProcessDetailModel
+paths: {}
+definitions:
+  ProcessDetailResponseModel:
+    type: object
+    required:
+      - id
+      - state
+      - flipFlopCount
+      - startDatetime
+    properties:
+      id:
+        type: long
+        description: Unique id assigned to a process
+      state:
+        type: string
+        description: Current state of the process
+      flipFlopCount:
+        type: long
+        description: Count of times the status was bounced/changed/flip flopped
+      startDatetime:
+        type: string
+        description: Datetime of when the process was last started

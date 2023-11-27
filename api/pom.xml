@@ -86,6 +86,9 @@
                     </configOptions>
                 </configuration>
                 <executions>
+                    <!-- /////////////////////////////////////////////////////// -->
+                    <!--                TIME SERIES ANALYSIS                     -->
+                    <!-- /////////////////////////////////////////////////////// -->
                     <execution>
                         <id>time-series-analysis-service-model</id>
                         <phase>generate-sources</phase>
@@ -200,6 +203,11 @@
                             </inputSpec>
                         </configuration>
                     </execution>
+
+
+                    <!-- /////////////////////////////////////////////////////// -->
+                    <!--                DECISION TREE CLASSIFIER                 -->
+                    <!-- /////////////////////////////////////////////////////// -->
                     <execution>
                         <id>decision-tree-service-model</id>
                         <phase>generate-sources</phase>
@@ -268,6 +276,10 @@
                             </inputSpec>
                         </configuration>
                     </execution>
+
+                    <!-- /////////////////////////////////////////////////////// -->
+                    <!--                      CLASSIFIER                         -->
+                    <!-- /////////////////////////////////////////////////////// -->
                     <execution>
                         <id>classifier-engine-model</id>
                         <phase>generate-sources</phase>
@@ -314,6 +326,126 @@
                             </inputSpec>
                         </configuration>
                     </execution>
+
+
+                    <!-- /////////////////////////////////////////////////////// -->
+                    <!--                            ADMIN                        -->
+                    <!-- /////////////////////////////////////////////////////// -->
+                    <execution>
+                        <id>admin-service-model</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Using spring generator, since it will generate constructor with required parameters -->
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.admin.model</modelPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/service/admin/AdminServiceApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>admin-service-api</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.admin.model</modelPackage>
+                            <apiPackage>org.mlsk.api.service.admin.api</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/service/admin/AdminServiceApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>admin-service-client</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <library>resttemplate</library>
+                            <generatorName>java</generatorName>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.service.admin.model</modelPackage>
+                            <invokerPackage>org.mlsk.api.service.admin.client</invokerPackage>
+                            <apiPackage>org.mlsk.api.service.admin.client</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/service/admin/AdminServiceApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>admin-engine-model</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- Using spring generator, since it will generate constructor with required parameters -->
+                            <generatorName>spring</generatorName>
+                            <generateSupportingFiles>false</generateSupportingFiles>
+                            <generateApis>false</generateApis>
+                            <generateModels>true</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.engine.admin.model</modelPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/engine/admin/AdminEngineApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>admin-engine-client</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <library>resttemplate</library>
+                            <generatorName>java</generatorName>
+                            <generateSupportingFiles>true</generateSupportingFiles>
+                            <generateApis>true</generateApis>
+                            <generateModels>false</generateModels>
+                            <generateModelTests>false</generateModelTests>
+                            <generateModelDocumentation>false</generateModelDocumentation>
+
+                            <modelPackage>org.mlsk.api.engine.admin.model</modelPackage>
+                            <invokerPackage>org.mlsk.api.engine.admin.client</invokerPackage>
+                            <apiPackage>org.mlsk.api.engine.admin.client</apiPackage>
+
+                            <inputSpec>
+                                ${basedir}/src/main/java/org/mlsk/api/engine/admin/AdminEngineApi.yaml
+                            </inputSpec>
+                        </configuration>
+                    </execution>
+
                 </executions>
             </plugin>
         </plugins>

@@ -11,8 +11,9 @@ class RequestDetailResponse:
   Contains all information and details about the inflight request
 
   Attributes
-    processes_details (List[ProcessDetailResponse])         - All ongoing processes details
-    inflight_requests_details (List[RequestDetailResponse]) - All inflights requests details
+    id (int)                      - Unique identifier of a request
+    type (RequestType)            - Type of the inflight request
+    creation_datetime (datetime)  - Datetime of when the request was created
   '''
 
 
