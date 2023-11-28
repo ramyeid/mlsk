@@ -1,5 +1,6 @@
 package org.mlsk.service.impl.engine.client;
 
+import org.mlsk.api.engine.admin.client.AdminEngineApi;
 import org.mlsk.api.engine.classifier.client.ClassifierEngineApi;
 import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
 import org.mlsk.lib.model.Endpoint;
@@ -23,5 +24,13 @@ public class EngineClientFactory {
     apiClient.setBasePath(endpoint.getUrl());
 
     return new ClassifierEngineApi(apiClient);
+  }
+
+  public AdminEngineApi buildAdminClient(Endpoint endpoint) {
+    RestTemplate restTemplate = buildRestTemplate();
+    org.mlsk.api.engine.admin.client.ApiClient apiClient = new org.mlsk.api.engine.admin.client.ApiClient(restTemplate);
+    apiClient.setBasePath(endpoint.getUrl());
+
+    return new AdminEngineApi(apiClient);
   }
 }

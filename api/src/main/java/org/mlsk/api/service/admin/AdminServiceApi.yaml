@@ -9,18 +9,19 @@ tags:
   - name: AdminService
 paths:
   '/admin/ping':
-    post:
+    get:
       tags:
         - AdminService
       summary: Ping engine(s) and return engine(s) details
       operationId: ping
       description: Make sure that engine(s) are up and retrieve their inflight requests and running processes
-      requestBody:
-        required: false
-        content:
-          application/json:
-            schema:
-              type: number
+      parameters:
+        - name: engineId
+          in: path
+          required: false
+          schema:
+            type: integer
+            minimum: 0
       responses:
         '200':
           description: Returns OK, Engine(s) are up and running

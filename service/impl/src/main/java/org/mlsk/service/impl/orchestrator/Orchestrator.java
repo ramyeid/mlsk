@@ -2,16 +2,22 @@ package org.mlsk.service.impl.orchestrator;
 
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
+import org.mlsk.service.model.engine.EngineState;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
 public interface Orchestrator {
 
-  List<Engine> getEngines();
+  EngineState getEngineState(int engineId);
 
   void launchEngines();
+
+  <Result> Result priorityRunOnEngine(int engineId, Function<Engine, Result> action);
+
+  <Result> List<Result> priorityRunOnAllEngines(Function<Engine, Result> action);
 
   /**
    * Acquire engine, run action and release lock on engine
