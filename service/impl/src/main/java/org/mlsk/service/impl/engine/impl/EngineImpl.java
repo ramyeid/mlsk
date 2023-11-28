@@ -6,10 +6,12 @@ import org.apache.logging.log4j.Logger;
 import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.engine.Engine;
+import org.mlsk.service.impl.admin.engine.AdminEngineClient;
 import org.mlsk.service.impl.classifier.engine.ClassifierEngineClient;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
 import org.mlsk.service.impl.timeseries.engine.TimeSeriesAnalysisEngineClient;
+import org.mlsk.service.model.admin.EngineDetailResponse;
 import org.mlsk.service.model.classifier.*;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
@@ -30,6 +32,7 @@ public class EngineImpl implements Engine {
   private final AtomicReference<EngineState> state;
   private final TimeSeriesAnalysisEngineClient timeSeriesAnalysisEngineClient;
   private final ClassifierEngineClient classifierEngineClient;
+  private final AdminEngineClient adminEngineClient;
 
   public EngineImpl(Endpoint endpoint) {
     this(new EngineClientFactory(), endpoint, new ResilientEngineProcess(endpoint, getLogsPath(), getEnginePath(), getEngineLogLevel()), new AtomicReference<>(OFF));
@@ -42,6 +45,7 @@ public class EngineImpl implements Engine {
     this.state = state;
     this.timeSeriesAnalysisEngineClient = new TimeSeriesAnalysisEngineClient(endpoint, engineClientFactory);
     this.classifierEngineClient = new ClassifierEngineClient(endpoint, engineClientFactory);
+    this.adminEngineClient = new AdminEngineClient(endpoint, engineClientFactory);
   }
 
   @Override
@@ -133,5 +137,10 @@ public class EngineImpl implements Engine {
   @Override
   public TimeSeries predict(TimeSeriesAnalysisRequest timeSeriesAnalysisRequest) {
     return this.timeSeriesAnalysisEngineClient.predict(timeSeriesAnalysisRequest);
+  }
+
+  @Override
+  public EngineDetailResponse ping() {
+    return this.adminEngineClient.ping();
   }
 }

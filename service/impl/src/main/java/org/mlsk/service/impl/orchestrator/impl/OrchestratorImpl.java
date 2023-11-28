@@ -13,14 +13,16 @@ import org.mlsk.service.impl.orchestrator.request.model.Request;
 import org.mlsk.service.impl.orchestrator.request.registry.RequestRegistry;
 import org.mlsk.service.model.engine.EngineState;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 import static java.util.Collections.unmodifiableList;
+import static java.util.stream.Collectors.toMap;
 import static org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException.buildNoAvailableEngineException;
 import static org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException.buildNoAvailableBlockedEngineException;
 import static org.mlsk.service.impl.orchestrator.exception.NoEngineWithInformationException.buildNoEngineWithInformationException;
@@ -29,7 +31,7 @@ public class OrchestratorImpl implements Orchestrator {
 
   private static final Logger LOGGER = LogManager.getLogger(OrchestratorImpl.class);
 
-  private final List<Engine> engines;
+  private final Map<Integer, Engine> engines;
   private final RequestRegistry requestRegistry;
 
   public OrchestratorImpl(List<Engine> engines) {
@@ -38,18 +40,20 @@ public class OrchestratorImpl implements Orchestrator {
 
   @VisibleForTesting
   public OrchestratorImpl(List<Engine> engines, RequestRegistry requestRegistry) {
-    this.engines = engines;
+    this.engines = IntStream.range(0, engines.size())
+        .boxed()
+        .collect(toMap(Function.identity(), engines::get));
     this.requestRegistry = requestRegistry;
   }
 
   @Override
-  public List<Engine> getEngines() {
-    return unmodifiableList(engines);
+  public EngineState getEngineState(int engineId) {
+    return engines.get(engineId).getState();
   }
 
   @Override
   public void launchEngines() {
-    this.engines.forEach(engine -> {
+    this.engines.values().forEach(engine -> {
       try {
         engine.launchEngine(() -> this.onEngineKilled(engine));
         engine.markAsReadyForNewRequest();
@@ -58,6 +62,21 @@ public class OrchestratorImpl implements Orchestrator {
         throw exception;
       }
     });
+  }
+
+  @Override
+  public <Result> Result priorityRunOnEngine(int engineId, Function<Engine, Result> action) {
+    Engine engine = this.engines.get(engineId);
+    if (engine == null) {
+      throw new NoEngineWithInformationException(format("No engine with id: `%s`", engineId));
+    }
+
+    return action.apply(engine);
+  }
+
+  @Override
+  public <Result> List<Result> priorityRunOnAllEngines(Function<Engine, Result> action) {
+    return this.engines.values().stream().map(action).collect(Collectors.toList());
   }
 
   @Override
@@ -163,7 +182,7 @@ public class OrchestratorImpl implements Orchestrator {
   }
 
   private Engine getEngine(Predicate<Engine> predicate, Supplier<? extends RuntimeException> exceptionSupplier) {
-    return engines.stream().filter(predicate).findFirst().orElseThrow(exceptionSupplier);
+    return engines.values().stream().filter(predicate).findFirst().orElseThrow(exceptionSupplier);
   }
 
   private static Supplier<NoAvailableEngineException> buildNoAvailableEngineExceptionSupplier(String actionName) {

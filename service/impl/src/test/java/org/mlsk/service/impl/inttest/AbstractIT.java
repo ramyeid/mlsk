@@ -113,7 +113,7 @@ public abstract class AbstractIT {
 
   protected void assertOnEngineState(EngineState... states) {
     for (int i = 0; i < states.length; ++i) {
-      assertEquals(states[i], orchestrator.getEngines().get(i).getState());
+      assertEquals(states[i], orchestrator.getEngineState(i));
     }
   }
 
