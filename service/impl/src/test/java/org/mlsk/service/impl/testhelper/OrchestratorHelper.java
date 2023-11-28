@@ -5,7 +5,9 @@ import org.mlsk.service.impl.orchestrator.Orchestrator;
 import org.mockito.invocation.InvocationOnMock;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.doThrow;
@@ -14,6 +16,18 @@ import static org.mockito.Mockito.when;
 public final class OrchestratorHelper {
 
   private OrchestratorHelper() {
+  }
+
+  public static void onPriorityRunOnEngine(Orchestrator orchestrator, Engine engine, int engineId) {
+    when(orchestrator.priorityRunOnEngine(eq(engineId), any(), any()))
+        .thenAnswer(invocation -> buildAnswer(engine, invocation));
+  }
+
+  public static void onPriorityRunOnAllEngines(Orchestrator orchestrator, List<Engine> engines) {
+    when(orchestrator.priorityRunOnAllEngines(anyString(), any()))
+        .thenAnswer(invocation -> engines.stream()
+            .map(engine -> buildAnswer(engine, invocation))
+            .collect(Collectors.toList()));
   }
 
   public static void onBookEngineReturn(Orchestrator orchestrator, Engine engine, long requestId) {
@@ -44,9 +58,25 @@ public final class OrchestratorHelper {
         .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, new RuntimeException(exceptionMessage), invocation));
   }
 
+  public static void doThrowExceptionOnPriorityRunOnEngine(Orchestrator orchestrator, Engine engine, String actionName, int engineId, String exceptionMessage) {
+    when(orchestrator.priorityRunOnEngine(eq(engineId), eq(actionName), any()))
+        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, new RuntimeException(exceptionMessage), invocation));
+  }
+
+  public static void doThrowExceptionOnPriorityRunOnAllEngines(Orchestrator orchestrator, Engine engine, String actionName, String exceptionMessage) {
+    when(orchestrator.priorityRunOnAllEngines(eq(actionName), any()))
+        .thenAnswer(invocation -> buildAnswerWithException(engine, actionName, new RuntimeException(exceptionMessage), invocation));
+  }
+
   private static Object buildAnswerWithException(Engine engine, String actionName, RuntimeException exception, InvocationOnMock invocation) {
     Object result = buildAnswer(engine, invocation);
-    if (invocation.getArgument(1, String.class).equals(actionName)) {
+    String actualActionName = null;
+    if (invocation.getArgument(0) instanceof String) {
+      actualActionName = invocation.getArgument(0, String.class);
+    } else if (invocation.getArgument(1) instanceof String) {
+      actualActionName = invocation.getArgument(1, String.class);
+    }
+    if (actionName.equals(actualActionName)) {
       throw exception;
     }
     return result;

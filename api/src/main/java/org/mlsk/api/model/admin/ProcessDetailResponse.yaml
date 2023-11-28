@@ -14,7 +14,7 @@ definitions:
       - startDatetime
     properties:
       id:
-        type: long
+        type: integer
         description: Unique id assigned to a process
       state:
         type: string

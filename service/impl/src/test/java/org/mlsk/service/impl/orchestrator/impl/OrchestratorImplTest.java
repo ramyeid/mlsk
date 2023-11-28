@@ -5,6 +5,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mlsk.lib.model.Endpoint;
+import org.mlsk.service.admin.AdminEngine;
 import org.mlsk.service.engine.Engine;
 import org.mlsk.service.impl.engine.impl.EngineImpl;
 import org.mlsk.service.impl.orchestrator.exception.NoAvailableEngineException;
@@ -12,6 +13,8 @@ import org.mlsk.service.impl.orchestrator.exception.NoBlockedEngineException;
 import org.mlsk.service.impl.orchestrator.exception.NoEngineWithInformationException;
 import org.mlsk.service.impl.orchestrator.request.model.Request;
 import org.mlsk.service.impl.orchestrator.request.registry.RequestRegistry;
+import org.mlsk.service.model.admin.EngineDetailResponse;
+import org.mlsk.service.model.admin.ProcessDetailResponse;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
 import org.mlsk.service.model.timeseries.TimeSeriesAnalysisRequest;
@@ -20,6 +23,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -395,6 +399,88 @@ public class OrchestratorImplTest {
     verifyStates(IDLE, IDLE);
   }
 
+  @Test
+  public void should_run_priority_on_engine_without_booking_the_engine() {
+    onPingReturn(engine1Spy, buildEngineDetailResponse1());
+    engine1Spy.markAsReadyForNewRequest();
+    engine2Spy.markAsReadyForNewRequest();
+
+    orchestrator.bookEngine(1L, "action1");
+    orchestrator.bookEngine(2L, "action2");
+    EngineDetailResponse actualResult = orchestrator.priorityRunOnEngine(0, "ping", AdminEngine::ping);
+
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engine1Spy).markAsReadyForNewRequest();
+    inOrder.verify(engine2Spy).markAsReadyForNewRequest();
+    inOrder.verify(engine1Spy).markAsBooked();
+    inOrder.verify(engine2Spy).markAsBooked();
+    inOrder.verify(engine1Spy).ping();
+    inOrder.verifyNoMoreInteractions();
+    verifyStates(BOOKED, BOOKED);
+    assertEquals(buildEngineDetailResponse1(), actualResult);
+  }
+
+  @Test
+  public void should_throw_exception_if_no_engine_with_id_on_run_priority_on_engine() {
+
+    try {
+      orchestrator.priorityRunOnEngine(3, "ping", AdminEngine::ping);
+      fail("should fail since engineId 3 is not available");
+
+    } catch (Exception exception) {
+      assertInstanceOf(NoEngineWithInformationException.class, exception);
+      assertEquals("No engine with id: `3` to run `ping`", exception.getMessage());
+    }
+  }
+
+  @Test
+  public void should_run_priority_on_engines_without_booking_the_engine() {
+    onPingReturn(engine1Spy, buildEngineDetailResponse1());
+    onPingReturn(engine2Spy, buildEngineDetailResponse2());
+    engine1Spy.markAsReadyForNewRequest();
+    engine2Spy.markAsReadyForNewRequest();
+
+    orchestrator.bookEngine(1L, "action1");
+    orchestrator.bookEngine(2L, "action2");
+    EngineDetailResponse actualResult1 = orchestrator.priorityRunOnEngine(0, "ping", AdminEngine::ping);
+    EngineDetailResponse actualResult2 = orchestrator.priorityRunOnEngine(1, "ping", AdminEngine::ping);
+
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engine1Spy).markAsReadyForNewRequest();
+    inOrder.verify(engine2Spy).markAsReadyForNewRequest();
+    inOrder.verify(engine1Spy).markAsBooked();
+    inOrder.verify(engine2Spy).markAsBooked();
+    inOrder.verify(engine1Spy).ping();
+    inOrder.verify(engine2Spy).ping();
+    inOrder.verifyNoMoreInteractions();
+    verifyStates(BOOKED, BOOKED);
+    assertEquals(buildEngineDetailResponse1(), actualResult1);
+    assertEquals(buildEngineDetailResponse2(), actualResult2);
+  }
+
+  @Test
+  public void should_run_priority_on_all_engines_without_booking_the_engine() {
+    onPingReturn(engine1Spy, buildEngineDetailResponse1());
+    onPingReturn(engine2Spy, buildEngineDetailResponse2());
+    engine1Spy.markAsReadyForNewRequest();
+    engine2Spy.markAsReadyForNewRequest();
+
+    orchestrator.bookEngine(1L, "action1");
+    orchestrator.bookEngine(2L, "action2");
+    List<EngineDetailResponse> actualResult = orchestrator.priorityRunOnAllEngines("ping", AdminEngine::ping);
+
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(engine1Spy).markAsReadyForNewRequest();
+    inOrder.verify(engine2Spy).markAsReadyForNewRequest();
+    inOrder.verify(engine1Spy).markAsBooked();
+    inOrder.verify(engine2Spy).markAsBooked();
+    inOrder.verify(engine1Spy).ping();
+    inOrder.verify(engine2Spy).ping();
+    inOrder.verifyNoMoreInteractions();
+    verifyStates(BOOKED, BOOKED);
+    assertEquals(newArrayList(buildEngineDetailResponse1(), buildEngineDetailResponse2()), actualResult);
+  }
+
   private InOrder buildInOrder() {
     return inOrder(engine1Spy, engine2Spy, requestRegistry);
   }
@@ -402,6 +488,10 @@ public class OrchestratorImplTest {
   private void onGetRequest(long requestId, Endpoint endpoint) {
     Optional<Request> request = ofNullable(endpoint).map(info -> new Request(requestId, info));
     when(requestRegistry.get(requestId)).thenReturn(request);
+  }
+
+  private void onPingReturn(Engine engine, EngineDetailResponse engineDetailResponse) {
+    doReturn(engineDetailResponse).when(engine).ping();
   }
 
   private static void doNothingOnLaunchEngine(Engine engine) {
@@ -448,5 +538,19 @@ public class OrchestratorImplTest {
 
   private static Function<Engine, TimeSeries> buildFunction() {
     return engine -> engine.predict(mock(TimeSeriesAnalysisRequest.class));
+  }
+
+  private static EngineDetailResponse buildEngineDetailResponse1() {
+    return new EngineDetailResponse(
+      newArrayList(new ProcessDetailResponse(1, "state", 2, "startDatetime")),
+      newArrayList()
+    );
+  }
+
+  private static EngineDetailResponse buildEngineDetailResponse2() {
+    return new EngineDetailResponse(
+        newArrayList(new ProcessDetailResponse(2, "state2", 3, "startDatetime2")),
+        newArrayList()
+    );
   }
 }

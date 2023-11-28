@@ -19,5 +19,5 @@ definitions:
         type: string
         description: Type of the inflight request
       creationDatetime:
-        type: long
+        type: string
         description: Datetime of when the request was created/registered

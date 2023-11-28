@@ -3,6 +3,10 @@ package org.mlsk.service.impl.engine.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mlsk.api.engine.admin.client.AdminEngineApi;
+import org.mlsk.api.engine.admin.model.EngineDetailResponseModel;
+import org.mlsk.api.engine.admin.model.ProcessDetailResponseModel;
+import org.mlsk.api.engine.admin.model.RequestDetailResponseModel;
 import org.mlsk.api.engine.classifier.client.ClassifierEngineApi;
 import org.mlsk.api.engine.classifier.model.*;
 import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
@@ -13,6 +17,9 @@ import org.mlsk.lib.engine.ResilientEngineProcess;
 import org.mlsk.lib.model.Endpoint;
 import org.mlsk.service.impl.engine.client.EngineClientFactory;
 import org.mlsk.service.impl.engine.impl.exception.UnableToLaunchEngineException;
+import org.mlsk.service.model.admin.EngineDetailResponse;
+import org.mlsk.service.model.admin.ProcessDetailResponse;
+import org.mlsk.service.model.admin.RequestDetailResponse;
 import org.mlsk.service.model.classifier.*;
 import org.mlsk.service.model.engine.EngineState;
 import org.mlsk.service.model.timeseries.TimeSeries;
@@ -45,6 +52,8 @@ public class EngineImplTest {
   private TimeSeriesAnalysisEngineApi tsaEngineClient;
   @Mock
   private ClassifierEngineApi classifierEngineApi;
+  @Mock
+  private AdminEngineApi adminEngineApi;
 
   private AtomicReference<EngineState> engineStateSpy;
   private EngineImpl engineImpl;
@@ -54,6 +63,7 @@ public class EngineImplTest {
     engineStateSpy = spy(new AtomicReference<>(OFF));
     onBuildClassifierEngineClient();
     onBuildTimeSeriesAnalysisEngineClient();
+    onBuildAdminEngineClient();
     engineImpl = new EngineImpl(engineClientFactory, ENDPOINT, resilientEngineProcess, engineStateSpy);
   }
 
@@ -309,8 +319,28 @@ public class EngineImplTest {
     inOrder.verifyNoMoreInteractions();
   }
 
+  @Test
+  public void should_delegate_admin_ping_call_to_engine() {
+    onPingReturn(buildEngineDetailResponseModel());
+
+    engineImpl.ping();
+
+    InOrder inOrder = buildInOrder();
+    inOrder.verify(adminEngineApi).ping();
+    inOrder.verifyNoMoreInteractions();
+  }
+
+  @Test
+  public void should_return_engine_detail_response_on_admin_ping() {
+    onPingReturn(buildEngineDetailResponseModel());
+
+    EngineDetailResponse actualResponse = engineImpl.ping();
+
+    assertEquals(buildEngineDetailResponse(), actualResponse);
+  }
+
   private InOrder buildInOrder() {
-    return inOrder(engineClientFactory, tsaEngineClient, classifierEngineApi, engineStateSpy, resilientEngineProcess);
+    return inOrder(engineClientFactory, tsaEngineClient, classifierEngineApi, adminEngineApi, engineStateSpy, resilientEngineProcess);
   }
 
   private void onBuildClassifierEngineClient() {
@@ -319,6 +349,10 @@ public class EngineImplTest {
 
   private void onBuildTimeSeriesAnalysisEngineClient() {
     when(engineClientFactory.buildTimeSeriesAnalysisClient(any())).thenReturn(tsaEngineClient);
+  }
+
+  private void onBuildAdminEngineClient() {
+    when(engineClientFactory.buildAdminClient(any())).thenReturn(adminEngineApi);
   }
 
   private void throwExceptionOnLaunchEngine() throws Exception {
@@ -343,6 +377,10 @@ public class EngineImplTest {
 
   private void onClassifierPredictAccuracyReturn(double accuracy) {
     when(classifierEngineApi.computePredictAccuracy(any())).thenReturn(BigDecimal.valueOf(accuracy));
+  }
+
+  private void onPingReturn(EngineDetailResponseModel engineDetailResponseModel) {
+    when(adminEngineApi.ping()).thenReturn(engineDetailResponseModel);
   }
 
   private static TimeSeriesAnalysisRequest buildTimeSeriesAnalysisRequest() {
@@ -419,5 +457,19 @@ public class EngineImplTest {
 
   private static ClassifierResponseModel buildClassifierResponseModel() {
     return new ClassifierResponseModel(REQUEST_ID, "columnName", newArrayList(0, 1, 0), ClassifierTypeModel.DECISION_TREE);
+  }
+
+  private static EngineDetailResponseModel buildEngineDetailResponseModel() {
+    return new EngineDetailResponseModel(
+        newArrayList(new ProcessDetailResponseModel(1, "state", 1L, "startDatetime")),
+        newArrayList(new RequestDetailResponseModel(2L, "type", "creationDatetime"))
+    );
+  }
+
+  private static EngineDetailResponse buildEngineDetailResponse() {
+    return new EngineDetailResponse(
+        newArrayList(new ProcessDetailResponse(1, "state", 1L, "startDatetime")),
+        newArrayList(new RequestDetailResponse(2L, "type", "creationDatetime"))
+    );
   }
 }

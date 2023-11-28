@@ -1,5 +1,6 @@
 package org.mlsk.service.impl.inttest;
 
+import org.mlsk.api.engine.admin.client.AdminEngineApi;
 import org.mlsk.api.engine.classifier.client.ClassifierEngineApi;
 import org.mlsk.api.engine.timeseries.client.TimeSeriesAnalysisEngineApi;
 import org.mlsk.lib.engine.ResilientEngineProcess;
@@ -113,7 +114,7 @@ public abstract class AbstractIT {
 
   protected void assertOnEngineState(EngineState... states) {
     for (int i = 0; i < states.length; ++i) {
-      assertEquals(states[i], orchestrator.getEngines().get(i).getState());
+      assertEquals(states[i], orchestrator.getEngineState(i));
     }
   }
 
@@ -154,10 +155,12 @@ public abstract class AbstractIT {
   private EngineClientFactory buildEngineClientFactory(Endpoint endpoint) {
     ClassifierEngineApi classifierEngineApi = new ClassifierEngineApi(new org.mlsk.api.engine.classifier.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
     TimeSeriesAnalysisEngineApi timeSeriesAnalysisEngineApi = new TimeSeriesAnalysisEngineApi(new org.mlsk.api.engine.timeseries.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
+    AdminEngineApi adminEngineApi = new AdminEngineApi(new org.mlsk.api.engine.admin.client.ApiClient(restTemplateSpy).setBasePath(endpoint.getUrl()));
 
     EngineClientFactory engineClientFactory = mock(EngineClientFactory.class);
     when(engineClientFactory.buildClassifierClient(endpoint)).thenReturn(classifierEngineApi);
     when(engineClientFactory.buildTimeSeriesAnalysisClient(endpoint)).thenReturn(timeSeriesAnalysisEngineApi);
+    when(engineClientFactory.buildAdminClient(endpoint)).thenReturn(adminEngineApi);
     return engineClientFactory;
   }
 
