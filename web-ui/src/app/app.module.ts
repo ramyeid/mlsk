@@ -6,6 +6,7 @@ import { HttpClientModule } from '@angular/common/http';
 
 import { AppComponent } from './app.component';
 import { ConfigurationModule } from './configuration/configuration.module';
+import { AdminModule } from './admin/admin.module';
 import { TimeSeriesAnalysisModule } from './time-series-analysis/time-series-analysis.module';
 import { DecisionTreeModule } from './classifier/decision-tree/decision-tree.module';
 import { HomeModule } from './home/home.module';
@@ -20,6 +21,7 @@ import { appRoutes } from './routes';
     SharedModule,
     HomeModule,
     ConfigurationModule,
+    AdminModule,
     TimeSeriesAnalysisModule,
     DecisionTreeModule,
     RouterModule.forRoot(appRoutes)

@@ -23,5 +23,9 @@ export const appRoutes: Routes = [
 
   { path : 'config',
     loadChildren: (): Promise<Type<unknown>> => import('./configuration/configuration.module').then(m => m.ConfigurationModule)
-  }
+  },
+
+  { path : 'admin',
+    loadChildren: (): Promise<Type<unknown>> => import('./admin/admin.module').then(m => m.AdminModule)
+  },
 ];
