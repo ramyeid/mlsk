@@ -8,9 +8,9 @@ definitions:
   EnginesDetailResponseModel:
     type: object
     required:
-      - enginesDetailResponse
+      - enginesDetail
     properties:
-      enginesDetailResponse:
+      enginesDetail:
         type: array
         description: details about all engines owned by the orchestrator
         items:
